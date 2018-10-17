@@ -15,6 +15,7 @@ public class MenuManager : MonoBehaviour {
     public TextAsset textBefore;
     public TextAsset textAddable;
     public TextAsset creditsAsset;
+    public TextAsset warningAsset;
     string[] lines;
 
     #region UI Elements
@@ -32,15 +33,15 @@ public class MenuManager : MonoBehaviour {
     public GameObject logAndSingPanel;
     public GameObject accountCanvas;
     public GameObject logInCanavas;
-    public GameObject singInDadCanvas;
-    public GameObject singInKidCanvas;
+    public GameObject singInCanvas;
     public GameObject kidsPanel;
+    public GameObject warningPanel;
     public Text ornamentText;
 
     [Header("Account Manager UI")]
     public Button gotAccountButton;
     public Button createAccountButton;
-    public Button notSingInButton;
+
 
     [Header("Log in canvas UI")]
     public InputField emailLogInInput;
@@ -51,42 +52,24 @@ public class MenuManager : MonoBehaviour {
     public Button logInButton;
     public Button returnLogInButton;
 
-    [Header("Sing In Dad UI")]
-    public InputField dadNameInput;
-    public InputField dadLastNameInput;
+    [Header("Sing In UI")]
     public InputField dadMailInput;
-    public InputField dadPassInput;
-    public InputField dadPassRepeatInput;
-    public Text dadRegistryText;
-    public Text dadNameText;
-    public Text dadLastNameText;
     public Text dadMailText;
+    public InputField dadPassInput;
     public Text dadPassText;
+    public InputField dadPassRepeatInput;
     public Text dadPassRepeatText;
-    public Text dadWarningText;
-    public Button singInDadNextButton;
-    public Button singInDadCancelButton;
-
-    [Header("Sing In Kid UI")]
-    public Text kidRegistryText;
-    public Text kidNameText;
-    public Text kidLastnameText;
-    public Text kidDateText;
-    public Text kidDayText;
-    public Text kidMonthText;
-    public Text kidYearText;
-    public Text kidGenderText;
-    public Text kidObligatoryText;
-    public Text acceptTermsAndConditionText;
     public InputField kidNameInput;
-    public InputField kidLastnameInput;
+    public Text kidNameText;
+    public Text kidDateText;
     public InputField kidDayInput;
     public InputField kidMonthInput;
     public InputField kidYearInput;
-    public Dropdown kidSexDropdown;
+    public Text kidMoreText;
+    public Text acceptTermsAndConditionText;
     public Button termsAndConditionsButton;
-    public Button kidSendButton;
-    public Button kidReturnButton;
+    public Button singInButton;
+    public Button singInBackButton;
 
     [Header("Kid Selector")]
     public GameObject miniKidCanvas;
@@ -104,6 +87,20 @@ public class MenuManager : MonoBehaviour {
     public Text subscribeText;
     public Button subscribeButton;
     public Button subscribeAnotherCountButton;
+
+    [Header("Shop Button")]
+    public GameObject shopCanvas;
+    public Button oneMonthButton;
+    public Button threeMonthButton;
+    public Button prepaidButton;
+    public Button sendButton;
+    public InputField input;
+
+    [Header("Warnings")]
+    public Text warningText;
+    public Button warningButton;
+    string[] warningLines;
+
     #endregion
 
     AudioManager audioManager;
@@ -112,6 +109,7 @@ public class MenuManager : MonoBehaviour {
     DemoKey key;
     LogInScript logInScript;
     SessionManager sessionManager;
+    MyIAPManager myIAPManager;
 
     string gender = "";
     int[] dobYMD;
@@ -120,6 +118,7 @@ public class MenuManager : MonoBehaviour {
     private void Awake()
     {
         Initialization();
+        dobYMD = new int[0];
     }
 
     // Use this for initialization
@@ -135,14 +134,7 @@ public class MenuManager : MonoBehaviour {
                 {
                     if (user != "")
                     {
-                        if (sessionManager.activeUser.kids.Count < 1)
-                        {
-                            Debug.Log("active kids are " + sessionManager.activeUser.kids.Count);
-                        }
-                        else
-                        {
-                            logInScript.IsActive(user);
-                        }
+                        logInScript.IsActive(user);
                     }
                     else
                     {
@@ -160,8 +152,6 @@ public class MenuManager : MonoBehaviour {
                         ShowLogIn();
                     }
                 }
-
-
             }
             else
             {
@@ -202,13 +192,19 @@ public class MenuManager : MonoBehaviour {
     {
         logInScript = GetComponent<LogInScript>();
         sessionManager = FindObjectOfType<SessionManager>();
+        myIAPManager = FindObjectOfType<MyIAPManager>();
         TextReader.FillCommon(textOfAll);
         TextReader.FillAddables(textAddable);
         TextReader.FillBefore(textBefore);
         lines = TextReader.TextsToShow(textOfScene);
+        warningLines = TextReader.TextsToShow(warningAsset);
         WriteTheTexts();
         ButtonSetUp();
-        key = FindObjectOfType<DemoKey>();
+        if (FindObjectOfType<DemoKey>())
+        {
+            key = FindObjectOfType<DemoKey>();
+        }
+        SetShop();
     }
 
     void ButtonSetUp()
@@ -216,39 +212,38 @@ public class MenuManager : MonoBehaviour {
         evaluationButton.onClick.AddListener(LoadEvaluation);
         gamesButton.onClick.AddListener(LoadGameMenus);
         gotAccountButton.onClick.AddListener(LogInMenuActive);
-        createAccountButton.onClick.AddListener(CreateAccountPart1);
-        notSingInButton.onClick.AddListener(NoSigIn);
+        createAccountButton.onClick.AddListener(CreateAccount);
+        singInBackButton.onClick.AddListener(ShowLogIn);
         logInButton.onClick.AddListener(TryToLogIn);
         forgotPassButton.onClick.AddListener(ForgotPassword);
         returnLogInButton.onClick.AddListener(GoBack);
-        singInDadNextButton.onClick.AddListener(CreateAUserDadPart);
-        singInDadCancelButton.onClick.AddListener(GoBack);
+        singInButton.onClick.AddListener(CreateUser);
         termsAndConditionsButton.onClick.AddListener(GoToTermsAndConditions);
-        kidSendButton.onClick.AddListener(TryToRegister);
-        kidReturnButton.onClick.AddListener(GoDadPart);
         singOutButton.onClick.AddListener(CloseSession);
         kidsButton.onClick.AddListener(SetKidsProfiles);
         aboutButton.onClick.AddListener(ShowCredits);
         exitCredits.onClick.AddListener(ShowGameMenu);
         selectionKidBackButton.onClick.AddListener(CloseKids);
         subscribeAnotherCountButton.onClick.AddListener(CloseSession);
+        warningButton.onClick.AddListener(HideWarning);
     }
 
 #endregion
 
 #region Shower Functions
 
-public void ShowGameMenu()
+    public void ShowGameMenu()
     {
         gameCanvas.SetActive(true);
         logInMenu.SetActive(false);
         accountCanvas.SetActive(false);
         logInCanavas.SetActive(false);
-        singInDadCanvas.SetActive(false);
-        singInKidCanvas.SetActive(false);
+        singInCanvas.SetActive(false);
         kidsPanel.SetActive(false);
         creditCanvas.SetActive(false);
         subscribeCanvas.SetActive(false);
+        warningPanel.SetActive(false);
+        shopCanvas.SetActive(false);
         IsTestIsAvailable();
     }
 
@@ -258,11 +253,12 @@ public void ShowGameMenu()
         logInMenu.SetActive(true);
         accountCanvas.SetActive(true);
         logInCanavas.SetActive(false);
-        singInDadCanvas.SetActive(false);
-        singInKidCanvas.SetActive(false);
+        singInCanvas.SetActive(false);
         kidsPanel.SetActive(false);
         creditCanvas.SetActive(false);
         subscribeCanvas.SetActive(false);
+        warningPanel.SetActive(false);
+        shopCanvas.SetActive(false);
     }
 
     void LogInMenuActive()
@@ -271,11 +267,12 @@ public void ShowGameMenu()
         logInMenu.SetActive(true);
         accountCanvas.SetActive(false);
         logInCanavas.SetActive(true);
-        singInDadCanvas.SetActive(false);
-        singInKidCanvas.SetActive(false);
+        singInCanvas.SetActive(false);
         kidsPanel.SetActive(false);
         creditCanvas.SetActive(false);
         subscribeCanvas.SetActive(false);
+        warningPanel.SetActive(false);
+        shopCanvas.SetActive(false);
     }
 
     public void ShowTrialIsOff()
@@ -284,37 +281,26 @@ public void ShowGameMenu()
         logInMenu.SetActive(false);
         accountCanvas.SetActive(false);
         logInCanavas.SetActive(false);
-        singInDadCanvas.SetActive(false);
-        singInKidCanvas.SetActive(false);
+        singInCanvas.SetActive(false);
         kidsPanel.SetActive(false);
         creditCanvas.SetActive(false);
         subscribeCanvas.SetActive(true);
+        warningPanel.SetActive(false);
+        shopCanvas.SetActive(false);
     }
 
-    void CreateAccountPart1()
+    void CreateAccount()
     {
         gameCanvas.SetActive(false);
         logInMenu.SetActive(true);
         accountCanvas.SetActive(false);
         logInCanavas.SetActive(false);
-        singInDadCanvas.SetActive(true);
-        singInKidCanvas.SetActive(false);
+        singInCanvas.SetActive(true);
         kidsPanel.SetActive(false);
         creditCanvas.SetActive(false);
         subscribeCanvas.SetActive(false);
-    }
-
-    void CreateAccountPart2()
-    {
-        gameCanvas.SetActive(false);
-        logInMenu.SetActive(true);
-        accountCanvas.SetActive(false);
-        logInCanavas.SetActive(false);
-        singInDadCanvas.SetActive(false);
-        singInKidCanvas.SetActive(true);
-        kidsPanel.SetActive(false);
-        creditCanvas.SetActive(false);
-        subscribeCanvas.SetActive(false);
+        warningPanel.SetActive(false);
+        shopCanvas.SetActive(false);
     }
 
     public void SetKidsProfiles()
@@ -323,17 +309,23 @@ public void ShowGameMenu()
         logInMenu.SetActive(false);
         accountCanvas.SetActive(false);
         logInCanavas.SetActive(false);
-        singInDadCanvas.SetActive(false);
-        singInKidCanvas.SetActive(false);
+        singInCanvas.SetActive(false);
         kidsPanel.SetActive(true);
         creditCanvas.SetActive(false);
         subscribeCanvas.SetActive(false);
+        warningPanel.SetActive(false);
+        shopCanvas.SetActive(false);
         if (sessionManager.activeUser != null)
         {
             List<GameObject> kidos = new List<GameObject>();
             float deltaSize = miniKidContainer.GetComponent<RectTransform>().sizeDelta.x;
             miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
+            for (int i = 0; i < miniKidContainer.transform.childCount; i++)
+            {
+                Destroy(miniKidContainer.transform.GetChild(i).gameObject);
+            }
             int kidsNumber = sessionManager.activeUser.kids.Count;
+            Debug.Log(kidsNumber + " this are kids numebrs");
             for (int i = 0; i < kidsNumber; i++)
             {
                 kidos.Add(Instantiate(miniKidCanvas, miniKidContainer.transform));
@@ -355,6 +347,11 @@ public void ShowGameMenu()
                 string parentkey = sessionManager.activeUser.kids[i].userkey;
                 int id = sessionManager.activeUser.kids[i].id;
                 kidos[i].GetComponent<Button>().onClick.AddListener(() => SetKidProfile(parentkey, id));
+                if (!sessionManager.activeUser.kids[i].isActive)
+                {
+                    kidos[i].transform.GetChild(0).GetComponent<Image>().color = Color.grey;
+                    kidos[i].transform.GetChild(2).GetComponent<Image>().color = Color.grey;
+                }
             }
         }
         sessionManager.SaveSession();
@@ -366,12 +363,31 @@ public void ShowGameMenu()
         logInMenu.SetActive(false);
         accountCanvas.SetActive(false);
         logInCanavas.SetActive(false);
-        singInDadCanvas.SetActive(false);
-        singInKidCanvas.SetActive(false);
+        singInCanvas.SetActive(false);
         kidsPanel.SetActive(false);
         creditCanvas.SetActive(true);
         subscribeCanvas.SetActive(false);
+        warningPanel.SetActive(false);
+        shopCanvas.SetActive(false);
     }
+
+    void ShowShop()
+    {
+        gameCanvas.SetActive(false);
+        logInMenu.SetActive(false);
+        accountCanvas.SetActive(false);
+        logInCanavas.SetActive(false);
+        singInCanvas.SetActive(false);
+        kidsPanel.SetActive(false);
+        creditCanvas.SetActive(false);
+        subscribeCanvas.SetActive(false);
+        warningPanel.SetActive(false);
+        shopCanvas.SetActive(true);
+        oneMonthButton.GetComponentInChildren<Text>().text = lines[39] + " " + myIAPManager.CostInCurrency(1);
+        threeMonthButton.GetComponentInChildren<Text>().text = lines[40] + " " + myIAPManager.CostInCurrency(3);
+    }
+
+
 
     #endregion
 
@@ -420,31 +436,34 @@ public void ShowGameMenu()
             }
             else
             {
+                ShowWarning(0);
+                Debug.Log("Necesitas ingresar tu contraseña");
                 Debug.Log("there should be some password");
             }
         }
         else
         {
+            ShowWarning(1);
             Debug.Log("There should be something in the mail");
+            Debug.Log("Necesitas ingresar tu correo");
         }
     }
 
-    void TryToRegister()
+    /*void TryToRegister()
     {
         string kidName = kidNameInput.text;
         if (kidName != "")
         {
             if (KidDateIsOK())
             {
-                ChooseGender();
                 string email = dadMailInput.text;
                 string dadName = dadNameInput.text;
-                string dadLastname = dadLastNameInput.text;
+                //string dadLastname = dadLastNameInput.text;
                 string pass = dadPassInput.text;
-                string kidLastname = kidLastnameInput.text;
+                //string kidLastname = kidLastnameInput.text;
                 string kidDate = DefineTheDateOfBirth();
                 string kidGender = gender;
-                logInScript.RegisterParentAndKid(dadName, dadLastname, email, pass, kidName, kidLastname, kidDate, kidGender);
+                logInScript.RegisterParentAndKid(dadName, email, pass, kidName, kidDate, kidGender);
             }
             else
             {
@@ -457,64 +476,77 @@ public void ShowGameMenu()
         }
 
 
-    }
+    }*/
 
-    void CreateAUserDadPart()
+    void CreateUser()
     {
-        string nam = dadNameInput.text;
-        string lastNam = dadLastNameInput.text;
+        Debug.Log("we try to create user");
         string mail = dadMailInput.text;
         string pass = dadPassInput.text;
         string pass2 = dadPassRepeatInput.text;
+        string kidName = kidNameInput.text;
+        string kidDob = DefineTheDateOfBirth();
         EmailVerificationUtility verificationUtility = new EmailVerificationUtility();
-        if (nam != "" && lastNam != "" && mail != "" && pass != "" && pass2 != "")
+        if (mail != "" && pass != "" && pass2 != "" && kidName != "" && kidDob != "")
         {
+
             if (verificationUtility.IsValidMail(mail))
             {
                 if (pass.Length >= 8)
                 {
                     if (pass == pass2)
                     {
-                        CreateAccountPart2();
+                        Debug.Log("try to log in");
+                        logInScript.RegisterParentAndKid(mail, pass, kidName, kidDob);
                     }
                     else
                     {
+
                         Debug.Log("Passwords doesnt Match");
+                        ShowWarning(7);
                     }
                 }
                 else
                 {
                     Debug.Log("pass is not long enough");
+                    ShowWarning(6);
                 }
             }
             else
             {
                 Debug.Log("Input a valid mail");
+                ShowWarning(5);
             }
-            
+
         }
         else
         {
             Debug.Log("All field are needed");
+            ShowWarning(4);
         }
     }
 
     void SetKidProfile(string parentKey, int id)
     {
         sessionManager.SetKid(parentKey, id);
-        IsTestIsAvailable();
-        ShowGameMenu();
+        if (sessionManager.activeKid.isActive)
+        {
+            IsTestIsAvailable();
+            ShowGameMenu();
+        }
+        else
+        {
+            ShowTrialIsOff();
+        }
     }
 
     void ForgotPassword()
     {
-        Application.OpenURL("http://towi.com.mx/platform/forgot_password.php");
+        Application.OpenURL(Keys.Api_Web_Key + "recuperar/");
     }
 
     void GoBack()
     {
-        dadNameInput.text = null;
-        dadLastNameInput.text = null;
         dadMailInput.text = null;
         dadPassInput.text = null;
         dadPassRepeatInput.text = null;
@@ -522,18 +554,6 @@ public void ShowGameMenu()
         emailLogInInput.text = null;
         passLogInInput.text = null;
         ShowLogIn();
-    }
-
-    void GoDadPart()
-    {
-        kidDayInput.text = null;
-        kidMonthInput.text = null;
-        kidYearInput.text = null;
-        kidNameInput.text = null;
-        kidLastnameInput.text = null;
-        kidSexDropdown.value = 0;
-
-        CreateAccountPart1();
     }
 
     void GoToTermsAndConditions()
@@ -571,41 +591,41 @@ public void ShowGameMenu()
         WriteTheText(gamesButton, 1);
         WriteTheText(aboutButton, 2);
         WriteTheText(singOutButton, 3);
+        WriteTheText(subscribeAnotherCountButton, 3); 
         WriteTheText(ornamentText, 4);
         WriteTheText(gotAccountButton, 5);
         WriteTheText(createAccountButton, 6);
-        WriteTheText(notSingInButton, 7);
         WriteTheText(emailLogInText, 8);
         WriteTheText(passLogInText, 9);
         WriteTheText(logInButton, 10);
-        WriteTheText(returnLogInButton, 11);
-        WriteTheText(kidReturnButton, 11);
+        //WriteTheText(returnLogInButton, 11);
+        //WriteTheText(kidReturnButton, 11);
         WriteTheText(forgotPassButton, 12);
-        WriteTheText(dadRegistryText, 13);
-        WriteTheText(dadNameText, 14);
-        WriteTheText(kidNameText, 14);
-        WriteTheText(dadLastNameText, 15);
+        //WriteTheText(dadRegistryText, 13);
+        //WriteTheText(dadNameText, 14);
+        WriteTheText(kidNameText, 15);
+        //WriteTheText(dadLastNameText, 15);
         WriteTheText(dadMailText, 16);
         WriteTheText(dadPassText, 17);
         WriteTheText(dadPassRepeatText, 18);
-        WriteTheText(dadWarningText, 19);
-        WriteTheText(singInDadNextButton, 20);
-        WriteTheText(singInDadCancelButton, 21);
+        //WriteTheText(dadWarningText, 19);
+        WriteTheText(singInButton, 20);
+        //WriteTheText(singInDadCancelButton, 21);
         WriteTheText(selectionKidBackButton, 21);
-        WriteTheText(kidRegistryText, 22);
-        WriteTheText(kidLastnameText, 23);
+        /*WriteTheText(kidRegistryText, 22);
+        WriteTheText(kidLastnameText, 23);*/
         WriteTheText(kidDateText, 24);
-        WriteTheText(kidDayText, 25);
+        /*WriteTheText(kidDayText, 25);
         WriteTheText(kidMonthText, 26);
         WriteTheText(kidYearText, 27);
         WriteTheText(kidGenderText, 28);
         WriteTheText(kidSexDropdown, 0, 29);
         WriteTheText(kidSexDropdown, 1, 30);
-        WriteTheText(kidSexDropdown, 2, 31);
-        WriteTheText(kidObligatoryText, 32);
+        WriteTheText(kidSexDropdown, 2, 31);*/
+        WriteTheText(kidMoreText, 32);
         WriteTheText(acceptTermsAndConditionText, 33);
         WriteTheText(termsAndConditionsButton, 34);
-        WriteTheText(kidSendButton, 35);
+        //WriteTheText(kidSendButton, 35);
         WriteTheText(selectionKidText, 36);
         WriteTheText(subscribeText, 37);
         WriteTheText(subscribeButton, 38);
@@ -626,14 +646,16 @@ public void ShowGameMenu()
     {
         drop.options[dropIndex].text = lines[index];
     }
-    public void HandleLoginAttemp()
-    {
 
+    public void ShowWarning(int numberOfWarning)
+    {
+        warningPanel.SetActive(true);
+        warningText.text = warningLines[numberOfWarning];
     }
 
-    void NoSigIn()
+    void HideWarning()
     {
-
+        warningPanel.SetActive(false);
     }
 
     public void LoggedNow()
@@ -641,23 +663,6 @@ public void ShowGameMenu()
         alreadyLogged = true;
         PlayerPrefs.SetInt(Keys.Purchase_Key, 1);
         PlayerPrefs.SetInt(Keys.Subscription_Purchased_Key, 1);
-    }
-
-    void ChooseGender()
-    {
-        switch (kidSexDropdown.value)
-        {
-            case 1:
-                gender = "masculino";
-                break;
-            case 2:
-                gender = "femenino";
-                break;
-            default:
-                gender = "not specified";
-                break;
-
-        }
     }
 
     void IsTestIsAvailable()
@@ -675,11 +680,52 @@ public void ShowGameMenu()
         }
     }
 
+    void SetShop()
+    {
+        if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.Windows)
+        {
+            subscribeButton.onClick.AddListener(ShopWindows);
+        }
+        else
+        {
+            subscribeButton.onClick.AddListener(ShowShop);
+            oneMonthButton.onClick.AddListener(myIAPManager.BuySubscriptionOneMonth);
+            threeMonthButton.onClick.AddListener(myIAPManager.BuySubscriptionThreeMonths);
+
+        }
+    }
+
+    void ShopWindows()
+    {
+        Application.OpenURL(Keys.Api_Web_Key + "subscripciones/");
+        Debug.Log("Open shop");
+    }
+
+    bool DatesFromInput()
+    {
+        if (kidDayInput.text != "" && kidMonthInput.text != "" && kidYearInput.text != "")
+        {
+            dobYMD = new int[] { int.Parse(kidYearInput.text), int.Parse(kidMonthInput.text), int.Parse(kidDayInput.text) };
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     string DefineTheDateOfBirth()
     {
-        string date = dobYMD[0].ToString("D4") + "-" + dobYMD[1].ToString("D2") + "-" + dobYMD[2].ToString("D2");
-        Debug.Log("dob is " + date);
-        return date;
+        if (DatesFromInput())
+        {
+            string date = dobYMD[0].ToString("D4") + "-" + dobYMD[1].ToString("D2") + "-" + dobYMD[2].ToString("D2");
+            Debug.Log("dob is " + date);
+            return date;
+        }
+        else
+        {
+            return "";
+        }
     }
 
     bool KidDateIsOK()

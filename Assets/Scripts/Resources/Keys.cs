@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Keys : MonoBehaviour {
 
+    public static string Api_Web_Key = "https://towi.nyx.mx:2443/";
+
     public static string Active_User_Key = "activeUser";
     public static string Purchase_Key = "purchased";
     public static string Subscription_Purchased_Key = "subscriptionPurchased";

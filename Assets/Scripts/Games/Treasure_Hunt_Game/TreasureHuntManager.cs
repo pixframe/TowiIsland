@@ -589,9 +589,11 @@ public class TreasureHuntManager : MonoBehaviour {
             audioManager.PlayClip(instructionsClips[instructionsIndex + 5]);
             readyButton.gameObject.SetActive(false);
             StartCoroutine(WaitForInstruction());
+            cellPhoneButton.gameObject.SetActive(false);
         }
         else
         {
+            cellPhoneButton.gameObject.SetActive(true);
             instructionPanel.SetActive(false);
         }
         Transform t = GameObject.FindGameObjectWithTag("CamaraLayer").transform;
@@ -599,7 +601,6 @@ public class TreasureHuntManager : MonoBehaviour {
         playerCam.gameObject.SetActive(true);
         inventoryManager.SetActive(true);
         backpackApp.SetActive(false);
-        cellPhoneButton.gameObject.SetActive(true);
         stopCellPhoneButton.gameObject.SetActive(false);
         cellPhone.SetActive(false);
         inputer.SetActive(true);
@@ -630,6 +631,10 @@ public class TreasureHuntManager : MonoBehaviour {
         }
         else
         {
+            if (ins == 10)
+            {
+                cellPhoneButton.gameObject.SetActive(true);
+            }
             specialInstructionPanel.SetActive(false);
             instructionPanel.SetActive(true);
             instructionText.text = stringsToShow[ins];

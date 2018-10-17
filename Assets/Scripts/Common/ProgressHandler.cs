@@ -11,7 +11,7 @@ public class ProgressHandler : MonoBehaviour {
 	public string postURL = ""; //be sure to add a ? to your url
     string syncURL = "http://www.towi.com.mx/api/sync.php";
     string rankURL = "http://www.towi.com.mx/api/towi_index.php";
-    string postSuperURL = "http://187.248.54.146:280/api/pruebas/";
+    string postSuperURL = "https://towi.nyx.mx:2443/api/pruebas/";
     //string header;
     //string []data;
     //List<string>dataDynamic;

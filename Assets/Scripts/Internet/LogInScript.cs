@@ -8,10 +8,9 @@ using Boomlagoon.JSON;
 public class LogInScript : MonoBehaviour {
     #region Variables
     //This urls are set in the NewLogin Scene
-    public string loginUrl;
-    public string activeUserUrl;
-    public string suscriptionUrl;
-    public string registerUrl;
+    string loginUrl = Keys.Api_Web_Key + "api/login/";
+    string activeUserUrl = Keys.Api_Web_Key + "api/active_account/";
+    string registerUrl = Keys.Api_Web_Key + "api/register_parent_child/";
 
     string username;
     string password;
@@ -85,26 +84,7 @@ public class LogInScript : MonoBehaviour {
             if (jsonObject.GetValue("access").Boolean)
             {
                 JSONArray kids = jsonObject.GetValue("children").Array;
-                List<string> tempSyncKeys = new List<string>();
 
-                for (int k = 0; k < kids.Length; k++)
-                {
-                    JSONObject kidObj = kids[k].Obj;
-                    bool rep = false;
-                    for (int t = 0; t < tempSyncKeys.Count; t++)
-                    {
-                        if (tempSyncKeys[t] == kidObj.GetValue("key").Str)
-                        {
-                            rep = true;
-                        }
-                    }
-                    if (!rep)
-                        tempSyncKeys.Add(kidObj.GetValue("key").Str);
-                }
-                for (int t = 0; t < tempSyncKeys.Count; t++)
-                {
-                    sessionManager.SyncProfiles(tempSyncKeys[t]);
-                }
                 sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetValue("id").Number);
                 sessionManager.AddKids(kids);
                 menuController.LoggedNow();
@@ -162,8 +142,19 @@ public class LogInScript : MonoBehaviour {
                 }*/
             }
         }
-        else {
-            Debug.Log(hs_post.error);
+        else
+        {
+            JSONObject jsonObj = JSONObject.Parse(hs_post.text);
+            string error = jsonObj.GetString("status");
+            if (error == "USER_NOT_FOUND")
+            {
+                menuController.ShowWarning(2);
+            }
+            else
+            {
+                menuController.ShowWarning(3);
+            }
+            Debug.Log(error);
         }
     }
 
@@ -241,25 +232,25 @@ public class LogInScript : MonoBehaviour {
         }
     }
 
-    public void RegisterParentAndKid(string name, string lastName, string email, string password, string kidName, string kidLastName, string dateOfBirth, string gender)
+    public void RegisterParentAndKid(string email, string password, string kidName, string dateOfBirth)
     {
-        StartCoroutine(PostRegisterParentAndKid(name, lastName, email, password, kidName, kidLastName , dateOfBirth, gender));
+        StartCoroutine(PostRegisterParentAndKid(email, password, kidName, dateOfBirth));
     }
 
-    IEnumerator PostRegisterParentAndKid(string name, string lastName, string email, string password, string kidName, string kidLastName, string dateOfBirth, string gender)
+    IEnumerator PostRegisterParentAndKid(string email, string password, string kidName, string dateOfBirth)
     {
         string psswdHash = password;//Md5SUm(password);
         string post_url = registerUrl;
 
         JSONObject data = new JSONObject();
-        data.Add("parent_name", name);
-        data.Add("parent_lastname", lastName);
+        //data.Add("parent_name", name);
+        //data.Add("parent_lastname", lastName);
         data.Add("parent_email", email);
         data.Add("parent_password", psswdHash);
         data.Add("child_name", kidName);
-        data.Add("child_lastname", kidLastName);
+        //data.Add("child_lastname", kidLastName);
         data.Add("child_dob", dateOfBirth);
-        data.Add("child_gender", gender);
+        //data.Add("child_gender", gender);
         data.Add("user_type", "Familiar");
         Debug.Log(data.ToString());
         WWWForm form = new WWWForm();
@@ -283,6 +274,7 @@ public class LogInScript : MonoBehaviour {
         }
         else
         {
+            menuController.ShowWarning(8);
             Debug.Log("Theres an error " + hs_post.error);
             Debug.Log(hs_post.text);
             //trialMng.loginRef.errorText = trialMng.loginRef.language.levelStrings[39];

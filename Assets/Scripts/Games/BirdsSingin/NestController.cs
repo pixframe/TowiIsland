@@ -26,7 +26,7 @@ public class NestController : MonoBehaviour {
         return songOfTheNest;
     }
 
-    void OnMouseUp()
+    /*void OnMouseUp()
     {
         if (manager.phase == BirdsSingingManager.GamePhase.Game)
         {
@@ -34,7 +34,7 @@ public class NestController : MonoBehaviour {
             PlayTheNotes();
             manager.PlayANestSong(songOfTheNest);
         }
-    }
+    }*/
 
     public void PlayTheNotes()
     {

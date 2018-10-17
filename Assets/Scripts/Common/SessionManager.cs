@@ -16,9 +16,9 @@ public class SessionManager : MonoBehaviour
     public User activeUser;
     public Kid activeKid;
     public bool main = false;
-    string syncProfileURL = "http://187.248.54.146:280/api/sync_profiles/";
-    string syncLevelsURL = "http://187.248.54.146:280/api/child_levels/";
-    string updateProfileURL = "http://187.248.54.146:280/api/update_profile/";
+    string syncProfileURL = Keys.Api_Web_Key + "api/sync_profiles/";
+    string syncLevelsURL = Keys.Api_Web_Key + "api/child_levels/";
+    string updateProfileURL = Keys.Api_Web_Key + "api/update_profile/";
     public List<Kid> temporalKids;
     public static int numberOfSessionManager = 0;
     MenuManager menuManager;
@@ -36,13 +36,10 @@ public class SessionManager : MonoBehaviour
         }
         //if(main)
         //	PlayerPrefs.DeleteAll ();
-        //PlayerPrefs.DeleteAll ();
         string version = Application.version;
-        Debug.Log("version of app is " + version);
         if (PlayerPrefs.GetString(Keys.Version_Last_Season) != version)
         {
-            Debug.Log("New Version");
-            PlayerPrefs.SetString("sessions", "");
+            PlayerPrefs.DeleteAll();
             PlayerPrefs.SetString(Keys.Version_Last_Season, version);
         }
         StartAgain();
@@ -60,7 +57,7 @@ public class SessionManager : MonoBehaviour
             AddUser("_local", "", "_local", null, 0);
             if (activeUser != null)
             {
-                activeUser.kids.Add(new Kid(0, "local_kid", "_local"));
+                activeUser.kids.Add(new Kid(0, "local_kid", "_local", false, false));
             }
             activeUser = null;
             SaveSession();
@@ -87,12 +84,10 @@ public class SessionManager : MonoBehaviour
             else
             {
                 string userS = PlayerPrefs.GetString("activeUser", "");
-                Debug.Log(userS);
                 if (userS != "")
                 {
                     activeUser = GetUser(userS);
                     int kidS = PlayerPrefs.GetInt("activeKid", -1);
-                    Debug.Log(kidS);
                     if (kidS != -1)
                     {
                         activeKid = GetKid(kidS);
@@ -111,6 +106,10 @@ public class SessionManager : MonoBehaviour
     {
         for (int i = 0; i < users.Count; i++)
         {
+            if (users[i].userkey == key)
+            {
+                return users[i];
+            }
             for (int c = 0; c < users[i].kids.Count; c++)
             {
                 if (users[i].kids[c].userkey == key||(key=="_local"&&users[i].userkey==key))
@@ -222,7 +221,7 @@ public class SessionManager : MonoBehaviour
                         activeKid = null;
                         PlayerPrefs.SetInt("activeKid", -1);
                     }
-                    //PlayerPrefs.SetString("activeUser", activeKid.userkey);
+                    PlayerPrefs.SetString("activeUser", activeUser.userkey);
                     //SyncProfiles(key);
                     break;
                 }
@@ -244,7 +243,9 @@ public class SessionManager : MonoBehaviour
                 PlayerPrefs.SetInt("activeKid", -1);
             }
             if (activeKid != null)
+            {
                 PlayerPrefs.SetString("activeUser", activeKid.userkey);
+            }
             SaveSession();
         }
     }
@@ -266,29 +267,51 @@ public class SessionManager : MonoBehaviour
         SaveSession();
     }
 
-    public void AddKid(int kidID, string name, string key)
+    public void AddKid(int kidID, string name, string key, bool actiive, bool trial)
     {
         //TODO Add Age
-        activeUser.kids.Add(new Kid(kidID, name, key));
+        activeUser.kids.Add(new Kid(kidID, name, key, actiive, trial));
         SaveSession();
     }
 
     public void AddKids(JSONArray kids)
     {
         temporalKids.Clear();
+        Debug.Log(kids.Length);
         for (int i = 0; i < kids.Length; i++)
         {
             JSONObject kidObj = kids[i].Obj;
-            bool missingUser = true;
-            bool missing = true;
+            //bool missingUser = true;
+            //bool missing = true;
             for (int u = 0; u < users.Count; u++)
             {
                 if (users[u].userkey == kidObj.GetValue("key").Str)
                 {
-                    missingUser = false;
-                    for (int k = 0; k < users[u].kids.Count; k++)
+                    int cid = (int)kidObj.GetValue("cid").Number;
+                    if (users[u].kids.Count >= kids.Length)
                     {
-                        if (users[u].kids[k].id == Convert.ToInt32(kidObj.GetValue("cid").Number))
+                        if (cid != users[u].kids[i].id)
+                        {
+                            string name = kidObj.GetValue("name").Str + " " + kidObj.GetValue("lastname").Str;
+                            string key = kidObj.GetValue("key").Str;
+                            users[u].kids.Add(new Kid(cid, name, key, kidObj.GetBoolean("active"),kidObj.GetBoolean("trial")));
+                            temporalKids.Add(users[u].kids[users[u].kids.Count - 1]);
+                        }
+                    }
+                    else
+                    {
+                        string name = kidObj.GetValue("name").Str + " " + kidObj.GetValue("lastname").Str;
+                        string key = kidObj.GetValue("key").Str;
+                        users[u].kids.Add(new Kid(cid, name, key, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial")));
+                        temporalKids.Add(users[u].kids[users[u].kids.Count - 1]);
+                    }
+                    /*if (kidObj.GetValue("active").Boolean || kidObj.GetValue("trial").Boolean)
+                    {
+
+                    }
+                    /*for (int k = 0; k < users[u].kids.Count; k++)
+                    {
+                        if (users[u].kids[k].id == (int)kidObj.GetValue("cid").Number)
                         {
                             if (!kidObj.GetValue("active").Boolean && !kidObj.GetValue("trial").Boolean)
                             {
@@ -300,14 +323,14 @@ public class SessionManager : MonoBehaviour
                                 users[u].kids[k].name = kidObj.GetValue("name").Str + " " + kidObj.GetValue("lastname").Str;
                                 users[u].kids[k].userkey = kidObj.GetValue("key").Str;
                                 /*users[u].kids[k].dateLastEvaluation = DateTime.Parse(kidObj.GetValue("pruebaDate").Str);
-                                Debug.Log(users[u].kids[k].dateLastEvaluation);*/
+                                Debug.Log(users[u].kids[k].dateLastEvaluation);
                                 temporalKids.Add(users[u].kids[k]);
                                 Debug.Log("we add 1 kid");
                             }
                             /*users[u].kids[k].name = kidObj.GetValue("name").Str + " " + kidObj.GetValue("lastname").Str;
                             users[u].kids[k].userkey = kidObj.GetValue("key").Str;
                             temporalKids.Add(users[u].kids[k]);
-                            missing = false;*/
+                            missing = false;
                             break;
                         }
                     }
@@ -315,20 +338,11 @@ public class SessionManager : MonoBehaviour
                     {
                         //byte[] uni = Encoding.Unicode.GetBytes(kidObj.GetValue("name").Str+" "+kidObj.GetValue("lastname").Str);
                         //string ascii = Encoding.ASCII.GetString(uni);
-                        if (kidObj.GetValue("active").Boolean || kidObj.GetValue("trial").Boolean)
-                        {
-                            int cid = (int)kidObj.GetValue("cid").Number;
-                            string name = kidObj.GetValue("name").Str + " " + kidObj.GetValue("lastname").Str;
-                            string key = kidObj.GetValue("key").Str;
-                            //DateTime date = DateTime.Parse(kidObj.GetValue("pruebaDate").Str);
-                            //Debug.Log(date);
-                            users[u].kids.Add(new Kid(cid, name, key));
-                            temporalKids.Add(users[u].kids[users[u].kids.Count - 1]);
-                        }
-                    }
+
+                    }*/
                 }
             }
-            if (missingUser)
+            /*if (missingUser)
             {
                 users.Add(new User(kidObj.GetValue("key").Str, "", "", 0));
                 if (bool.Parse(kidObj.GetValue("active").Str) || bool.Parse(kidObj.GetValue("trial").Str))
@@ -340,7 +354,7 @@ public class SessionManager : MonoBehaviour
                     users[users.Count - 1].kids.Add(new Kid(cid, name, key));
                     temporalKids.Add(users[users.Count - 1].kids[users[users.Count - 1].kids.Count - 1]);
                 }
-            }
+            }*/
         }
         /*for (int k=0; k< activeUser.kids.Count; k++) {
             bool exists=false;
@@ -379,7 +393,7 @@ public class SessionManager : MonoBehaviour
             }
         }
         PlayerPrefs.SetInt("activeKid", id);
-        PlayerPrefs.SetString("activeUser", activeKid.userkey);
+        //PlayerPrefs.SetString("activeUser", activeKid.userkey);
         SaveSession();
         SyncChildLevels();
     }
@@ -453,51 +467,11 @@ public class SessionManager : MonoBehaviour
 
                 if (kidObj.GetBoolean("active") || kidObj.GetBoolean("trial"))
                 {
-                    int cid = (int)kidObj.GetNumber("cid");
-                    string kidName = kidObj.GetString("name");
 
-                    AddKid(cid, kidName, activeUser.userkey);
-
-                    int index = activeUser.kids.Count - 1;
-
-                    activeUser.kids[index].kiwis = (int)kidObj.GetNumber("kiwis");
-                    activeUser.kids[index].avatar = kidObj.GetString("avatar");
-                    activeUser.kids[index].avatarClothes = kidObj.GetString("avatarClothes");
-                    activeUser.kids[index].ownedItems = kidObj.GetString("ownedItems");
-                    activeUser.kids[index].age = (int)kidObj.GetNumber("age");
-                    activeUser.kids[index].activeMissions.Clear();
-                    for (int o = 0; o < activeMissions.Length; o++)
-                    {
-                        activeUser.kids[index].activeMissions.Add(activeMissions[o].Str);
-                    }
-                    activeUser.kids[index].activeDay = (int)kidObj.GetNumber("activeDay");
-                    activeUser.kids[index].ageSet = true;
-                    activeUser.kids[index].birdsFirst = kidObj.GetBoolean("arbolFirstTime");
-                    activeUser.kids[index].lavaFirst = kidObj.GetBoolean("sombrasFirstTime");
-                    activeUser.kids[index].monkeyFirst = kidObj.GetBoolean("bolitaFirstTime");
-                    activeUser.kids[index].riverFirst = kidObj.GetBoolean("rioFirstTime");
-                    activeUser.kids[index].sandFirst = kidObj.GetBoolean("arenaFirstTime");
-                    activeUser.kids[index].treasureFirst = kidObj.GetBoolean("tesoroFirstTime");
-                    activeUser.kids[index].testAvailable = kidObj.GetBoolean("testAvailable");
-                    if (activeUser.kids[index].birdsFirst || activeUser.kids[index].lavaFirst || activeUser.kids[index].monkeyFirst || activeUser.kids[index].riverFirst || activeUser.kids[index].sandFirst || activeUser.kids[index].treasureFirst)
-                    {
-                        activeUser.kids[index].anyFirstTime = true;
-                    }
-                    else
-                    {
-                        activeUser.kids[index].anyFirstTime = false;
-                    }
-                    if (activeKid != null)
-                    {
-                        if (activeKid.id == cid)
-                        {
-                            SyncChildLevels();
-                        }
-                    }
                 }
                 else
                 {
-                    if (activeKid != null)
+                    /*if (activeKid != null)
                     {
                         if (activeKid.id == (int)kidObj.GetNumber("cid"))
                         {
@@ -516,7 +490,7 @@ public class SessionManager : MonoBehaviour
                                 }
                                 if (anotherActiveKid)
                                 {
-
+                                    FindObjectOfType<MenuManager>().SetKidsProfiles();
                                 }
                                 else
                                 {
@@ -531,63 +505,90 @@ public class SessionManager : MonoBehaviour
                     }
                     else
                     {
-                        FindObjectOfType<MenuManager>().SetKidsProfiles();
-                    }
-                }
-                //Debug.Log(activeMissions);
-                /*for (int u = 0; u < users.Count; u++)
-                {
-                    if (users[u].userkey == key)
-                    {
-                        users[u].kids.Clear();
-                        if (kidObj.GetBoolean("active") || kidObj.GetBoolean("trial"))
+                        if (kids.Length > 1)
+                        {
+                            bool anotherActiveKid = false;
+                            for (int j = 0; j < kids.Length; j++)
+                            {
+                                JSONObject kidObjt = kids[j].Obj;
+                                if (kidObjt.GetBoolean("active") || kidObjt.GetBoolean("trial"))
+                                {
+                                    Debug.Log("Change kid");
+                                    anotherActiveKid = true;
+                                    break;
+                                }
+                            }
+                            if (anotherActiveKid)
+                            {
+                                FindObjectOfType<MenuManager>().SetKidsProfiles();
+                            }
+                            else
+                            {
+                                if (i == 0)
+                                {
+                                    int cid = (int)kidObj.GetNumber("cid");
+                                    string kidName = kidObj.GetString("name");
+
+                                    AddKid(cid, kidName, activeUser.userkey);
+                                }
+                                FindObjectOfType<MenuManager>().ShowTrialIsOff();
+                                break;
+                            }
+                        }
+                        else
                         {
                             int cid = (int)kidObj.GetNumber("cid");
                             string kidName = kidObj.GetString("name");
 
-                            AddKid(cid, kidName, users[u].userkey);
-
-                            int index = users[u].kids.Count - 1;
+                            AddKid(cid, kidName, activeUser.userkey);
+                            FindObjectOfType<MenuManager>().ShowTrialIsOff();
                         }
+                    }*/
+                }
 
-                        for (int k = 0; k < users[u].kids.Count; k++)
-                        {
-                            if (users[u].kids[k].id == (int)kidObj.GetValue("cid").Number && users[u].kids[k].syncProfile)
-                            {
-                                users[u].kids[k].kiwis = (int)kidObj.GetValue("kiwis").Number;
-                                users[u].kids[k].avatar = kidObj.GetValue("avatar").Str;
-                                users[u].kids[k].avatarClothes = kidObj.GetValue("avatarClothes").Str;
-                                users[u].kids[k].ownedItems = kidObj.GetValue("ownedItems").Str;
-                                users[u].kids[k].age = (int)kidObj.GetValue("age").Number;
-                                users[u].kids[k].activeMissions.Clear();
-                                for (int o = 0; o < activeMissions.Length; o++)
-                                {
-                                    users[u].kids[k].activeMissions.Add(activeMissions[o].Str);
-                                }
-                                users[u].kids[k].activeDay = (int)kidObj.GetValue("activeDay").Number;
-                                users[u].kids[k].ageSet = true;
-                                users[u].kids[k].birdsFirst = kidObj.GetValue("arbolFirstTime").Boolean;
-                                users[u].kids[k].lavaFirst = kidObj.GetValue("sombrasFirstTime").Boolean;
-                                users[u].kids[k].monkeyFirst = kidObj.GetValue("bolitaFirstTime").Boolean;
-                                users[u].kids[k].riverFirst = kidObj.GetValue("rioFirstTime").Boolean;
-                                users[u].kids[k].sandFirst = kidObj.GetValue("arenaFirstTime").Boolean;
-                                users[u].kids[k].treasureFirst = kidObj.GetValue("tesoroFirstTime").Boolean;
-                                users[u].kids[k].testAvailable = kidObj.GetValue("testAvailable").Boolean;
-                                if (users[u].kids[k].birdsFirst || users[u].kids[k].lavaFirst || users[u].kids[k].monkeyFirst || users[u].kids[k].riverFirst || users[u].kids[k].sandFirst || users[u].kids[k].treasureFirst)
-                                {
-                                    users[u].kids[k].anyFirstTime = true;
-                                }
-                                else
-                                {
-                                    users[u].kids[k].anyFirstTime = false;
-                                }
-                                break;
-                            }
-                        }
+                int cid = (int)kidObj.GetNumber("cid");
+                string kidName = kidObj.GetString("name");
+
+                AddKid(cid, kidName, activeUser.userkey, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial"));
+
+                int index = activeUser.kids.Count - 1;
+                activeUser.kids[index].isActive = kidObj.GetBoolean("active");
+                activeUser.kids[index].kiwis = (int)kidObj.GetNumber("kiwis");
+                activeUser.kids[index].avatar = kidObj.GetString("avatar");
+                activeUser.kids[index].avatarClothes = kidObj.GetString("avatarClothes");
+                activeUser.kids[index].ownedItems = kidObj.GetString("ownedItems");
+                activeUser.kids[index].age = (int)kidObj.GetNumber("age");
+                activeUser.kids[index].activeMissions.Clear();
+                for (int o = 0; o < activeMissions.Length; o++)
+                {
+                    activeUser.kids[index].activeMissions.Add(activeMissions[o].Str);
+                }
+                activeUser.kids[index].activeDay = (int)kidObj.GetNumber("activeDay");
+                activeUser.kids[index].ageSet = true;
+                activeUser.kids[index].birdsFirst = kidObj.GetBoolean("arbolFirstTime");
+                activeUser.kids[index].lavaFirst = kidObj.GetBoolean("sombrasFirstTime");
+                activeUser.kids[index].monkeyFirst = kidObj.GetBoolean("bolitaFirstTime");
+                activeUser.kids[index].riverFirst = kidObj.GetBoolean("rioFirstTime");
+                activeUser.kids[index].sandFirst = kidObj.GetBoolean("arenaFirstTime");
+                activeUser.kids[index].treasureFirst = kidObj.GetBoolean("tesoroFirstTime");
+                activeUser.kids[index].testAvailable = kidObj.GetBoolean("testAvailable");
+                if (activeUser.kids[index].birdsFirst || activeUser.kids[index].lavaFirst || activeUser.kids[index].monkeyFirst || activeUser.kids[index].riverFirst || activeUser.kids[index].sandFirst || activeUser.kids[index].treasureFirst)
+                {
+                    activeUser.kids[index].anyFirstTime = true;
+                }
+                else
+                {
+                    activeUser.kids[index].anyFirstTime = false;
+                }
+                if (activeKid != null)
+                {
+                    if (activeKid.id == cid)
+                    {
+                        SyncChildLevels();
                     }
-                }*/
-                SaveSession();
+                }
             }
+            SaveSession();
             /*if (jsonObject.GetValue("code").Str == "200")
             {
                 JSONArray kids = jsonObject.GetValue("profiles").Array;
@@ -915,9 +916,10 @@ public class SessionManager : MonoBehaviour
         public bool anyFirstTime;
         public bool needSync;
         public bool testAvailable;
+        public bool isActive;
 
         //TODO Add age
-        public Kid(int id, string name, string key)
+        public Kid(int id, string name, string key, bool active, bool trial)
         {
             this.id = id;
             this.name = name;
@@ -988,6 +990,7 @@ public class SessionManager : MonoBehaviour
             anyFirstTime = false;
             needSync = false;
             testAvailable = true;
+            isActive = active || trial;
         }
     }
 }

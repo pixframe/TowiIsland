@@ -1465,7 +1465,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 1.45, y: -56.75}
-  m_SizeDelta: {x: 155.2, y: 155.2}
+  m_SizeDelta: {x: 144.32, y: 105.98}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &776969496
 MonoBehaviour:
@@ -1486,7 +1486,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: f00ebf16b164b424dafed1f042e6ca78, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9e3e2a1cef66b844f829d2171858fa50, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5710,6 +5710,8 @@ MonoBehaviour:
     riverLevel: 0
     sandDifficulty: 0
     sandLevel: 0
+    sandLevel2: 0
+    sandLevel3: 0
     monkeyDifficulty: 0
     monkeyLevel: 0
     lavaDifficulty: 0
@@ -5748,6 +5750,7 @@ MonoBehaviour:
     treasureFirst: 0
     anyFirstTime: 0
     needSync: 0
+    testAvailable: 0
   main: 0
   temporalKids: []
 --- !u!114 &1967719359

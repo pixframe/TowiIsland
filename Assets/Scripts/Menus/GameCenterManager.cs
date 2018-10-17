@@ -19,6 +19,7 @@ public class GameCenterManager : MonoBehaviour {
     public GameObject backPanel;
     public GameObject fowardPanel;
     public GameObject centerPanel;
+    public GameObject warningPanel;
 
     GamePanel previosPanel;
     GamePanel nextPanel;
@@ -66,11 +67,6 @@ public class GameCenterManager : MonoBehaviour {
         ChildGames();
         audioPlayer = FindObjectOfType<AudioPlayerForMenus>();
 
-        if (stations.Count < 1)
-        {
-            LoadNewLogin();
-        }
-
         stringsToShow = TextReader.TextsToShow(textAsset);
         previosPanel = new GamePanel(backPanel);
         nextPanel = new GamePanel(fowardPanel);
@@ -89,10 +85,7 @@ public class GameCenterManager : MonoBehaviour {
         eventTrigger.triggers.Add(t2);
         goBackButton.onClick.AddListener(GoBackScene);
 
-        if (stations.Count > 0)
-        {
-            ChangeMenus();
-        }
+        ChangeMenus();
 
         backPanel.gameObject.GetComponent<Button>().onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Left));
         fowardPanel.gameObject.GetComponent<Button>().onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Right));
@@ -229,79 +222,97 @@ public class GameCenterManager : MonoBehaviour {
 
     void ChangeMenus()
     {
-        if (directtion == DirectionOfSwipe.Right)
+        if (stations.Count < 1)
         {
-            index++;
-        }
-        else if(directtion == DirectionOfSwipe.Left)
-        {
-            index--;
-        }
-
-        int count = stations.Count;
-
-        if (count < 2)
-        {
-            index = 0;
-            previosPanel.theObject.SetActive(false);
-            nextPanel.theObject.SetActive(false);
-            SetPanel(currentPanel, stations[index], true);
-        }
-        else if (count < 3)
-        {
-            if (index == count)
+            if (sessionManager.activeKid.anyFirstTime)
             {
-                index = count - 1;
+                LoadNewLogin();
             }
-            
-            if(index == -1)
+            else
             {
-                index = 0;
+                warningPanel.SetActive(true);
+                backPanel.SetActive(false);
+                centerPanel.SetActive(false);
+                fowardPanel.SetActive(false);
             }
-
-            if (index == 0)
-            {
-                previosPanel.theObject.SetActive(false);
-                nextPanel.theObject.SetActive(true);
-                SetPanel(nextPanel, stations[index + 1], false);
-            }
-            if (index == 1)
-            {
-                previosPanel.theObject.SetActive(true);
-                nextPanel.theObject.SetActive(false);
-                SetPanel(previosPanel, stations[index - 1], false);
-            }
-            SetPanel(currentPanel, stations[index], true);
         }
         else
         {
-            if (index == count)
+            if (directtion == DirectionOfSwipe.Right)
+            {
+                index++;
+            }
+            else if (directtion == DirectionOfSwipe.Left)
+            {
+                index--;
+            }
+
+            int count = stations.Count;
+
+            if (count < 2)
             {
                 index = 0;
+                previosPanel.theObject.SetActive(false);
+                nextPanel.theObject.SetActive(false);
+                SetPanel(currentPanel, stations[index], true);
             }
-
-            if (index == -1)
+            else if (count < 3)
             {
-                index += count;
+                if (index == count)
+                {
+                    index = count - 1;
+                }
+
+                if (index == -1)
+                {
+                    index = 0;
+                }
+
+                if (index == 0)
+                {
+                    previosPanel.theObject.SetActive(false);
+                    nextPanel.theObject.SetActive(true);
+                    SetPanel(nextPanel, stations[index + 1], false);
+                }
+                if (index == 1)
+                {
+                    previosPanel.theObject.SetActive(true);
+                    nextPanel.theObject.SetActive(false);
+                    SetPanel(previosPanel, stations[index - 1], false);
+                }
+                SetPanel(currentPanel, stations[index], true);
             }
-
-            int previous = index - 1;
-
-            if (previous == -1)
+            else
             {
-                previous += count;
-            }
+                if (index == count)
+                {
+                    index = 0;
+                }
 
-            int next = index + 1;
-            if (next >= count)
-            {
-                next = 0;
-            }
+                if (index == -1)
+                {
+                    index += count;
+                }
 
-            SetPanel(currentPanel, stations[index], true);
-            SetPanel(nextPanel, stations[next], false);
-            SetPanel(previosPanel, stations[previous], false);
+                int previous = index - 1;
+
+                if (previous == -1)
+                {
+                    previous += count;
+                }
+
+                int next = index + 1;
+                if (next >= count)
+                {
+                    next = 0;
+                }
+
+                SetPanel(currentPanel, stations[index], true);
+                SetPanel(nextPanel, stations[next], false);
+                SetPanel(previosPanel, stations[previous], false);
+            }
         }
+
     }
 
     void ChangeMenus(DirectionOfSwipe dir)

@@ -179,7 +179,7 @@ public class TrialRegisterController : MonoBehaviour {
 				case "200":
 					PlayerPrefs.SetString ("ParentKey",jsonObject.GetValue ("key").Str);
                     trialMng.loginRef.sessionMng.LoadUser(email, psswdHash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetValue("id").Number);
-                    trialMng.loginRef.sessionMng.AddKid((int)jsonObject.GetValue("child_id").Number, kidName + " " + kidLastName, jsonObject.GetValue("key").Str);
+                    trialMng.loginRef.sessionMng.AddKid((int)jsonObject.GetValue("child_id").Number, kidName + " " + kidLastName, jsonObject.GetValue("key").Str, jsonObject.GetBoolean("active"), jsonObject.GetBoolean("trial"));
 					trialMng.loginRef.sessionMng.SaveSession();
 					trialMng.loginRef.CreateProfiles();
 					PlayerPrefs.SetInt("SubscriptionTrial",1);
