@@ -329,6 +329,9 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
                             string intro_json = (introductory_info_dict == null || !introductory_info_dict.ContainsKey(item.definition.storeSpecificId)) ? null : introductory_info_dict[item.definition.storeSpecificId];
                             SubscriptionManager p = new SubscriptionManager(item, intro_json);
                             SubscriptionInfo info = p.getSubscriptionInfo();
+                            Debbugger debbugger = FindObjectOfType<Debbugger>();
+                            debbugger.Debbugg("Have and active subscription " + info.isSubscribed().ToString(), "lime");
+                            debbugger.Debbugg("is active up to " + info.getExpireDate(), "lime");
                             Debug.Log("product id is: " + info.getProductId());
                             Debug.Log("purchase date is: " + info.getPurchaseDate());
                             Debug.Log("subscription next billing date is: " + info.getExpireDate());

@@ -315,7 +315,7 @@ public class MenuManager : MonoBehaviour {
     }
 
     //we give the user the create account format
-    void CreateAccount()
+    public void CreateAccount()
     {
         HideAllCanvas();
         logInMenu.SetActive(true);
@@ -445,22 +445,7 @@ public class MenuManager : MonoBehaviour {
         quantityKidsDrop.gameObject.SetActive(false);
         moreAccountsNeedsButton.gameObject.SetActive(false);
         shopIAPButton.gameObject.SetActive(false);
-        if (sessionManager.activeUser.isPossibleBuyIAP)
-        {
-            oneMonthButton.gameObject.SetActive(true);
-            threeMonthButton.gameObject.SetActive(true);
-            shopInWeb.gameObject.SetActive(false);
-            oneMonthButton.GetComponentInChildren<Text>().text = lines[33] + " " + myIAPManager.CostInCurrency(1) + lines[35];
-            threeMonthButton.GetComponentInChildren<Text>().text = lines[34] + " " + myIAPManager.CostInCurrency(3) + lines[35];
-        }
-        else
-        {
-            oneMonthButton.gameObject.SetActive(false);
-            threeMonthButton.gameObject.SetActive(false);
-            shopInWeb.gameObject.SetActive(true);
-        }
-
-
+        SetShop();
 
         sendCardButton.onClick.RemoveAllListeners();
         prepaidButton.onClick.RemoveAllListeners();
@@ -482,6 +467,7 @@ public class MenuManager : MonoBehaviour {
         oneMonthButton.gameObject.SetActive(false);
         threeMonthButton.gameObject.SetActive(false);
         prepaidButton.gameObject.SetActive(false);
+        shopInWeb.gameObject.SetActive(false);
         inputPrepaidCode.gameObject.SetActive(true);
         sendCardButton.gameObject.SetActive(true);
         codeText.gameObject.SetActive(true);
@@ -502,6 +488,7 @@ public class MenuManager : MonoBehaviour {
         oneMonthButton.gameObject.SetActive(false);
         threeMonthButton.gameObject.SetActive(false);
         prepaidButton.gameObject.SetActive(false);
+        shopInWeb.gameObject.SetActive(false);
         inputPrepaidCode.gameObject.SetActive(false);
         sendCardButton.gameObject.SetActive(false);
         codeText.gameObject.SetActive(true);
@@ -992,13 +979,26 @@ public class MenuManager : MonoBehaviour {
     {
         if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.Windows)
         {
-            //subscribeButton.onClick.AddListener(ShopWindows);
-            //subscribeButton.onClick.AddListener(ShowShop);  
-            //prepaidButton.onClick.AddListener(ShopWithCode);
+            oneMonthButton.gameObject.SetActive(false);
+            threeMonthButton.gameObject.SetActive(false);
+            shopInWeb.gameObject.SetActive(true);
         }
         else
         {
-            //subscribeButton.onClick.AddListener(()=>ShowShop(0));
+            if (sessionManager.activeUser.isPossibleBuyIAP)
+            {
+                oneMonthButton.gameObject.SetActive(true);
+                threeMonthButton.gameObject.SetActive(true);
+                shopInWeb.gameObject.SetActive(false);
+                oneMonthButton.GetComponentInChildren<Text>().text = lines[33] + " " + myIAPManager.CostInCurrency(1) + lines[35];
+                threeMonthButton.GetComponentInChildren<Text>().text = lines[34] + " " + myIAPManager.CostInCurrency(3) + lines[35];
+            }
+            else
+            {
+                oneMonthButton.gameObject.SetActive(false);
+                threeMonthButton.gameObject.SetActive(false);
+                shopInWeb.gameObject.SetActive(true);
+            }
         }
     }
 

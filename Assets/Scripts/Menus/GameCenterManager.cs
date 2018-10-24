@@ -90,7 +90,7 @@ public class GameCenterManager : MonoBehaviour {
         backPanel.gameObject.GetComponent<Button>().onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Left));
         fowardPanel.gameObject.GetComponent<Button>().onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Right));
 
-        currentPanel.playButton.GetComponentInChildren<Text>().text = stringsToShow[stringsToShow.Length - 1];
+        currentPanel.playButton.GetComponentInChildren<Text>().text = stringsToShow[6];
     }
 
     void ChildGames()

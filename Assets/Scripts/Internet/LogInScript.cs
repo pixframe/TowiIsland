@@ -28,12 +28,6 @@ public class LogInScript : MonoBehaviour {
         menuController = GetComponent<MenuManager>();
 	}
 	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
-
     public string Md5SUm(string stringToCode) {
 
         System.Text.UTF8Encoding uTF8 = new System.Text.UTF8Encoding();
@@ -244,6 +238,8 @@ public class LogInScript : MonoBehaviour {
             }
             else
             {
+                menuController.CreateAccount();
+                menuController.ShowWarning(13);
                 Debug.Log("Theres an error in the connection");
             }
         }
