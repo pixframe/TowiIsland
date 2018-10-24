@@ -423,13 +423,12 @@ public class EvaluationController : MonoBehaviour
         RestartSecctionTime();
         saveHandler.CreateSaveBlock("PruebaEcologica", totalTimeTest);
         saveHandler.AddLevelsToBlock();
-        SceneManager.LoadScene("Evaluation_Scene8");
+        GoToNextScene("Evaluation_Scene8");
     }
 
     public void FinishEvaluation()
     {
-        PrefsKeys.SetNextScene("NewLogin");
-        SceneManager.LoadScene("Loader_Scene");
+        GoToNextScene("NewLogin");
     }
 
     public void SaveFlashCarData(string name, int age, int[] hits, float[] latencies, float[] labtimes)
@@ -517,7 +516,8 @@ public class EvaluationController : MonoBehaviour
     //this will send to the next need scene
     void GoToNextScene(string scene)
     {
-        SceneManager.LoadScene(scene);
+        PrefsKeys.SetNextScene(scene);
+        SceneManager.LoadScene("Loader_Scene");
     }
 
     int IntDivider(int num1, int num2)

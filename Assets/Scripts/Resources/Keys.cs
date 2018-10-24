@@ -15,6 +15,7 @@ public class Keys : MonoBehaviour {
     public static string Play_Anim = "PA";
     public static string Emergency_Save = "Em";
     public static string Version_Last_Season = "VeSe";
+    public static string Logged_In = "Logeds";
 
     //Games Strings
     //Lava Game

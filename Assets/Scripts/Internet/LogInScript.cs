@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.Networking;
 using Boomlagoon.JSON;
 
 public class LogInScript : MonoBehaviour {
@@ -11,6 +8,7 @@ public class LogInScript : MonoBehaviour {
     string loginUrl = Keys.Api_Web_Key + "api/login/";
     string activeUserUrl = Keys.Api_Web_Key + "api/active_account/";
     string registerUrl = Keys.Api_Web_Key + "api/register_parent_child/";
+    string newKidURL = Keys.Api_Web_Key + "api/register_child/";
 
     string username;
     string password;
@@ -74,77 +72,33 @@ public class LogInScript : MonoBehaviour {
         WWW hs_post = new WWW(post_url, form);
         yield return hs_post;
 
-        Debug.Log(hs_post.text);
         //this is what is do if there is no error
         if (hs_post.error == null)
         {
             //we get a JSON object from the server  
             JSONObject jsonObject = JSONObject.Parse(hs_post.text);
-            //we check if the accses is allow by a key
-            if (jsonObject.GetValue("access").Boolean)
-            {
-                JSONArray kids = jsonObject.GetValue("children").Array;
+            JSONArray kids = jsonObject.GetValue("children").Array;
 
-                sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetValue("id").Number);
-                sessionManager.AddKids(kids);
-                menuController.LoggedNow();
-                sessionManager.activeUser.trialAccount = false;
-                sessionManager.SaveSession();
-                menuController.SetKidsProfiles();
-            }
-            else
-            {
-                /*if (sessionManager.FindUser(username))
-                {
-                    int resultS = sessionManager.TryLogin(username, hash);
-                    if (resultS == 1)
-                    {
-                        alreadyLogged = true;
-                        CreateProfiles();
-                        if (!avoidSwitch)
-                        {
-                            if (currentState == Phase.TrialOptions)
-                            {
-                                if (PlayerPrefs.GetInt("purchased", 0) == 1 || PlayerPrefs.GetInt("subscriptionPurchased", 0) == 1)
-                                {
-                                    currentState = Phase.Menu;
-                                    menu.gameObject.SetActive(true);
-                                }
-                                HideBG();
-                                showRegister = false;
-                            }
-                            else
-                            {
-                                fadeIn = true;
-                                menu.gameObject.SetActive(false);
-                            }
-                        }
-                        else
-                        {
-                            HideBG();
-                        }
-                        avoidSwitch = false;
-                        showRegister = false;
-                        showLogin = false;
-                    }
-                    else if (resultS == -1)
-                    {
-                        errorText = "Hubo un problema de conexion, intenta con el último nombre y contraseña usado en este equipo";
-                    }
-                    else
-                    {
-                        errorText = "Parece que esta cuenta no está activa, intenta iniciar sesión conectado a internet.";
-                    }
-                }
-                else
-                {
-                    errorText = "Hubo un problema al intentar conectarse, revise su conexión a internet.";
-                }*/
-            }
+            sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetValue("id").Number);
+            sessionManager.AddKids(kids);
+            sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+            menuController.LoggedNow();
+            sessionManager.activeUser.trialAccount = false;
+            sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
+            sessionManager.SaveSession();
+            menuController.SetKidsProfiles();
+            //we check if the accses is allow by a key
+        }
+        else if (hs_post.text == "")
+        {
+            menuController.LogInMenuActive();
+            menuController.ShowWarning(9);
         }
         else
         {
+            menuController.LogInMenuActive();
             JSONObject jsonObj = JSONObject.Parse(hs_post.text);
+            Debug.Log(jsonObj.ToString());
             string error = jsonObj.GetString("status");
             if (error == "USER_NOT_FOUND")
             {
@@ -182,53 +136,74 @@ public class LogInScript : MonoBehaviour {
         // Post the URL to the site and create a download object to get the result.
         WWW hs_post = new WWW(post_url, form);
         yield return hs_post; // Wait until the download is done
+
+        Debug.Log(hs_post.text);
+
         if (hs_post.error == null)
         {
             JSONObject jsonObject = JSONObject.Parse(hs_post.text);
             //menuController.ShowGameMenu();
-            Debug.Log(hs_post.text);
+
             //Debug.Log(jsonObject.GetValue("access"));
+
+            sessionManager.LoadActiveUser(user.userkey);
+            sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+            sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
 
             if (jsonObject.GetValue("active").Boolean)
             {
-                if (sessionManager.LoadActiveUser())
+                if (sessionManager.activeKid != null)
                 {
-                    sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                    if (sessionManager.activeKid.isActive)
+                    {
+                        menuController.ShowGameMenu();
+                    }
+                    else
+                    {
+                        menuController.ShowAccountWarning(0);
+                    }
                 }
-                menuController.ShowGameMenu();
+                else
+                {
+                    menuController.SetKidsProfiles();
+                }
             }
             else
             {
-                menuController.ShowTrialIsOff();
+                menuController.ShowAccountWarning(0);
             }
         }
         else
         {
-            int resultS = sessionManager.TryLogin(user.username, user.psswdHash);
+            menuController.HideAllCanvas();
+            menuController.ShowWarning(11);
+            /*int resultS = sessionManager.TryLogin(user.username, user.psswdHash);
             if (resultS == 1)
             {
-                if (sessionManager.LoadActiveUser())
+                sessionManager.LoadActiveUser(user.userkey);
+                menuController.ShowLogIn();
+                /*if ()
                 {
                     /*menu.gameObject.SetActive(true);
                     lang = sessionMng.activeUser.language;
                     ChangeLanguage();
-                    CreateProfiles();*/
+                    CreateProfiles();
                 }
                 else
                 {
                     /*menu.gameObject.SetActive(false);
                     currentState = Phase.TrialOptions;
-                    DisplayLogin();*/
-                    menuController.ShowLogIn();
-                }
-            }
+                    DisplayLogin();
+
+                }*/
+            /*}
             else
             {
                 /*menu.gameObject.SetActive(false);
                 currentState = Phase.TrialOptions;
-                DisplayLogin();*/
+                DisplayLogin();
                 menuController.ShowLogIn();
-            }
+            }*/
         }
     }
 
@@ -278,6 +253,49 @@ public class LogInScript : MonoBehaviour {
             Debug.Log("Theres an error " + hs_post.error);
             Debug.Log(hs_post.text);
             //trialMng.loginRef.errorText = trialMng.loginRef.language.levelStrings[39];
+        }
+    }
+
+    public void RegisterAKid(string dobKid, string nameKid, int parentId)
+    {
+        StartCoroutine(RegisterKid(dobKid, nameKid, parentId));
+    }
+
+    IEnumerator RegisterKid(string dobKid, string nameKid, int parentId)
+    {
+        JSONObject jsonObj = new JSONObject
+        {
+            { "child_dob", dobKid},
+            { "child_name", nameKid},
+            { "parent_id", parentId}
+        };
+
+        WWWForm form = new WWWForm();
+        form.AddField("jsonToDb", jsonObj.ToString());
+
+        WWW post = new WWW(newKidURL, form);
+        yield return post;
+        Debug.Log(post.text);
+        JSONObject jsonObt = JSONObject.Parse(post.text);
+        if (post.text == "")
+        {
+            menuController.ShowWarning(9);
+        }
+        else
+        {
+            if (jsonObt.ContainsKey("status"))
+            {
+                menuController.ShowWarning(9);
+                menuController.AddKidShower();
+            }
+            else
+            {
+                sessionManager.activeUser.suscriptionsLeft = (int)jsonObt.GetNumber("suscriptionsAvailables");
+                sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                sessionManager.activeKid = sessionManager.activeUser.kids[sessionManager.activeUser.kids.Count - 1];
+                sessionManager.SaveSession();
+                menuController.ShowGameMenu();
+            }
         }
     }
 }

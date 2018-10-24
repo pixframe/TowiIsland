@@ -143,18 +143,18 @@ public class GameCenterManager : MonoBehaviour {
                                 activeMissions.Add("ArbolMusical");
                             }
                             break;
-                        case "DibujoFrutal":
+                        case "ArenaMagica":
                             if (sessionManager.activeKid.playedSand == 0)
                             {
                                 stations.Add(1);
-                                activeMissions.Add("DibujoFrutal");
+                                activeMissions.Add("ArenaMagica");
                             }
                             break;
-                        case "RecoleccionTesoro":
+                        case "Tesoro":
                             if (sessionManager.activeKid.playedTreasure == 0)
                             {
                                 stations.Add(2);
-                                activeMissions.Add("RecoleccionTesoro");
+                                activeMissions.Add("Tesoro");
                             }
                             break;
                         case "DondeQuedoLaBolita":
@@ -171,11 +171,11 @@ public class GameCenterManager : MonoBehaviour {
                                 activeMissions.Add("Rio");
                             }
                             break;
-                        case "Sombras":
+                        case "JuegoDeSombras":
                             if (sessionManager.activeKid.playedLava == 0)
                             {
                                 stations.Add(5);
-                                activeMissions.Add("Sombras");
+                                activeMissions.Add("JuegoDeSombras");
                             }
                             break;
                         default:

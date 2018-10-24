@@ -1,6 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System;
 using UnityEngine;
 using UnityEngine.Purchasing;
 
@@ -9,6 +9,8 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
 
     static IStoreController m_StoreController;          // The Unity Purchasing system.
     static IExtensionProvider m_StoreExtensionProvider; // The store-specific Purchasing subsystems.
+    IGooglePlayStoreExtensions m_GooglePlayStoreExtensions;
+    IAppleExtensions m_AppleExtensions;
 
     // Product identifiers for all products capable of being purchased: 
     // "convenience" general identifiers for use with Purchasing, and their store-specific identifier 
@@ -19,11 +21,37 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
     public static string oneMonthSuscription = "Suscripcion mensual";
     static string oneMonthApple = "one_month_subscription";
     static string oneMonthGoolge = "one_month_subscription";
+    public static string oneMonthSuscriptionTwo = "Suscripcion mensual dos niños";
+    static string oneMonthAppleTwo = "one_month_two_kids";
+    static string oneMonthGoolgeTwo = "one_month_two_kids";
+    public static string oneMonthSuscriptionThree = "Suscripcion mensual tres niños";
+    static string oneMonthAppleThree = "one_moth_three_kids";
+    static string oneMonthGoolgeThree = "one_moth_three_kids";
+    public static string oneMonthSuscriptionFour = "Suscripcion mensual cuatro niños";
+    static string oneMonthAppleFour = "one_moth_four_kids";
+    static string oneMonthGoolgeFour = "one_month_four_kids";
+    public static string oneMonthSuscriptionFive = "Suscripcion mensual cinco niños";
+    static string oneMonthAppleFive = "one_month_five_kids";
+    static string oneMonthGoolgeFive = "one_month_five_kids ";
 
     //Three month identifiers
     public static string threeMonthSuscription = "Suscripcion trimestral";
     static string threeMonthApple = "three_month_subscription";
     static string threeMonthGoolge = "three_month_subscription";
+    public static string threeMonthSuscriptionTwo = "Suscripcion trimestral dos niños";
+    static string threeMonthAppleTwo = "three_month_two_kids";
+    static string threeMonthGoolgeTwo = "three_month_two_kids";
+    public static string threeMonthSuscriptionThree = "Suscripcion trimestral tres niños";
+    static string threeMonthAppleThree = "three_month_three_kids";
+    static string threeMonthGoolgeThree = "three_month_three_kids";
+    public static string threeMonthSuscriptionFour = "Suscripcion trimestral cuatro niños";
+    static string threeMonthAppleFour = "three_month_four_kids";
+    static string threeMonthGoolgeFour = "three_month_four_kids";
+    public static string threeMonthSuscriptionFive = "Suscripcion trimestral cinco niños";
+    static string threeMonthAppleFive = "three_month_five_kids";
+    static string threeMonthGoolgeFive = "three_month_five_kids";
+
+    MenuManager menuManager;
 
     void Awake()
     {
@@ -39,6 +67,8 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
             // Begin to configure our connection to Purchasing
             InitializePurchasing();
         }
+
+        menuManager = FindObjectOfType<MenuManager>();
     }
 
     public void InitializePurchasing()
@@ -57,11 +87,47 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
                 { oneMonthApple, AppleAppStore.Name },
                 { oneMonthGoolge, GooglePlay.Name }
         });
+        builder.AddProduct(oneMonthSuscriptionTwo, ProductType.Subscription, new IDs(){
+                { oneMonthAppleTwo, AppleAppStore.Name },
+                { oneMonthGoolgeTwo, GooglePlay.Name }
+        });
+        builder.AddProduct(oneMonthSuscriptionThree, ProductType.Subscription, new IDs(){
+                { oneMonthAppleThree, AppleAppStore.Name },
+                { oneMonthGoolgeThree, GooglePlay.Name }
+        });
+        builder.AddProduct(oneMonthSuscriptionFour, ProductType.Subscription, new IDs(){
+                { oneMonthAppleFour, AppleAppStore.Name },
+                { oneMonthGoolgeFour, GooglePlay.Name }
+        });
+        builder.AddProduct(oneMonthSuscriptionFive, ProductType.Subscription, new IDs(){
+                { oneMonthAppleFive, AppleAppStore.Name },
+                { oneMonthGoolgeFive, GooglePlay.Name }
+        });
 
         builder.AddProduct(threeMonthSuscription, ProductType.Subscription, new IDs()
         {
             { threeMonthApple, AppleAppStore.Name},
             { threeMonthGoolge, GooglePlay.Name}
+        });
+        builder.AddProduct(threeMonthSuscriptionTwo, ProductType.Subscription, new IDs()
+        {
+            { threeMonthAppleTwo, AppleAppStore.Name},
+            { threeMonthGoolgeTwo, GooglePlay.Name}
+        });
+        builder.AddProduct(threeMonthSuscriptionThree, ProductType.Subscription, new IDs()
+        {
+            { threeMonthAppleThree, AppleAppStore.Name},
+            { threeMonthGoolgeThree, GooglePlay.Name}
+        });
+        builder.AddProduct(threeMonthSuscriptionFour, ProductType.Subscription, new IDs()
+        {
+            { threeMonthAppleFour, AppleAppStore.Name},
+            { threeMonthGoolgeFour, GooglePlay.Name}
+        });
+        builder.AddProduct(threeMonthSuscriptionFive, ProductType.Subscription, new IDs()
+        {
+            { threeMonthAppleFive, AppleAppStore.Name},
+            { threeMonthGoolgeFive, GooglePlay.Name}
         });
 
         // Kick off the remainder of the set-up with an asynchrounous call, passing the configuration 
@@ -77,18 +143,57 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
     }
 
 
-    public void BuySubscriptionOneMonth()
+    public void BuySubscriptionOneMonth(int numOfKids)
     {
-        // Buy the subscription product using its the general identifier. Expect a response either 
-        // through ProcessPurchase or OnPurchaseFailed asynchronously.
-        // Notice how we use the general product identifier in spite of this ID being mapped to
-        // custom store-specific identifiers above.
-        BuyProductID(oneMonthSuscription);
+        Debug.Log("Buying One Month");
+        switch (numOfKids)
+        {
+            case 1:
+                BuyProductID(oneMonthSuscription);
+                break;
+            case 2:
+                BuyProductID(oneMonthSuscriptionTwo);
+                break;
+            case 3:
+                BuyProductID(oneMonthSuscriptionThree);
+                break;
+            case 4:
+                BuyProductID(oneMonthSuscriptionFour);
+                break;
+            case 5:
+                BuyProductID(oneMonthSuscriptionFive);
+                break;
+            default:
+                BuyProductID(oneMonthSuscription);
+                break;
+        }
+
     }
 
-    public void BuySubscriptionThreeMonths()
+    public void BuySubscriptionThreeMonths(int numOfKids)
     {
-        BuyProductID(threeMonthSuscription);
+        Debug.Log("Buying Three Month");
+        switch (numOfKids)
+        {
+            case 1:
+                BuyProductID(threeMonthSuscription);
+                break;
+            case 2:
+                BuyProductID(threeMonthSuscriptionTwo);
+                break;
+            case 3:
+                BuyProductID(threeMonthSuscriptionThree);
+                break;
+            case 4:
+                BuyProductID(threeMonthSuscriptionFour);
+                break;
+            case 5:
+                BuyProductID(threeMonthSuscriptionFive);
+                break;
+            default:
+                BuyProductID(threeMonthSuscription);
+                break;
+        }
     }
 
     public string CostInCurrency(int months)
@@ -196,8 +301,119 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
         m_StoreController = controller;
         // Store specific subsystem, for accessing device-specific store features.
         m_StoreExtensionProvider = extensions;
+        m_AppleExtensions = extensions.GetExtension<IAppleExtensions>();
+        m_GooglePlayStoreExtensions = extensions.GetExtension<IGooglePlayStoreExtensions>();
+        Dictionary<string, string> introductory_info_dict = m_AppleExtensions.GetIntroductoryPriceDictionary();
+        Debug.Log("Available items:");
+        foreach (var item in controller.products.all)
+        {
+            if (item.availableToPurchase)
+            {
+                Debug.Log(string.Join(" - ",
+                    new[]
+                    {
+                        item.metadata.localizedTitle,
+                        item.metadata.localizedDescription,
+                        item.metadata.isoCurrencyCode,
+                        item.metadata.localizedPrice.ToString(),
+                        item.metadata.localizedPriceString,
+                        item.transactionID,
+                        item.receipt
+                    }));
+                if (item.receipt != null)
+                {
+                    if (item.definition.type == ProductType.Subscription)
+                    {
+                        if (checkIfProductIsAvailableForSubscriptionManager(item.receipt))
+                        {
+                            string intro_json = (introductory_info_dict == null || !introductory_info_dict.ContainsKey(item.definition.storeSpecificId)) ? null : introductory_info_dict[item.definition.storeSpecificId];
+                            SubscriptionManager p = new SubscriptionManager(item, intro_json);
+                            SubscriptionInfo info = p.getSubscriptionInfo();
+                            Debug.Log("product id is: " + info.getProductId());
+                            Debug.Log("purchase date is: " + info.getPurchaseDate());
+                            Debug.Log("subscription next billing date is: " + info.getExpireDate());
+                            Debug.Log("is subscribed? " + info.isSubscribed().ToString());
+                            Debug.Log("is expired? " + info.isExpired().ToString());
+                            Debug.Log("is cancelled? " + info.isCancelled());
+                            Debug.Log("product is in free trial peroid? " + info.isFreeTrial());
+                            Debug.Log("product is auto renewing? " + info.isAutoRenewing());
+                            Debug.Log("subscription remaining valid time until next billing date is: " + info.getRemainingTime());
+                            Debug.Log("is this product in introductory price period? " + info.isIntroductoryPricePeriod());
+                            Debug.Log("the product introductory localized price is: " + info.getIntroductoryPrice());
+                            Debug.Log("the product introductory price period is: " + info.getIntroductoryPricePeriod());
+                            Debug.Log("the number of product introductory price period cycles is: " + info.getIntroductoryPricePeriodCycles());
+                        }
+                        else
+                        {
+                            Debug.Log("This product is not available for SubscriptionManager class, only products that are purchase by 1.19+ SDK can use this class.");
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("the product is not a subscription product");
+                    }
+                }
+                else
+                {
+                    Debug.Log("the product should have a valid receipt");
+                }
+            }
+        }
     }
 
+
+    private bool checkIfProductIsAvailableForSubscriptionManager(string receipt)
+    {
+        var receipt_wrapper = (Dictionary<string, object>)MiniJson.JsonDecode(receipt);
+        if (!receipt_wrapper.ContainsKey("Store") || !receipt_wrapper.ContainsKey("Payload"))
+        {
+            Debug.Log("The product receipt does not contain enough information");
+            return false;
+        }
+        var store = (string)receipt_wrapper["Store"];
+        var payload = (string)receipt_wrapper["Payload"];
+
+        if (payload != null)
+        {
+            switch (store)
+            {
+                case GooglePlay.Name:
+                    {
+                        var payload_wrapper = (Dictionary<string, object>)MiniJson.JsonDecode(payload);
+                        if (!payload_wrapper.ContainsKey("json"))
+                        {
+                            Debug.Log("The product receipt does not contain enough information, the 'json' field is missing");
+                            return false;
+                        }
+                        var original_json_payload_wrapper = (Dictionary<string, object>)MiniJson.JsonDecode((string)payload_wrapper["json"]);
+                        if (original_json_payload_wrapper == null || !original_json_payload_wrapper.ContainsKey("developerPayload"))
+                        {
+                            Debug.Log("The product receipt does not contain enough information, the 'developerPayload' field is missing");
+                            return false;
+                        }
+                        var developerPayloadJSON = (string)original_json_payload_wrapper["developerPayload"];
+                        var developerPayload_wrapper = (Dictionary<string, object>)MiniJson.JsonDecode(developerPayloadJSON);
+                        if (developerPayload_wrapper == null || !developerPayload_wrapper.ContainsKey("is_free_trial") || !developerPayload_wrapper.ContainsKey("has_introductory_price_trial"))
+                        {
+                            Debug.Log("The product receipt does not contain enough information, the product is not purchased using 1.19 or later");
+                            return false;
+                        }
+                        return true;
+                    }
+                case AppleAppStore.Name:
+                case AmazonApps.Name:
+                case MacAppStore.Name:
+                    {
+                        return true;
+                    }
+                default:
+                    {
+                        return false;
+                    }
+            }
+        }
+        return false;
+    }
 
     public void OnInitializeFailed(InitializationFailureReason error)
     {
@@ -205,17 +421,63 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
         Debug.Log("OnInitializeFailed InitializationFailureReason:" + error);
     }
 
+    public void ConfirmPurchaseProduct(PurchaseEventArgs args)
+    {
+        m_StoreController.ConfirmPendingPurchase(args.purchasedProduct);
+    }
 
     public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args)
     {
         if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscription, StringComparison.Ordinal))
         {
-            Debug.Log(string.Format("ProcessPurchase: PASS. Product: '{0}'", args.purchasedProduct.definition.id));
+            menuManager.SetKidprofilesToAddASubscription(1, "monthly_inApp", args);
+            return PurchaseProcessingResult.Pending;
             // TODO: The subscription item has been successfully purchased, grant this to the player.
+        }
+        else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionTwo, StringComparison.Ordinal))
+        {
+            menuManager.SetKidprofilesToAddASubscription(2, "monthly_inApp", args);
+            return PurchaseProcessingResult.Pending;
+        }
+        else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionThree, StringComparison.Ordinal))
+        {
+            menuManager.SetKidprofilesToAddASubscription(3, "monthly_inApp", args);
+            return PurchaseProcessingResult.Pending;
+        }
+        else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionFour, StringComparison.Ordinal))
+        {
+            menuManager.SetKidprofilesToAddASubscription(4, "monthly_inApp", args);
+            return PurchaseProcessingResult.Pending;
+        }
+        else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionFive, StringComparison.Ordinal))
+        {
+            menuManager.SetKidprofilesToAddASubscription(5, "monthly_inApp", args);
+            return PurchaseProcessingResult.Pending;
         }
         else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscription, StringComparison.Ordinal))
         {
-
+            menuManager.SetKidprofilesToAddASubscription(1, "quarterly_inApp", args);
+            return PurchaseProcessingResult.Pending;
+        }
+        else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionTwo, StringComparison.Ordinal))
+        {
+            menuManager.SetKidprofilesToAddASubscription(2, "quarterly_inApp", args);
+            return PurchaseProcessingResult.Pending;
+        }
+        else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionThree, StringComparison.Ordinal))
+        {
+            menuManager.SetKidprofilesToAddASubscription(3, "quarterly_inApp", args);
+            return PurchaseProcessingResult.Pending;
+        }
+        else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionFour, StringComparison.Ordinal))
+        {
+            menuManager.SetKidprofilesToAddASubscription(4, "quarterly_inApp", args);
+            return PurchaseProcessingResult.Pending;
+        }
+        else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionFive, StringComparison.Ordinal))
+        {
+            menuManager.SetKidprofilesToAddASubscription(5, "quarterly_inApp", args);
+            return PurchaseProcessingResult.Pending;
         }
         // Or ... an unknown product has been purchased by this user. Fill in additional products here....
         else
@@ -234,7 +496,7 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
     {
         // A product purchase attempt did not succeed. Check failureReason for more detail. Consider sharing 
         // this reason with the user to guide their troubleshooting actions.
-        FindObjectOfType<MenuManager>().ShowWarning(0);
+        FindObjectOfType<MenuManager>().ShowWarning(8);
         Debug.Log(string.Format("OnPurchaseFailed: FAIL. Product: '{0}', PurchaseFailureReason: {1}", product.definition.storeSpecificId, failureReason));
     }
 }

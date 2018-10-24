@@ -225,4 +225,20 @@ public class TrialRegisterController : MonoBehaviour {
 		
 		return hashString.PadLeft(32, '0');
 	}
+
+    public void RegisterAKid(string dobKid, string nameKid, int parentId )
+    {
+        StartCoroutine(RegisterKid(dobKid, nameKid, parentId));
+    }
+
+    IEnumerator RegisterKid(string dobKid, string nameKid, int parentId)
+    {
+        JSONObject jsonObj = new JSONObject
+        {
+            { "child_dob", dobKid},
+            { "child_name", nameKid},
+            { "parent_id", parentId}
+        };
+        yield return null;
+    }
 }

@@ -254,7 +254,7 @@ public class Login : MonoBehaviour
             {
                 if (alreadyLogged)
                 {
-                    sessionMng.LoadActiveUser();
+                    //sessionMng.LoadActiveUser();
                     lang = sessionMng.activeUser.language;
                     ChangeLanguage();
                     CreateProfiles();
@@ -758,12 +758,12 @@ public class Login : MonoBehaviour
 
             if (jsonObject.GetValue("active").Str == "true")
             {
-                if (sessionMng.LoadActiveUser())
+                /*if (sessionMng.LoadActiveUser())
                 {
                     lang = sessionMng.activeUser.language;
                     ChangeLanguage();
                     CreateProfiles();
-                }
+                }*/
             }
             else
             {
@@ -780,7 +780,7 @@ public class Login : MonoBehaviour
             int resultS = sessionMng.TryLogin(user.username, user.psswdHash);
             if (resultS == 1)
             {
-                if (sessionMng.LoadActiveUser())
+                /*if (sessionMng.LoadActiveUser())
                 {
                     menu.gameObject.SetActive(true);
                     lang = sessionMng.activeUser.language;
@@ -791,7 +791,7 @@ public class Login : MonoBehaviour
                     menu.gameObject.SetActive(false);
                     currentState = Phase.TrialOptions;
                     DisplayLogin();
-                }
+                }*/
             }
             else
             {

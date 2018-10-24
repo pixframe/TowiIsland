@@ -121,7 +121,7 @@ public class SessionManager : MonoBehaviour
         return null;
     }
 
-    Kid GetKid(int id)
+    public Kid GetKid(int id)
     {
         for (int i = 0; i < activeUser.kids.Count; i++)
         {
@@ -185,15 +185,16 @@ public class SessionManager : MonoBehaviour
         PlayerPrefs.SetInt("activeKid", activeKid.id);
     }
 
-    public bool LoadActiveUser()
+    public void LoadActiveUser(string key)
     {
-        string userS = PlayerPrefs.GetString("activeUser", "");
+        activeUser = GetUser(key);
+        /*string userS = PlayerPrefs.GetString("activeUser", "");
         if (userS != "")
         {
             activeUser = GetUser(userS);
             return true;
         }
-        return false;
+        return false;*/
     }
 
     public void LoadUser(string username, string psswd, string key, string[] kids, int id)
@@ -452,99 +453,19 @@ public class SessionManager : MonoBehaviour
 
         WWWForm form = new WWWForm();
         form.AddField("userKey", key);
+        Debug.Log("\"userKey \" , " + key);
 
         WWW hs_post = new WWW(post_url, form);
         yield return hs_post;
         if (hs_post.error == null)
         {
             JSONArray kids = JSONArray.Parse(hs_post.text);
-            Debug.Log(hs_post.text);
             activeUser.kids.Clear();
+            bool setType = false;
             for (int i = 0; i < kids.Length; i++)
             {
                 JSONObject kidObj = kids[i].Obj;
                 JSONArray activeMissions = kidObj.GetArray("activeMissions");
-
-                if (kidObj.GetBoolean("active") || kidObj.GetBoolean("trial"))
-                {
-
-                }
-                else
-                {
-                    /*if (activeKid != null)
-                    {
-                        if (activeKid.id == (int)kidObj.GetNumber("cid"))
-                        {
-                            if (kids.Length > 1)
-                            {
-                                bool anotherActiveKid = false;
-                                for (int j = 0; j < kids.Length; j++)
-                                {
-                                    JSONObject kidObjt = kids[j].Obj;
-                                    if (kidObjt.GetBoolean("active") || kidObjt.GetBoolean("trial"))
-                                    {
-                                        Debug.Log("Change kid");
-                                        anotherActiveKid = true;
-                                        break;
-                                    }
-                                }
-                                if (anotherActiveKid)
-                                {
-                                    FindObjectOfType<MenuManager>().SetKidsProfiles();
-                                }
-                                else
-                                {
-                                    FindObjectOfType<MenuManager>().ShowTrialIsOff();
-                                }
-                            }
-                            else
-                            {
-                                FindObjectOfType<MenuManager>().ShowTrialIsOff();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (kids.Length > 1)
-                        {
-                            bool anotherActiveKid = false;
-                            for (int j = 0; j < kids.Length; j++)
-                            {
-                                JSONObject kidObjt = kids[j].Obj;
-                                if (kidObjt.GetBoolean("active") || kidObjt.GetBoolean("trial"))
-                                {
-                                    Debug.Log("Change kid");
-                                    anotherActiveKid = true;
-                                    break;
-                                }
-                            }
-                            if (anotherActiveKid)
-                            {
-                                FindObjectOfType<MenuManager>().SetKidsProfiles();
-                            }
-                            else
-                            {
-                                if (i == 0)
-                                {
-                                    int cid = (int)kidObj.GetNumber("cid");
-                                    string kidName = kidObj.GetString("name");
-
-                                    AddKid(cid, kidName, activeUser.userkey);
-                                }
-                                FindObjectOfType<MenuManager>().ShowTrialIsOff();
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            int cid = (int)kidObj.GetNumber("cid");
-                            string kidName = kidObj.GetString("name");
-
-                            AddKid(cid, kidName, activeUser.userkey);
-                            FindObjectOfType<MenuManager>().ShowTrialIsOff();
-                        }
-                    }*/
-                }
 
                 int cid = (int)kidObj.GetNumber("cid");
                 string kidName = kidObj.GetString("name");
@@ -552,7 +473,6 @@ public class SessionManager : MonoBehaviour
                 AddKid(cid, kidName, activeUser.userkey, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial"));
 
                 int index = activeUser.kids.Count - 1;
-                activeUser.kids[index].isActive = kidObj.GetBoolean("active");
                 activeUser.kids[index].kiwis = (int)kidObj.GetNumber("kiwis");
                 activeUser.kids[index].avatar = kidObj.GetString("avatar");
                 activeUser.kids[index].avatarClothes = kidObj.GetString("avatarClothes");
@@ -580,6 +500,11 @@ public class SessionManager : MonoBehaviour
                 {
                     activeUser.kids[index].anyFirstTime = false;
                 }
+                string tyep = kidObj.GetString("suscriptionType");
+                if (tyep == "monthly" || tyep == "quarterly")
+                {
+                    setType = true;
+                }
                 if (activeKid != null)
                 {
                     if (activeKid.id == cid)
@@ -587,6 +512,14 @@ public class SessionManager : MonoBehaviour
                         SyncChildLevels();
                     }
                 }
+                else
+                {
+
+                }
+            }
+            if (!setType)
+            {
+                activeUser.isPossibleBuyIAP = true;
             }
             SaveSession();
             /*if (jsonObject.GetValue("code").Str == "200")
@@ -728,7 +661,6 @@ public class SessionManager : MonoBehaviour
         if (hs_post.error == null)
         {
             JSONObject response = JSONObject.Parse(hs_post.text);
-            Debug.Log(response["code"].Str);
             if (response["code"].Str == "200")
             {
 
@@ -822,9 +754,11 @@ public class SessionManager : MonoBehaviour
         public string psswdHash;
         public List<Kid> kids;
         public int id;
+        public int suscriptionsLeft;
         public string language;
         public bool trialAccount;
         public DateTime suscriptionDate;
+        public bool isPossibleBuyIAP;
         public User(string key, string user, string psswd, int ide)
         {
             language = "es";
@@ -836,6 +770,8 @@ public class SessionManager : MonoBehaviour
             trialAccount = true;
             suscriptionDate = DateTime.Now;
             suscriptionDate.AddDays(7);
+            suscriptionsLeft = 0;
+            isPossibleBuyIAP = false;
         }
     }
 
