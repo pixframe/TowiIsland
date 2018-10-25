@@ -238,7 +238,6 @@ public class MenuManager : MonoBehaviour {
         {
             key = FindObjectOfType<DemoKey>();
         }
-        SetShop();
     }
 
     //here we set almost every button in the ui with the correspondent function to do
