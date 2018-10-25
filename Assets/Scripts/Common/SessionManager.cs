@@ -16,12 +16,15 @@ public class SessionManager : MonoBehaviour
     public User activeUser;
     public Kid activeKid;
     public bool main = false;
-    string syncProfileURL = Keys.Api_Web_Key + "api/sync_profiles/";
-    string syncLevelsURL = Keys.Api_Web_Key + "api/child_levels/";
-    string updateProfileURL = Keys.Api_Web_Key + "api/update_profile/";
+    string syncProfileURL = Keys.Api_Web_Key + " api/profile/sync/";
+    string syncLevelsURL = Keys.Api_Web_Key + "api/levels/children";
+    string updateProfileURL = Keys.Api_Web_Key + "api/profile/update/";
     public List<Kid> temporalKids;
     public static int numberOfSessionManager = 0;
     MenuManager menuManager;
+
+    string idStrings;
+    int kidsIAP;
 
     void Awake()
     {
@@ -378,6 +381,30 @@ public class SessionManager : MonoBehaviour
         SaveSession();
     }
 
+    public string GetKidsIds()
+    {
+        string s = "";
+        for (int i = 0; i < activeUser.kids.Count; i++)
+        {
+            if (!activeUser.kids[i].isActive)
+            {
+                if (activeUser.kids[i].isIAPSubscribed)
+                {
+                    kidsIAP++;
+                    if (s == "")
+                    {
+                        s += activeUser.kids[i].id.ToString();
+                    }
+                    else
+                    {
+                        s += ","+activeUser.kids[i].id.ToString();
+                    }
+                }
+            }
+        }
+        return s;
+    }
+
     public void SetKid(string parentkey, int id)
     {
         for (int u = 0; u < users.Count; u++)
@@ -462,6 +489,7 @@ public class SessionManager : MonoBehaviour
             JSONArray kids = JSONArray.Parse(hs_post.text);
             activeUser.kids.Clear();
             bool setType = false;
+            bool needStoreSync = false;
             for (int i = 0; i < kids.Length; i++)
             {
                 JSONObject kidObj = kids[i].Obj;
@@ -505,6 +533,10 @@ public class SessionManager : MonoBehaviour
                 {
                     setType = true;
                 }
+                else if (tyep == "monthly_inApp" || tyep == "quarterly_inApp")
+                {
+                    activeUser.kids[index].isIAPSubscribed = true;
+                }
                 if (activeKid != null)
                 {
                     if (activeKid.id == cid)
@@ -512,14 +544,15 @@ public class SessionManager : MonoBehaviour
                         SyncChildLevels();
                     }
                 }
-                else
-                {
-
-                }
             }
             if (!setType)
             {
                 activeUser.isPossibleBuyIAP = true;
+            }
+            if (needStoreSync)
+            {
+                idStrings = GetKidsIds();
+                menuManager.UpdateIAPSubscription(idStrings, kidsIAP);
             }
             SaveSession();
             /*if (jsonObject.GetValue("code").Str == "200")
@@ -853,6 +886,7 @@ public class SessionManager : MonoBehaviour
         public bool needSync;
         public bool testAvailable;
         public bool isActive;
+        public bool isIAPSubscribed;
 
         //TODO Add age
         public Kid(int id, string name, string key, bool active, bool trial)
@@ -927,6 +961,7 @@ public class SessionManager : MonoBehaviour
             needSync = false;
             testAvailable = true;
             isActive = active || trial;
+            isIAPSubscribed = false;
         }
     }
 }

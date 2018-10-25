@@ -644,7 +644,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &259127801
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5683,8 +5683,10 @@ MonoBehaviour:
     psswdHash: 
     kids: []
     id: 0
+    suscriptionsLeft: 0
     language: 
     trialAccount: 0
+    isPossibleBuyIAP: 0
   activeKid:
     userkey: 
     id: 0
@@ -5751,6 +5753,8 @@ MonoBehaviour:
     anyFirstTime: 0
     needSync: 0
     testAvailable: 0
+    isActive: 0
+    isIAPSubscribed: 0
   main: 0
   temporalKids: []
 --- !u!114 &1967719359

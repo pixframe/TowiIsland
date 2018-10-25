@@ -6,9 +6,9 @@ public class LogInScript : MonoBehaviour {
     #region Variables
     //This urls are set in the NewLogin Scene
     string loginUrl = Keys.Api_Web_Key + "api/login/";
-    string activeUserUrl = Keys.Api_Web_Key + "api/active_account/";
-    string registerUrl = Keys.Api_Web_Key + "api/register_parent_child/";
-    string newKidURL = Keys.Api_Web_Key + "api/register_child/";
+    string activeUserUrl = Keys.Api_Web_Key + "api/profile/active/";
+    string registerUrl = Keys.Api_Web_Key + "api/register/user/";
+    string newKidURL = Keys.Api_Web_Key + "api/register/children/";
 
     string username;
     string password;

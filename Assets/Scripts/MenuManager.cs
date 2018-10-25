@@ -929,6 +929,10 @@ public class MenuManager : MonoBehaviour {
     {
         warningPanel.SetActive(true);
         warningText.text = warningLines[numberOfWarning];
+        if(numberOfWarning == 11)
+        {
+
+        }
     }
 
     public void MoreSubscriptions()
@@ -1090,6 +1094,23 @@ public class MenuManager : MonoBehaviour {
         else
         {
             return false;
+        }
+    }
+
+    public void UpdateIAPSubscription(string kidsIDs, int kids)
+    {
+        if (myIAPManager.IsStillSuscribed())
+        {
+            DateTime nowT = myIAPManager.ExpireDate();
+            string date = String.Format("{0:0000}-{1:00}-{2:00}T{3:00}:{4:00}:{5:00}", nowT.Year, nowT.Month, nowT.Day, nowT.Hour, nowT.Minute, nowT.Second);
+            if (kids == myIAPManager.GetKidData())
+            {
+                subscriptionsManager.ActivateKidIAP(kidsIDs, date, sessionManager.activeUser.id);
+            }
+            else
+            {
+                subscriptionsManager.ActivateKidIAP(kidsIDs, date, sessionManager.activeUser.id);
+            }
         }
     }
     #endregion

@@ -6,9 +6,10 @@ using Boomlagoon.JSON;
 public class SubscriptionsWays : MonoBehaviour
 {
 
-    string codeURL = Keys.Api_Web_Key + "api/redeem_code/";
-    string IAPURL = Keys.Api_Web_Key + "api/suscription_update/";
-    string activateKidURL = Keys.Api_Web_Key + "api/active_children/";
+    string codeURL = Keys.Api_Web_Key + "api/subscription/redeem_code/";
+    string IAPURL = Keys.Api_Web_Key + "api/subscription/create/";
+    string activateKidURL = Keys.Api_Web_Key + "api/children/active/";
+    string activateIAPRenew = Keys.Api_Web_Key + "api/subscription/children/update/";
     SessionManager sessionManager;
     MenuManager menuManager;
 
@@ -212,6 +213,41 @@ public class SubscriptionsWays : MonoBehaviour
         {
             menuManager.ShowAccountWarning(0);
             menuManager.ShowWarning(9);
+        }
+    }
+
+    public void ActivateKidIAP(string ids, string date,int parentId)
+    {
+        StartCoroutine(StartActivateKidByIAP(ids, date, parentId));
+    }
+
+    IEnumerator StartActivateKidByIAP(string ids, string date, int parentId)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("childrens", ids);
+        form.AddField("parent_id", parentId);
+        form.AddField("finished_date", date);
+
+        WWW post = new WWW(activateIAPRenew, form);
+
+        yield return post;
+
+        Debug.Log(post.text);
+        if (post.text != "")
+        {
+            JSONObject jsonObj = JSONObject.Parse(post.text);
+            if (jsonObj.ContainsKey("successful"))
+            {
+
+            }
+            else
+            {
+                menuManager.ShowAccountWarning(11);
+            }
+        }
+        else
+        {
+            menuManager.ShowAccountWarning(11);
         }
     }
 }

@@ -52,6 +52,13 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
     static string threeMonthGoolgeFive = "three_month_five_kids";
 
     MenuManager menuManager;
+    bool isSubscribedInIAP;
+
+    DateTime dateExpiration;
+    int kids;
+    int subscriptions;
+
+    List<int> ids = new List<int>();
 
     void Awake()
     {
@@ -60,7 +67,6 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
             Destroy(gameObject);
         }
         DontDestroyOnLoad(this);
-
         // If we haven't set up the Unity Purchasing reference
         if (m_StoreController == null)
         {
@@ -332,6 +338,51 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
                             Debbugger debbugger = FindObjectOfType<Debbugger>();
                             debbugger.Debbugg("Have and active subscription " + info.isSubscribed().ToString(), "lime");
                             debbugger.Debbugg("is active up to " + info.getExpireDate(), "lime");
+
+                            if (info.isSubscribed() == Result.True)
+                            {
+                                isSubscribedInIAP = true;
+
+                                switch (info.getProductId())
+                                {
+                                    case "one_month_subscription":
+                                        kids = 1;
+                                        break;
+                                    case "one_month_two_kids":
+                                        kids = 2;
+                                        break;
+                                    case "one_moth_three_kids":
+                                        kids = 3;
+                                        break;
+                                    case "one_moth_four_kids":
+                                        kids = 4;
+                                        break;
+                                    case "one_month_four_kids":
+                                        kids = 4;
+                                        break;
+                                    case "one_month_five_kids":
+                                        kids = 5;
+                                        break;
+                                    case "three_month_subscription":
+                                        kids = 1;
+                                        break;
+                                    case "three_month_two_kids":
+                                        kids = 2;
+                                        break;
+                                    case "three_month_three_kids":
+                                        kids = 3;
+                                        break;
+                                    case "three_month_four_kids":
+                                        kids = 4;
+                                        break;
+                                    case "three_month_five_kids":
+                                        kids = 5;
+                                        break;
+                                }
+
+                                dateExpiration = info.getExpireDate();
+                            }
+
                             Debug.Log("product id is: " + info.getProductId());
                             Debug.Log("purchase date is: " + info.getPurchaseDate());
                             Debug.Log("subscription next billing date is: " + info.getExpireDate());
@@ -359,11 +410,27 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
                 else
                 {
                     Debug.Log("the product should have a valid receipt");
+                    Debug.Log("id of product is " == item.definition.id);
                 }
             }
         }
     }
 
+
+    public bool IsStillSuscribed()
+    {
+        return isSubscribedInIAP;
+    }
+
+    public DateTime ExpireDate()
+    {
+        return dateExpiration;
+    }
+
+    public int GetKidData()
+    {
+        return kids;
+    }
 
     private bool checkIfProductIsAvailableForSubscriptionManager(string receipt)
     {

@@ -8,7 +8,7 @@ using System.IO;
 public class LevelSaver : MonoBehaviour {
 
     string secretKey = "$k1w1GAMES$";
-    string postURL = Keys.Api_Web_Key + "api/levels/";
+    string postURL = Keys.Api_Web_Key + "api/levels/create/";
     JSONObject data;
     JSONObject item;
     JSONObject jsonToSend;
