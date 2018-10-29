@@ -11,6 +11,7 @@ public class AvatarSelectionController : MonoBehaviour {
     public Text instructionText;
     public Button noButton;
     public Button yesButton;
+	public Button returnButton;
 
     [Header("Text Elements")]
     public TextAsset textAsset;
@@ -36,6 +37,7 @@ public class AvatarSelectionController : MonoBehaviour {
         yesButton.GetComponentInChildren<Text>().text = stringToShow[3];
         noButton.gameObject.SetActive(false);
         yesButton.gameObject.SetActive(false);
+		returnButton.onClick.AddListener(GoBackMenu);
 	}
 	
 	// Update is called once per frame
@@ -113,4 +115,10 @@ public class AvatarSelectionController : MonoBehaviour {
         PrefsKeys.SetNextScene("GameMenus");
         SceneManager.LoadScene("Loader_Scene");
     }
+
+	void GoBackMenu()
+	{
+		PrefsKeys.SetNextScene("GameMenus");
+        SceneManager.LoadScene("Loader_Scene");
+	}
 }

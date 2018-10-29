@@ -27,6 +27,7 @@ public class MenuManager : MonoBehaviour {
     public Button aboutButton;
     public Button kidsButton;
     public Button singOutButton;
+	public Text kidNameText;
     public Text savigDirectionText;
 
     [Header("Log in UI")]
@@ -294,6 +295,7 @@ public class MenuManager : MonoBehaviour {
     {
         HideAllCanvas();
         gameCanvas.SetActive(true);
+		kidNameText.text = sessionManager.activeKid.name;
         IsTestIsAvailable();
     }
 

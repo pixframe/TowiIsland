@@ -16,8 +16,8 @@ public class SessionManager : MonoBehaviour
     public User activeUser;
     public Kid activeKid;
     public bool main = false;
-    string syncProfileURL = Keys.Api_Web_Key + " api/profile/sync/";
-    string syncLevelsURL = Keys.Api_Web_Key + "api/levels/children";
+    string syncProfileURL = Keys.Api_Web_Key + "api/profile/sync/";
+    string syncLevelsURL = Keys.Api_Web_Key + "api/levels/children/";
     string updateProfileURL = Keys.Api_Web_Key + "api/profile/update/";
     public List<Kid> temporalKids;
     public static int numberOfSessionManager = 0;
@@ -484,6 +484,7 @@ public class SessionManager : MonoBehaviour
 
         WWW hs_post = new WWW(post_url, form);
         yield return hs_post;
+		Debug.Log(hs_post.text);
         if (hs_post.error == null)
         {
             JSONArray kids = JSONArray.Parse(hs_post.text);
