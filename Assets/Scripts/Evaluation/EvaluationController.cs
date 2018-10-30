@@ -428,6 +428,8 @@ public class EvaluationController : MonoBehaviour
 
     public void FinishEvaluation()
     {
+        sessionManager.activeKid.needSync = true;
+        sessionManager.activeKid.testAvailable = false;
         GoToNextScene("NewLogin");
     }
 

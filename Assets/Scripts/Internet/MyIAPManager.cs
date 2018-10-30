@@ -500,53 +500,53 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
     {
         if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscription, StringComparison.Ordinal))
         {
-            menuManager.SetKidprofilesToAddASubscription(1, "monthly_inApp", args);
+            menuManager.SetKidProfilesToAddASubscription(1, "monthly_inApp", args);
             return PurchaseProcessingResult.Pending;
             // TODO: The subscription item has been successfully purchased, grant this to the player.
         }
         else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionTwo, StringComparison.Ordinal))
         {
-            menuManager.SetKidprofilesToAddASubscription(2, "monthly_inApp", args);
+            menuManager.SetKidProfilesToAddASubscription(2, "monthly_inApp", args);
             return PurchaseProcessingResult.Pending;
         }
         else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionThree, StringComparison.Ordinal))
         {
-            menuManager.SetKidprofilesToAddASubscription(3, "monthly_inApp", args);
+            menuManager.SetKidProfilesToAddASubscription(3, "monthly_inApp", args);
             return PurchaseProcessingResult.Pending;
         }
         else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionFour, StringComparison.Ordinal))
         {
-            menuManager.SetKidprofilesToAddASubscription(4, "monthly_inApp", args);
+            menuManager.SetKidProfilesToAddASubscription(4, "monthly_inApp", args);
             return PurchaseProcessingResult.Pending;
         }
         else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionFive, StringComparison.Ordinal))
         {
-            menuManager.SetKidprofilesToAddASubscription(5, "monthly_inApp", args);
+            menuManager.SetKidProfilesToAddASubscription(5, "monthly_inApp", args);
             return PurchaseProcessingResult.Pending;
         }
         else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscription, StringComparison.Ordinal))
         {
-            menuManager.SetKidprofilesToAddASubscription(1, "quarterly_inApp", args);
+            menuManager.SetKidProfilesToAddASubscription(1, "quarterly_inApp", args);
             return PurchaseProcessingResult.Pending;
         }
         else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionTwo, StringComparison.Ordinal))
         {
-            menuManager.SetKidprofilesToAddASubscription(2, "quarterly_inApp", args);
+            menuManager.SetKidProfilesToAddASubscription(2, "quarterly_inApp", args);
             return PurchaseProcessingResult.Pending;
         }
         else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionThree, StringComparison.Ordinal))
         {
-            menuManager.SetKidprofilesToAddASubscription(3, "quarterly_inApp", args);
+            menuManager.SetKidProfilesToAddASubscription(3, "quarterly_inApp", args);
             return PurchaseProcessingResult.Pending;
         }
         else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionFour, StringComparison.Ordinal))
         {
-            menuManager.SetKidprofilesToAddASubscription(4, "quarterly_inApp", args);
+            menuManager.SetKidProfilesToAddASubscription(4, "quarterly_inApp", args);
             return PurchaseProcessingResult.Pending;
         }
         else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionFive, StringComparison.Ordinal))
         {
-            menuManager.SetKidprofilesToAddASubscription(5, "quarterly_inApp", args);
+            menuManager.SetKidProfilesToAddASubscription(5, "quarterly_inApp", args);
             return PurchaseProcessingResult.Pending;
         }
         // Or ... an unknown product has been purchased by this user. Fill in additional products here....

@@ -213,7 +213,8 @@ public class MenuManager : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update() {
+    void Update()
+    {
 
     }
 
@@ -265,8 +266,6 @@ public class MenuManager : MonoBehaviour {
         changeProfileButton.onClick.AddListener(SetKidsProfiles);
         newKidButton.onClick.AddListener(CreateAKid);
         moreAccountsNeedsButton.onClick.AddListener(MoreSubscriptions);
-        continueEvaluationButton.onClick.AddListener(LoadEvaluation);
-        escapeEvaluationButton.onClick.AddListener(ShowGameMenu);
         shopInWeb.onClick.AddListener(MoreSubscriptions);
     }
 
@@ -335,6 +334,32 @@ public class MenuManager : MonoBehaviour {
         WriteTheText(subscribeText, 26);
         warningLogo.gameObject.SetActive(true);
         suscripctionLogo.gameObject.SetActive(false);
+        WriteTheText(escapeEvaluationButton, 41);
+        WriteTheText(continueEvaluationButton, 42);
+        continueEvaluationButton.onClick.RemoveAllListeners();
+        escapeEvaluationButton.onClick.RemoveAllListeners();
+        continueEvaluationButton.onClick.AddListener(LoadEvaluation);
+        escapeEvaluationButton.onClick.AddListener(ShowGameMenu);
+    }
+
+    public void ShowIOSDisclaimer()
+    {
+        HideAllCanvas();
+        subscribeCanvas.SetActive(true);
+        subscribeAnotherCountButton.gameObject.SetActive(false);
+        changeProfileButton.gameObject.SetActive(false);
+        subscribeButton.gameObject.SetActive(false);
+        continueEvaluationButton.gameObject.SetActive(true);
+        escapeEvaluationButton.gameObject.SetActive(true);
+        WriteTheText(subscribeText, 44);
+        warningLogo.gameObject.SetActive(false);
+        suscripctionLogo.gameObject.SetActive(true);
+        WriteTheText(escapeEvaluationButton, 42);
+        WriteTheText(continueEvaluationButton, 41);
+        continueEvaluationButton.onClick.RemoveAllListeners();
+        escapeEvaluationButton.onClick.RemoveAllListeners();
+        continueEvaluationButton.onClick.AddListener(() => ShowShop(0));
+        escapeEvaluationButton.onClick.AddListener(ShopIAP);
     }
 
     //We show the player that his accoount has not that privelage
@@ -350,7 +375,7 @@ public class MenuManager : MonoBehaviour {
         escapeEvaluationButton.gameObject.SetActive(false);
         warningLogo.gameObject.SetActive(false);
         suscripctionLogo.gameObject.SetActive(true);
-
+        WriteTheText(subscribeButton, 29);
         if (sessionManager.activeUser.suscriptionsLeft < 1)
         {
             if (typeOfWarning == 0)
@@ -423,6 +448,7 @@ public class MenuManager : MonoBehaviour {
                 }
             }
         }
+
         sessionManager.SaveSession();
     }
 
@@ -502,7 +528,14 @@ public class MenuManager : MonoBehaviour {
         shopBackButton.onClick.RemoveAllListeners();
         shopIAPButton.onClick.RemoveAllListeners();
         shopBackButton.onClick.AddListener(()=>ShowShop(showShop));
-        shopIAPButton.onClick.AddListener(ShopIAP);
+        if (Application.platform == RuntimePlatform.IPhonePlayer)
+        {
+            shopIAPButton.onClick.AddListener(IOSExtraStep);
+        }
+        else
+        {
+            shopIAPButton.onClick.AddListener(ShopIAP);
+        }
     }
 
     void ShopIAP()
@@ -683,7 +716,7 @@ public class MenuManager : MonoBehaviour {
     }
 
     //this will set all available kids to show wich of them you will add to your subscription plan
-    public void SetKidprofilesToAddASubscription(int numOfKids, string typeOfSubscription, UnityEngine.Purchasing.PurchaseEventArgs args)
+    public void SetKidProfilesToAddASubscription(int numOfKids, string typeOfSubscription, UnityEngine.Purchasing.PurchaseEventArgs args)
     {
         WriteTheText(selectionKidText, 24);
         HideAllCanvas();
@@ -781,6 +814,7 @@ public class MenuManager : MonoBehaviour {
             }
         }
         Debug.Log(idsSt);
+
         subscriptionsManager.SendSubscriptionData(kids, idsSt, sessionManager.activeUser.id, typeOfSubscription, args);
     }
 
@@ -890,13 +924,9 @@ public class MenuManager : MonoBehaviour {
         WriteTheText(kidMoreText, 20);
         WriteTheText(acceptTermsAndConditionText, 21);
         WriteTheText(termsAndConditionsButton, 22);
-        WriteTheText(subscribeButton, 29);
         WriteTheText(shopInWeb, 29);
         WriteTheText(prepaidButton, 36);
         WriteTheText(moreAccountsNeedsButton, 39);
-        WriteTheText(creditText, 40);
-        WriteTheText(escapeEvaluationButton, 41);
-        WriteTheText(continueEvaluationButton, 42);
         warningButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
         newKidButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
     }
@@ -979,6 +1009,11 @@ public class MenuManager : MonoBehaviour {
         }
     }
 
+    void IOSExtraStep()
+    {
+
+    }
+
     //This will set the shop
     void SetShop()
     {
@@ -997,6 +1032,10 @@ public class MenuManager : MonoBehaviour {
                 shopInWeb.gameObject.SetActive(false);
                 oneMonthButton.GetComponentInChildren<Text>().text = lines[33] + " " + myIAPManager.CostInCurrency(1) + lines[35];
                 threeMonthButton.GetComponentInChildren<Text>().text = lines[34] + " " + myIAPManager.CostInCurrency(3) + lines[35];
+                if (Application.platform == RuntimePlatform.IPhonePlayer)
+                {
+                    prepaidButton.gameObject.SetActive(false);
+                }
             }
             else
             {
