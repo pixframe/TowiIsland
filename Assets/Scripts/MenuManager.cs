@@ -324,6 +324,41 @@ public class MenuManager : MonoBehaviour {
 
     public void ShowDisclaimer()
     {
+        if (Application.platform == RuntimePlatform.IPhonePlayer)
+        {
+            if (!UnityEngine.iOS.Device.generation.ToString().Contains("iPad"))
+            {
+                HideAllCanvas();
+                subscribeCanvas.SetActive(true);
+                subscribeAnotherCountButton.gameObject.SetActive(false);
+                changeProfileButton.gameObject.SetActive(false);
+                subscribeButton.gameObject.SetActive(false);
+                continueEvaluationButton.gameObject.SetActive(false);
+                escapeEvaluationButton.gameObject.SetActive(true);
+                WriteTheText(subscribeText, 26);
+                warningLogo.gameObject.SetActive(true);
+                suscripctionLogo.gameObject.SetActive(false);
+                WriteTheText(escapeEvaluationButton, 41);
+                WriteTheText(continueEvaluationButton, 42);
+                continueEvaluationButton.onClick.RemoveAllListeners();
+                escapeEvaluationButton.onClick.RemoveAllListeners();
+                continueEvaluationButton.onClick.AddListener(LoadEvaluation);
+                escapeEvaluationButton.onClick.AddListener(ShowGameMenu);
+            }
+            else
+            {
+                ShowTheDisclaimer();
+            }
+        }
+        else
+        {
+            ShowTheDisclaimer();
+        }
+
+    }
+
+    void ShowTheDisclaimer()
+    {
         HideAllCanvas();
         subscribeCanvas.SetActive(true);
         subscribeAnotherCountButton.gameObject.SetActive(false);

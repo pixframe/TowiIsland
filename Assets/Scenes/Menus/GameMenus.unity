@@ -382,6 +382,7 @@ GameObject:
   - component: {fileID: 146972450}
   - component: {fileID: 146972452}
   - component: {fileID: 146972451}
+  - component: {fileID: 146972453}
   m_Layer: 5
   m_Name: Kids Panel
   m_TagString: Untagged
@@ -446,6 +447,17 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 146972449}
   m_CullTransparentMesh: 0
+--- !u!114 &146972453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 146972449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b3f755a9341c8546b5a730c9ef8bcf4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &218561534
 Prefab:
   m_ObjectHideFlags: 0
@@ -1683,9 +1695,9 @@ RectTransform:
   m_Father: {fileID: 411802077}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.45, y: -57}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 1.45, y: 31}
   m_SizeDelta: {x: 127.1, y: 62.555}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &851569692
@@ -3361,7 +3373,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 1.45, y: -57}
-  m_SizeDelta: {x: 127.1, y: 62.555}
+  m_SizeDelta: {x: 127.1, y: 62.554993}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1712304951
 MonoBehaviour:

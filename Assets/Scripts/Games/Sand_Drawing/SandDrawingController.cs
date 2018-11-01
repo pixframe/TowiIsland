@@ -144,6 +144,8 @@ public class SandDrawingController : MonoBehaviour {
         }
         endButton.onClick.AddListener(CalificateTheDraw);
 
+        endButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[2];
+
         EventTrigger trigger = endButton.GetComponent<EventTrigger>();
         EventTrigger.Entry en = new EventTrigger.Entry();
         en.eventID = EventTriggerType.PointerDown;

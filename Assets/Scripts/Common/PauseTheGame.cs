@@ -9,6 +9,7 @@ public class PauseTheGame : MonoBehaviour {
     Button pauseButton;
     GameObject pausePanel;
     GameObject miniPausePanel;
+    GameObject dontTouchPanel;
     Text pauseText;
     Button goBackButton;
     Button goMenuButton;
@@ -30,6 +31,8 @@ public class PauseTheGame : MonoBehaviour {
         textAsset = Resources.Load<TextAsset>("StringsToShow/Menus/PauseMenu");
 
         stringsToShow = TextReader.TextsToShow(textAsset);
+
+        dontTouchPanel = transform.parent.GetChild(0).gameObject;
 
         pauseButton = transform.GetChild(0).GetComponent<Button>();
         pausePanel = transform.GetChild(1).gameObject;
@@ -63,6 +66,7 @@ public class PauseTheGame : MonoBehaviour {
         }
         pauseButton.gameObject.SetActive(false);
         pausePanel.SetActive(true);
+        dontTouchPanel.SetActive(true);
     }
 
     void GoBackGame()
@@ -73,6 +77,7 @@ public class PauseTheGame : MonoBehaviour {
         }
         pauseButton.gameObject.SetActive(true);
         pausePanel.SetActive(false);
+        dontTouchPanel.SetActive(false);
     }
 
     void GoBackIsland()
@@ -88,6 +93,7 @@ public class PauseTheGame : MonoBehaviour {
     {
         pauseButton.gameObject.SetActive(false);
         pausePanel.SetActive(false);
+        dontTouchPanel.SetActive(false);
         howToPlayButton.gameObject.SetActive(true);
         playButton.gameObject.SetActive(true);
     }
@@ -96,6 +102,7 @@ public class PauseTheGame : MonoBehaviour {
     {
         pauseButton.gameObject.SetActive(true);
         pausePanel.SetActive(false);
+        dontTouchPanel.SetActive(false);
         howToPlayButton.gameObject.SetActive(false);
         playButton.gameObject.SetActive(false);
     }
