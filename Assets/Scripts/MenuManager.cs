@@ -340,9 +340,7 @@ public class MenuManager : MonoBehaviour {
                 suscripctionLogo.gameObject.SetActive(false);
                 WriteTheText(escapeEvaluationButton, 41);
                 WriteTheText(continueEvaluationButton, 42);
-                continueEvaluationButton.onClick.RemoveAllListeners();
                 escapeEvaluationButton.onClick.RemoveAllListeners();
-                continueEvaluationButton.onClick.AddListener(LoadEvaluation);
                 escapeEvaluationButton.onClick.AddListener(ShowGameMenu);
             }
             else
