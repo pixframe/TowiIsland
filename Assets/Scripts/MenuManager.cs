@@ -335,7 +335,7 @@ public class MenuManager : MonoBehaviour {
                 subscribeButton.gameObject.SetActive(false);
                 continueEvaluationButton.gameObject.SetActive(false);
                 escapeEvaluationButton.gameObject.SetActive(true);
-                WriteTheText(subscribeText, 26);
+                WriteTheText(subscribeText, 45);
                 warningLogo.gameObject.SetActive(true);
                 suscripctionLogo.gameObject.SetActive(false);
                 WriteTheText(escapeEvaluationButton, 41);

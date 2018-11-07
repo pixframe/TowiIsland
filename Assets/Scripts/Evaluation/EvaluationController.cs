@@ -386,8 +386,8 @@ public class EvaluationController : MonoBehaviour
         }
         saveHandler.AddLevelData("arrange_learningcurve", corrects[2] - corrects[0]);
         saveHandler.AddLevelData("arrange_amplitude", nOfStimulus);
-        saveHandler.AddLevelData("arrange_primacy", firstObjects);
-        saveHandler.AddLevelData("arrange_recence", lastObjects);
+        /*saveHandler.AddLevelData("arrange_primacy", firstObjects);
+        saveHandler.AddLevelData("arrange_recence", lastObjects);*/
         saveHandler.AddLevelData("arrange_spacialprecision_score", positionScore);
         saveHandler.AddLevelData("arrange_time", secctionTime);
         saveHandler.AddLevelData("arrange_primacy", (firstPercentage / 3));
@@ -495,10 +495,11 @@ public class EvaluationController : MonoBehaviour
         {
             return 0;
         }
-        else if (ageOfTheCurrentPlayer >= 6 && ageOfTheCurrentPlayer < 10) 
+        else if (ageOfTheCurrentPlayer >= 7 && ageOfTheCurrentPlayer < 10) 
         {
             return 1;
-        } else
+        }
+        else
         {
             return 2;
         }
