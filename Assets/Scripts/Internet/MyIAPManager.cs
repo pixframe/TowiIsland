@@ -241,7 +241,7 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
             // Otherwise ...
             else
             {
-                FindObjectOfType<MenuManager>().ShowWarning(1);
+                FindObjectOfType<MenuManager>().ShowWarning(8);
                 // ... report the product look-up failure situation  
                 Debug.Log("BuyProductID: FAIL. Not purchasing product, either is not found or is not available for purchase");
             }

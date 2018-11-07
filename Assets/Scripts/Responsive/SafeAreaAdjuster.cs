@@ -11,7 +11,7 @@ public class SafeAreaAdjuster : MonoBehaviour {
 
     KeyCode KeySafeArea = KeyCode.A;
     public enum SimDevice { None, iPhoneX }
-    public static SimDevice Sim = SimDevice.iPhoneX;
+    public static SimDevice Sim = SimDevice.None;
     Rect[] NSA_iPhoneX = new Rect[]
     {
             new Rect (0f, 102f / 2436f, 1f, 2202f / 2436f),  // Portrait

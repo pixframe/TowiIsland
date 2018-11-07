@@ -155,7 +155,6 @@ public class MenuManager : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-        Debug.Log(PlayerPrefs.GetInt(Keys.Logged_In) + " logged in");
         if (key == null)
         {
             if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
@@ -324,7 +323,7 @@ public class MenuManager : MonoBehaviour {
 
     public void ShowDisclaimer()
     {
-        if (Application.platform == RuntimePlatform.IPhonePlayer)
+        if (Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.Android && !IsTablet())
         {
             if (!UnityEngine.iOS.Device.generation.ToString().Contains("iPad"))
             {
@@ -563,7 +562,7 @@ public class MenuManager : MonoBehaviour {
         shopBackButton.onClick.AddListener(()=>ShowShop(showShop));
         if (Application.platform == RuntimePlatform.IPhonePlayer)
         {
-            shopIAPButton.onClick.AddListener(IOSExtraStep);
+            shopIAPButton.onClick.AddListener(() => IOSExtraStep(showShop));
         }
         else
         {
@@ -994,9 +993,13 @@ public class MenuManager : MonoBehaviour {
     {
         warningPanel.SetActive(true);
         warningText.text = warningLines[numberOfWarning];
+        if (numberOfWarning == 8)
+        {
+            ShowGameMenu();
+        }
         if(numberOfWarning == 11)
         {
-
+            ShowWarning(11);
         }
     }
 
@@ -1022,8 +1025,7 @@ public class MenuManager : MonoBehaviour {
     {
         alreadyLogged = true;
         PlayerPrefs.SetInt(Keys.Logged_In, 1);
-        PlayerPrefs.GetString(Keys.Active_User_Key, sessionManager.activeUser.userkey);
-        Debug.Log("its logged");
+        PlayerPrefs.SetString(Keys.Active_User_Key, sessionManager.activeUser.userkey);
     }
 
     //this method shows if a kid has the evaluation available for playing
@@ -1042,9 +1044,23 @@ public class MenuManager : MonoBehaviour {
         }
     }
 
-    void IOSExtraStep()
+    void IOSExtraStep(int showShop)
     {
-
+        HideAllCanvas();
+        subscribeCanvas.SetActive(true);
+        subscribeAnotherCountButton.gameObject.SetActive(false);
+        changeProfileButton.gameObject.SetActive(false);
+        subscribeButton.gameObject.SetActive(false);
+        continueEvaluationButton.gameObject.SetActive(false);
+        escapeEvaluationButton.gameObject.SetActive(true);
+        WriteTheText(subscribeText, 44);
+        warningLogo.gameObject.SetActive(true);
+        suscripctionLogo.gameObject.SetActive(true);
+        WriteTheText(escapeEvaluationButton, 41);
+        WriteTheText(continueEvaluationButton, 42);
+        escapeEvaluationButton.onClick.RemoveAllListeners();
+        continueEvaluationButton.onClick.AddListener(() => ShowShop(showShop));
+        escapeEvaluationButton.onClick.AddListener(ShopIAP);
     }
 
     //This will set the shop
@@ -1238,6 +1254,17 @@ public class MenuManager : MonoBehaviour {
             }
             return match.Groups[1].Value + domainName;
         }
+    }
+
+    bool IsTablet()
+    {
+        float screenWidth = Screen.width / Screen.dpi;
+        float screenHeight = Screen.height / Screen.dpi;
+        float diagonalInches = Mathf.Sqrt(Mathf.Pow(screenWidth, 2) + Mathf.Pow(screenHeight, 2));
+
+        Debug.Log("Getting device inches: " + diagonalInches);
+
+        return diagonalInches > 6.5f;
     }
 
 }
