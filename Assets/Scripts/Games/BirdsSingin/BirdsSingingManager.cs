@@ -68,12 +68,14 @@ public class BirdsSingingManager : MonoBehaviour {
     int difficulty;
     //this is the sub level of difficulty
     int level;
+    int levelCategorizer;
     int numberOfCategories;
     int pool;
     int categorie;
     int numberOfAssays = 5;
     int birdsNumber;
     int nestsNumber;
+    int occupiedNest;
     int bankNumber;
     int storyIndex;
     int maxLevelPerDifficulty;
@@ -86,6 +88,7 @@ public class BirdsSingingManager : MonoBehaviour {
     int firstTime;
     int birdsWellOrdered;
     int birdsBadOrdered;
+    int totalLevels = 54;
     public enum GamePhase {Tutorial, Listen , Listening, Lounging , Game, Transition };
 
     int errors;
@@ -134,6 +137,12 @@ public class BirdsSingingManager : MonoBehaviour {
         }
         else
         {
+            if (!sessionManager.activeKid.birdsLevelSet)
+            {
+                levelCategorizer = LevelDifficultyChange(totalLevels);
+                Debug.Log(levelCategorizer);
+                GetDataJustForLevel(levelCategorizer);
+            }
             instructionPanel.transform.parent.gameObject.SetActive(false);
             pauser.WantTutorial();
             pauser.howToPlayButton.onClick.AddListener(TellTheStory);
@@ -158,6 +167,7 @@ public class BirdsSingingManager : MonoBehaviour {
             }
         }
     }
+
     #region Game dynamics
 
 
@@ -197,9 +207,20 @@ public class BirdsSingingManager : MonoBehaviour {
         {
             sessionManager.activeKid.birdsDifficulty = difficulty;
             sessionManager.activeKid.birdsLevel = level;
-            sessionManager.activeKid.birdsFirst = false;
+            if (!sessionManager.activeKid.birdsFirst)
+            {
+                if (!sessionManager.activeKid.birdsLevelSet)
+                {
+                    sessionManager.activeKid.birdsLevelSet = true;
+                }
+            }
+            else
+            {
+                sessionManager.activeKid.birdsFirst = false;
+            }
             sessionManager.activeKid.playedBird = 1;
             sessionManager.activeKid.needSync = true;
+            sessionManager.activeKid.kiwis += passLevels;
 
             levelSaver.AddLevelData("birds", 5);
             levelSaver.AddLevelData("nests", 5);
@@ -364,13 +385,6 @@ public class BirdsSingingManager : MonoBehaviour {
     {
         int lenght = tempoBirds.Count;
 
-        /*for (int i = 0; i < birdsNumber; i++)
-        {
-            int randomize = UnityEngine.Random.Range(0, tempoBirds.Count);
-            currentBirds.Add(tempoBirds[randomize]);
-            tempoBirds.Remove(tempoBirds[randomize]);
-        }*/
-
         for (int i = 0; i < birdsNumber; i++)
         {
             currentBirds[i].gameObject.SetActive(true);
@@ -413,7 +427,7 @@ public class BirdsSingingManager : MonoBehaviour {
         audioManager.PlayClip(audioBank[bankNumber][currentNest[nestPlayIndex].GetTheNestSong()]);
         currentNest[nestPlayIndex].PlayTheNotes();
         nestPlayIndex++;
-        if (nestPlayIndex < nestsNumber)
+        if (nestPlayIndex < (nestsNumber - occupiedNest))
         {
             Invoke("PlayTheNestSongs", audioManager.ClipDuration() + 1.5f);
         }
@@ -603,6 +617,7 @@ public class BirdsSingingManager : MonoBehaviour {
                     nestSelected.PlayTheNotes(true);
                     dadaBird.BirdIsWellSet();
                     currentNest.Remove(nestSelected);
+                    occupiedNest++;
                     if (AreAllNestFill())
                     {
                         HandleFinishActivity();
@@ -677,8 +692,16 @@ public class BirdsSingingManager : MonoBehaviour {
         readyButton.gameObject.SetActive(false);
         audioManager.PlayClip(instructionsClips[7]);
         Invoke("ReadyButtonOn", audioManager.ClipDuration());
-        NewLevelArrange();
-        numberOfAssays--;
+        if (sessionManager.activeKid.birdsLevelSet || sessionManager.activeKid.birdsFirst)
+        {
+            NewLevelArrange();
+            numberOfAssays--;
+        }
+        else
+        {
+            numberOfAssays--;
+            FastLevelIdentificationSystem();
+        }
 
         if (numberOfAssays > 0)
         {
@@ -692,6 +715,7 @@ public class BirdsSingingManager : MonoBehaviour {
 
     void ResetTheGame()
     {
+        occupiedNest = 0;
         instructionPanel.SetActive(false);
         errors += birdsBadOrdered;
         goods += birdsWellOrdered;
@@ -708,7 +732,6 @@ public class BirdsSingingManager : MonoBehaviour {
         ChangeThePhase(GamePhase.Transition);
         nestPlayIndex = 0;
         showTutorial = false;
-        //SetNewGame();
     }
 
     void DesactivateAllBirds()
@@ -782,6 +805,20 @@ public class BirdsSingingManager : MonoBehaviour {
         }
     }
 
+    void FastLevelIdentificationSystem()
+    {
+        if (birdsBadOrdered < 1)
+        {
+            levelCategorizer += LevelDifficultyChange(totalLevels);
+        }
+        else
+        {
+            levelCategorizer -= LevelDifficultyChange(totalLevels);
+        }
+        Debug.Log("New Level categorizer is " + levelCategorizer);
+        GetDataJustForLevel(levelCategorizer);
+    }
+
     void ChangeLevel()
     {
         repeatedOneBad = 0;
@@ -791,6 +828,59 @@ public class BirdsSingingManager : MonoBehaviour {
     void ReadyButtonOn()
     {
         readyButton.gameObject.SetActive(true);
+    }
+
+    void GetDataJustForLevel(int levelInput)
+    {
+        int totalDifficulty = 4;
+        int baseLevelDifficulty = 9;
+        int[] levelBreakers = new int[totalDifficulty];
+
+        for (int i = 0; i < levelBreakers.Length; i++)
+        {
+            if (i == 0)
+            {
+                levelBreakers[i] = baseLevelDifficulty;
+            }
+            else
+            {
+                levelBreakers[i] = levelBreakers[i - 1] + (baseLevelDifficulty + ((baseLevelDifficulty / 3) * i));
+            }
+
+            if (levelInput < levelBreakers[i])
+            {
+                int getDifficulty = i;
+                difficulty = getDifficulty;
+                if (difficulty == 0)
+                {
+                    level = levelInput;
+                }
+                else
+                {
+                    level = levelInput - levelBreakers[i - 1];
+                }
+                break;
+            }
+        }
+
+        Debug.Log("Level is " + level + " Difficulty is " + difficulty);
+    }
+
+    /// <summary>
+    /// Function to determine how many levels a player change with the FLIS
+    /// </summary>
+    /// <param name="totalNumberOfLevelsToAdapt"></param>
+    /// <returns></returns>
+    int LevelDifficultyChange(int totalNumberOfLevelsToAdapt)
+    {
+        //To determine how many levels go up or down we use the function
+        // y = z/(2^(x+1))
+        //where x = current assay, y = the amount of levels to change, z = the total levels of the game
+        //x starts in 0
+        //we return a integer value, so could be some differences with an actual graphic of the function
+        int currentAssay = 5 - numberOfAssays;
+        int amountOfLevelsToChange = Mathf.RoundToInt(totalNumberOfLevelsToAdapt / Mathf.Pow(2, (currentAssay + 1)));
+        return amountOfLevelsToChange;
     }
 
     #endregion

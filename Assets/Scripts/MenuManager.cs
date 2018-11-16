@@ -646,7 +646,7 @@ public class MenuManager : MonoBehaviour {
     {
         string email = emailLogInInput.text;
         string password = passLogInInput.text;
-        EmailVerificationUtility verificationUtility = new EmailVerificationUtility();
+        var verificationUtility = new EmailVerificationUtility();
         bool isAccountReady = verificationUtility.IsValidMail(email);
         bool isPassReady = (password != "");
         if (isAccountReady)

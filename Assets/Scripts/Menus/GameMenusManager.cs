@@ -14,6 +14,10 @@ public class GameMenusManager : MonoBehaviour {
     public Button goBackButton;
 
     public AudioClip[] Clips;
+
+    public GameObject normalCanvas;
+    public GameObject miniShopGame;
+
     AudioPlayerForMenus player;
     GameCenterCamera centerCamera;
     SessionManager sessionManager;
@@ -30,11 +34,13 @@ public class GameMenusManager : MonoBehaviour {
         gamesButton.onClick.AddListener(GoGamingZone);
         goBackButton.onClick.AddListener(GoBackToLogin);
         avatarButton.onClick.AddListener(GoAvatars);
+        shopButton.onClick.AddListener(GoShoping);
         if (sessionManager.activeKid.needSync)
         {
             sessionManager.UpdateProfile();
         }
         centerCamera.StartTheThingNow();
+        ReturnToNormality();
     }
 
     public void FinishAnim()
@@ -67,5 +73,21 @@ public class GameMenusManager : MonoBehaviour {
     {
         PrefsKeys.SetNextScene("Avatar_Selection");
         SceneManager.LoadScene("Loader_Scene");
+    }
+
+    //This is used top start the shoping minigame
+    void GoShoping()
+    {
+        normalCanvas.SetActive(false);
+        centerCamera.gameObject.SetActive(false);
+        miniShopGame.SetActive(true);
+    }
+
+    //This is used to return to normality
+    public void ReturnToNormality()
+    {
+        normalCanvas.SetActive(true);
+        centerCamera.gameObject.SetActive(true);
+        miniShopGame.SetActive(false);
     }
 }

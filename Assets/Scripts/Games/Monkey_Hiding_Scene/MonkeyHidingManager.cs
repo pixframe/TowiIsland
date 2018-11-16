@@ -37,6 +37,7 @@ public class MonkeyHidingManager : MonoBehaviour {
     int monkeysInCorrectPlace;
     int monkeysSwitchInCorrectPlaces;
     int straightBadAnswers;
+    int levelCategorizer;
     int numberOfAssays = 5;
     int goodAnswer;
     int badAnswer;
@@ -44,6 +45,7 @@ public class MonkeyHidingManager : MonoBehaviour {
     int firstTime;
     int passLevels;
     int repeatedLevels;
+    int totalLevels = 60;
 
     float movementTime;
     float timeForMovement;
@@ -54,6 +56,7 @@ public class MonkeyHidingManager : MonoBehaviour {
 
     bool counting = false;
     bool showTutorial = false;
+    bool findingMultipleObjects = false;
 
     MonkeyController monkey1;
     MonkeyController monkey2;
@@ -130,8 +133,20 @@ public class MonkeyHidingManager : MonoBehaviour {
             }
             else
             {
-                difficulty = sessionManager.activeKid.monkeyDifficulty;
-                level = sessionManager.activeKid.monkeyLevel;
+                if (sessionManager.activeKid.monkeyLevelSet)
+                {
+                    difficulty = sessionManager.activeKid.monkeyDifficulty;
+                    if (difficulty > 1)
+                    {
+                        difficulty = 1;
+                    }
+                    level = sessionManager.activeKid.monkeyLevel;
+                }
+                else
+                {
+                    levelCategorizer = LevelDifficultyChange(totalLevels);
+                    GetDataJustForLevel(levelCategorizer);
+                }
                 firstTime = 1;
             }
         }
@@ -208,7 +223,7 @@ public class MonkeyHidingManager : MonoBehaviour {
     {
         if (showTutorial)
         {
-
+            showTutorial = false;
         }
         else
         {
@@ -408,27 +423,7 @@ public class MonkeyHidingManager : MonoBehaviour {
             numberOfObjectsToFind--;
             if (numberOfObjectsToFind == 0)
             {
-                goodAnswer++;
-                instructionText.text = stringsToShow[11];
-                audioManager.PlayClip(instructionsClips[11]);
-                Invoke("ReadyButtonOn", audioManager.ClipDuration());
-                straightBadAnswers = 0;
-                level++;
-                passLevels++;
-                if (level >= 30)
-                {
-                    if (difficulty < 1)
-                    {
-                        difficulty++;
-                        level = 0;
-                    }
-                }
-                readyButton.onClick.RemoveAllListeners();
-                readyButton.onClick.AddListener(ExitMonkeys);
-                foreach (GameObject mon in finalMonkeys)
-                {
-                    mon.GetComponent<MonkeyController>().DisableTheMonkey();
-                }
+                GoodAnswer(11);
             }
         }
         else
@@ -438,30 +433,18 @@ public class MonkeyHidingManager : MonoBehaviour {
                 numberOfObjectsToFind--;
                 if (numberOfObjectsToFind == 0)
                 {
-                    goodAnswer++;
-                    straightBadAnswers = 0;
-                    level++;
-                    passLevels++;
-                    instructionText.text = stringsToShow[11];
-                    audioManager.PlayClip(instructionsClips[11]);
-                    Invoke("ReadyButtonOn", audioManager.ClipDuration());
-                    if (level >= 30)
+                    if (findingMultipleObjects)
                     {
-                        if (difficulty < 1)
-                        {
-                            difficulty++;
-                            level = 0;
-                        }
+                        GoodAnswer(14);
                     }
-                    readyButton.onClick.RemoveAllListeners();
-                    readyButton.onClick.AddListener(ExitMonkeys);
-                    foreach (GameObject mon in finalMonkeys)
+                    else
                     {
-                        mon.GetComponent<MonkeyController>().DisableTheMonkey();
+                        GoodAnswer(11);
                     }
                 }
             }
-            else {
+            else
+            {
                 BadAnswer();
             }
         }
@@ -470,28 +453,94 @@ public class MonkeyHidingManager : MonoBehaviour {
     public void BadAnswer() {
         badAnswer++;
         straightBadAnswers++;
+        numberOfAssays--;
+
+        GetLevelDown();
         instructionText.text = stringsToShow[10];
         audioManager.PlayClip(instructionsClips[10]);
         Invoke("ReadyButtonOn", audioManager.ClipDuration());
-        if (straightBadAnswers >= 3) {
-            level--;
-            straightBadAnswers = 0;
-            if (level < 0) {
-                if (difficulty <= 1)
-                {
-                    difficulty = 0;
-                    level = 29;
-                }
-                else {
-                    level = 0;
-                }
-            }
-        }
+
         readyButton.onClick.RemoveAllListeners();
         readyButton.onClick.AddListener(ExitMonkeys);
         foreach (GameObject mon in finalMonkeys)
         {
             mon.GetComponent<MonkeyController>().DisableTheMonkey();
+        }
+    }
+
+    void GoodAnswer(int audiosAndTextToPlay)
+    {
+        goodAnswer++;
+        straightBadAnswers = 0;
+        level++;
+        passLevels++;
+        numberOfAssays--;
+
+        GetLevelUp();
+        instructionText.text = stringsToShow[audiosAndTextToPlay];
+        audioManager.PlayClip(instructionsClips[audiosAndTextToPlay]);
+        Invoke("ReadyButtonOn", audioManager.ClipDuration());
+
+        readyButton.onClick.RemoveAllListeners();
+        readyButton.onClick.AddListener(ExitMonkeys);
+
+        foreach (GameObject mon in finalMonkeys)
+        {
+            mon.GetComponent<MonkeyController>().DisableTheMonkey();
+        }
+    }
+
+    void GetLevelUp()
+    {
+        if (sessionManager.activeKid.monkeyLevelSet || sessionManager.activeKid.monkeyFirst)
+        {
+            if (level >= 30)
+            {
+                if (difficulty < 1)
+                {
+                    difficulty++;
+                    level = 0;
+                }
+                else
+                {
+                    difficulty = 1;
+                    level = 29;
+                }
+            }
+        }
+        else
+        {
+            levelCategorizer += LevelDifficultyChange(totalLevels);
+            GetDataJustForLevel(levelCategorizer);
+        }
+    }
+
+    void GetLevelDown()
+    {
+        if (sessionManager.activeKid.monkeyLevelSet || sessionManager.activeKid.monkeyFirst)
+        {
+            if (straightBadAnswers >= 3)
+            {
+                level--;
+                straightBadAnswers = 0;
+                if (level < 0)
+                {
+                    if (difficulty <= 1)
+                    {
+                        difficulty = 0;
+                        level = 29;
+                    }
+                    else
+                    {
+                        level = 0;
+                    }
+                }
+            }
+        }
+        else
+        {
+            levelCategorizer -= LevelDifficultyChange(totalLevels);
+            GetDataJustForLevel(levelCategorizer);
         }
     }
 
@@ -518,7 +567,6 @@ public class MonkeyHidingManager : MonoBehaviour {
         if(monkeysInCorrectPlace == finalMonkeys.Count)
         {
             monkeysInCorrectPlace = 0;
-            numberOfAssays--;
             if (numberOfAssays > 0)
             {
                 ResetGame();
@@ -572,6 +620,7 @@ public class MonkeyHidingManager : MonoBehaviour {
             audioManager.PlayClip(instructionsClips[7]);
             objectToFind = null;
             numberOfObjectToFind = stimulusNumbers[0];
+            findingMultipleObjects = false;
         }
         else
         {
@@ -582,12 +631,14 @@ public class MonkeyHidingManager : MonoBehaviour {
                 audioManager.PlayClip(instructionsClips[8], stimulusAudioClip[stimulusNumbers[randomito]]);
                 objectToFind = finalStimulus[randomito].name;
                 numberOfObjectToFind = stimulusNumbers[randomito];
+                findingMultipleObjects = false;
             }
             else
             {
                 instructionText.text = stringsToShow[9];
                 audioManager.PlayClip(instructionsClips[9]);
                 objectToFind = null;
+                findingMultipleObjects = true;
             }
         }
     }
@@ -612,5 +663,39 @@ public class MonkeyHidingManager : MonoBehaviour {
     void ReadyButtonOn()
     {
         readyButton.gameObject.SetActive(true);
+    }
+
+    void GetDataJustForLevel(int levelInput)
+    {
+        if (levelInput < 30)
+        {
+            difficulty = 0;
+            level = levelInput;
+        }
+        else
+        {
+            difficulty = 1;
+            level = levelInput - 30;
+        }
+
+        Debug.Log("Level is " + level + " Difficulty is " + difficulty);
+    }
+
+    /// <summary>
+    /// Function to determine how many levels a player change with the FLIS
+    /// </summary>
+    /// <param name="totalNumberOfLevelsToAdapt"></param>
+    /// <returns></returns>
+    int LevelDifficultyChange(int totalNumberOfLevelsToAdapt)
+    {
+        //To determine how many levels go up or down we use the function
+        // y = z/(2^(x+1))
+        //where x = current assay, y = the amount of levels to change, z = the total levels of the game
+        //x starts in 0
+        //we return a integer value, so could be some differences with an actual graphic of the function
+        int currentAssay = 5 - numberOfAssays;
+        int amountOfLevelsToChange = Mathf.RoundToInt(totalNumberOfLevelsToAdapt / Mathf.Pow(2, (currentAssay + 1)));
+        Debug.Log(amountOfLevelsToChange);
+        return amountOfLevelsToChange;
     }
 }

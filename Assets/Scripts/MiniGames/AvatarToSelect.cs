@@ -60,8 +60,8 @@ public class AvatarToSelect : MonoBehaviour {
         if (isMoving)
         {
             anim.SetFloat("Speed", speed);                          // set our animator's float parameter 'Speed' equal to the vertical input axis				
-            anim.speed = animSpeed;                             // set the speed of our animator to the public variable 'animSpeed'
-            anim.SetLookAtWeight(lookWeight);                   // set the Look At Weight - amount to use look at IK vs using the head's animation
+            anim.speed = animSpeed;                                 // set the speed of our animator to the public variable 'animSpeed'
+            anim.SetLookAtWeight(lookWeight);                       // set the Look At Weight - amount to use look at IK vs using the head's animation
             currentBaseState = anim.GetCurrentAnimatorStateInfo(0); // set our currentState variable to the current state of the Base Layer (0) of animation
         }
     }

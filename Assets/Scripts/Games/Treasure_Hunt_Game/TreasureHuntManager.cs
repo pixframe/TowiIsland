@@ -95,6 +95,8 @@ public class TreasureHuntManager : MonoBehaviour {
     int passLevels;
     int repeatedLevels;
     int notSure;
+    int levelCategorizer;
+    int totalLevels = 36;
 
     float time;
 
@@ -351,8 +353,16 @@ public class TreasureHuntManager : MonoBehaviour {
             }
             else
             {
-                difficulty = sessionManager.activeKid.treasureDifficulty;
-                level = sessionManager.activeKid.treasureLevel;
+                if (sessionManager.activeKid.treasureLevelSet)
+                {
+                    difficulty = sessionManager.activeKid.treasureDifficulty;
+                    level = sessionManager.activeKid.treasureLevel;
+                }
+                else
+                {
+                    levelCategorizer = LevelDifficultyChange(totalLevels);
+                    GetDataJustForLevel(levelCategorizer);
+                }
                 firstTime = 1;
             }
         }
@@ -458,8 +468,9 @@ public class TreasureHuntManager : MonoBehaviour {
     //This will create the character that the child previosly has chose
     void InstanciateCharacter()
     {
-        int randomChracter = Random.Range(0, 5);
-        character = Instantiate(characters[randomChracter], characterSpawnerPlace.transform.position, characterSpawnerPlace.transform.rotation);
+        string avatarName = sessionManager.activeKid.avatar;
+        avatarName.ToLower();
+        character = Instantiate(characters[TowiDictionary.AvatarNames[avatarName]], characterSpawnerPlace.transform.position, characterSpawnerPlace.transform.rotation);
         character.AddComponent<PlayerGrabbing>();
         playerController = character.GetComponent<PlayerController>();
     }
@@ -781,6 +792,7 @@ public class TreasureHuntManager : MonoBehaviour {
                 }
                 else
                 {
+                    errors++;
                     miniUIInstructionsText.text = stringsToShow[18];
                     audioManager.PlayClip(instructionsClips[18]);
                     yesButton.onClick.AddListener(SetNewAssay);
@@ -795,13 +807,13 @@ public class TreasureHuntManager : MonoBehaviour {
                 }
                 else
                 {
+                    errors++;
                     miniUIInstructionsText.text = stringsToShow[19];
                     audioManager.PlayClip(instructionsClips[19]);
                     yesButton.onClick.AddListener(SetNewAssay);
                 }
                 break;
             case PackingStatuts.Ok:
-                HandleNewLevel();
                 if (numberOfAssays <= 1)
                 {
                     miniUIInstructionsText.text = stringsToShow[16];
@@ -810,6 +822,7 @@ public class TreasureHuntManager : MonoBehaviour {
                 }
                 else
                 {
+                    errors++;
                     miniUIInstructionsText.text = stringsToShow[15];
                     audioManager.PlayClip(instructionsClips[15]);
                     yesButton.onClick.AddListener(SetNewAssay);
@@ -840,29 +853,52 @@ public class TreasureHuntManager : MonoBehaviour {
         yesButton.onClick.RemoveAllListeners();
         yesButton.onClick.AddListener(ShowInventorySecondTime);
         stopCellPhoneButton.gameObject.SetActive(false);
+        errors++;
     }
 
     //This will handle the level up or down accordingly to the game
     void HandleNewLevel()
     {
-        if (errors < 2)
+        if (sessionManager.activeKid.treasureLevelSet || sessionManager.activeKid.treasureFirst)
         {
-            level++;
-            passLevels++;
-            if (level > 5)
+            if (errors < 2)
             {
-                level = 0;
-                difficulty++;
-                if (difficulty > 5)
+                level++;
+                passLevels++;
+                if (level > 5)
                 {
-                    level = 5;
-                    difficulty = 5;
+                    level = 0;
+                    difficulty++;
+                    if (difficulty > 5)
+                    {
+                        level = 5;
+                        difficulty = 5;
+                    }
                 }
+            }
+            else
+            {
+                repeatedLevels++;
+                level--;
             }
         }
         else
         {
-            repeatedLevels++;
+            FastLevelIdentificationSystem();
+        }
+    }
+
+    void FastLevelIdentificationSystem()
+    {
+        if (errors < 2)
+        {
+            levelCategorizer += LevelDifficultyChange(totalLevels);
+            GetDataJustForLevel(levelCategorizer);
+        }
+        else
+        {
+            levelCategorizer -= LevelDifficultyChange(totalLevels);
+            GetDataJustForLevel(levelCategorizer);
         }
     }
 
@@ -870,6 +906,7 @@ public class TreasureHuntManager : MonoBehaviour {
     void SetNewAssay()
     {
         numberOfAssays--;
+        HandleNewLevel();
         if (numberOfAssays < 1)
         {
             miniUIInstructionsText.text = stringsToShow[16];
@@ -939,7 +976,6 @@ public class TreasureHuntManager : MonoBehaviour {
         }
         else
         {
-
         }
 
         yesButton.gameObject.SetActive(true);
@@ -1102,6 +1138,45 @@ public class TreasureHuntManager : MonoBehaviour {
     void ReadyButtonOn()
     {
         readyButton.gameObject.SetActive(true);
+    }
+
+    void GetDataJustForLevel(int levelInput)
+    {
+        int baseDificulty = 5;
+        int amountOfDifficulties = 6;
+
+        for (int i = 0; i < amountOfDifficulties; i++)
+        {
+
+            if (levelInput < baseDificulty * (i + 1))
+            {
+                int x = i;
+                difficulty = x;
+                break;
+            }
+        }
+
+        level = levelInput - (difficulty * baseDificulty);
+
+        Debug.Log("Level is " + level + " Difficulty is " + difficulty);
+    }
+
+    /// <summary>
+    /// Function to determine how many levels a player change with the FLIS
+    /// </summary>
+    /// <param name="totalNumberOfLevelsToAdapt"></param>
+    /// <returns></returns>
+    int LevelDifficultyChange(int totalNumberOfLevelsToAdapt)
+    {
+        //To determine how many levels go up or down we use the function
+        // y = z/(2^(x+1))
+        //where x = current assay, y = the amount of levels to change, z = the total levels of the game
+        //x starts in 0
+        //we return a integer value, so could be some differences with an actual graphic of the function
+        int currentAssay = 4 - numberOfAssays;
+        int amountOfLevelsToChange = Mathf.RoundToInt(totalNumberOfLevelsToAdapt / Mathf.Pow(2, (currentAssay + 1)));
+        Debug.Log(amountOfLevelsToChange);
+        return amountOfLevelsToChange;
     }
 }
 

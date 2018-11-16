@@ -84,7 +84,7 @@ public class MagicRiverManager : MonoBehaviour {
     int direction;
     int direction1;
     int direction2;
-    int numberOfAssays = 3;
+    int numberOfAssays = 5;
     int handleStimulus;
     int specialInstructionIndex;
     int whenToDrop1;
@@ -99,6 +99,8 @@ public class MagicRiverManager : MonoBehaviour {
     int repeatedLevels;
     //Those will set the type of special object 0 SwitchPlaces, object 1 LetItGo
     int typeOfSpecials;
+    int totalLevels = 36;
+    int levelCategorizer;
 
     bool reverseMode;
     bool letItGoMode;
@@ -190,8 +192,16 @@ public class MagicRiverManager : MonoBehaviour {
             }
             else
             {
-                difficulty = sessionManager.activeKid.riverDifficulty;
-                level = sessionManager.activeKid.riverLevel;
+                if (sessionManager.activeKid.riverLevelSet)
+                {
+                    difficulty = sessionManager.activeKid.riverDifficulty;
+                    level = sessionManager.activeKid.riverLevel;
+                }
+                else
+                {
+                    levelCategorizer = LevelDifficultyChange(totalLevels);
+                    GetDataJustForLevel(levelCategorizer);
+                }
                 firstTime = 1;
             }
         }
@@ -810,32 +820,48 @@ public class MagicRiverManager : MonoBehaviour {
         totalCorrects += (15 - totalErrors);
         totalIncorrects += totalErrors;
         numberOfAssays--;
-        if (totalErrors < 2)
+        if (sessionManager.activeKid.riverLevelSet || sessionManager.activeKid.riverFirst)
         {
-            if (specificBadAnswer < 1)
+            if (totalErrors < 2)
             {
-                level++;
-                passLevels++;
-                if (level == 18)
+                if (specificBadAnswer < 1)
                 {
-                    difficulty++;
-                    if (difficulty >= 2)
+                    level++;
+                    passLevels++;
+                    if (level == 18)
                     {
-                        difficulty = 1;
-                        level = 17;
-                    }
-                    else
-                    {
-                        level = 0;
+                        difficulty++;
+                        if (difficulty >= 2)
+                        {
+                            difficulty = 1;
+                            level = 17;
+                        }
+                        else
+                        {
+                            level = 0;
+                        }
                     }
                 }
+            }
+            else
+            {
+                repeatedLevels++;
+                level--;
             }
         }
         else
         {
-            repeatedLevels++;
-        }
+            if (totalErrors < 2)
+            {
+                levelCategorizer += LevelDifficultyChange(totalLevels);
+            }
+            else
+            {
+                levelCategorizer -= LevelDifficultyChange(totalLevels);
+            }
 
+            GetDataJustForLevel(levelCategorizer);
+        }
         PrepareAnotherGame();
     }
 
@@ -1035,5 +1061,43 @@ public class MagicRiverManager : MonoBehaviour {
     void GoBack()
     {
         SceneManager.LoadScene("GameCenter");
+    }
+
+    void GetDataJustForLevel(int levelInput)
+    {
+        int amountOfDifficulties = 4;
+        int baseLevelDifficulty = 16;
+
+        for (int i = 0; i < amountOfDifficulties; i++)
+        {
+
+            if (levelInput < baseLevelDifficulty * (i + 1))
+            {
+                int x = i;
+                difficulty = x;
+                break;
+            }
+        }
+
+        level = levelInput - (difficulty * baseLevelDifficulty);
+
+        Debug.Log("Level is " + level + " Difficulty is " + difficulty);
+    }
+
+    /// <summary>
+    /// Function to determine how many levels a player change with the FLIS
+    /// </summary>
+    /// <param name="totalNumberOfLevelsToAdapt"></param>
+    /// <returns></returns>
+    int LevelDifficultyChange(int totalNumberOfLevelsToAdapt)
+    {
+        //To determine how many levels go up or down we use the function
+        // y = z/(2^(x+1))
+        //where x = current assay, y = the amount of levels to change, z = the total levels of the game
+        //x starts in 0
+        //we return a integer value, so could be some differences with an actual graphic of the function
+        int currentAssay = 5 - numberOfAssays;
+        int amountOfLevelsToChange = Mathf.RoundToInt(totalNumberOfLevelsToAdapt / Mathf.Pow(2, (currentAssay + 1)));
+        return amountOfLevelsToChange;
     }
 }

@@ -110,7 +110,7 @@ public class AvatarSelectionController : MonoBehaviour {
 
     void SetTheCorrectCharacter()
     {
-        sessionManager.activeKid.avatar = selectedChacracter.name;
+        sessionManager.activeKid.avatar = selectedChacracter.name.ToLower();
         sessionManager.activeKid.needSync = true;
         PrefsKeys.SetNextScene("GameMenus");
         SceneManager.LoadScene("Loader_Scene");

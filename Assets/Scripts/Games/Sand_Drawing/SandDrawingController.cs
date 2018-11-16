@@ -56,6 +56,8 @@ public class SandDrawingController : MonoBehaviour {
     int levelCompletion = 11;
     int levelIdentyfy = 11;
     int maxNumberOfAssays = 5;
+    int totalLevelsNormal = 30;
+    int totalSpecialLevels = 15;
     int blackToFill = 0;
     int drawFull = 0;
     int w = Screen.width;
@@ -155,10 +157,11 @@ public class SandDrawingController : MonoBehaviour {
 
     void GetLevels()
     {
-        if (sessionManager != null && !FindObjectOfType<DemoKey>())
+        if (sessionManager != null)
         {
             if (sessionManager.activeKid.sandFirst)
             {
+                Debug.Log("First Time");
                 levelGame = 0;
                 levelFill = 0;
                 levelIdentyfy = 0;
@@ -167,10 +170,32 @@ public class SandDrawingController : MonoBehaviour {
             }
             else
             {
-                levelGame = sessionManager.activeKid.sandDifficulty;
-                levelFill = sessionManager.activeKid.sandLevel;
-                levelIdentyfy = sessionManager.activeKid.sandLevel2;
-                levelCompletion = sessionManager.activeKid.sandLevel3;
+                if (sessionManager.activeKid.sandLevelSet && sessionManager.activeKid.sandLevelSet2)
+                {
+                    Debug.Log("Set no stuff");
+                    levelGame = sessionManager.activeKid.sandDifficulty;
+                    levelFill = sessionManager.activeKid.sandLevel;
+                    levelIdentyfy = sessionManager.activeKid.sandLevel2;
+                    levelCompletion = sessionManager.activeKid.sandLevel3;
+                }
+                else
+                {
+                    if (sessionManager.activeKid.sandLevelSet)
+                    {
+                        Debug.Log("Set second stuff");
+                        maxNumberOfAssays = 6;
+                        levelIdentyfy = LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex));
+                        levelCompletion = LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex));
+                        Debug.Log("initials levels are: completion = " + levelCompletion + " identify = " + levelIdentyfy);
+
+                    }
+                    else
+                    {
+                        Debug.Log("Set first stuff");
+                        levelFill = LevelDifficultyChange(totalLevelsNormal, assayIndex);
+                        Debug.Log("initial level fill level is " + levelFill);
+                    }
+                }
                 firstTime = 1;
             }
         }
@@ -193,7 +218,24 @@ public class SandDrawingController : MonoBehaviour {
             string a = "1" + levelFill.ToString("00") + levelIdentyfy.ToString("00") + levelCompletion.ToString("00");
             int sublevel = int.Parse(a);
             accuracyPercentage = (accuracyPercentage * 100) / 500;
-            sessionManager.activeKid.sandFirst = false;
+            if (sessionManager.activeKid.sandFirst)
+            {
+                sessionManager.activeKid.sandFirst = false;
+            }
+            else
+            {
+                if (!sessionManager.activeKid.sandLevelSet)
+                {
+                    sessionManager.activeKid.sandLevelSet = true;
+                }
+                else
+                {
+                    if (!sessionManager.activeKid.sandLevelSet2)
+                    {
+                        sessionManager.activeKid.sandLevelSet2 = true;
+                    }
+                }
+            }
             sessionManager.activeKid.sandDifficulty = levelGame;
             sessionManager.activeKid.sandLevel = levelFill;
             sessionManager.activeKid.sandLevel2 = levelIdentyfy;
@@ -395,7 +437,21 @@ public class SandDrawingController : MonoBehaviour {
 
     void GetTheData()
     {
-        typeOfGamesIndex = GameConfigurator.SandConfig(levelGame);
+        if (sessionManager.activeKid.sandLevelSet && sessionManager.activeKid.sandLevelSet2 || sessionManager.activeKid.sandFirst)
+        {
+            typeOfGamesIndex = GameConfigurator.SandConfig(levelGame);
+        }
+        else
+        {
+            if (sessionManager.activeKid.sandLevelSet)
+            {
+                typeOfGamesIndex = new int[] { 1, 2, 1, 2, 1, 2 };
+            }
+            else
+            {
+                typeOfGamesIndex = new int[] { 0, 0, 0, 0, 0 };
+            }
+        }
     }
 
     void SetTheNextGame()
@@ -672,6 +728,18 @@ public class SandDrawingController : MonoBehaviour {
                         for (int i = 0; i < datas.Length; i++)
                         {
                             probableSprites[i] = (Sprite)datas[i];
+                            bool hasBeenAdded = false;
+                            for (int j = 0; j < choosen.Count; j++)
+                            {
+                                if (choosen[j] == i)
+                                {
+                                    hasBeenAdded = true;
+                                }
+                            }
+                            if (!hasBeenAdded)
+                            {
+                                temporals.Add(i);
+                            }
                         }
                         data2 = Resources.LoadAll("Sand/HardBank", typeof(Sprite));
                         keySprites = new Sprite[data2.Length];
@@ -942,36 +1010,85 @@ public class SandDrawingController : MonoBehaviour {
         switch (typeOfGameToPlay)
         {
             case TypeOfGame.Fill:
-                if (isPassable && !isWellLimited)
+                if (sessionManager.activeKid.sandLevelSet || sessionManager.activeKid.sandFirst)
                 {
-                    levelFill++;
-                    passLevels++;
+                    if (isPassable && !isWellLimited)
+                    {
+                        levelFill++;
+                        passLevels++;
+                    }
+                    else
+                    {
+                        repeatedLevels++;
+                        levelFill--;
+                    }
                 }
                 else
                 {
-                    repeatedLevels++;
+                    reapeatExercise = false;
+                    if (isPassable && !isWellLimited)
+                    {
+                        levelFill += LevelDifficultyChange(totalLevelsNormal, assayIndex + 1);
+                    }
+                    else
+                    {
+                        levelFill -= LevelDifficultyChange(totalLevelsNormal, assayIndex + 1);
+                    }
+                    Debug.Log("The next level in fill is " + levelFill);
                 }
                 break;
             case TypeOfGame.Completion:
-                if (isPassable && !isWellLimited)
+                if (sessionManager.activeKid.sandLevelSet2 || sessionManager.activeKid.sandFirst)
                 {
-                    levelCompletion++;
-                    passLevels++;
+                    if (isPassable && !isWellLimited)
+                    {
+                        levelCompletion++;
+                        passLevels++;
+                    }
+                    else
+                    {
+                        repeatedLevels++;
+                    }
                 }
                 else
                 {
-                    repeatedLevels++;
+                    reapeatExercise = false;
+                    if (isPassable && !isWellLimited)
+                    {
+                        levelCompletion += LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex + 2));
+                    }
+                    else
+                    {
+                        levelCompletion -= LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex + 2));
+                    }
+                    Debug.Log("The next level in completion is " + levelCompletion);
                 }
                 break;
             case TypeOfGame.Identify:
-                if (isPassable && !isWellLimited)
+                if (sessionManager.activeKid.sandLevelSet2 || sessionManager.activeKid.sandFirst)
                 {
-                    levelIdentyfy++;
-                    passLevels++;
+                    if (isPassable && !isWellLimited)
+                    {
+                        levelIdentyfy++;
+                        passLevels++;
+                    }
+                    else
+                    {
+                        repeatedLevels++;
+                    }
                 }
                 else
                 {
-                    repeatedLevels++;
+                    reapeatExercise = false;
+                    if (isPassable && !isWellLimited)
+                    {
+                        levelIdentyfy += LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex + 2));
+                    }
+                    else
+                    {
+                        levelIdentyfy -= LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex + 2));
+                    }
+                    Debug.Log("The next level in identify is " + levelIdentyfy);
                 }
                 break;
         }
@@ -1048,6 +1165,41 @@ public class SandDrawingController : MonoBehaviour {
     void ReadyButtonOn()
     {
         readyButton.gameObject.SetActive(true);
+    }
+
+    int AssaysOfHabilityToEvaluate(int assayToDetermine)
+    {
+        int baseOfAssyas = 2;
+        int determination = 0;
+
+        for (int i = 0; i < (maxNumberOfAssays / 2); i++)
+        {
+            if (assayToDetermine < (baseOfAssyas * (1 + i)))
+            {
+                determination = i;
+                break;
+            }
+        }
+
+        Debug.Log("determinatios is " + determination);
+        return determination;
+    }
+
+    /// <summary>
+    /// Function to determine how many levels a player change with the FLIS
+    /// </summary>
+    /// <param name="totalNumberOfLevelsToAdapt"></param>
+    /// <returns></returns>
+    int LevelDifficultyChange(int totalNumberOfLevelsToAdapt, int assay)
+    {
+        //To determine how many levels go up or down we use the function
+        // y = z/(2^(x+1))
+        //where x = current assay, y = the amount of levels to change, z = the total levels of the game
+        //x starts in 0
+        //we return a integer value, so could be some differences with an actual graphic of the function
+        int currentAssay = assay;
+        int amountOfLevelsToChange = Mathf.RoundToInt(totalNumberOfLevelsToAdapt / Mathf.Pow(2, (currentAssay + 1)));
+        return amountOfLevelsToChange;
     }
 }
 

@@ -1,14 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class AvatarSpawner : MonoBehaviour {
-    
+
 	public GameObject[]avatars;
 	GameObject avatarPos;
 	public string key;
 	[HideInInspector]
 	public string[]clothesPieces;
-	SessionManager sessionMng;
+	SessionManager sessionManager;
 	GameObject avatarRef;
 	SkinnedMeshRenderer[]tempRenderer;
 	Transform shoesRef;
@@ -16,38 +17,32 @@ public class AvatarSpawner : MonoBehaviour {
 
 	// Use this for initialization
 	void Awake() {
-        sessionMng = FindObjectOfType<SessionManager>();
-		avatarPos=GameObject.Find("Avatar");
-        //string avatarName = "Jaguar";
-        string avatarName = sessionMng.activeKid.avatar;
-        if (avatarName == "")
+
+        sessionManager = FindObjectOfType<SessionManager>();
+        avatarPos = gameObject;
+        string avatarName = sessionManager.activeKid.avatar;
+        avatarName = avatarName.ToLower();
+        Debug.Log(avatarName);
+        avatarRef = Instantiate(avatars[TowiDictionary.AvatarNames[avatarName]]);
+        avatarRef.transform.position = transform.position;
+        avatarRef.transform.rotation = transform.rotation;
+        avatarRef.name = "Character";
+        switch (key)
         {
-            avatarName = "koala";
+            case "Treasure":
+                avatarRef.AddComponent<PlayerInteraction>();
+                avatarRef.GetComponent<BotControlScript>().enabled = false;
+                break;
+            case "Prueba":
+                avatarRef.GetComponent<Rigidbody>().isKinematic = true;
+                avatarRef.transform.parent = Camera.main.transform.Find("Avatar").transform;
+                avatarRef.transform.position = avatarRef.transform.parent.transform.position;
+                avatarRef.transform.Rotate(0, -25f, 0);
+                avatarRef.GetComponent<BotControlScript>().enabled = false;
+                break;
         }
-		for (int i=0; i<avatars.Length; i++) {
-			if(avatars[i].name==avatarName){
-			 	avatarRef=(GameObject)GameObject.Instantiate(avatars[i]);
-				avatarRef.transform.position=transform.position;
-				avatarRef.transform.rotation=transform.rotation;
-				avatarRef.name="Character";
-				switch(key){
-					case "Treasure":
-						avatarRef.AddComponent<PlayerInteraction>();
-						avatarRef.GetComponent<BotControlScript>().enabled=false;
-					break;
-					case "Prueba":
-						avatarRef.GetComponent<Rigidbody>().isKinematic = true;
-						avatarRef.transform.parent = Camera.main.transform.Find("Avatar").transform;
-						avatarRef.transform.position = avatarRef.transform.parent.transform.position;
-						avatarRef.transform.Rotate(0, -25f, 0);
-                        avatarRef.GetComponent<BotControlScript>().enabled = false;
-					break;
-				}
-				LoadClothes(avatarRef);
-				break;
-			}
-		}
-		if(tempRenderer!=null&&hideShoes>=1)
+        LoadClothes(avatarRef);
+        if (tempRenderer!=null&&hideShoes>=1)
 		{
 			for(int idx=0;idx<tempRenderer.Length;idx++)
 			{
@@ -77,7 +72,7 @@ public class AvatarSpawner : MonoBehaviour {
 			}
 		}
 
-		string clothes = sessionMng.activeKid.avatarClothes;
+		string clothes = sessionManager.activeKid.avatarClothes;
 		if(clothes!="")
 		{
 			clothesPieces=clothes.Split('|');

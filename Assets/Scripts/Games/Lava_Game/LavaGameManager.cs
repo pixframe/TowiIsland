@@ -88,7 +88,7 @@ public class LavaGameManager : MonoBehaviour {
     //This is the difficulty
     int difficulty = 0;
     //This is the amount of the games play by session
-    int tryBySession = 5;
+    int numberOfAssays = 5;
     //This is the category that was selected
     int categorySelected = 0;
     //This is the amount of items Inside Every Category
@@ -97,6 +97,8 @@ public class LavaGameManager : MonoBehaviour {
     int goodAnswer;
     int passLevels;
     int repeatedLevels;
+    int totalLevels = 54;
+    int levelCategorizer;
 
 
     //Here we Store Every Object to be show in a particular time in the game
@@ -164,7 +166,7 @@ public class LavaGameManager : MonoBehaviour {
         if (firstTime == 0)
         {
             ShowFirstTutorial();
-            tryBySession = 3;
+            numberOfAssays = 3;
             difficulty = 0;
             level = 0;
         }
@@ -244,8 +246,16 @@ public class LavaGameManager : MonoBehaviour {
             }
             else
             {
-                difficulty = sessionManager.activeKid.lavaDifficulty;
-                level = sessionManager.activeKid.laveLevel;
+                if (sessionManager.activeKid.lavaLevelSet)
+                {
+                    difficulty = sessionManager.activeKid.lavaDifficulty;
+                    level = sessionManager.activeKid.laveLevel;
+                }
+                else
+                {
+                    levelCategorizer = LevelDifficultyChange(totalLevels);
+                    GetDataJustForLevel(levelCategorizer);
+                }
                 firstTime = 1;
             }
         }
@@ -621,7 +631,20 @@ public class LavaGameManager : MonoBehaviour {
     //This will start the new game
     void StartNewGame()
     {
-        tryBySession--;
+        numberOfAssays--;
+        if (!sessionManager.activeKid.lavaLevelSet && !sessionManager.activeKid.lavaFirst)
+        {
+            if (winTheGame)
+            {
+                levelCategorizer += LevelDifficultyChange(totalLevels);
+                GetDataJustForLevel(levelCategorizer);
+            }
+            else
+            {
+                levelCategorizer -= LevelDifficultyChange(totalLevels);
+                GetDataJustForLevel(levelCategorizer);
+            }
+        }
         string stringChoose;
         if (winTheGame)
         {
@@ -649,7 +672,7 @@ public class LavaGameManager : MonoBehaviour {
         }
         instructionText.text = stringChoose;
         instructionPanel.SetActive(true);
-        if (tryBySession <= 0)
+        if (numberOfAssays <= 0)
         {
             readyButton.onClick.RemoveAllListeners();
             readyButton.onClick.AddListener(FinishTheGame);
@@ -707,6 +730,44 @@ public class LavaGameManager : MonoBehaviour {
     }
 
     #endregion
+
+    void GetDataJustForLevel(int levelInput)
+    {
+        int amountOfDifficulties = 6;
+        int baseLevelDifficulty = 9;
+
+        for (int i = 0; i < amountOfDifficulties; i++)
+        {
+
+            if (levelInput < baseLevelDifficulty * (i + 1))
+            {
+                int x = i;
+                difficulty = x;
+                break;
+            }
+        }
+
+        level = levelInput - (difficulty * baseLevelDifficulty);
+
+        Debug.Log("Level is " + level + " Difficulty is " + difficulty);
+    }
+
+    /// <summary>
+    /// Function to determine how many levels a player change with the FLIS
+    /// </summary>
+    /// <param name="totalNumberOfLevelsToAdapt"></param>
+    /// <returns></returns>
+    int LevelDifficultyChange(int totalNumberOfLevelsToAdapt)
+    {
+        //To determine how many levels go up or down we use the function
+        // y = z/(2^(x+1))
+        //where x = current assay, y = the amount of levels to change, z = the total levels of the game
+        //x starts in 0
+        //we return a integer value, so could be some differences with an actual graphic of the function
+        int currentAssay = 5 - numberOfAssays;
+        int amountOfLevelsToChange = Mathf.RoundToInt(totalNumberOfLevelsToAdapt / Mathf.Pow(2, (currentAssay + 1)));
+        return amountOfLevelsToChange;
+    }
 
     #endregion
 }

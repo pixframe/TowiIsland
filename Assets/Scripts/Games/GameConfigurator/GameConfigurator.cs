@@ -4,16 +4,24 @@ using UnityEngine;
 
 public class GameConfigurator
 {
-
+    /*for more information of how this works check the manual of traning*/
+    /// <summary>
+    /// Here we will calculate the number of the nest and birds to be used, and the banks of sounds were the sounds come from.
+    /// The rules of here are 9 levels in the first difficulty and gets up by three every difficulty, have 4 difficulties
+    /// </summary>
+    /// <param name="difficulty"></param>
+    /// <param name="level"></param>
+    /// <returns></returns>
     public static List<int> SoundThreeConfig(int difficulty, int level)
     {
+        //nest are easy calculated the maximum number of nest are 5
         int nest = difficulty + 2;
 
-        int tt = level % 3;
-
+        //Thi sis used to determine the number of birds that will be in an assay
+        int levelAcomodation = level % 3;
         int birds;
 
-        switch (tt)
+        switch (levelAcomodation)
         {
             case 0:
                 birds = Random.Range(1, 3);
@@ -29,6 +37,8 @@ public class GameConfigurator
                 break;
         }
 
+        //We create a sort of clssification were every difficult level its divided by 3 
+        //to determine from wich bank the birds will get teir sounds
         float bank = level / 3;
 
         int bankForGet;
@@ -120,9 +130,15 @@ public class GameConfigurator
                 break;
         }
 
-        return new List<int>() { nest, birds , bankForGet};
+        return new List<int>() { nest, birds, bankForGet };
     }
 
+    /// <summary>
+    /// return the amount of monkeys to show, the time and movements the monkeys will have, and how many objects they will lokong for 
+    /// </summary>
+    /// <param name="difficulty"></param>
+    /// <param name="level"></param>
+    /// <returns></returns>
     public static int[] MonkeyGameConfig(int difficulty, int level)
     {
         //this will set the number of monkeys
@@ -148,7 +164,8 @@ public class GameConfigurator
         int numOfMovements = movements[level % 10];
 
         int find = 1;
-        if (difficulty > 0) {
+        if (difficulty > 0)
+        {
             find = level % 10;
             if (find < 5)
             {
@@ -181,6 +198,12 @@ public class GameConfigurator
         return movementData;
     }
 
+    /// <summary>
+    /// Returns the amount of targets, distractors, and hide objects
+    /// </summary>
+    /// <param name="difficulty"></param>
+    /// <param name="level"></param>
+    /// <returns></returns>
     public static List<int> TreasureGameConfigSimple(int difficulty, int level) {
         List<int> returner = new List<int>();
         int objects = difficulty + 3;
@@ -224,7 +247,13 @@ public class GameConfigurator
         return returner;
     }
 
-    public static List<List<int>> TreasureGameConfigDouble (int difficulty, int level){
+    /// <summary>
+    /// return the type of qualifications the objects will have
+    /// </summary>
+    /// <param name="difficulty"></param>
+    /// <param name="level"></param>
+    /// <returns></returns>
+    public static List<List<int>> TreasureGameConfigDouble(int difficulty, int level) {
         List<int> li0 = new List<int>();
         List<int> li1 = new List<int>();
         List<int> li2 = new List<int>();
@@ -271,7 +300,7 @@ public class GameConfigurator
                 switch (level)
                 {
                     case 0:
-                        li0 = new List<int> { 0, 0 ,0};
+                        li0 = new List<int> { 0, 0, 0 };
                         li1 = new List<int> { 0 };
                         retuner = new List<List<int>> { li0, li1 };
                         return retuner;
@@ -312,7 +341,7 @@ public class GameConfigurator
                         retuner = new List<List<int>> { li0, li1 };
                         return retuner;
                     case 1:
-                        li0 = new List<int> { 0, 0 , 1};
+                        li0 = new List<int> { 0, 0, 1 };
                         li1 = new List<int> { 0 };
                         li2 = new List<int> { 0 };
                         retuner = new List<List<int>> { li0, li1, li2 };
@@ -370,7 +399,7 @@ public class GameConfigurator
                         li0 = new List<int> { 0, 0 };
                         li1 = new List<int> { 0, 1 };
                         li2 = new List<int> { 0, 1 };
-                        retuner = new List<List<int>> { li0, li1, li2};
+                        retuner = new List<List<int>> { li0, li1, li2 };
                         return retuner;
                     case 4:
                         li0 = new List<int> { 0, 0 };
@@ -413,7 +442,7 @@ public class GameConfigurator
                         li1 = new List<int> { 0, 1 };
                         li2 = new List<int> { 0 };
                         li3 = new List<int> { 0 };
-                        retuner = new List<List<int>> { li0, li1, li2 , li3};
+                        retuner = new List<List<int>> { li0, li1, li2, li3 };
                         return retuner;
                     case 4:
                         li0 = new List<int> { 0, 0, 1 };
@@ -450,7 +479,7 @@ public class GameConfigurator
                         li1 = new List<int> { 0, 1 };
                         li2 = new List<int> { 0 };
                         li3 = new List<int> { 0 };
-                        retuner = new List<List<int>> { li0, li1, li2 , li3};
+                        retuner = new List<List<int>> { li0, li1, li2, li3 };
                         return retuner;
                     case 3:
                         li0 = new List<int> { 0, 0 };
@@ -465,7 +494,7 @@ public class GameConfigurator
                         li2 = new List<int> { 0 };
                         li3 = new List<int> { 0 };
                         li4 = new List<int> { 0 };
-                        retuner = new List<List<int>> { li0, li1, li2, li3 , li4};
+                        retuner = new List<List<int>> { li0, li1, li2, li3, li4 };
                         return retuner;
                     default:
                         li0 = new List<int> { 0, 0 };
@@ -479,6 +508,12 @@ public class GameConfigurator
         }
     }
 
+    /// <summary>
+    /// Return direction of ordering, speed of sorting, and conditions
+    /// </summary>
+    /// <param name="difficulty"></param>
+    /// <param name="level"></param>
+    /// <returns></returns>
     public static int[] RiverConfig(int difficulty, int level)
     {
         //This will set the direction of ordering the objects if its 0 refers a normal handel if its one referes a reverse 

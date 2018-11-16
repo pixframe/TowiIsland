@@ -8,7 +8,6 @@ using Boomlagoon.JSON;
 using System.Text;
 using System.Xml.Serialization;
 
-
 public class SessionManager : MonoBehaviour
 {
 
@@ -38,7 +37,7 @@ public class SessionManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
         //if(main)
-        //	PlayerPrefs.DeleteAll ();
+        //PlayerPrefs.DeleteAll ();
         string version = Application.version;
         if (PlayerPrefs.GetString(Keys.Version_Last_Season) != version)
         {
@@ -695,6 +694,7 @@ public class SessionManager : MonoBehaviour
         if (hs_post.error == null)
         {
             JSONObject response = JSONObject.Parse(hs_post.text);
+            Debug.Log(hs_post.text);
             if (response["code"].Str == "200")
             {
 
@@ -884,18 +884,29 @@ public class SessionManager : MonoBehaviour
         public bool sandFirst;
         public bool treasureFirst;
         public bool anyFirstTime;
+
+        public bool birdsLevelSet;
+        public bool lavaLevelSet;
+        public bool monkeyLevelSet;
+        public bool riverLevelSet;
+        public bool sandLevelSet;
+        public bool sandLevelSet2;
+        public bool treasureLevelSet;
+
         public bool needSync;
         public bool testAvailable;
         public bool isActive;
         public bool isIAPSubscribed;
 
-        //TODO Add age
+        public List<int> buyedIslandObjects;
+
         public Kid(int id, string name, string key, bool active, bool trial)
         {
             this.id = id;
             this.name = name;
             userkey = key;
             kiwis = 0;
+            age = 0;
             dontSyncArbolMusical = 0;
             dontSyncRio = 0;
             dontSyncArenaMagica = 0;
@@ -963,6 +974,8 @@ public class SessionManager : MonoBehaviour
             testAvailable = true;
             isActive = active || trial;
             isIAPSubscribed = false;
+            buyedIslandObjects = new List<int>();
+
         }
     }
 }
