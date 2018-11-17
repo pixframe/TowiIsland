@@ -274,9 +274,21 @@ public class LavaGameManager : MonoBehaviour {
         {
             sessionManager.activeKid.lavaDifficulty = difficulty;
             sessionManager.activeKid.laveLevel = level;
-            sessionManager.activeKid.lavaFirst = false;
             sessionManager.activeKid.playedLava = 1;
             sessionManager.activeKid.needSync = true;
+            sessionManager.activeKid.kiwis += passLevels;
+
+            if (sessionManager.activeKid.lavaFirst)
+            {
+                sessionManager.activeKid.lavaFirst = false;
+            }
+            else
+            {
+                if (!sessionManager.activeKid.lavaLevelSet)
+                {
+                    sessionManager.activeKid.lavaLevelSet = true;
+                }
+            }
 
             levelSaver.AddLevelData("level", difficulty);
             levelSaver.AddLevelData("sublevel", level);
@@ -685,10 +697,15 @@ public class LavaGameManager : MonoBehaviour {
         instructionText.text = stringsToShow[5];
         readyButton.gameObject.SetActive(false);
         audioManager.PlayClip(instructionsClips[5]);
-        Invoke("ReadyButtonOn", audioManager.ClipDuration());
         readyButton.onClick.RemoveAllListeners();
-        readyButton.onClick.AddListener(GoBack);
         instructionPanel.SetActive(true);
+        Invoke("ShowEarnings", audioManager.ClipDuration());
+    }
+
+    void ShowEarnings()
+    {   
+        instructionPanel.gameObject.SetActive(false);
+        pauser.ShowKiwiEarnings(passLevels);
     }
 
     //This will put the correct scale of the object

@@ -221,9 +221,20 @@ public class MagicRiverManager : MonoBehaviour {
         {
             sessionManager.activeKid.riverDifficulty = difficulty;
             sessionManager.activeKid.riverLevel = level;
-            sessionManager.activeKid.riverFirst = false;
+            sessionManager.activeKid.kiwis += passLevels;
             sessionManager.activeKid.playedRiver = 1;
             sessionManager.activeKid.needSync = true;
+            if (sessionManager.activeKid.riverFirst)
+            {
+                sessionManager.activeKid.riverFirst = false;
+            }
+            else
+            {
+                if (!sessionManager.activeKid.riverLevelSet)
+                {
+                    sessionManager.activeKid.riverLevelSet = true;
+                }
+            }
 
             levelSaver.AddLevelData("level", difficulty);
             levelSaver.AddLevelData("sublevel", level);
@@ -853,6 +864,7 @@ public class MagicRiverManager : MonoBehaviour {
         {
             if (totalErrors < 2)
             {
+                passLevels++;
                 levelCategorizer += LevelDifficultyChange(totalLevels);
             }
             else
@@ -869,38 +881,53 @@ public class MagicRiverManager : MonoBehaviour {
     {
         if (numberOfAssays <= 0)
         {
-            instructionPanel.SetActive(true);
-            SaveLevel();
-            readyButton.onClick.RemoveAllListeners();
-            readyButton.onClick.AddListener(GoBack);
-            instructionText.text = stringsToShow[14];
-            readyButton.gameObject.SetActive(false);
-            audioManager.PlayClip(instructionsClips[14]);
-            Invoke("ReadyButtonOn", audioManager.ClipDuration());
+            FinishTheGame();
         }
         else
         {
-            instructionIndex = 0;
-            missAnswer = 0;
-            badAnswer = 0;
-            specificBadAnswer = 0;
-            correctAnswer = 0;
-            handleStimulus = 0;
-            specialInstructionIndex = 0;
-            dropperTime = 0;
-            direction = 0;
-            direction1 = 0;
-            direction2 = 0;
-            instructionPanel.SetActive(true);
-            specialAction.Clear();
-            finalStimulusStrings.Clear();
-            audiosOfStimulus.Clear();
-            specialType.Clear();
-            finalBeachStimulus.Clear();
-            finalForestStimulus.Clear();
-            specialStimulus.Clear();
-            SetTheInstruction();
+            CreateNewLevel();
         }
+    }
+
+    void CreateNewLevel()
+    {
+        instructionIndex = 0;
+        missAnswer = 0;
+        badAnswer = 0;
+        specificBadAnswer = 0;
+        correctAnswer = 0;
+        handleStimulus = 0;
+        specialInstructionIndex = 0;
+        dropperTime = 0;
+        direction = 0;
+        direction1 = 0;
+        direction2 = 0;
+        instructionPanel.SetActive(true);
+        specialAction.Clear();
+        finalStimulusStrings.Clear();
+        audiosOfStimulus.Clear();
+        specialType.Clear();
+        finalBeachStimulus.Clear();
+        finalForestStimulus.Clear();
+        specialStimulus.Clear();
+        SetTheInstruction();
+    }
+
+    void FinishTheGame()
+    {
+        instructionPanel.SetActive(true);
+        SaveLevel();
+        readyButton.onClick.RemoveAllListeners();
+        instructionText.text = stringsToShow[14];
+        readyButton.gameObject.SetActive(false);
+        audioManager.PlayClip(instructionsClips[14]);
+        Invoke("ShowEarnings", audioManager.ClipDuration());
+    }
+
+    void ShowEarnings()
+    {
+        instructionPanel.gameObject.SetActive(false);
+        pauser.ShowKiwiEarnings(passLevels);
     }
 
     void ReadyButtonOn()
@@ -1056,11 +1083,6 @@ public class MagicRiverManager : MonoBehaviour {
                 }
             }
         }
-    }
-
-    void GoBack()
-    {
-        SceneManager.LoadScene("GameCenter");
     }
 
     void GetDataJustForLevel(int levelInput)

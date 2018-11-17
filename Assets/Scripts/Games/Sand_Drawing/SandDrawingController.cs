@@ -240,6 +240,7 @@ public class SandDrawingController : MonoBehaviour {
             sessionManager.activeKid.sandLevel = levelFill;
             sessionManager.activeKid.sandLevel2 = levelIdentyfy;
             sessionManager.activeKid.sandLevel3 = levelCompletion;
+            sessionManager.activeKid.kiwis += passLevels;
             sessionManager.activeKid.playedSand = 1;
             sessionManager.activeKid.needSync = true;
 
@@ -1028,6 +1029,7 @@ public class SandDrawingController : MonoBehaviour {
                     reapeatExercise = false;
                     if (isPassable && !isWellLimited)
                     {
+                        passLevels++;
                         levelFill += LevelDifficultyChange(totalLevelsNormal, assayIndex + 1);
                     }
                     else
@@ -1055,6 +1057,7 @@ public class SandDrawingController : MonoBehaviour {
                     reapeatExercise = false;
                     if (isPassable && !isWellLimited)
                     {
+                        passLevels++;
                         levelCompletion += LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex + 2));
                     }
                     else
@@ -1082,6 +1085,7 @@ public class SandDrawingController : MonoBehaviour {
                     reapeatExercise = false;
                     if (isPassable && !isWellLimited)
                     {
+                        passLevels++;
                         levelIdentyfy += LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex + 2));
                     }
                     else
@@ -1143,23 +1147,28 @@ public class SandDrawingController : MonoBehaviour {
         }
         else
         {
-            levelGame++;
-            if (levelGame >= 16)
-            {
-                levelGame = 0;
-            }
-            SaveLevels();
-            instructionText.text = stringsToShow[9];
-            readyButton.gameObject.SetActive(false);
-            audioManager.PlayClip(instructionsClips[9]);
-            Invoke("ReadyButtonOn", audioManager.ClipDuration());
-            readyButton.onClick.AddListener(GoBack);
+            FinishGame();
         }
     }
 
-    void GoBack()
+    void FinishGame()
     {
-        SceneManager.LoadScene("GameCenter");
+        levelGame++;
+        if (levelGame >= 16)
+        {
+            levelGame = 0;
+        }
+        SaveLevels();
+        instructionText.text = stringsToShow[9];
+        readyButton.gameObject.SetActive(false);
+        audioManager.PlayClip(instructionsClips[9]);
+        Invoke("ShowEarnings", audioManager.ClipDuration());
+    }
+
+    void ShowEarnings()
+    {
+        instructionPanel.gameObject.SetActive(false);
+        pauser.ShowKiwiEarnings(passLevels);
     }
 
     void ReadyButtonOn()

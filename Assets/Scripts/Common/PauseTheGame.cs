@@ -14,6 +14,7 @@ public class PauseTheGame : MonoBehaviour {
     Button goBackButton;
     Button goMenuButton;
     Button cancelButton;
+    KiwiEarningPanel kiwiEarningPanel;
     [System.NonSerialized]
     public Button howToPlayButton;
     [System.NonSerialized]
@@ -49,6 +50,7 @@ public class PauseTheGame : MonoBehaviour {
 
         howToPlayButton = transform.GetChild(2).GetComponent<Button>();
         playButton = transform.GetChild(3).GetComponent<Button>();
+        kiwiEarningPanel = new KiwiEarningPanel(transform.GetChild(4).gameObject);
 
         pauseButton.onClick.AddListener(PauseButton);
         goMenuButton.onClick.AddListener(GoBackIsland);
@@ -86,7 +88,8 @@ public class PauseTheGame : MonoBehaviour {
         {
             Time.timeScale = 1;
         }
-        SceneManager.LoadScene("GameCenter");
+
+        ReturnHome();
     }
 
     public void WantTutorial()
@@ -96,6 +99,7 @@ public class PauseTheGame : MonoBehaviour {
         dontTouchPanel.SetActive(false);
         howToPlayButton.gameObject.SetActive(true);
         playButton.gameObject.SetActive(true);
+        kiwiEarningPanel.mainPanel.SetActive(false);
     }
 
     void HideTutorialButtons()
@@ -105,5 +109,49 @@ public class PauseTheGame : MonoBehaviour {
         dontTouchPanel.SetActive(false);
         howToPlayButton.gameObject.SetActive(false);
         playButton.gameObject.SetActive(false);
+        kiwiEarningPanel.mainPanel.SetActive(false);
+    }
+
+    public void ShowKiwiEarnings(int kiwisEarn)
+    {
+        pauseButton.gameObject.SetActive(false);
+        pausePanel.SetActive(false);
+        dontTouchPanel.SetActive(false);
+        howToPlayButton.gameObject.SetActive(false);
+        playButton.gameObject.SetActive(false);
+        kiwiEarningPanel.mainPanel.SetActive(true);
+
+        if (kiwisEarn < 1)
+        {
+            kiwiEarningPanel.kiwiText.text = TextReader.beforeStrings[0];
+        }
+        else
+        {
+            kiwiEarningPanel.kiwiText.text = TextReader.commonStrings[11];
+        }
+        kiwiEarningPanel.amoutOfKiwisEarnText.text = "X " + kiwisEarn;
+        kiwiEarningPanel.continueButton.onClick.AddListener(ReturnHome);
+    }
+
+    void ReturnHome()
+    {
+        PrefsKeys.SetNextScene("GameCenter");
+        SceneManager.LoadScene("Loader_Scene");
+    }
+}
+
+struct KiwiEarningPanel
+{
+    public GameObject mainPanel;
+    public Text kiwiText;
+    public Text amoutOfKiwisEarnText;
+    public Button continueButton;
+
+    public KiwiEarningPanel(GameObject panel)
+    {
+        mainPanel = panel;
+        kiwiText = panel.transform.GetChild(0).GetComponent<Text>();
+        amoutOfKiwisEarnText = panel.transform.GetChild(1).GetComponent<Text>();
+        continueButton = panel.transform.GetChild(2).GetComponent<Button>();
     }
 }

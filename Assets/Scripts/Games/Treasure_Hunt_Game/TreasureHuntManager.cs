@@ -114,6 +114,10 @@ public class TreasureHuntManager : MonoBehaviour {
         {
             sessionManager = FindObjectOfType<SessionManager>();
             levelSaver = GetComponent<LevelSaver>();
+            if (sessionManager.activeKid.treasureLevelSet)
+            {
+                Debug.Log("Normal game");
+            }
         }
         audioManager = FindObjectOfType<AudioManager>();
         instructionsClips = Resources.LoadAll<AudioClip>("Audios/Games/Treasure");
@@ -382,9 +386,20 @@ public class TreasureHuntManager : MonoBehaviour {
         {
             sessionManager.activeKid.treasureDifficulty = difficulty;
             sessionManager.activeKid.treasureLevel= level;
-            sessionManager.activeKid.treasureFirst = false;
+            if (sessionManager.activeKid.treasureFirst)
+            {
+                sessionManager.activeKid.treasureFirst = false;
+            }
+            else
+            {
+                if (!sessionManager.activeKid.treasureLevelSet)
+                {
+                    sessionManager.activeKid.treasureLevelSet = true;
+                }
+            }
             sessionManager.activeKid.playedTreasure = 1;
             sessionManager.activeKid.needSync = true;
+            sessionManager.activeKid.kiwis += passLevels;
 
             levelSaver.AddLevelData("level", difficulty);
             levelSaver.AddLevelData("sublevel", level);
@@ -822,7 +837,6 @@ public class TreasureHuntManager : MonoBehaviour {
                 }
                 else
                 {
-                    errors++;
                     miniUIInstructionsText.text = stringsToShow[15];
                     audioManager.PlayClip(instructionsClips[15]);
                     yesButton.onClick.AddListener(SetNewAssay);
@@ -838,6 +852,7 @@ public class TreasureHuntManager : MonoBehaviour {
                 }
                 else
                 {
+                    errors++;
                     miniUIInstructionsText.text = stringsToShow[18];
                     audioManager.PlayClip(instructionsClips[18]);
                     yesButton.onClick.AddListener(SetNewAssay);
@@ -892,6 +907,7 @@ public class TreasureHuntManager : MonoBehaviour {
     {
         if (errors < 2)
         {
+            passLevels++;
             levelCategorizer += LevelDifficultyChange(totalLevels);
             GetDataJustForLevel(levelCategorizer);
         }
@@ -1060,8 +1076,6 @@ public class TreasureHuntManager : MonoBehaviour {
         stopCellPhoneButton.gameObject.SetActive(false);
     }
 
-
-
     //this will stop the use of the cellphone and let the game continue without a troble
     void StopCall()
     {
@@ -1117,15 +1131,17 @@ public class TreasureHuntManager : MonoBehaviour {
     //this will set the finish of the game
     void FinishGame()
     {
+        HandleNewLevel();
         SaveLevel();
         yesButton.onClick.RemoveAllListeners();
-        yesButton.onClick.AddListener(GoBack);
+        yesButton.onClick.AddListener(ShowEarnings);
     }
-    
-    //This script will make us go back to the island
-    void GoBack()
+
+    void ShowEarnings()
     {
-        SceneManager.LoadScene("GameCenter");
+        specialInstructionPanel.SetActive(false);
+        instructionPanel.gameObject.SetActive(false);
+        pauser.ShowKiwiEarnings(passLevels);
     }
 
     IEnumerator TimeOfTheList()

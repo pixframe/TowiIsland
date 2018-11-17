@@ -166,7 +166,18 @@ public class MonkeyHidingManager : MonoBehaviour {
         {
             sessionManager.activeKid.monkeyDifficulty = difficulty;
             sessionManager.activeKid.monkeyLevel = level;
-            sessionManager.activeKid.monkeyFirst = false;
+            if (sessionManager.activeKid.monkeyFirst)
+            {
+                sessionManager.activeKid.monkeyFirst = false;
+            }
+            else
+            {
+                if (!sessionManager.activeKid.monkeyLevelSet)
+                {
+                    sessionManager.activeKid.monkeyLevelSet = true;
+                }
+            }
+            sessionManager.activeKid.kiwis += passLevels;
             sessionManager.activeKid.playedMonkey = 1;
             sessionManager.activeKid.needSync = true;
 
@@ -647,17 +658,17 @@ public class MonkeyHidingManager : MonoBehaviour {
     {
         SaveLevel();
         readyButton.onClick.RemoveAllListeners();
-        readyButton.onClick.AddListener(GoBack);
-        readyButton.gameObject.SetActive(true);
+        readyButton.gameObject.SetActive(false);
         instructionPanel.SetActive(true);
         instructionText.text = stringsToShow[13];
         audioManager.PlayClip(instructionsClips[13]);
-        Invoke("ReadyButtonOn", audioManager.ClipDuration());
+        Invoke("ShowEarnings", audioManager.ClipDuration());
     }
 
-    void GoBack()
+    void ShowEarnings()
     {
-        SceneManager.LoadScene("GameCenter");
+        instructionPanel.gameObject.SetActive(false);
+        pauser.ShowKiwiEarnings(passLevels);
     }
 
     void ReadyButtonOn()

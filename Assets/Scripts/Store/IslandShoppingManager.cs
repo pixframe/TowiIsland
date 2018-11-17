@@ -113,12 +113,14 @@ public class IslandShoppingManager : MonoBehaviour {
         kiwiAmout -= IslandPrices[activateObject];
         miniIsland.transform.GetChild(activateObject + 1).gameObject.SetActive(true);
         miniIsland.buyedObjects[activateObject] = true;
+        sessionManager.activeKid.kiwis = kiwiAmout;
         UpdateKiwiAmount();
         SetCorrectButtons();
         ViewIsland();
         finishPartciles.transform.position = miniIsland.transform.GetChild(activateObject + 1).position;
         finishPartciles.GetComponent<ParticleSystem>().Play();
         sessionManager.activeKid.buyedIslandObjects.Add(activateObject);
+        sessionManager.UpdateProfile();
     }
 
     void CloseTheDeal(int objectToActivate)

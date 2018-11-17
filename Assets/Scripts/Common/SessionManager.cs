@@ -494,6 +494,7 @@ public class SessionManager : MonoBehaviour
             {
                 JSONObject kidObj = kids[i].Obj;
                 JSONArray activeMissions = kidObj.GetArray("activeMissions");
+                JSONArray buyedItems = kidObj.GetArray("islandShoppingList");
 
                 int cid = (int)kidObj.GetNumber("cid");
                 string kidName = kidObj.GetString("name");
@@ -507,10 +508,12 @@ public class SessionManager : MonoBehaviour
                 activeUser.kids[index].ownedItems = kidObj.GetString("ownedItems");
                 activeUser.kids[index].age = (int)kidObj.GetNumber("age");
                 activeUser.kids[index].activeMissions.Clear();
+
                 for (int o = 0; o < activeMissions.Length; o++)
                 {
                     activeUser.kids[index].activeMissions.Add(activeMissions[o].Str);
                 }
+
                 activeUser.kids[index].activeDay = (int)kidObj.GetNumber("activeDay");
                 activeUser.kids[index].ageSet = true;
                 activeUser.kids[index].birdsFirst = kidObj.GetBoolean("arbolFirstTime");
@@ -520,6 +523,19 @@ public class SessionManager : MonoBehaviour
                 activeUser.kids[index].sandFirst = kidObj.GetBoolean("arenaFirstTime");
                 activeUser.kids[index].treasureFirst = kidObj.GetBoolean("tesoroFirstTime");
                 activeUser.kids[index].testAvailable = kidObj.GetBoolean("testAvailable");
+                activeUser.kids[index].riverLevelSet = kidObj.GetBoolean("rioLevelSet");
+                activeUser.kids[index].treasureLevelSet = kidObj.GetBoolean("tesoroLevelSet");
+                activeUser.kids[index].birdsLevelSet = kidObj.GetBoolean("arbolLevelSet");
+                activeUser.kids[index].sandLevelSet = kidObj.GetBoolean("arenaLevelSet");
+                activeUser.kids[index].sandLevelSet2 = kidObj.GetBoolean("arenaLevelSet2");
+                activeUser.kids[index].lavaLevelSet = kidObj.GetBoolean("sombrasLevelSet");
+                activeUser.kids[index].monkeyLevelSet = kidObj.GetBoolean("bolitaLevelSet");
+
+                for (int o = 0; o < buyedItems.Length; o++)
+                {
+                    activeUser.kids[index].buyedIslandObjects.Add((int)buyedItems[o].Number);
+                }
+
                 if (activeUser.kids[index].birdsFirst || activeUser.kids[index].lavaFirst || activeUser.kids[index].monkeyFirst || activeUser.kids[index].riverFirst || activeUser.kids[index].sandFirst || activeUser.kids[index].treasureFirst)
                 {
                     activeUser.kids[index].anyFirstTime = true;
@@ -603,6 +619,26 @@ public class SessionManager : MonoBehaviour
         data.Add("arenaFirstTime", activeKid.sandFirst);
         data.Add("sombrasFirstTime", activeKid.lavaFirst);
         data.Add("bolitaFirstTime", activeKid.monkeyFirst);
+        data.Add("rioLevelSet", activeKid.riverLevelSet);
+        data.Add("tesoroLevelSet", activeKid.treasureLevelSet);
+        data.Add("arbolLevelSet", activeKid.birdsLevelSet);
+        data.Add("arenaLevelSet", activeKid.sandLevelSet);
+        data.Add("arenaLevelSet2", activeKid.sandLevelSet2);
+        data.Add("sombrasLevelSet", activeKid.lavaLevelSet);
+        data.Add("bolitaLevelSet", activeKid.monkeyLevelSet);
+        string shopingList = "";
+        for (int i = 0; i < activeKid.buyedIslandObjects.Count; i++)
+        {
+            if (i == 0)
+            {
+                shopingList += activeKid.buyedIslandObjects[i].ToString();
+            }
+            else
+            {
+                shopingList += "," + activeKid.buyedIslandObjects[i].ToString();
+            }
+        }
+        data.Add("islandShoppingList", shopingList);
         data.Add("userKey", activeKid.userkey);
         Debug.Log(data.ToString());
         WWWForm form = new WWWForm();
@@ -650,6 +686,26 @@ public class SessionManager : MonoBehaviour
         data.Add("arenaFirstTime", activeKid.sandFirst);
         data.Add("sombrasFirstTime", activeKid.lavaFirst);
         data.Add("bolitaFirstTime", activeKid.monkeyFirst);
+        data.Add("rioLevelSet", activeKid.riverLevelSet);
+        data.Add("tesoroLevelSet", activeKid.treasureLevelSet);
+        data.Add("arbolLevelSet", activeKid.birdsLevelSet);
+        data.Add("arenaLevelSet", activeKid.sandLevelSet);
+        data.Add("arenaLevelSet2", activeKid.sandLevelSet2);
+        data.Add("sombrasLevelSet", activeKid.lavaLevelSet);
+        data.Add("bolitaLevelSet", activeKid.monkeyLevelSet);
+        string shopingList = "";
+        for (int i = 0; i < activeKid.buyedIslandObjects.Count; i++)
+        {
+            if (i == 0)
+            {
+                shopingList += activeKid.buyedIslandObjects[i].ToString();
+            }
+            else
+            {
+                shopingList += "," + activeKid.buyedIslandObjects[i].ToString();
+            }
+        }
+        data.Add("islandShoppingList", shopingList);
         data.Add("userKey", activeKid.userkey);
         Debug.Log(data.ToString());
         WWWForm form = new WWWForm();

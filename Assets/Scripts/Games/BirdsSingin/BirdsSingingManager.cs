@@ -759,16 +759,16 @@ public class BirdsSingingManager : MonoBehaviour {
     void FinishTheGame()
     {
         SaveLevel();
-        readyButton.onClick.AddListener(GoBack);
         instructionText.text = stringsToShow[8];
         readyButton.gameObject.SetActive(false);
         audioManager.PlayClip(instructionsClips[8]);
-        Invoke("ReadyButtonOn", audioManager.ClipDuration());
+        Invoke("ShowEarnings", audioManager.ClipDuration());
     }
 
-    void GoBack()
+    void ShowEarnings()
     {
-        SceneManager.LoadScene("GameCenter");
+        instructionPanel.gameObject.SetActive(false);
+        pauser.ShowKiwiEarnings(passLevels);
     }
 
     void NewLevelArrange()
@@ -809,6 +809,7 @@ public class BirdsSingingManager : MonoBehaviour {
     {
         if (birdsBadOrdered < 1)
         {
+            passLevels++;
             levelCategorizer += LevelDifficultyChange(totalLevels);
         }
         else
