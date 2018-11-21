@@ -170,7 +170,7 @@ public class LogInScript : MonoBehaviour {
         else
         {
             menuController.HideAllCanvas();
-            menuController.ShowWarning(11);
+            menuController.ShowWarning(8);
             /*int resultS = sessionManager.TryLogin(user.username, user.psswdHash);
             if (resultS == 1)
             {
