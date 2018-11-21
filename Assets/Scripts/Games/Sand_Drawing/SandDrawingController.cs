@@ -58,6 +58,10 @@ public class SandDrawingController : MonoBehaviour {
     int maxNumberOfAssays = 5;
     int totalLevelsNormal = 30;
     int totalSpecialLevels = 15;
+    int miniKidLevel = 10;
+    int maxiKidLevel = 20;
+    int miniKidLevelSpecials = 5;
+    int maxiKidLevelSpecials = 10;
     int blackToFill = 0;
     int drawFull = 0;
     int w = Screen.width;
@@ -131,11 +135,6 @@ public class SandDrawingController : MonoBehaviour {
         if (firstTime == 0)
         {
             TellAStory();
-            maxNumberOfAssays = 3;
-            levelCompletion = 0;
-            levelFill = 0;
-            levelIdentyfy = 0;
-            levelGame = 0;
         }
         else
         {
@@ -161,40 +160,49 @@ public class SandDrawingController : MonoBehaviour {
         {
             if (sessionManager.activeKid.sandFirst)
             {
-                Debug.Log("First Time");
-                levelGame = 0;
-                levelFill = 0;
-                levelIdentyfy = 0;
-                levelCompletion = 0;
+                if (sessionManager.activeKid.age < 7)
+                {
+                    levelFill = miniKidLevel;
+                }
+                else if (sessionManager.activeKid.age > 9)
+                {
+                    levelFill = maxiKidLevel;
+                }
+                else
+                {
+                    levelFill = LevelDifficultyChange(totalLevelsNormal, assayIndex);
+                }
                 firstTime = 0;
             }
             else
             {
-                if (sessionManager.activeKid.sandLevelSet && sessionManager.activeKid.sandLevelSet2)
+                if (!sessionManager.activeKid.sandLevelSet)
+                {
+                    Debug.Log("Set second stuff");
+                    if (sessionManager.activeKid.age < 7)
+                    {
+                        levelIdentyfy = miniKidLevelSpecials;
+                        levelCompletion = miniKidLevelSpecials;
+                    }
+                    else if (sessionManager.activeKid.age > 9)
+                    {
+                        levelIdentyfy = maxiKidLevelSpecials;
+                        levelCompletion = maxiKidLevelSpecials;
+                    }
+                    else
+                    {
+                        levelIdentyfy = LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex));
+                        levelCompletion = LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex));
+                    }
+                    maxNumberOfAssays = 6;
+                }
+                else
                 {
                     Debug.Log("Set no stuff");
                     levelGame = sessionManager.activeKid.sandDifficulty;
                     levelFill = sessionManager.activeKid.sandLevel;
                     levelIdentyfy = sessionManager.activeKid.sandLevel2;
                     levelCompletion = sessionManager.activeKid.sandLevel3;
-                }
-                else
-                {
-                    if (sessionManager.activeKid.sandLevelSet)
-                    {
-                        Debug.Log("Set second stuff");
-                        maxNumberOfAssays = 6;
-                        levelIdentyfy = LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex));
-                        levelCompletion = LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex));
-                        Debug.Log("initials levels are: completion = " + levelCompletion + " identify = " + levelIdentyfy);
-
-                    }
-                    else
-                    {
-                        Debug.Log("Set first stuff");
-                        levelFill = LevelDifficultyChange(totalLevelsNormal, assayIndex);
-                        Debug.Log("initial level fill level is " + levelFill);
-                    }
                 }
                 firstTime = 1;
             }
@@ -227,13 +235,6 @@ public class SandDrawingController : MonoBehaviour {
                 if (!sessionManager.activeKid.sandLevelSet)
                 {
                     sessionManager.activeKid.sandLevelSet = true;
-                }
-                else
-                {
-                    if (!sessionManager.activeKid.sandLevelSet2)
-                    {
-                        sessionManager.activeKid.sandLevelSet2 = true;
-                    }
                 }
             }
             sessionManager.activeKid.sandDifficulty = levelGame;
@@ -438,13 +439,13 @@ public class SandDrawingController : MonoBehaviour {
 
     void GetTheData()
     {
-        if (sessionManager.activeKid.sandLevelSet && sessionManager.activeKid.sandLevelSet2 || sessionManager.activeKid.sandFirst)
+        if (!sessionManager.activeKid.sandFirst && sessionManager.activeKid.sandLevelSet)
         {
             typeOfGamesIndex = GameConfigurator.SandConfig(levelGame);
         }
         else
         {
-            if (sessionManager.activeKid.sandLevelSet)
+            if (!sessionManager.activeKid.sandFirst)
             {
                 typeOfGamesIndex = new int[] { 1, 2, 1, 2, 1, 2 };
             }
@@ -1011,7 +1012,7 @@ public class SandDrawingController : MonoBehaviour {
         switch (typeOfGameToPlay)
         {
             case TypeOfGame.Fill:
-                if (sessionManager.activeKid.sandLevelSet || sessionManager.activeKid.sandFirst)
+                if (!sessionManager.activeKid.sandFirst && sessionManager.activeKid.sandLevelSet)
                 {
                     if (isPassable && !isWellLimited)
                     {
@@ -1036,11 +1037,12 @@ public class SandDrawingController : MonoBehaviour {
                     {
                         levelFill -= LevelDifficultyChange(totalLevelsNormal, assayIndex + 1);
                     }
+                    Mathf.Clamp(levelFill, 0, maxiKidLevel - 1);
                     Debug.Log("The next level in fill is " + levelFill);
                 }
                 break;
             case TypeOfGame.Completion:
-                if (sessionManager.activeKid.sandLevelSet2 || sessionManager.activeKid.sandFirst)
+                if (!sessionManager.activeKid.sandFirst && sessionManager.activeKid.sandLevelSet)
                 {
                     if (isPassable && !isWellLimited)
                     {
@@ -1064,11 +1066,12 @@ public class SandDrawingController : MonoBehaviour {
                     {
                         levelCompletion -= LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex + 2));
                     }
+                    Mathf.Clamp(levelCompletion, 0, maxiKidLevelSpecials - 1);
                     Debug.Log("The next level in completion is " + levelCompletion);
                 }
                 break;
             case TypeOfGame.Identify:
-                if (sessionManager.activeKid.sandLevelSet2 || sessionManager.activeKid.sandFirst)
+                if (!sessionManager.activeKid.sandFirst && sessionManager.activeKid.sandLevelSet)
                 {
                     if (isPassable && !isWellLimited)
                     {
@@ -1092,7 +1095,8 @@ public class SandDrawingController : MonoBehaviour {
                     {
                         levelIdentyfy -= LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex + 2));
                     }
-                    Debug.Log("The next level in identify is " + levelIdentyfy);
+                    Mathf.Clamp(levelIdentyfy, 0, maxiKidLevelSpecials - 1);
+                    Debug.Log("The next level in completion is" + levelIdentyfy);
                 }
                 break;
         }

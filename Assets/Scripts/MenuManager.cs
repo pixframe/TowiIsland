@@ -323,7 +323,7 @@ public class MenuManager : MonoBehaviour {
 
     public void ShowDisclaimer()
     {
-        if (Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.Android && !IsTablet())
+        if (Application.platform == RuntimePlatform.IPhonePlayer)
         {
             if (!UnityEngine.iOS.Device.generation.ToString().Contains("iPad"))
             {
@@ -346,6 +346,10 @@ public class MenuManager : MonoBehaviour {
             {
                 ShowTheDisclaimer();
             }
+        }
+        else if (Application.platform == RuntimePlatform.Android && !IsTablet())
+        {
+            ShowTheDisclaimer();
         }
         else
         {

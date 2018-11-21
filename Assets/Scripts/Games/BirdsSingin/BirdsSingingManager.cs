@@ -89,6 +89,8 @@ public class BirdsSingingManager : MonoBehaviour {
     int birdsWellOrdered;
     int birdsBadOrdered;
     int totalLevels = 54;
+    int miniKidLevel = 8;
+    int maxiKidLevel = 36;
     public enum GamePhase {Tutorial, Listen , Listening, Lounging , Game, Transition };
 
     int errors;
@@ -131,18 +133,9 @@ public class BirdsSingingManager : MonoBehaviour {
         if (firstTime == 0)
         {
             TellTheStory();
-            numberOfAssays = 3;
-            difficulty = 0;
-            level = 0;
         }
         else
         {
-            if (!sessionManager.activeKid.birdsLevelSet)
-            {
-                levelCategorizer = LevelDifficultyChange(totalLevels);
-                Debug.Log(levelCategorizer);
-                GetDataJustForLevel(levelCategorizer);
-            }
             instructionPanel.transform.parent.gameObject.SetActive(false);
             pauser.WantTutorial();
             pauser.howToPlayButton.onClick.AddListener(TellTheStory);
@@ -180,8 +173,19 @@ public class BirdsSingingManager : MonoBehaviour {
         {
             if (sessionManager.activeKid.birdsFirst)
             {
-                difficulty = 0;
-                level = 0;
+                if (sessionManager.activeKid.age < 7)
+                {
+                    levelCategorizer = miniKidLevel;
+                }
+                else if (sessionManager.activeKid.age > 9)
+                {
+                    levelCategorizer = maxiKidLevel;
+                }
+                else
+                {
+                    levelCategorizer = LevelDifficultyChange(totalLevels);
+                }
+                GetDataJustForLevel(levelCategorizer);
                 firstTime = 0;
             }
             else
@@ -207,14 +211,7 @@ public class BirdsSingingManager : MonoBehaviour {
         {
             sessionManager.activeKid.birdsDifficulty = difficulty;
             sessionManager.activeKid.birdsLevel = level;
-            if (!sessionManager.activeKid.birdsFirst)
-            {
-                if (!sessionManager.activeKid.birdsLevelSet)
-                {
-                    sessionManager.activeKid.birdsLevelSet = true;
-                }
-            }
-            else
+            if (sessionManager.activeKid.birdsFirst)
             {
                 sessionManager.activeKid.birdsFirst = false;
             }
@@ -692,15 +689,15 @@ public class BirdsSingingManager : MonoBehaviour {
         readyButton.gameObject.SetActive(false);
         audioManager.PlayClip(instructionsClips[7]);
         Invoke("ReadyButtonOn", audioManager.ClipDuration());
-        if (sessionManager.activeKid.birdsLevelSet || sessionManager.activeKid.birdsFirst)
-        {
-            NewLevelArrange();
-            numberOfAssays--;
-        }
-        else
+        if (sessionManager.activeKid.birdsFirst)
         {
             numberOfAssays--;
             FastLevelIdentificationSystem();
+        }
+        else
+        {
+            NewLevelArrange();
+            numberOfAssays--;
         }
 
         if (numberOfAssays > 0)
@@ -816,6 +813,7 @@ public class BirdsSingingManager : MonoBehaviour {
         {
             levelCategorizer -= LevelDifficultyChange(totalLevels);
         }
+        Mathf.Clamp(levelCategorizer, 0, totalLevels - 1);
         Debug.Log("New Level categorizer is " + levelCategorizer);
         GetDataJustForLevel(levelCategorizer);
     }

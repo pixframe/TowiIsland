@@ -46,6 +46,8 @@ public class MonkeyHidingManager : MonoBehaviour {
     int passLevels;
     int repeatedLevels;
     int totalLevels = 60;
+    int miniKidLevel = 15;
+    int maxiKidLevel = 45;
 
     float movementTime;
     float timeForMovement;
@@ -100,9 +102,6 @@ public class MonkeyHidingManager : MonoBehaviour {
         if (firstTime == 0)
         {
             SetStory(0);
-            numberOfAssays = 3;
-            difficulty = 0;
-            level = 0;
         }
         else
         {
@@ -127,26 +126,29 @@ public class MonkeyHidingManager : MonoBehaviour {
         {
             if (sessionManager.activeKid.monkeyFirst)
             {
-                difficulty = 0;
-                level = 0;
-                firstTime = 0;
-            }
-            else
-            {
-                if (sessionManager.activeKid.monkeyLevelSet)
+                if (sessionManager.activeKid.age < 7)
                 {
-                    difficulty = sessionManager.activeKid.monkeyDifficulty;
-                    if (difficulty > 1)
-                    {
-                        difficulty = 1;
-                    }
-                    level = sessionManager.activeKid.monkeyLevel;
+                    levelCategorizer = miniKidLevel;
+                }
+                else if (sessionManager.activeKid.age > 9)
+                {
+                    levelCategorizer = maxiKidLevel;
                 }
                 else
                 {
                     levelCategorizer = LevelDifficultyChange(totalLevels);
-                    GetDataJustForLevel(levelCategorizer);
                 }
+                GetDataJustForLevel(levelCategorizer);
+                firstTime = 0;
+            }
+            else
+            {
+                difficulty = sessionManager.activeKid.monkeyDifficulty;
+                if (difficulty > 1)
+                {
+                    difficulty = 1;
+                }
+                level = sessionManager.activeKid.monkeyLevel;
                 firstTime = 1;
             }
         }
@@ -169,13 +171,6 @@ public class MonkeyHidingManager : MonoBehaviour {
             if (sessionManager.activeKid.monkeyFirst)
             {
                 sessionManager.activeKid.monkeyFirst = false;
-            }
-            else
-            {
-                if (!sessionManager.activeKid.monkeyLevelSet)
-                {
-                    sessionManager.activeKid.monkeyLevelSet = true;
-                }
             }
             sessionManager.activeKid.kiwis += passLevels;
             sessionManager.activeKid.playedMonkey = 1;
@@ -503,7 +498,7 @@ public class MonkeyHidingManager : MonoBehaviour {
 
     void GetLevelUp()
     {
-        if (sessionManager.activeKid.monkeyLevelSet || sessionManager.activeKid.monkeyFirst)
+        if (!sessionManager.activeKid.monkeyFirst)
         {
             if (level >= 30)
             {
@@ -523,12 +518,13 @@ public class MonkeyHidingManager : MonoBehaviour {
         {
             levelCategorizer += LevelDifficultyChange(totalLevels);
             GetDataJustForLevel(levelCategorizer);
+            Mathf.Clamp(levelCategorizer, 0, totalLevels - 1);
         }
     }
 
     void GetLevelDown()
     {
-        if (sessionManager.activeKid.monkeyLevelSet || sessionManager.activeKid.monkeyFirst)
+        if (!sessionManager.activeKid.monkeyFirst)
         {
             if (straightBadAnswers >= 3)
             {
@@ -551,6 +547,7 @@ public class MonkeyHidingManager : MonoBehaviour {
         else
         {
             levelCategorizer -= LevelDifficultyChange(totalLevels);
+            Mathf.Clamp(levelCategorizer, 0, totalLevels - 1);
             GetDataJustForLevel(levelCategorizer);
         }
     }

@@ -101,6 +101,8 @@ public class MagicRiverManager : MonoBehaviour {
     int typeOfSpecials;
     int totalLevels = 36;
     int levelCategorizer;
+    int miniKidLevel = 9;
+    int maxiKidLevel = 27;
 
     bool reverseMode;
     bool letItGoMode;
@@ -131,9 +133,6 @@ public class MagicRiverManager : MonoBehaviour {
         if (firstTime == 0)
         {
             SetTutorial();
-            numberOfAssays = 2;
-            difficulty = 0;
-            level = 0;
         }
         else
         {
@@ -186,22 +185,25 @@ public class MagicRiverManager : MonoBehaviour {
         {
             if (sessionManager.activeKid.riverFirst)
             {
-                difficulty = 0;
-                level = 0;
-                firstTime = 0;
-            }
-            else
-            {
-                if (sessionManager.activeKid.riverLevelSet)
+                if (sessionManager.activeKid.age < 7)
                 {
-                    difficulty = sessionManager.activeKid.riverDifficulty;
-                    level = sessionManager.activeKid.riverLevel;
+                    levelCategorizer = miniKidLevel;
+                }
+                else if (sessionManager.activeKid.age > 9)
+                {
+                    levelCategorizer = maxiKidLevel;
                 }
                 else
                 {
                     levelCategorizer = LevelDifficultyChange(totalLevels);
-                    GetDataJustForLevel(levelCategorizer);
                 }
+                GetDataJustForLevel(levelCategorizer);
+                firstTime = 0;
+            }
+            else
+            {
+                difficulty = sessionManager.activeKid.riverDifficulty;
+                level = sessionManager.activeKid.riverLevel;
                 firstTime = 1;
             }
         }
@@ -227,13 +229,6 @@ public class MagicRiverManager : MonoBehaviour {
             if (sessionManager.activeKid.riverFirst)
             {
                 sessionManager.activeKid.riverFirst = false;
-            }
-            else
-            {
-                if (!sessionManager.activeKid.riverLevelSet)
-                {
-                    sessionManager.activeKid.riverLevelSet = true;
-                }
             }
 
             levelSaver.AddLevelData("level", difficulty);
@@ -831,7 +826,7 @@ public class MagicRiverManager : MonoBehaviour {
         totalCorrects += (15 - totalErrors);
         totalIncorrects += totalErrors;
         numberOfAssays--;
-        if (sessionManager.activeKid.riverLevelSet || sessionManager.activeKid.riverFirst)
+        if (!sessionManager.activeKid.riverFirst)
         {
             if (totalErrors < 2)
             {
@@ -871,7 +866,7 @@ public class MagicRiverManager : MonoBehaviour {
             {
                 levelCategorizer -= LevelDifficultyChange(totalLevels);
             }
-
+            Mathf.Clamp(levelCategorizer, 0, totalLevels - 1);
             GetDataJustForLevel(levelCategorizer);
         }
         PrepareAnotherGame();

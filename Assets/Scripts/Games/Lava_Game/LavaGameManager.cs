@@ -99,7 +99,8 @@ public class LavaGameManager : MonoBehaviour {
     int repeatedLevels;
     int totalLevels = 54;
     int levelCategorizer;
-
+    int miniKidLevel = 9;
+    int maxiKidLevel = 27;
 
     //Here we Store Every Object to be show in a particular time in the game
     int[] objectsToShow = new int[3];
@@ -166,9 +167,6 @@ public class LavaGameManager : MonoBehaviour {
         if (firstTime == 0)
         {
             ShowFirstTutorial();
-            numberOfAssays = 3;
-            difficulty = 0;
-            level = 0;
         }
         else
         {
@@ -240,22 +238,25 @@ public class LavaGameManager : MonoBehaviour {
         {
             if (sessionManager.activeKid.lavaFirst)
             {
-                difficulty = 0;
-                level = 0;
-                firstTime = 0;
-            }
-            else
-            {
-                if (sessionManager.activeKid.lavaLevelSet)
+                if (sessionManager.activeKid.age < 7)
                 {
-                    difficulty = sessionManager.activeKid.lavaDifficulty;
-                    level = sessionManager.activeKid.laveLevel;
+                    levelCategorizer = miniKidLevel;
+                }
+                else if (sessionManager.activeKid.age > 9)
+                {
+                    levelCategorizer = maxiKidLevel;
                 }
                 else
                 {
                     levelCategorizer = LevelDifficultyChange(totalLevels);
-                    GetDataJustForLevel(levelCategorizer);
                 }
+                GetDataJustForLevel(levelCategorizer);
+                firstTime = 0;
+            }
+            else
+            {
+                difficulty = sessionManager.activeKid.lavaDifficulty;
+                level = sessionManager.activeKid.laveLevel;
                 firstTime = 1;
             }
         }
@@ -281,13 +282,6 @@ public class LavaGameManager : MonoBehaviour {
             if (sessionManager.activeKid.lavaFirst)
             {
                 sessionManager.activeKid.lavaFirst = false;
-            }
-            else
-            {
-                if (!sessionManager.activeKid.lavaLevelSet)
-                {
-                    sessionManager.activeKid.lavaLevelSet = true;
-                }
             }
 
             levelSaver.AddLevelData("level", difficulty);
@@ -644,16 +638,24 @@ public class LavaGameManager : MonoBehaviour {
     void StartNewGame()
     {
         numberOfAssays--;
-        if (!sessionManager.activeKid.lavaLevelSet && !sessionManager.activeKid.lavaFirst)
+        if (sessionManager.activeKid.lavaFirst)
         {
             if (winTheGame)
             {
                 levelCategorizer += LevelDifficultyChange(totalLevels);
+                if (levelCategorizer >= totalLevels)
+                {
+                    levelCategorizer = totalLevels - 1;
+                }
                 GetDataJustForLevel(levelCategorizer);
             }
             else
             {
                 levelCategorizer -= LevelDifficultyChange(totalLevels);
+                if (levelCategorizer < 0)
+                {
+                    levelCategorizer = 0;
+                }
                 GetDataJustForLevel(levelCategorizer);
             }
         }
