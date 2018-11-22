@@ -133,6 +133,7 @@ public class BirdsSingingManager : MonoBehaviour {
         if (firstTime == 0)
         {
             TellTheStory();
+            pauser.HideTutorialButtons();
         }
         else
         {
@@ -813,8 +814,8 @@ public class BirdsSingingManager : MonoBehaviour {
         {
             levelCategorizer -= LevelDifficultyChange(totalLevels);
         }
-        Mathf.Clamp(levelCategorizer, 0, totalLevels - 1);
         Debug.Log("New Level categorizer is " + levelCategorizer);
+        levelCategorizer = Mathf.Clamp(levelCategorizer, 0, totalLevels - 1);
         GetDataJustForLevel(levelCategorizer);
     }
 

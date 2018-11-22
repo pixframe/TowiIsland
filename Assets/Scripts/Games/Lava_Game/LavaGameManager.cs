@@ -138,6 +138,7 @@ public class LavaGameManager : MonoBehaviour {
     Quaternion firstRotation;
 
     #endregion
+
     bool rotate = false;
     bool gameTime = false;
     bool winTheGame = false;
@@ -167,6 +168,7 @@ public class LavaGameManager : MonoBehaviour {
         if (firstTime == 0)
         {
             ShowFirstTutorial();
+            pauser.HideTutorialButtons();
         }
         else
         {
@@ -643,19 +645,13 @@ public class LavaGameManager : MonoBehaviour {
             if (winTheGame)
             {
                 levelCategorizer += LevelDifficultyChange(totalLevels);
-                if (levelCategorizer >= totalLevels)
-                {
-                    levelCategorizer = totalLevels - 1;
-                }
+                levelCategorizer = Mathf.Clamp(levelCategorizer, 0, totalLevels - 1);
                 GetDataJustForLevel(levelCategorizer);
             }
             else
             {
                 levelCategorizer -= LevelDifficultyChange(totalLevels);
-                if (levelCategorizer < 0)
-                {
-                    levelCategorizer = 0;
-                }
+                levelCategorizer = Mathf.Clamp(levelCategorizer, 0, totalLevels - 1);
                 GetDataJustForLevel(levelCategorizer);
             }
         }

@@ -21,8 +21,10 @@ public class AvatarSpawner : MonoBehaviour {
         sessionManager = FindObjectOfType<SessionManager>();
         avatarPos = gameObject;
         string avatarName = sessionManager.activeKid.avatar;
-        avatarName = avatarName.ToLower();
-        Debug.Log(avatarName);
+        if (avatarName == "Null")
+        {
+            avatarName = "";
+        }
         avatarRef = Instantiate(avatars[TowiDictionary.AvatarNames[avatarName]]);
         avatarRef.transform.position = transform.position;
         avatarRef.transform.rotation = transform.rotation;

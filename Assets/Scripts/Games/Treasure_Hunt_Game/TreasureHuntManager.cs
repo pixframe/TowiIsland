@@ -131,6 +131,7 @@ public class TreasureHuntManager : MonoBehaviour {
         if (firstTime == 0)
         {
             TellAStory();
+            pauser.HideTutorialButtons();
         }
         else
         {
@@ -475,7 +476,10 @@ public class TreasureHuntManager : MonoBehaviour {
     void InstanciateCharacter()
     {
         string avatarName = sessionManager.activeKid.avatar;
-        avatarName.ToLower();
+        if (avatarName != "")
+        {
+            avatarName.ToLower();
+        }
         character = Instantiate(characters[TowiDictionary.AvatarNames[avatarName]], characterSpawnerPlace.transform.position, characterSpawnerPlace.transform.rotation);
         character.AddComponent<PlayerGrabbing>();
         playerController = character.GetComponent<PlayerController>();
@@ -905,7 +909,7 @@ public class TreasureHuntManager : MonoBehaviour {
         {
             levelCategorizer -= LevelDifficultyChange(totalLevels);
         }
-        Mathf.Clamp(levelCategorizer, 0, totalLevels - 1);
+        levelCategorizer = Mathf.Clamp(levelCategorizer, 0, totalLevels - 1);
         GetDataJustForLevel(levelCategorizer);
     }
 

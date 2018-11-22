@@ -102,7 +102,7 @@ public class PauseTheGame : MonoBehaviour {
         kiwiEarningPanel.mainPanel.SetActive(false);
     }
 
-    void HideTutorialButtons()
+    public void HideTutorialButtons()
     {
         pauseButton.gameObject.SetActive(true);
         pausePanel.SetActive(false);

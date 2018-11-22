@@ -133,6 +133,7 @@ public class MagicRiverManager : MonoBehaviour {
         if (firstTime == 0)
         {
             SetTutorial();
+            pauser.HideTutorialButtons();
         }
         else
         {
@@ -866,7 +867,7 @@ public class MagicRiverManager : MonoBehaviour {
             {
                 levelCategorizer -= LevelDifficultyChange(totalLevels);
             }
-            Mathf.Clamp(levelCategorizer, 0, totalLevels - 1);
+            levelCategorizer = Mathf.Clamp(levelCategorizer, 0, totalLevels - 1);
             GetDataJustForLevel(levelCategorizer);
         }
         PrepareAnotherGame();

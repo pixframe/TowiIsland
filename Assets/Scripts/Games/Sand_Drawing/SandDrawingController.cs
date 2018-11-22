@@ -135,6 +135,7 @@ public class SandDrawingController : MonoBehaviour {
         if (firstTime == 0)
         {
             TellAStory();
+            pauser.HideTutorialButtons();
         }
         else
         {
@@ -1037,7 +1038,7 @@ public class SandDrawingController : MonoBehaviour {
                     {
                         levelFill -= LevelDifficultyChange(totalLevelsNormal, assayIndex + 1);
                     }
-                    Mathf.Clamp(levelFill, 0, maxiKidLevel - 1);
+                    levelFill = Mathf.Clamp(levelFill, 0, maxiKidLevel - 1);
                     Debug.Log("The next level in fill is " + levelFill);
                 }
                 break;
@@ -1066,7 +1067,7 @@ public class SandDrawingController : MonoBehaviour {
                     {
                         levelCompletion -= LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex + 2));
                     }
-                    Mathf.Clamp(levelCompletion, 0, maxiKidLevelSpecials - 1);
+                    levelCompletion = Mathf.Clamp(levelCompletion, 0, maxiKidLevelSpecials - 1);
                     Debug.Log("The next level in completion is " + levelCompletion);
                 }
                 break;
@@ -1095,7 +1096,7 @@ public class SandDrawingController : MonoBehaviour {
                     {
                         levelIdentyfy -= LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex + 2));
                     }
-                    Mathf.Clamp(levelIdentyfy, 0, maxiKidLevelSpecials - 1);
+                    levelIdentyfy = Mathf.Clamp(levelIdentyfy, 0, maxiKidLevelSpecials - 1);
                     Debug.Log("The next level in completion is" + levelIdentyfy);
                 }
                 break;

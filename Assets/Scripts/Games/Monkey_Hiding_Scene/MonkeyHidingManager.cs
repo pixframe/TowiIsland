@@ -102,6 +102,7 @@ public class MonkeyHidingManager : MonoBehaviour {
         if (firstTime == 0)
         {
             SetStory(0);
+            pauser.HideTutorialButtons();
         }
         else
         {
@@ -517,8 +518,8 @@ public class MonkeyHidingManager : MonoBehaviour {
         else
         {
             levelCategorizer += LevelDifficultyChange(totalLevels);
+            levelCategorizer = Mathf.Clamp(levelCategorizer, 0, totalLevels - 1);
             GetDataJustForLevel(levelCategorizer);
-            Mathf.Clamp(levelCategorizer, 0, totalLevels - 1);
         }
     }
 
@@ -547,7 +548,7 @@ public class MonkeyHidingManager : MonoBehaviour {
         else
         {
             levelCategorizer -= LevelDifficultyChange(totalLevels);
-            Mathf.Clamp(levelCategorizer, 0, totalLevels - 1);
+            levelCategorizer = Mathf.Clamp(levelCategorizer, 0, totalLevels - 1);
             GetDataJustForLevel(levelCategorizer);
         }
     }

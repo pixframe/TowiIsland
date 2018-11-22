@@ -323,6 +323,7 @@ public class MenuManager : MonoBehaviour {
 
     public void ShowDisclaimer()
     {
+#if UNITY_IOS
         if (Application.platform == RuntimePlatform.IPhonePlayer)
         {
             if (!UnityEngine.iOS.Device.generation.ToString().Contains("iPad"))
@@ -347,7 +348,8 @@ public class MenuManager : MonoBehaviour {
                 ShowTheDisclaimer();
             }
         }
-        else if (Application.platform == RuntimePlatform.Android && !IsTablet())
+#endif
+        if (Application.platform == RuntimePlatform.Android && !IsTablet())
         {
             ShowTheDisclaimer();
         }
@@ -610,9 +612,9 @@ public class MenuManager : MonoBehaviour {
 
 
 
-    #endregion
+#endregion
 
-    #region Button Functions
+#region Button Functions
 
     //this one is used to load the evaluation
     void LoadEvaluation()
@@ -925,7 +927,7 @@ public class MenuManager : MonoBehaviour {
         //Debug.Log("We are creating a kid");
     }
 
-    #endregion
+#endregion
 
     //This will set all the texts need for the menus
     void WriteTheTexts()
@@ -1207,7 +1209,7 @@ public class MenuManager : MonoBehaviour {
             }
         }
     }
-    #endregion
+#endregion
 
     //this class will check if a email is well set
     class EmailVerificationUtility
