@@ -110,7 +110,7 @@ public class FloatingObject : MonoBehaviour {
             }
             else
             {
-                manager.MissAnAnswer();
+                manager.MissAnAnswer(this);
             }
             Destroy(this.gameObject);
         }
@@ -127,7 +127,7 @@ public class FloatingObject : MonoBehaviour {
         isTarget = true;
     }
 
-    public bool ThisIsATarget()
+    public bool IsThisATarget()
     {
         return isTarget;
     }

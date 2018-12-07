@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-
 
 public class BirdsSingingManager : MonoBehaviour {
     //These Objects are Needed and are made available ina previous scene
@@ -95,13 +91,19 @@ public class BirdsSingingManager : MonoBehaviour {
 
     int errors;
     int goods;
+    int goodsAfterClue;
+    int errorsAfterClue;
     int passLevels;
     int repeatedLevels;
     int firstDifficulty;
     int clues;
     int tutorialLook;
+    int beforePair;
+    int afterPair;
+
 
     float time;
+    float assayTime;
 
     [System.NonSerialized]
     public GamePhase phase;
@@ -111,6 +113,20 @@ public class BirdsSingingManager : MonoBehaviour {
     bool isFirstBird = true;
     bool showTutorial;
     bool countTime = false;
+    bool pairing = false;
+    bool afterHear;
+
+    List<int> cluesToSend = new List<int>();
+    List<int> goodAnswers = new List<int>();
+    List<int> badAnswers = new List<int>();
+    List<int> goodAnswersAfterClue = new List<int>();
+    List<int> badAnswersAfterClue = new List<int>();
+    List<int> levelsPLayed = new List<int>();
+    List<int> difficultyPlayed = new List<int>();
+    List<int> birdsBeforePair = new List<int>();
+    List<int> birdsAfterPair = new List<int>();
+    List<float> assaysTimes = new List<float>();
+
 
     // Use this for initialization
     void Start()
@@ -152,6 +168,11 @@ public class BirdsSingingManager : MonoBehaviour {
             time += Time.deltaTime;
         }
 
+        if (afterHear)
+        {
+            assayTime += Time.deltaTime;
+        }
+
         if (phase == GamePhase.Game)
         {
             if (objectIsSelected)
@@ -172,28 +193,45 @@ public class BirdsSingingManager : MonoBehaviour {
     {
         if (sessionManager != null)
         {
-            if (sessionManager.activeKid.birdsFirst)
+            if (!FindObjectOfType<DemoKey>())
             {
-                if (sessionManager.activeKid.age < 7)
+                if (sessionManager.activeKid.birdsFirst)
                 {
-                    levelCategorizer = miniKidLevel;
-                }
-                else if (sessionManager.activeKid.age > 9)
-                {
-                    levelCategorizer = maxiKidLevel;
+                    FLISSetup();
                 }
                 else
                 {
-                    levelCategorizer = LevelDifficultyChange(totalLevels);
+                    difficulty = sessionManager.activeKid.birdsDifficulty;
+                    level = sessionManager.activeKid.birdsLevel;
+                    firstTime = 1;
                 }
-                GetDataJustForLevel(levelCategorizer);
-                firstTime = 0;
             }
             else
             {
-                difficulty = sessionManager.activeKid.birdsDifficulty;
-                level = sessionManager.activeKid.birdsLevel;
-                firstTime = 1;
+                var key = FindObjectOfType<DemoKey>();
+                if (key.IsFLISOn())
+                {
+                    sessionManager.activeKid.birdsFirst = true;
+                    FLISSetup();
+                }
+                else
+                {
+                    sessionManager.activeKid.birdsFirst = false;
+                    firstTime = 1;
+                    switch (key.GetDifficulty())
+                    {
+                        case 0:
+                            levelCategorizer = 0;
+                            break;
+                        case 1:
+                            levelCategorizer = totalLevels / 2;
+                            break;
+                        case 2:
+                            levelCategorizer = totalLevels - 5;
+                            break;
+                    }
+                    GetDataJustForLevel(levelCategorizer);
+                }
             }
         }
         else
@@ -204,6 +242,24 @@ public class BirdsSingingManager : MonoBehaviour {
         }
     }
 
+    void FLISSetup()
+    {
+        if (sessionManager.activeKid.age < 7)
+        {
+            levelCategorizer = miniKidLevel;
+        }
+        else if (sessionManager.activeKid.age > 9)
+        {
+            levelCategorizer = maxiKidLevel;
+        }
+        else
+        {
+            levelCategorizer = LevelDifficultyChange(totalLevels);
+        }
+        GetDataJustForLevel(levelCategorizer);
+        firstTime = 0;
+    }
+
     void SaveLevel()
     {
         countTime = false;
@@ -212,14 +268,13 @@ public class BirdsSingingManager : MonoBehaviour {
         {
             sessionManager.activeKid.birdsDifficulty = difficulty;
             sessionManager.activeKid.birdsLevel = level;
-            if (sessionManager.activeKid.birdsFirst)
-            {
-                sessionManager.activeKid.birdsFirst = false;
-            }
+
             sessionManager.activeKid.playedBird = 1;
             sessionManager.activeKid.needSync = true;
             sessionManager.activeKid.kiwis += passLevels;
 
+            //levelSaver.AddLevelData("sessioncorrect_percentage")
+            //levelSaver.AddLevelData("sessioncorrect_percentage")
             levelSaver.AddLevelData("birds", 5);
             levelSaver.AddLevelData("nests", 5);
             levelSaver.AddLevelData("level", difficulty);
@@ -233,8 +288,41 @@ public class BirdsSingingManager : MonoBehaviour {
             levelSaver.AddLevelData("errors", 0);
             levelSaver.AddLevelData("correct", 0);
 
+            //Version 2
+            sessionManager.activeKid.birdsSessions++;
+            if (sessionManager.activeKid.birdsFirst)
+            {
+                sessionManager.activeKid.birdsFirst = false;
+                levelSaver.AddLevelData("initial_level", level);
+                levelSaver.AddLevelData("initial_difficulty", difficulty);
+            }
+            levelSaver.AddLevelData("final_Level", level);
+            levelSaver.AddLevelData("final_Difficulty", difficulty);
+            var goodBefore = new List<int>();
+            var badBefore = new List<int>();
+            int interactions = 0;
+            for (int i = 0; i < goodAnswers.Count; i++)
+            {
+                goodBefore.Add(goodAnswers[i] - goodAnswersAfterClue[i]);
+                badBefore.Add(badAnswers[i] - badAnswersAfterClue[i]);
+                interactions += goodAnswers[i];
+                interactions += badAnswers[i];
+            }
+            levelSaver.AddLevelData("session_correct_percentage", (goods * 100)/interactions);
+            levelSaver.AddLevelData("session_errors_percentage",(errors * 100)/interactions);
+            levelSaver.AddLevelData("correct_before_clue", goodBefore);
+            levelSaver.AddLevelData("errors_before_clue", badBefore);
+            levelSaver.AddLevelData("correct_after_clue", goodAnswersAfterClue);
+            levelSaver.AddLevelData("errors_after_clue", badAnswersAfterClue);
+            levelSaver.AddLevelData("total_clues", cluesToSend);
+            levelSaver.AddLevelData("total_correct", goodAnswers);
+            levelSaver.AddLevelData("total_correct", goodAnswers);
+            levelSaver.AddLevelData("played_levels", levelsPLayed);
+            levelSaver.AddLevelData("played_difficulty", difficultyPlayed);
+            levelSaver.AddLevelData("essay_time", assaysTimes);
+
             levelSaver.SetLevel();
-            levelSaver.CreateSaveBlock("ArbolMusical", time, passLevels, repeatedLevels, 5);
+            levelSaver.CreateSaveBlock("ArbolMusical", time, passLevels, repeatedLevels, 5, sessionManager.activeKid.birdsSessions);
             levelSaver.AddLevelsToBlock();
             levelSaver.PostProgress();
         }
@@ -412,6 +500,8 @@ public class BirdsSingingManager : MonoBehaviour {
         nestsNumber = data[0];
         birdsNumber = data[1];
         bankNumber = data[2];
+        difficultyPlayed.Add(difficulty);
+        levelsPLayed.Add(level);
     }
 
     void ChangeThePhase(GamePhase newPhase)
@@ -496,6 +586,7 @@ public class BirdsSingingManager : MonoBehaviour {
     {
         instructionPanel.SetActive(false);
         ChangeThePhase(GamePhase.Game);
+        afterHear = true;
     }
 
     void PlayLastInstruction()
@@ -612,6 +703,10 @@ public class BirdsSingingManager : MonoBehaviour {
                     selectedBird.transform.position = nestSelected.DadPosition();
                     selectedBird = null;
                     birdsWellOrdered++;
+                    if (clues > 0)
+                    {
+                        goodsAfterClue++;
+                    }
                     nestSelected.PlayTheNotes(true);
                     dadaBird.BirdIsWellSet();
                     currentNest.Remove(nestSelected);
@@ -624,6 +719,10 @@ public class BirdsSingingManager : MonoBehaviour {
                 else
                 {
                     birdsBadOrdered++;
+                    if (clues > 0)
+                    {
+                        errorsAfterClue++;
+                    }
                     nestSelected.PlayTheNotes(false);
                     //PlayANestSong(nestSelected.GetTheNestSong());
                     if (birdsBadOrdered % 3 == 0)
@@ -701,6 +800,15 @@ public class BirdsSingingManager : MonoBehaviour {
             numberOfAssays--;
         }
 
+        goodAnswers.Add(birdsWellOrdered);
+        goodAnswersAfterClue.Add(goodsAfterClue);
+        badAnswers.Add(birdsBadOrdered);
+        badAnswersAfterClue.Add(errorsAfterClue);
+        cluesToSend.Add(clues);
+        birdsAfterPair.Add(afterPair);
+        birdsBeforePair.Add(beforePair);
+        assaysTimes.Add(assayTime);
+
         if (numberOfAssays > 0)
         {
             readyButton.onClick.AddListener(ResetTheGame);
@@ -719,6 +827,14 @@ public class BirdsSingingManager : MonoBehaviour {
         goods += birdsWellOrdered;
         birdsWellOrdered = 0;
         birdsBadOrdered = 0;
+        goodsAfterClue = 0;
+        errorsAfterClue = 0;
+        clues = 0;
+        afterPair = 0;
+        beforePair = 0;
+        assayTime = 0;
+        pairing = false;
+        afterHear = false;
         DesactivateAllBirds();
         Camera.main.transform.GetComponent<BirdCamera>().StartMoving();
         tempoBirdPos.Clear();
@@ -828,6 +944,18 @@ public class BirdsSingingManager : MonoBehaviour {
     void ReadyButtonOn()
     {
         readyButton.gameObject.SetActive(true);
+    }
+
+    public void PairOrNot()
+    {
+        if (pairing)
+        {
+            afterPair++;
+        }
+        else
+        {
+            beforePair++;
+        }
     }
 
     void GetDataJustForLevel(int levelInput)

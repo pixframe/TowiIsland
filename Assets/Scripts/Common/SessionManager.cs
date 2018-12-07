@@ -5,8 +5,6 @@ using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using Boomlagoon.JSON;
-using System.Text;
-using System.Xml.Serialization;
 
 public class SessionManager : MonoBehaviour
 {
@@ -37,7 +35,7 @@ public class SessionManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
         //if(main)
-        //PlayerPrefs.DeleteAll ();
+        PlayerPrefs.DeleteAll ();
         string version = Application.version;
         if (PlayerPrefs.GetString(Keys.Version_Last_Season) != version)
         {
@@ -530,13 +528,7 @@ public class SessionManager : MonoBehaviour
                 activeUser.kids[index].sandFirst = kidObj.GetBoolean("arenaFirstTime");
                 activeUser.kids[index].treasureFirst = kidObj.GetBoolean("tesoroFirstTime");
                 activeUser.kids[index].testAvailable = kidObj.GetBoolean("testAvailable");
-                activeUser.kids[index].riverLevelSet = kidObj.GetBoolean("rioLevelSet");
-                activeUser.kids[index].treasureLevelSet = kidObj.GetBoolean("tesoroLevelSet");
-                activeUser.kids[index].birdsLevelSet = kidObj.GetBoolean("arbolLevelSet");
                 activeUser.kids[index].sandLevelSet = kidObj.GetBoolean("arenaLevelSet");
-                activeUser.kids[index].sandLevelSet2 = kidObj.GetBoolean("arenaLevelSet2");
-                activeUser.kids[index].lavaLevelSet = kidObj.GetBoolean("sombrasLevelSet");
-                activeUser.kids[index].monkeyLevelSet = kidObj.GetBoolean("bolitaLevelSet");
 
                 for (int o = 0; o < buyedItems.Length; o++)
                 {
@@ -626,13 +618,7 @@ public class SessionManager : MonoBehaviour
         data.Add("arenaFirstTime", activeKid.sandFirst);
         data.Add("sombrasFirstTime", activeKid.lavaFirst);
         data.Add("bolitaFirstTime", activeKid.monkeyFirst);
-        data.Add("rioLevelSet", activeKid.riverLevelSet);
-        data.Add("tesoroLevelSet", activeKid.treasureLevelSet);
-        data.Add("arbolLevelSet", activeKid.birdsLevelSet);
         data.Add("arenaLevelSet", activeKid.sandLevelSet);
-        data.Add("arenaLevelSet2", activeKid.sandLevelSet2);
-        data.Add("sombrasLevelSet", activeKid.lavaLevelSet);
-        data.Add("bolitaLevelSet", activeKid.monkeyLevelSet);
         string shopingList = "";
         for (int i = 0; i < activeKid.buyedIslandObjects.Count; i++)
         {
@@ -693,13 +679,7 @@ public class SessionManager : MonoBehaviour
         data.Add("arenaFirstTime", activeKid.sandFirst);
         data.Add("sombrasFirstTime", activeKid.lavaFirst);
         data.Add("bolitaFirstTime", activeKid.monkeyFirst);
-        data.Add("rioLevelSet", activeKid.riverLevelSet);
-        data.Add("tesoroLevelSet", activeKid.treasureLevelSet);
-        data.Add("arbolLevelSet", activeKid.birdsLevelSet);
         data.Add("arenaLevelSet", activeKid.sandLevelSet);
-        data.Add("arenaLevelSet2", activeKid.sandLevelSet2);
-        data.Add("sombrasLevelSet", activeKid.lavaLevelSet);
-        data.Add("bolitaLevelSet", activeKid.monkeyLevelSet);
         string shopingList = "";
         for (int i = 0; i < activeKid.buyedIslandObjects.Count; i++)
         {
@@ -910,6 +890,8 @@ public class SessionManager : MonoBehaviour
         public int laveLevel;
         public int treasureDifficulty;
         public int treasureLevel;
+        public int icecreamDifficulty;
+        public int icecreamLevel;
 
         public int playedBird;
         public int blockedArbolMusical;
@@ -923,6 +905,15 @@ public class SessionManager : MonoBehaviour
         public int blockedDondeQuedoLaBolita;
         public int playedTreasure;
         public int blockedTesoro;
+
+        //These integers are used to keep track of the amout of sessions played by the kid
+        public int birdsSessions;
+        public int lavaSessions;
+        public int monkeySessions;
+        public int riverSessions;
+        public int sandSessions;
+        public int treasureSessions;
+        public int icecreamSessions;
 
         public int rioTutorial;
         public int tesoroTutorial;
@@ -946,15 +937,10 @@ public class SessionManager : MonoBehaviour
         public bool riverFirst;
         public bool sandFirst;
         public bool treasureFirst;
+        public bool icecreamFirst;
         public bool anyFirstTime;
 
-        public bool birdsLevelSet;
-        public bool lavaLevelSet;
-        public bool monkeyLevelSet;
-        public bool riverLevelSet;
         public bool sandLevelSet;
-        public bool sandLevelSet2;
-        public bool treasureLevelSet;
 
         public bool needSync;
         public bool testAvailable;

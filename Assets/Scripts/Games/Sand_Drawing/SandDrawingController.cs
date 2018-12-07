@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 
 public class SandDrawingController : MonoBehaviour {
@@ -55,7 +53,11 @@ public class SandDrawingController : MonoBehaviour {
     int levelFill = 20;
     int levelCompletion = 11;
     int levelIdentyfy = 11;
+    int initialLevelFill;
+    int initialLevelCompletion;
+    int initialLevelIdentify;
     int maxNumberOfAssays = 5;
+    int totalAssaysInTheGame;
     int totalLevelsNormal = 30;
     int totalSpecialLevels = 15;
     int miniKidLevel = 10;
@@ -70,11 +72,16 @@ public class SandDrawingController : MonoBehaviour {
     int passLevels;
     int repeatedLevels;
     List<int> choosen = new List<int>();
+    List<int> levelsPlayed = new List<int>();
+    List<float> accuracies = new List<float>();
+    List<float> overdraws = new List<float>();
+    List<float> drawingTimes = new List<float>();
 
     int[] typeOfGamesIndex;
 
     float time;
     float accuracyPercentage;
+    float drawTime;
 
     bool dragTime;
     bool calificationTime;
@@ -157,55 +164,87 @@ public class SandDrawingController : MonoBehaviour {
 
     void GetLevels()
     {
+        totalAssaysInTheGame = maxNumberOfAssays;
         if (sessionManager != null)
         {
-            if (sessionManager.activeKid.sandFirst)
+            if (!FindObjectOfType<DemoKey>())
             {
-                if (sessionManager.activeKid.age < 7)
+                if (sessionManager.activeKid.sandFirst)
                 {
-                    levelFill = miniKidLevel;
-                }
-                else if (sessionManager.activeKid.age > 9)
-                {
-                    levelFill = maxiKidLevel;
+                    FLISSetup();
                 }
                 else
                 {
-                    levelFill = LevelDifficultyChange(totalLevelsNormal, assayIndex);
-                }
-                firstTime = 0;
-            }
-            else
-            {
-                if (!sessionManager.activeKid.sandLevelSet)
-                {
-                    Debug.Log("Set second stuff");
-                    if (sessionManager.activeKid.age < 7)
+                    if (!sessionManager.activeKid.sandLevelSet)
                     {
-                        levelIdentyfy = miniKidLevelSpecials;
-                        levelCompletion = miniKidLevelSpecials;
-                    }
-                    else if (sessionManager.activeKid.age > 9)
-                    {
-                        levelIdentyfy = maxiKidLevelSpecials;
-                        levelCompletion = maxiKidLevelSpecials;
+                        Debug.Log("Set second stuff");
+                        if (sessionManager.activeKid.age < 7)
+                        {
+                            levelIdentyfy = miniKidLevelSpecials;
+                            levelCompletion = miniKidLevelSpecials;
+                        }
+                        else if (sessionManager.activeKid.age > 9)
+                        {
+                            levelIdentyfy = maxiKidLevelSpecials;
+                            levelCompletion = maxiKidLevelSpecials;
+                        }
+                        else
+                        {
+                            levelIdentyfy = LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex));
+                            levelCompletion = LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex));
+                        }
+                        maxNumberOfAssays = 6;
                     }
                     else
                     {
-                        levelIdentyfy = LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex));
-                        levelCompletion = LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex));
+                        Debug.Log("Set no stuff");
+                        levelGame = sessionManager.activeKid.sandDifficulty;
+                        levelFill = sessionManager.activeKid.sandLevel;
+                        levelIdentyfy = sessionManager.activeKid.sandLevel2;
+                        levelCompletion = sessionManager.activeKid.sandLevel3;
+                        initialLevelFill = levelFill;
+                        initialLevelIdentify = levelIdentyfy;
+                        initialLevelCompletion = levelCompletion;
                     }
-                    maxNumberOfAssays = 6;
+                    firstTime = 1;
+                }
+            }
+            else
+            {
+                var key = FindObjectOfType<DemoKey>();
+                if (key.IsFLISOn())
+                {
+                    sessionManager.activeKid.sandFirst = true;
+                    sessionManager.activeKid.sandLevelSet = false;
+                    FLISSetup();
                 }
                 else
                 {
-                    Debug.Log("Set no stuff");
-                    levelGame = sessionManager.activeKid.sandDifficulty;
-                    levelFill = sessionManager.activeKid.sandLevel;
-                    levelIdentyfy = sessionManager.activeKid.sandLevel2;
-                    levelCompletion = sessionManager.activeKid.sandLevel3;
+                    sessionManager.activeKid.sandFirst = false;
+                    sessionManager.activeKid.sandLevelSet = true;
+                    firstTime = 1;
+                    switch (key.GetDifficulty())
+                    {
+                        case 0:
+                            levelGame = 0;
+                            levelFill = 0;
+                            levelIdentyfy = 0;
+                            levelCompletion = 0;
+                            break;
+                        case 1:
+                            levelGame = 5;
+                            levelFill = totalLevelsNormal / 2;
+                            levelIdentyfy = totalSpecialLevels / 2;
+                            levelCompletion = totalSpecialLevels / 2;
+                            break;
+                        case 2:
+                            levelGame = 10;
+                            levelFill = totalLevelsNormal - 5;
+                            levelIdentyfy = totalSpecialLevels - 3;
+                            levelCompletion = totalSpecialLevels - 3;
+                            break;
+                    }
                 }
-                firstTime = 1;
             }
         }
         else
@@ -219,6 +258,23 @@ public class SandDrawingController : MonoBehaviour {
 
     }
 
+    void FLISSetup()
+    {
+        if (sessionManager.activeKid.age < 7)
+        {
+            levelFill = miniKidLevel;
+        }
+        else if (sessionManager.activeKid.age > 9)
+        {
+            levelFill = maxiKidLevel;
+        }
+        else
+        {
+            levelFill = LevelDifficultyChange(totalLevelsNormal, assayIndex);
+        }
+        firstTime = 0;
+    }
+
     void SaveLevels()
     {
         countTime = true;
@@ -227,17 +283,7 @@ public class SandDrawingController : MonoBehaviour {
             string a = "1" + levelFill.ToString("00") + levelIdentyfy.ToString("00") + levelCompletion.ToString("00");
             int sublevel = int.Parse(a);
             accuracyPercentage = (accuracyPercentage * 100) / 500;
-            if (sessionManager.activeKid.sandFirst)
-            {
-                sessionManager.activeKid.sandFirst = false;
-            }
-            else
-            {
-                if (!sessionManager.activeKid.sandLevelSet)
-                {
-                    sessionManager.activeKid.sandLevelSet = true;
-                }
-            }
+
             sessionManager.activeKid.sandDifficulty = levelGame;
             sessionManager.activeKid.sandLevel = levelFill;
             sessionManager.activeKid.sandLevel2 = levelIdentyfy;
@@ -255,8 +301,48 @@ public class SandDrawingController : MonoBehaviour {
             levelSaver.AddLevelData("repeated", repeatedLevels);
             levelSaver.AddLevelData("accuracy", accuracyPercentage);
 
+            //Version 2
+            sessionManager.activeKid.sandSessions++;
+            float overTotals = 0;
+            foreach(float f in overdraws)
+            {
+                overTotals += f;
+            }
+            float acuTotals = 0;
+            foreach (float f in accuracies)
+            {
+                acuTotals += f;
+            }
+            levelSaver.AddLevelData("session_overdraw_percentage", overTotals / totalAssaysInTheGame);
+            levelSaver.AddLevelData("session_accuracy_percentage", acuTotals / totalAssaysInTheGame);
+            if (sessionManager.activeKid.sandFirst)
+            {
+                sessionManager.activeKid.sandFirst = false;
+                levelSaver.AddLevelData("initial_level_motor", levelFill);
+            }
+            else
+            {
+                if (!sessionManager.activeKid.sandLevelSet)
+                {
+                    sessionManager.activeKid.sandLevelSet = true;
+                    levelSaver.AddLevelData("initial_level_overlapping", levelIdentyfy);
+                    levelSaver.AddLevelData("initial_level_clousre", levelCompletion);
+                }
+            }
+            levelSaver.AddLevelData("time_percentage", drawingTimes);
+            levelSaver.AddLevelData("types_levels", typeOfGamesIndex);
+            levelSaver.AddLevelData("played_levels", levelsPlayed);
+            levelSaver.AddLevelData("current_level", levelGame);
+            levelSaver.AddLevelData("current_level_motor", levelFill);
+            levelSaver.AddLevelData("current_level_overlapping", levelIdentyfy);
+            levelSaver.AddLevelData("current_level_clousre", levelCompletion);
+            levelSaver.AddLevelData("change_level_motor", levelFill - initialLevelFill);
+            levelSaver.AddLevelData("change_level_overlapping", levelIdentyfy - initialLevelIdentify);
+            levelSaver.AddLevelData("change_level_clousure", levelCompletion - initialLevelCompletion);
+            levelSaver.AddLevelData("accuracy", accuracies);
+            levelSaver.AddLevelData("overdraw", overdraws);
             levelSaver.SetLevel();
-            levelSaver.CreateSaveBlock("ArenaMagica", time, passLevels, repeatedLevels, 5);
+            levelSaver.CreateSaveBlock("ArenaMagica", time, passLevels, repeatedLevels, totalAssaysInTheGame, sessionManager.activeKid.sandSessions);
             levelSaver.AddLevelsToBlock();
             levelSaver.PostProgress();
         }
@@ -356,6 +442,7 @@ public class SandDrawingController : MonoBehaviour {
         }
         if (playGame)
         {
+            drawTime += Time.deltaTime;
             if (Input.GetMouseButtonDown(0))
             {
                 if (createTrail)
@@ -589,6 +676,7 @@ public class SandDrawingController : MonoBehaviour {
             switch (typeOfGameToPlay)
             {
                 case TypeOfGame.Fill:
+                    levelsPlayed.Add(levelFill);
                     if (levelFill < 10)
                     {
 						datas = Resources.LoadAll("Sand/EasyBank" , typeof(Sprite));
@@ -660,6 +748,7 @@ public class SandDrawingController : MonoBehaviour {
 
                     break;
                 case TypeOfGame.Completion:
+                    levelsPlayed.Add(levelCompletion);
                     if (levelCompletion < 3)
                     {
 						datas = Resources.LoadAll("Sand/EasyComplete", typeof(Sprite));
@@ -839,6 +928,7 @@ public class SandDrawingController : MonoBehaviour {
                     }
                     break;
                 case TypeOfGame.Identify:
+                    levelsPlayed.Add(levelIdentyfy);
                     int[] spis = new int[multiples.Length];
                     List<int> temp = new List<int>();
 
@@ -942,6 +1032,9 @@ public class SandDrawingController : MonoBehaviour {
         endButton.gameObject.SetActive(false);
 
         playGame = false;
+        drawingTimes.Add(drawTime);
+
+        drawTime = 0;
         if (!createTrail)
         {
             brushTrail.GetComponent<SwipeTrail>().StopMoving();
@@ -970,6 +1063,8 @@ public class SandDrawingController : MonoBehaviour {
         Debug.Log("percentage off equals " + percentageOff + " fill percentage " + fillPercentage);
         bool tooMuchOut = false;
         bool passable = false;
+        accuracies.Add(fillPercentage);
+        overdraws.Add(percentageOff);
 
         if (fillPercentage > 64)
         {

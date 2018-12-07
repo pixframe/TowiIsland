@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 public class MagicRiverManager : MonoBehaviour {
 
@@ -57,6 +55,8 @@ public class MagicRiverManager : MonoBehaviour {
     List<string> finalStimulusStrings = new List<string>();
     List<int> numbersForest = new List<int>();
     List<int> numbersBeach = new List<int>();
+    List<int> playedLevels = new List<int>();
+    List<int> playedDifficulty = new List<int>();
     List<AudioClip> audiosOfStimulus = new List<AudioClip>();
 
     float speedOfSpawning;
@@ -73,11 +73,13 @@ public class MagicRiverManager : MonoBehaviour {
     int badAnswer;
     int specificBadAnswer;
     int correctAnswer;
+    int specificGoodAnswer;
     int missAnswer;
+    int specificMissAnswer;
 
     int instructionIndex;
     int objectsToDrop = 15;
-    int numberOfObjectToDrop = 15;
+    const int numberOfObjectToDrop = 15;
     int specialObjects;
     int maxTimeToShowSpecial;
     int timeToShowSpecial;
@@ -85,6 +87,7 @@ public class MagicRiverManager : MonoBehaviour {
     int direction1;
     int direction2;
     int numberOfAssays = 5;
+    const int totalNumberOfAssays = 5;
     int handleStimulus;
     int specialInstructionIndex;
     int whenToDrop1;
@@ -95,6 +98,8 @@ public class MagicRiverManager : MonoBehaviour {
     int totalReverse;
     int totalCorrects;
     int totalIncorrects;
+    int totalCorrectTargets;
+    int totalIncorrectTargets;
     int passLevels;
     int repeatedLevels;
     //Those will set the type of special object 0 SwitchPlaces, object 1 LetItGo
@@ -103,6 +108,7 @@ public class MagicRiverManager : MonoBehaviour {
     int levelCategorizer;
     int miniKidLevel = 9;
     int maxiKidLevel = 27;
+    int totalTargets;
 
     bool reverseMode;
     bool letItGoMode;
@@ -182,39 +188,74 @@ public class MagicRiverManager : MonoBehaviour {
 
     void GetLevel()
     {
-        if (sessionManager != null)
+        if (!FindObjectOfType<DemoKey>())
         {
-            if (sessionManager.activeKid.riverFirst)
+            if (sessionManager != null)
             {
-                if (sessionManager.activeKid.age < 7)
+                if (sessionManager.activeKid.riverFirst)
                 {
-                    levelCategorizer = miniKidLevel;
-                }
-                else if (sessionManager.activeKid.age > 9)
-                {
-                    levelCategorizer = maxiKidLevel;
+                    FLISSetup();
                 }
                 else
                 {
-                    levelCategorizer = LevelDifficultyChange(totalLevels);
+                    difficulty = sessionManager.activeKid.riverDifficulty;
+                    level = sessionManager.activeKid.riverLevel;
+                    firstTime = 1;
                 }
-                GetDataJustForLevel(levelCategorizer);
-                firstTime = 0;
             }
             else
             {
-                difficulty = sessionManager.activeKid.riverDifficulty;
-                level = sessionManager.activeKid.riverLevel;
-                firstTime = 1;
+                difficulty = PlayerPrefs.GetInt(Keys.River_Difficulty);
+                level = PlayerPrefs.GetInt(Keys.River_Level);
+                firstTime = PlayerPrefs.GetInt(Keys.River_First);
             }
         }
         else
         {
-            difficulty = PlayerPrefs.GetInt(Keys.River_Difficulty);
-            level = PlayerPrefs.GetInt(Keys.River_Level);
-            firstTime = PlayerPrefs.GetInt(Keys.River_First);
+            var key = FindObjectOfType<DemoKey>();
+            if (key.IsFLISOn())
+            {
+                sessionManager.activeKid.riverFirst = true;
+                FLISSetup();
+            }
+            else
+            {
+                sessionManager.activeKid.riverFirst = false;
+                firstTime = 1;
+                switch (key.GetDifficulty())
+                {
+                    case 0:
+                        levelCategorizer = 0;
+                        break;
+                    case 1:
+                        levelCategorizer = totalLevels / 2;
+                        break;
+                    case 2:
+                        levelCategorizer = totalLevels - 5;
+                        break;
+                }
+                GetDataJustForLevel(levelCategorizer);
+            }
         }
 
+    }
+
+    void FLISSetup()
+    {
+        if (sessionManager.activeKid.age < 7)
+        {
+            levelCategorizer = miniKidLevel;
+        }
+        else if (sessionManager.activeKid.age > 9)
+        {
+            levelCategorizer = maxiKidLevel;
+        }
+        else
+        {
+            levelCategorizer = LevelDifficultyChange(totalLevels);
+        }
+        GetDataJustForLevel(levelCategorizer);
+        firstTime = 0;
     }
 
     void SaveLevel()
@@ -227,10 +268,7 @@ public class MagicRiverManager : MonoBehaviour {
             sessionManager.activeKid.kiwis += passLevels;
             sessionManager.activeKid.playedRiver = 1;
             sessionManager.activeKid.needSync = true;
-            if (sessionManager.activeKid.riverFirst)
-            {
-                sessionManager.activeKid.riverFirst = false;
-            }
+
 
             levelSaver.AddLevelData("level", difficulty);
             levelSaver.AddLevelData("sublevel", level);
@@ -248,8 +286,26 @@ public class MagicRiverManager : MonoBehaviour {
             levelSaver.AddLevelData("specialreverseobjects", "totalReverse");
             levelSaver.AddLevelData("specialleaveobjects", "totalSpecials");
 
+            //Version 2
+            sessionManager.activeKid.riverSessions++;
+            if (sessionManager.activeKid.riverFirst)
+            {
+                sessionManager.activeKid.riverFirst = false;
+                levelSaver.AddLevelData("initial_level", level);
+                levelSaver.AddLevelData("initial_difficulty", difficulty);
+            }
+            levelSaver.AddLevelData("current_level", level);
+            levelSaver.AddLevelData("current_difficulty", difficulty);
+            levelSaver.AddLevelData("session_correct_total", (totalCorrects * 100) / (numberOfObjectToDrop * totalNumberOfAssays));
+            levelSaver.AddLevelData("session_errors_total", (totalIncorrects* 100) / (numberOfObjectToDrop * totalNumberOfAssays));
+            levelSaver.AddLevelData("played_levels", playedLevels);
+            levelSaver.AddLevelData("played_difficulty", playedDifficulty);
+            levelSaver.AddLevelData("target_total", totalTargets);
+            levelSaver.AddLevelData("target_correct", totalCorrectTargets);
+            levelSaver.AddLevelData("target_errors", totalIncorrectTargets);
+
             levelSaver.SetLevel();
-            levelSaver.CreateSaveBlock("Rio", time, passLevels, repeatedLevels, 5);
+            levelSaver.CreateSaveBlock("Rio", time, passLevels, repeatedLevels, 5, sessionManager.activeKid.riverSessions);
             levelSaver.AddLevelsToBlock();
             levelSaver.PostProgress();
         }
@@ -432,7 +488,7 @@ public class MagicRiverManager : MonoBehaviour {
     {
         if (specialObjects > 0)
         {
-            maxTimeToShowSpecial = objectsToDrop / specialObjects;
+            maxTimeToShowSpecial = numberOfObjectToDrop / specialObjects;
         }
         objectsToDrop = numberOfObjectToDrop;
         speedOfSwiming = Vector3.Distance(showerSpot.transform.position, collector.transform.position);
@@ -641,7 +697,7 @@ public class MagicRiverManager : MonoBehaviour {
             FloatingObject oldFloatingObject = target.GetComponent<FloatingObject>();
             FloatingObject newFloatingObject = objectToDrop.GetComponent<FloatingObject>();
             newFloatingObject.SetTheDirection(oldFloatingObject.GetTheData());
-            if (oldFloatingObject.ThisIsATarget())
+            if (oldFloatingObject.IsThisATarget())
             {
                 newFloatingObject.SetThisAsTarget(oldFloatingObject.WhatTargetIs(), oldFloatingObject.SpecialNumber());
             }
@@ -668,7 +724,7 @@ public class MagicRiverManager : MonoBehaviour {
             int numToCompare = floatingObject.GetTheData();
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, classifierMask))
             {
-                if (floatingObject.ThisIsATarget())
+                if (floatingObject.IsThisATarget())
                 {
                     if (specialAction[floatingObject.SpecialNumber()] == Actions.Reverse)
                     {
@@ -676,7 +732,7 @@ public class MagicRiverManager : MonoBehaviour {
                         {
                             if (numToCompare == hit.transform.GetSiblingIndex())
                             {
-
+                                specificGoodAnswer++;
                                 correctAnswer++;
                                 hit.transform.GetChild(0).GetComponent<ParticleSystem>().Play();
                             }
@@ -786,10 +842,14 @@ public class MagicRiverManager : MonoBehaviour {
         return handleStimulus == numberOfObjectToDrop;
     }
 
-    public void MissAnAnswer()
+    public void MissAnAnswer(FloatingObject floating)
     {
         GameObject collector = transform.GetChild(3).gameObject;
         collector.transform.GetChild(1).GetComponent<ParticleSystem>().Play();
+        if (floating.IsThisATarget())
+        {
+            specificMissAnswer++;
+        }
         missAnswer++;
         handleStimulus++;
 
@@ -824,8 +884,10 @@ public class MagicRiverManager : MonoBehaviour {
     void HandleLevelData()
     {
         int totalErrors = missAnswer + badAnswer;
-        totalCorrects += (15 - totalErrors);
+        totalCorrects += (numberOfObjectToDrop - totalErrors);
         totalIncorrects += totalErrors;
+        totalCorrectTargets += specificGoodAnswer;
+        totalIncorrectTargets += specificBadAnswer + specificMissAnswer;
         numberOfAssays--;
         if (!sessionManager.activeKid.riverFirst)
         {
@@ -891,6 +953,8 @@ public class MagicRiverManager : MonoBehaviour {
         missAnswer = 0;
         badAnswer = 0;
         specificBadAnswer = 0;
+        specificGoodAnswer = 0;
+        specificMissAnswer = 0;
         correctAnswer = 0;
         handleStimulus = 0;
         specialInstructionIndex = 0;
@@ -935,6 +999,9 @@ public class MagicRiverManager : MonoBehaviour {
     {
         int[] data = GameConfigurator.RiverConfig(difficulty, level);
 
+        playedLevels.Add(level);
+        playedDifficulty.Add(difficulty);
+
         if (data[0] == 0)
         {
             reverseMode = false;
@@ -947,6 +1014,7 @@ public class MagicRiverManager : MonoBehaviour {
         dropSpeed = data[1];
 
         specialObjects = (data.Length / 2) - 1;
+        totalTargets += specialObjects;
 
         for (int i = 0; i < data.Length - 2; i += 2)
         {

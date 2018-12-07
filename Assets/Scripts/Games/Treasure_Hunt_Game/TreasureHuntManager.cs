@@ -66,6 +66,7 @@ public class TreasureHuntManager : MonoBehaviour {
     SessionManager sessionManager;
     LevelSaver levelSaver;
     AudioManager audioManager;
+    DemoKey demokey;
 
     AudioClip[] instructionsClips;
 
@@ -86,9 +87,11 @@ public class TreasureHuntManager : MonoBehaviour {
     int difficulty;
     int level;
     int numberOfAssays = 4;
+    int numberOfAnswers;
     int trys = 2;
     int storyIndex;
     int errors = 0;
+    int goods = 0;
     int extraInventoryShow = 0;
     int firstTime;
     int instructionsIndex;
@@ -99,6 +102,11 @@ public class TreasureHuntManager : MonoBehaviour {
     int totalLevels = 36;
     int miniKidLevel = 11;
     int maxiKidLevel = 26;
+    int secondChances;
+    int diferenceBetweenAskObjects;
+    int minimunObjects;
+    int maximunObjects;
+    int remainder;
 
     float time;
 
@@ -109,6 +117,9 @@ public class TreasureHuntManager : MonoBehaviour {
     bool showTutorial = false;
     bool counting = false;
 
+    List<int> playedLevels = new List<int>();
+    List<int> playedDifficulties = new List<int>();
+
     // Use this for initialization
     void Start()
     {
@@ -116,6 +127,10 @@ public class TreasureHuntManager : MonoBehaviour {
         {
             sessionManager = FindObjectOfType<SessionManager>();
             levelSaver = GetComponent<LevelSaver>();
+        }
+        if (FindObjectOfType<DemoKey>())
+        {
+            demokey = FindObjectOfType<DemoKey>();
         }
         audioManager = FindObjectOfType<AudioManager>();
         instructionsClips = Resources.LoadAll<AudioClip>("Audios/Games/Treasure");
@@ -345,29 +360,47 @@ public class TreasureHuntManager : MonoBehaviour {
     {
         if (sessionManager != null)
         {
-            if (sessionManager.activeKid.treasureFirst)
+            if (!FindObjectOfType<DemoKey>())
             {
-                if (sessionManager.activeKid.age < 7)
+                if (sessionManager.activeKid.treasureFirst)
                 {
-                    levelCategorizer = miniKidLevel;
-                }
-                else if (sessionManager.activeKid.age > 9)
-                {
-                    levelCategorizer = maxiKidLevel;
+                    FLISSetup();
                 }
                 else
                 {
-                    levelCategorizer = LevelDifficultyChange(totalLevels);
+                    difficulty = sessionManager.activeKid.treasureDifficulty;
+                    level = sessionManager.activeKid.treasureLevel;
+                    firstTime = 1;
                 }
-                GetDataJustForLevel(levelCategorizer);
-                firstTime = 0;
             }
             else
             {
-                difficulty = sessionManager.activeKid.treasureDifficulty;
-                level = sessionManager.activeKid.treasureLevel;
-                firstTime = 1;
+                var key = FindObjectOfType<DemoKey>();
+                if (key.IsFLISOn())
+                {
+                    sessionManager.activeKid.treasureFirst = true;
+                    FLISSetup();
+                }
+                else
+                {
+                    sessionManager.activeKid.treasureFirst = false;
+                    firstTime = 1;
+                    switch (key.GetDifficulty())
+                    {
+                        case 0:
+                            levelCategorizer = 0;
+                            break;
+                        case 1:
+                            levelCategorizer = totalLevels / 2;
+                            break;
+                        case 2:
+                            levelCategorizer = totalLevels - 5;
+                            break;
+                    }
+                    GetDataJustForLevel(levelCategorizer);
+                }
             }
+
         }
         else
         {
@@ -375,6 +408,24 @@ public class TreasureHuntManager : MonoBehaviour {
             level = PlayerPrefs.GetInt(Keys.Treasure_Level);
             firstTime = PlayerPrefs.GetInt(Keys.Treasure_First);
         }
+    }
+
+    void FLISSetup()
+    {
+        if (sessionManager.activeKid.age < 7)
+        {
+            levelCategorizer = miniKidLevel;
+        }
+        else if (sessionManager.activeKid.age > 9)
+        {
+            levelCategorizer = maxiKidLevel;
+        }
+        else
+        {
+            levelCategorizer = LevelDifficultyChange(totalLevels);
+        }
+        GetDataJustForLevel(levelCategorizer);
+        firstTime = 0;
     }
 
     //This will sav ethe progress that the kid have achived in the session
@@ -413,8 +464,28 @@ public class TreasureHuntManager : MonoBehaviour {
             levelSaver.AddLevelData("searchorders", "look for these objects");
             levelSaver.AddLevelData("availabledistractors", "15");
 
+            //Version 2
+            sessionManager.activeKid.treasureSessions++;
+            if (sessionManager.activeKid.treasureFirst)
+            {
+                sessionManager.activeKid.treasureFirst = false;
+                levelSaver.AddLevelData("initial_level", level);
+                levelSaver.AddLevelData("initial_difficulty", difficulty);
+            }
+            levelSaver.AddLevelData("current_level", level);
+            levelSaver.AddLevelData("current_difficulty", difficulty);
+            levelSaver.AddLevelData("session_correct_total", (goods * 100)/numberOfAnswers);
+            levelSaver.AddLevelData("session_errors_total", (errors * 100) / numberOfAnswers);
+            levelSaver.AddLevelData("total_second_chances", secondChances);
+            levelSaver.AddLevelData("diffrence_in_quantity", diferenceBetweenAskObjects);
+            levelSaver.AddLevelData("played_levels", playedLevels);
+            levelSaver.AddLevelData("played_difficulty", playedDifficulties);
+            levelSaver.AddLevelData("session_minobjects", minimunObjects);
+            levelSaver.AddLevelData("session_maxobjects", maximunObjects);
+            levelSaver.AddLevelData("requestreminder", remainder);
+
             levelSaver.SetLevel();
-            levelSaver.CreateSaveBlock("Tesoro", time, passLevels, repeatedLevels, 5);
+            levelSaver.CreateSaveBlock("Tesoro", time, passLevels, repeatedLevels, 5, sessionManager.activeKid.treasureSessions);
             levelSaver.AddLevelsToBlock();
             levelSaver.PostProgress();
         }
@@ -526,6 +597,16 @@ public class TreasureHuntManager : MonoBehaviour {
         numberOfDistractions = individuals[1];
         numberOfHides = individuals[2];
 
+        if (minimunObjects == 0 || minimunObjects > numberOfStimulus)
+        {
+            minimunObjects = numberOfStimulus;
+        }
+
+        if (maximunObjects == 0 || maximunObjects < numberOfStimulus)
+        {
+            maximunObjects = numberOfStimulus;
+        }
+
         for (int i = 0; i < stimulus.Length; i++)
         {
             tempTreasures.Add(stimulus[i].GetComponent<TreasureManager>());
@@ -616,6 +697,8 @@ public class TreasureHuntManager : MonoBehaviour {
         {
             cellPhoneButton.gameObject.SetActive(true);
             instructionPanel.SetActive(false);
+            playedLevels.Add(level);
+            playedDifficulties.Add(difficulty);
         }
         Transform t = GameObject.FindGameObjectWithTag("CamaraLayer").transform;
         normalCam.gameObject.SetActive(false);
@@ -731,7 +814,7 @@ public class TreasureHuntManager : MonoBehaviour {
         {
             totalBackpack += countsOfArrays[i];
         }
-
+        diferenceBetweenAskObjects += (totalBackpack - numberOfStimulus);
         if (totalBackpack < numberOfStimulus)
         {
             return PackingStatuts.LessItems;
@@ -790,7 +873,8 @@ public class TreasureHuntManager : MonoBehaviour {
     {
         noButton.gameObject.SetActive(false);
         yesButton.GetComponentInChildren<Text>().text = stringsToShow[23];
-
+        numberOfAnswers++;
+        
         switch (packingStatuts)
         {
             case PackingStatuts.MoreItems:
@@ -824,6 +908,7 @@ public class TreasureHuntManager : MonoBehaviour {
                 }
                 break;
             case PackingStatuts.Ok:
+                goods++;
                 if (numberOfAssays <= 1)
                 {
                     miniUIInstructionsText.text = stringsToShow[16];
@@ -864,6 +949,7 @@ public class TreasureHuntManager : MonoBehaviour {
         yesButton.onClick.AddListener(ShowInventorySecondTime);
         stopCellPhoneButton.gameObject.SetActive(false);
         errors++;
+        secondChances++;
     }
 
     //This will handle the level up or down accordingly to the game
@@ -1001,6 +1087,7 @@ public class TreasureHuntManager : MonoBehaviour {
     void ShowInventorySecondTime()
     {
         extraInventoryShow++;
+        remainder++;
         needApp.SetActive(true);
         inventoryManager.SetActive(true);
 

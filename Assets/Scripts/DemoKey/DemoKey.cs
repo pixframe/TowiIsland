@@ -8,8 +8,12 @@ public class DemoKey : MonoBehaviour {
     public TextAsset commonAsset;
     public TextAsset addableAsset;
     public TextAsset beforeAssets;
+
+    int difficulty;
+    bool isFLISActive = true;
 	// Use this for initialization
-	void Start () {
+	void Start ()
+    {
         TextReader.FillAddables(addableAsset);
         TextReader.FillBefore(beforeAssets);
         TextReader.FillCommon(commonAsset);
@@ -19,14 +23,33 @@ public class DemoKey : MonoBehaviour {
         {
             DontDestroyOnLoad(this.gameObject);
         }
-        else {
+        else
+        {
             Destroy(this.gameObject);
         }
 
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+        Debug.Log("is FLIS active? " + isFLISActive);
+    }
+
+    public void SetDifficulty(int difficultyInput)
+    {
+        difficulty = Mathf.Clamp(difficultyInput, 0, 2);
+        Debug.Log("difficulty is" + difficulty);
+    }
+
+    public int GetDifficulty()
+    {
+        return difficulty;
+    }
+
+    public void ChangeFLIS()
+    {
+        isFLISActive = !isFLISActive;
+        Debug.Log("is FLIS active? " + isFLISActive);
+    }
+
+    public bool IsFLISOn()
+    {
+        return isFLISActive;
+    }
 }

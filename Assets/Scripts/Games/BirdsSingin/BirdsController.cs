@@ -109,6 +109,7 @@ public class BirdsController : MonoBehaviour {
     void SingNow()
     {
         manager.BirdSing(numberOfSong);
+        manager.PairOrNot();
         singingParticles.gameObject.SetActive(true);
         singingParticles.Play();
         singingNote.SetActive(false);

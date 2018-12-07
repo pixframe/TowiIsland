@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 public class MonkeyHidingManager : MonoBehaviour {
 
@@ -39,6 +37,7 @@ public class MonkeyHidingManager : MonoBehaviour {
     int straightBadAnswers;
     int levelCategorizer;
     int numberOfAssays = 5;
+    int totalNumberOfAssays;
     int goodAnswer;
     int badAnswer;
     int numberOfObjectToFind;
@@ -55,10 +54,12 @@ public class MonkeyHidingManager : MonoBehaviour {
     string objectToFind;
 
     float time;
+    float latency;
 
     bool counting = false;
     bool showTutorial = false;
     bool findingMultipleObjects = false;
+    bool latencyTime = false;
 
     MonkeyController monkey1;
     MonkeyController monkey2;
@@ -81,6 +82,9 @@ public class MonkeyHidingManager : MonoBehaviour {
     List<GameObject> indications = new List<GameObject>();
     List<int> tempStimulusNums = new List<int>();
     List<int> stimulusNumbers = new List<int>();
+    List<int> playedLevels = new List<int>();
+    List<int> playedDifficulty = new List<int>();
+    List<float> latencies = new List<float>();
 
     #endregion
 
@@ -99,6 +103,7 @@ public class MonkeyHidingManager : MonoBehaviour {
         stringsToShow = TextReader.TextsToShow(textAsset);
         stringOfObjects = TextReader.TextsToShow(objectsText);
         pauser = FindObjectOfType<PauseTheGame>();
+        counting = true;
         if (firstTime == 0)
         {
             SetStory(0);
@@ -116,50 +121,90 @@ public class MonkeyHidingManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        if (counting) {
+        if (counting)
+        {
             time += Time.deltaTime;
+        }
+        if (latencyTime)
+        {
+            latency += Time.deltaTime;
         }
 	}
 
     void GetLevel()
     {
-        if (sessionManager != null)
+        totalNumberOfAssays = numberOfAssays;
+        if (!FindObjectOfType<DemoKey>())
         {
-            if (sessionManager.activeKid.monkeyFirst)
+            if (sessionManager != null)
             {
-                if (sessionManager.activeKid.age < 7)
+                if (sessionManager.activeKid.monkeyFirst)
                 {
-                    levelCategorizer = miniKidLevel;
-                }
-                else if (sessionManager.activeKid.age > 9)
-                {
-                    levelCategorizer = maxiKidLevel;
+                    FLISSetup();
                 }
                 else
                 {
-                    levelCategorizer = LevelDifficultyChange(totalLevels);
+                    difficulty = sessionManager.activeKid.monkeyDifficulty;
+                    if (difficulty > 1)
+                    {
+                        difficulty = 1;
+                    }
+                    level = sessionManager.activeKid.monkeyLevel;
+                    firstTime = 1;
                 }
-                GetDataJustForLevel(levelCategorizer);
-                firstTime = 0;
             }
             else
             {
-                difficulty = sessionManager.activeKid.monkeyDifficulty;
-                if (difficulty > 1)
-                {
-                    difficulty = 1;
-                }
-                level = sessionManager.activeKid.monkeyLevel;
-                firstTime = 1;
+                difficulty = PlayerPrefs.GetInt(Keys.Monkey_Difficulty);
+                level = PlayerPrefs.GetInt(Keys.Monkey_Level);
+                firstTime = PlayerPrefs.GetInt(Keys.Monkey_First);
             }
         }
         else
         {
-            difficulty = PlayerPrefs.GetInt(Keys.Monkey_Difficulty);
-            level = PlayerPrefs.GetInt(Keys.Monkey_Level);
-            firstTime = PlayerPrefs.GetInt(Keys.Monkey_First);
+            var key = FindObjectOfType<DemoKey>();
+            if (key.IsFLISOn())
+            {
+                sessionManager.activeKid.monkeyFirst = true;
+                FLISSetup();
+            }
+            else
+            {
+                sessionManager.activeKid.monkeyFirst = false;
+                firstTime = 1;
+                switch (key.GetDifficulty())
+                {
+                    case 0:
+                        levelCategorizer = 0;
+                        break;
+                    case 1:
+                        levelCategorizer = totalLevels / 2;
+                        break;
+                    case 2:
+                        levelCategorizer = totalLevels - 5;
+                        break;
+                }
+                GetDataJustForLevel(levelCategorizer);
+            }
         }
+    }
 
+    void FLISSetup()
+    {
+        if (sessionManager.activeKid.age < 7)
+        {
+            levelCategorizer = miniKidLevel;
+        }
+        else if (sessionManager.activeKid.age > 9)
+        {
+            levelCategorizer = maxiKidLevel;
+        }
+        else
+        {
+            levelCategorizer = LevelDifficultyChange(totalLevels);
+        }
+        GetDataJustForLevel(levelCategorizer);
+        firstTime = 0;
     }
 
     void SaveLevel()
@@ -169,10 +214,7 @@ public class MonkeyHidingManager : MonoBehaviour {
         {
             sessionManager.activeKid.monkeyDifficulty = difficulty;
             sessionManager.activeKid.monkeyLevel = level;
-            if (sessionManager.activeKid.monkeyFirst)
-            {
-                sessionManager.activeKid.monkeyFirst = false;
-            }
+
             sessionManager.activeKid.kiwis += passLevels;
             sessionManager.activeKid.playedMonkey = 1;
             sessionManager.activeKid.needSync = true;
@@ -187,8 +229,27 @@ public class MonkeyHidingManager : MonoBehaviour {
             levelSaver.AddLevelData("timeofmovements", 10);
             levelSaver.AddLevelData("correct", goodAnswer);
 
+            //Verison 2
+            sessionManager.activeKid.monkeySessions++;
+
+            if (sessionManager.activeKid.monkeyFirst)
+            {
+                sessionManager.activeKid.monkeyFirst = false;
+                levelSaver.AddLevelData("initial_level", level);
+                levelSaver.AddLevelData("initial_difficulty", difficulty);
+            }
+            levelSaver.AddLevelData("current_level", level);
+            levelSaver.AddLevelData("current_difficulty", difficulty);
+            levelSaver.AddLevelData("correct_monkeys", goodAnswer);
+            levelSaver.AddLevelData("errors_monkeys", badAnswer);
+            levelSaver.AddLevelData("session_correct_percentage", goodAnswer * 20);
+            levelSaver.AddLevelData("session_errors_percentage", badAnswer * 20);
+            levelSaver.AddLevelData("latency", latencies);
+            levelSaver.AddLevelData("played_levels", playedLevels);
+            levelSaver.AddLevelData("played_difficulty", playedDifficulty);
+
             levelSaver.SetLevel();
-            levelSaver.CreateSaveBlock("DondeQuedoLaBolita", time, passLevels, repeatedLevels, 5);
+            levelSaver.CreateSaveBlock("DondeQuedoLaBolita", time, passLevels, repeatedLevels, passLevels - repeatedLevels, sessionManager.activeKid.monkeySessions);
             levelSaver.AddLevelsToBlock();
             levelSaver.PostProgress();
 
@@ -254,6 +315,8 @@ public class MonkeyHidingManager : MonoBehaviour {
         numberOfObjectsToFind = dataGameConfig[3];
         timeForMovement = movementTime / numberOfMovements;
         numberOfObjects = difficulty + 1;
+        playedLevels.Add(level);
+        playedDifficulty.Add(difficulty);
     }
 
     void FillTheLists()
@@ -375,7 +438,6 @@ public class MonkeyHidingManager : MonoBehaviour {
         }
         ChooseMonkeysToMove();
         instructionPanel.gameObject.SetActive(false);
-        counting = true;
         Cursor.visible = false;
     }
 
@@ -404,15 +466,17 @@ public class MonkeyHidingManager : MonoBehaviour {
 
     public void NextMovement() {
         monkeysSwitchInCorrectPlaces++;
-        if (monkeysSwitchInCorrectPlaces == 2) {
+        if (monkeysSwitchInCorrectPlaces == 2)
+        {
             monkeysSwitchInCorrectPlaces = 0;
             numberOfMovements--;
             if (numberOfMovements > 0)
             {
                 ChooseMonkeysToMove();
             }
-            else {
-                counting = false;
+            else
+            {
+                latencyTime = true;
                 SetObjectsToFind();
                 Cursor.visible = true;
                 foreach (GameObject mon in finalMonkeys)
@@ -425,6 +489,7 @@ public class MonkeyHidingManager : MonoBehaviour {
 
     public void CorrectAnswer(string name)
     {
+        latencyTime = false;
         if (objectToFind == null)
         {
             numberOfObjectsToFind--;
@@ -457,7 +522,9 @@ public class MonkeyHidingManager : MonoBehaviour {
         }
     }
 
-    public void BadAnswer() {
+    public void BadAnswer()
+    {
+        latencyTime = false;
         badAnswer++;
         straightBadAnswers++;
         numberOfAssays--;
@@ -576,6 +643,7 @@ public class MonkeyHidingManager : MonoBehaviour {
         if(monkeysInCorrectPlace == finalMonkeys.Count)
         {
             monkeysInCorrectPlace = 0;
+            latencies.Add(latency);
             if (numberOfAssays > 0)
             {
                 ResetGame();
@@ -610,6 +678,7 @@ public class MonkeyHidingManager : MonoBehaviour {
         finalMonkeys.RemoveRange(0, finalMonkeys.Count);
         finalStimulus.RemoveRange(0, finalStimulus.Count);
         positions.RemoveRange(0, positions.Count);
+        latency = 0;
         readyButton.onClick.RemoveAllListeners();
         readyButton.onClick.AddListener(SetAGame);
         readyButton.gameObject.SetActive(true);

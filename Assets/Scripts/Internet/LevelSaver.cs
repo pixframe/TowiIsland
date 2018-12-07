@@ -3,7 +3,6 @@ using System.Collections;
 using Boomlagoon.JSON;
 using System.Collections.Generic;
 using System;
-using System.IO;
 
 public class LevelSaver : MonoBehaviour {
 
@@ -276,7 +275,7 @@ public class LevelSaver : MonoBehaviour {
         //EmergencySave();
     }
 
-    public void CreateSaveBlock(string gameKey, float gameTime, int passedLevels, int repeatedLevels, int playedLevels)
+    public void CreateSaveBlock(string gameKey, float gameTime, int passedLevels, int repeatedLevels, int playedLevels, int sessionNumber)
     {
         game = gameKey;
         JSONObject headerItem = new JSONObject
@@ -290,7 +289,16 @@ public class LevelSaver : MonoBehaviour {
             { "repeatedLevels", repeatedLevels },
             { "playedLevels", playedLevels },
             { "device", SystemInfo.deviceType.ToString()},
-            { "version", "5.0" }
+            { "version", Application.version },
+            //version 2
+            { "game_key", gameKey },
+            { "parent_id", sessionManager.activeUser.id },
+            { "kid_id", kidKey },
+            { "passed_Levels", passedLevels},
+            { "repetaed_levels", repeatedLevels},
+            { "played_levels", playedLevels },
+            { "sesession_time",Mathf.Round(gameTime * 100) / 100 },
+            { "session_number",  sessionNumber}
         };
         DateTime nowT = DateTime.Now;
         headerItem.Add("date", String.Format("{0:0000}-{1:00}-{2:00}T{3:00}:{4:00}:{5:00}", nowT.Year, nowT.Month, nowT.Day, nowT.Hour, nowT.Minute, nowT.Second));

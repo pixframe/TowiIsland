@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -84,7 +83,7 @@ public class LavaGameManager : MonoBehaviour {
     //Here we will get the posibles categories of the sprites
     int numberOfCategories;
     //This is the one that get the variables
-    int level = 6;
+    int level = 0;
     //This is the difficulty
     int difficulty = 0;
     //This is the amount of the games play by session
@@ -95,12 +94,17 @@ public class LavaGameManager : MonoBehaviour {
     int objectsPerCategory = 3;
     int firstTime;
     int goodAnswer;
+    int badAnswer;
+    int missedAnswer;
     int passLevels;
     int repeatedLevels;
     int totalLevels = 54;
     int levelCategorizer;
     int miniKidLevel = 9;
     int maxiKidLevel = 27;
+    int totalAnswers;//This is used to store the max amount of answers a player can input
+    int initialLevel;
+    int initialDifficulty;
 
     //Here we Store Every Object to be show in a particular time in the game
     int[] objectsToShow = new int[3];
@@ -130,6 +134,8 @@ public class LavaGameManager : MonoBehaviour {
     //This is the time the 
     float showResultTime = 3.0f;
 
+    float latency; //Here we store temporaly th elatency of the answer later this will be store in the list named "latencies"
+
     float timer = 0.0f;
     float time;
 
@@ -149,17 +155,22 @@ public class LavaGameManager : MonoBehaviour {
 
     PauseTheGame pauser;
 
+    List<float> latencies = new List<float>();
+    List<int> levelsPlayed = new List<int>();
+    List<int> difficultiesPlayed = new List<int>();
     #endregion
 
     // Use this for initialization
     void Start ()
     {
-        if (FindObjectOfType<SessionManager>())
-        {
-            sessionManager = FindObjectOfType<SessionManager>();
-            levelSaver = GetComponent<LevelSaver>();
-        }
+        //We get need componets to make the game work
+        sessionManager = FindObjectOfType<SessionManager>();
+        levelSaver = GetComponent<LevelSaver>();
         audioManager = FindObjectOfType<AudioManager>();
+
+        //Here we declare that the max amout of possible answers equals the numbers of assays
+        totalAnswers = numberOfAssays;
+
         GetLevels();
         FillTheLists();
         instructionsClips = Resources.LoadAll<AudioClip>("Audios/Games/Lava");
@@ -206,6 +217,12 @@ public class LavaGameManager : MonoBehaviour {
             }
             else
             {
+                if (phase == GamePhase.EraserVapors)
+                {
+                    //Its in the phase of eraser vapors because the variable phase tells wich its the next phase and not the current one
+                    latency += Time.deltaTime;
+                    Debug.Log("latencie is " + latency);
+                }
                 if (rotate)
                 {
                     RotateTheShadows();
@@ -238,29 +255,51 @@ public class LavaGameManager : MonoBehaviour {
     {
         if (sessionManager != null)
         {
-            if (sessionManager.activeKid.lavaFirst)
+            if (!FindObjectOfType<DemoKey>())
             {
-                if (sessionManager.activeKid.age < 7)
+                if (sessionManager.activeKid.lavaFirst)
                 {
-                    levelCategorizer = miniKidLevel;
-                }
-                else if (sessionManager.activeKid.age > 9)
-                {
-                    levelCategorizer = maxiKidLevel;
+                    FLISSetup();
                 }
                 else
                 {
-                    levelCategorizer = LevelDifficultyChange(totalLevels);
+                    difficulty = sessionManager.activeKid.lavaDifficulty;
+                    level = sessionManager.activeKid.laveLevel;
+                    levelsPlayed.Add(level);
+                    difficultiesPlayed.Add(difficulty);
+                    firstTime = 1;
                 }
-                GetDataJustForLevel(levelCategorizer);
-                firstTime = 0;
             }
             else
             {
-                difficulty = sessionManager.activeKid.lavaDifficulty;
-                level = sessionManager.activeKid.laveLevel;
-                firstTime = 1;
+                var key = FindObjectOfType<DemoKey>();
+                if (key.IsFLISOn())
+                {
+                    sessionManager.activeKid.lavaFirst = true;
+                    FLISSetup();
+                }
+                else
+                {
+                    sessionManager.activeKid.lavaFirst = false;
+                    firstTime = 1;
+                    switch (key.GetDifficulty())
+                    {
+                        case 0:
+                            levelCategorizer = 0;
+                            break;
+                        case 1:
+                            levelCategorizer = totalLevels / 2;
+                            break;
+                        case 2:
+                            levelCategorizer = totalLevels - 5;
+                            break;
+                    }
+                    GetDataJustForLevel(levelCategorizer);
+                }
             }
+
+            initialLevel = level;
+            initialDifficulty = difficulty;
         }
         else
         {
@@ -268,6 +307,24 @@ public class LavaGameManager : MonoBehaviour {
             difficulty = PlayerPrefs.GetInt(Keys.Lava_Difficulty);
             firstTime = PlayerPrefs.GetInt(Keys.Lava_First);
         }
+    }
+
+    void FLISSetup()
+    {
+        if (sessionManager.activeKid.age < 7)
+        {
+            levelCategorizer = miniKidLevel;
+        }
+        else if (sessionManager.activeKid.age > 9)
+        {
+            levelCategorizer = maxiKidLevel;
+        }
+        else
+        {
+            levelCategorizer = LevelDifficultyChange(totalLevels);
+        }
+        GetDataJustForLevel(levelCategorizer);
+        firstTime = 0;
     }
 
     void SaveLevels()
@@ -281,11 +338,6 @@ public class LavaGameManager : MonoBehaviour {
             sessionManager.activeKid.needSync = true;
             sessionManager.activeKid.kiwis += passLevels;
 
-            if (sessionManager.activeKid.lavaFirst)
-            {
-                sessionManager.activeKid.lavaFirst = false;
-            }
-
             levelSaver.AddLevelData("level", difficulty);
             levelSaver.AddLevelData("sublevel", level);
             levelSaver.AddLevelData("shadow", "names");
@@ -294,9 +346,36 @@ public class LavaGameManager : MonoBehaviour {
             levelSaver.AddLevelData("options", "options that were show");
             levelSaver.AddLevelData("correct", goodAnswer);
             levelSaver.AddLevelData("time", time);
+            levelSaver.AddLevelData("latencies", latencies);
+            //Version 2 
+            sessionManager.activeKid.lavaSessions++;    
+            if (sessionManager.activeKid.lavaFirst)
+            {
+                levelSaver.AddLevelData("start_level", level);
+                levelSaver.AddLevelData("strat_difficulty", difficulty);
+                sessionManager.activeKid.lavaFirst = false;
+            }
+            levelSaver.AddLevelData("current_level", level);
+            levelSaver.AddLevelData("current_difficulty", difficulty);
+            levelSaver.AddLevelData("session_correct_percentage", goodAnswer * 20);
+            levelSaver.AddLevelData("session_errors_percentage", badAnswer * 20);
+            levelSaver.AddLevelData("session_miss_percentage", missedAnswer * 20);
+            float totalLatencies = 0;
+            foreach (float f in latencies)
+            {
+                totalLatencies += f;
+            }
+            totalLatencies /= totalAnswers;
+            levelSaver.AddLevelData("latencies_percentage", totalLatencies);
+            levelSaver.AddLevelData("correct_answers", goodAnswer);
+            levelSaver.AddLevelData("bad_answers", badAnswer);
+            levelSaver.AddLevelData("miss_answers", missedAnswer);
+            levelSaver.AddLevelData("latencies", latencies);
+            levelSaver.AddLevelData("played_levels", levelsPlayed);
+            levelSaver.AddLevelData("played_difficulty", difficultiesPlayed);
 
             levelSaver.SetLevel();
-            levelSaver.CreateSaveBlock("JuegoDeSombras", time, passLevels, repeatedLevels, passLevels+repeatedLevels);
+            levelSaver.CreateSaveBlock("JuegoDeSombras", time, passLevels, repeatedLevels, passLevels+repeatedLevels, sessionManager.activeKid.lavaSessions);
             levelSaver.AddLevelsToBlock();
             levelSaver.PostProgress();
         }
@@ -474,11 +553,19 @@ public class LavaGameManager : MonoBehaviour {
                 }
                 break;
             case GamePhase.EraserVapors:
-                if (!answer) {
+                if (!answer)
+                {
                     imagesOfResults[1].sprite = categories[difficulty][objectToFind];
                     winTheGame = false;
                     missAnswer = true;
+                    latencies.Add(3f);
+                    missedAnswer++;
                 }
+                else
+                {
+                    latencies.Add(latency);
+                }
+                latency = 0;
                 rotate = false;
                 PlayTheVapors(0, 3);
                 HideAll();
@@ -605,7 +692,6 @@ public class LavaGameManager : MonoBehaviour {
     void LevelUp()
     {
         level++;
-        goodAnswer++;
         passLevels++;
         if (level >= 9)
         {
@@ -687,6 +773,11 @@ public class LavaGameManager : MonoBehaviour {
             readyButton.onClick.RemoveAllListeners();
             readyButton.onClick.AddListener(FinishTheGame);
         }
+        else
+        {
+            levelsPlayed.Add(level);
+            difficultiesPlayed.Add(difficulty);
+        }
     }
 
     void FinishTheGame()
@@ -730,10 +821,12 @@ public class LavaGameManager : MonoBehaviour {
         if (orderOfObjects[index] == objectToFind)
         {
             winTheGame = true;
+            goodAnswer++;
         }
         else
         {
             winTheGame = false;
+            badAnswer++;
         }
         imagesOfResults[1].sprite = categories[difficulty][orderOfObjects[index]];
         ToDo();

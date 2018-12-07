@@ -27,6 +27,7 @@ public class MenuManager : MonoBehaviour {
     public Button aboutButton;
     public Button kidsButton;
     public Button singOutButton;
+    public Button escapeButton;
 	public Text kidNameText;
     public Text savigDirectionText;
 
@@ -239,6 +240,10 @@ public class MenuManager : MonoBehaviour {
         {
             key = FindObjectOfType<DemoKey>();
         }
+        if (SystemInfo.deviceType == DeviceType.Handheld)
+        {
+            escapeButton.gameObject.SetActive(false);
+        }
     }
 
     //here we set almost every button in the ui with the correspondent function to do
@@ -266,6 +271,7 @@ public class MenuManager : MonoBehaviour {
         newKidButton.onClick.AddListener(CreateAKid);
         moreAccountsNeedsButton.onClick.AddListener(MoreSubscriptions);
         shopInWeb.onClick.AddListener(MoreSubscriptions);
+        escapeButton.onClick.AddListener(EscapeApplication);
     }
 
     #endregion
@@ -1273,4 +1279,9 @@ public class MenuManager : MonoBehaviour {
         return diagonalInches > 6.5f;
     }
 
+
+    void EscapeApplication() {
+        Application.Quit();
+        Debug.Log("shoul exit now");
+    }
 }

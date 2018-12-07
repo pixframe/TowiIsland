@@ -32,6 +32,13 @@ public class GameCenterManager : MonoBehaviour {
     [Header("Buttons")]
     public Button goBackButton;
 
+    [Header("Demo Version")]
+    public GameObject demoPanel;
+    public Slider difficultySlider;
+    public Toggle flisActivation;
+    public Button ageButton;
+    public InputField ageValue;
+
     int index;
     List<int> stations = new List<int> { 0, 1, 2, 3, 4, 5 };
     //int[] stations = new int[] { 2, 3, 5 };
@@ -64,6 +71,17 @@ public class GameCenterManager : MonoBehaviour {
             Debug.Log("We need to update a profile");
             sessionManager.UpdateProfile(activeMissions);
         }
+        if (FindObjectOfType<DemoKey>())
+        {
+            key = FindObjectOfType<DemoKey>();
+            demoPanel.SetActive(true);
+            difficultySlider.value = key.GetDifficulty();
+            difficultySlider.onValueChanged.AddListener(delegate { key.SetDifficulty((int)difficultySlider.value); });
+            flisActivation.isOn = key.IsFLISOn();
+            flisActivation.onValueChanged.AddListener(delegate { key.ChangeFLIS(); });
+            ageButton.onClick.AddListener(ChangeAge);
+            ageValue.placeholder.GetComponent<Text>().text = "Age is " + sessionManager.activeKid.age.ToString("00");
+        }
         ChildGames();
         audioPlayer = FindObjectOfType<AudioPlayerForMenus>();
 
@@ -93,13 +111,16 @@ public class GameCenterManager : MonoBehaviour {
         currentPanel.playButton.GetComponentInChildren<Text>().text = stringsToShow[6];
     }
 
+    void ChangeAge()
+    {
+        sessionManager.activeKid.age = int.Parse(ageValue.text);
+        ageValue.text = "";
+        ageValue.placeholder.GetComponent<Text>().text = "Age is " + sessionManager.activeKid.age.ToString("00");
+    }
+
     void ChildGames()
     {
-        if (FindObjectOfType<DemoKey>())
-        {
-
-        }
-        else
+        if (!FindObjectOfType<DemoKey>())
         {
             if (sessionManager.activeKid.anyFirstTime)
             {
