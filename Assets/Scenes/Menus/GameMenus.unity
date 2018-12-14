@@ -4846,7 +4846,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: -0.000072862145, y: 47.30002}
+  m_AnchoredPosition: {x: -0.000011253388, y: 47.30002}
   m_SizeDelta: {x: 127, y: 94.6}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &459789721
@@ -7556,7 +7556,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 1.45, y: -56.75}
-  m_SizeDelta: {x: 144.32, y: 105.98}
+  m_SizeDelta: {x: 148.89, y: 148.89}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &776969496
 MonoBehaviour:
@@ -7577,7 +7577,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 9e3e2a1cef66b844f829d2171858fa50, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e28498e780ccc0243b01e9f2170ad555, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -13394,14 +13394,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.754717, g: 0.45245194, b: 0.24563903, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 23d44c10bc0f5af4997ffd47e2f17b98, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bd9b971fc700a364e9d81291a9542df9, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -14099,14 +14099,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.754717, g: 0.45245194, b: 0.24563903, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 23d44c10bc0f5af4997ffd47e2f17b98, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bd9b971fc700a364e9d81291a9542df9, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -23118,14 +23118,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.754717, g: 0.45245194, b: 0.24563903, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 23d44c10bc0f5af4997ffd47e2f17b98, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bd9b971fc700a364e9d81291a9542df9, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -33173,6 +33173,8 @@ MonoBehaviour:
     laveLevel: 0
     treasureDifficulty: 0
     treasureLevel: 0
+    icecreamDifficulty: 0
+    icecreamLevel: 0
     playedBird: 0
     blockedArbolMusical: 0
     playedRiver: 0
@@ -33185,6 +33187,13 @@ MonoBehaviour:
     blockedDondeQuedoLaBolita: 0
     playedTreasure: 0
     blockedTesoro: 0
+    birdsSessions: 0
+    lavaSessions: 0
+    monkeySessions: 0
+    riverSessions: 0
+    sandSessions: 0
+    treasureSessions: 0
+    icecreamSessions: 0
     rioTutorial: 0
     tesoroTutorial: 0
     arbolMusicalTutorial: 0
@@ -33203,7 +33212,9 @@ MonoBehaviour:
     riverFirst: 0
     sandFirst: 0
     treasureFirst: 0
+    icecreamFirst: 0
     anyFirstTime: 0
+    sandLevelSet: 0
     needSync: 0
     testAvailable: 0
     isActive: 0

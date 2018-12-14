@@ -120,7 +120,7 @@ public class FoodDicctionary
 
     public class MadeIngridients
     {
-        public enum KindOfMadeIngridients { Dough, FixableDough, Burned, Trashable};
+        public enum KindOfMadeIngridients { Dough, FixableDough, Trashable};
     }
 
     public class CookedMeal
