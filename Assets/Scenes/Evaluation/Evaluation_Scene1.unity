@@ -130,7 +130,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &9600471
 RectTransform:
   m_ObjectHideFlags: 0
@@ -676,8 +676,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.7999878, y: -62.205}
-  m_SizeDelta: {x: 601.86, y: 307.9}
+  m_AnchoredPosition: {x: 0.8, y: -62.2}
+  m_SizeDelta: {x: 640.5, y: 640.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &152599507
 MonoBehaviour:
@@ -698,7 +698,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: d385826779241450bbd20f074d70f1e1, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a4ae8cd4b9e6b3247b25f7e6243f2f2a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2847,8 +2847,6 @@ MonoBehaviour:
   tryPanel: {fileID: 544744142}
   storyCanvas: {fileID: 9600470}
   lightsImage: {fileID: 1672227826}
-  audioClipsInScene:
-  - {fileID: 8300000, guid: b1da12060d52acc46b20d4270db13896, type: 3}
 --- !u!1 &831318212
 GameObject:
   m_ObjectHideFlags: 0

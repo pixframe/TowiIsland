@@ -3114,6 +3114,8 @@ MonoBehaviour:
   aboutButton: {fileID: 873523792}
   kidsButton: {fileID: 950499165}
   singOutButton: {fileID: 916440973}
+  escapeButton: {fileID: 0}
+  kidNameText: {fileID: 0}
   savigDirectionText: {fileID: 1388729250}
   logInMenu: {fileID: 360332826}
   logAndSingPanel: {fileID: 1367393759}
@@ -4067,6 +4069,8 @@ MonoBehaviour:
     laveLevel: 0
     treasureDifficulty: 0
     treasureLevel: 0
+    icecreamDifficulty: 0
+    icecreamLevel: 0
     playedBird: 0
     blockedArbolMusical: 0
     playedRiver: 0
@@ -4079,6 +4083,13 @@ MonoBehaviour:
     blockedDondeQuedoLaBolita: 0
     playedTreasure: 0
     blockedTesoro: 0
+    birdsSessions: 0
+    lavaSessions: 0
+    monkeySessions: 0
+    riverSessions: 0
+    sandSessions: 0
+    treasureSessions: 0
+    icecreamSessions: 0
     rioTutorial: 0
     tesoroTutorial: 0
     arbolMusicalTutorial: 0
@@ -4097,10 +4108,14 @@ MonoBehaviour:
     riverFirst: 0
     sandFirst: 0
     treasureFirst: 0
+    icecreamFirst: 0
     anyFirstTime: 0
+    sandLevelSet: 0
     needSync: 0
     testAvailable: 0
     isActive: 0
+    isIAPSubscribed: 0
+    buyedIslandObjects: 
   main: 0
   temporalKids: []
 --- !u!1 &530209688
@@ -6999,7 +7014,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!108 &913017198
 Light:
   m_ObjectHideFlags: 0

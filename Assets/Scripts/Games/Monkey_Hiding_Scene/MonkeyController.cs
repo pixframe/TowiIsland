@@ -180,7 +180,7 @@ public class MonkeyController : MonoBehaviour {
         holding = true;
         holdObject = objectName;
         numberOfStimulus = stimulusNum;
-        return transform.GetChild(0).transform.GetChild(4).transform.position;
+        return transform.GetChild(0).transform.GetChild(3).transform.position;
     }
 
     //this will tell if the monkey is holding something
@@ -355,7 +355,7 @@ public class MonkeyController : MonoBehaviour {
                 manager.CorrectAnswer(WhatIsHolding());
                 GameObject objectToPresent = manager.ObjectToShow(numberOfStimulus);
                 objectToPresent.SetActive(true);
-                objectToPresent.transform.position = transform.GetChild(0).transform.GetChild(4).transform.position;
+                objectToPresent.transform.position = transform.GetChild(0).transform.GetChild(3).transform.position;
                 holding = false;
                 holdObject = null;
                 coli.enabled = false;
@@ -365,7 +365,7 @@ public class MonkeyController : MonoBehaviour {
                 manager.BadAnswer();
                 GameObject objectToPresent = manager.BadAnswerShow();
                 objectToPresent.SetActive(true);
-                objectToPresent.transform.position = transform.GetChild(0).transform.GetChild(4).transform.position;
+                objectToPresent.transform.position = transform.GetChild(0).transform.GetChild(3).transform.position;
             }
         }
     }
