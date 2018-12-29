@@ -85,6 +85,7 @@ public class GameCenterManager : MonoBehaviour {
         ChildGames();
         audioPlayer = FindObjectOfType<AudioPlayerForMenus>();
 
+        textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Menus/GameSelectionIsland");
         stringsToShow = TextReader.TextsToShow(textAsset);
         previosPanel = new GamePanel(backPanel);
         nextPanel = new GamePanel(fowardPanel);

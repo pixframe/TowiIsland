@@ -39,6 +39,7 @@ public class IslandShoppingManager : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
+
         sessionManager = FindObjectOfType<SessionManager>();
         miniIsland = FindObjectOfType<MiniIslandController>();
         cam = FindObjectOfType<CameraIslandShop>();
@@ -46,7 +47,7 @@ public class IslandShoppingManager : MonoBehaviour {
         kiwiAmout = sessionManager.activeKid.kiwis;
         UpdateKiwiAmount();
 
-        stringsToShow = TextReader.TextsToShow(Resources.Load<TextAsset>("StringsToShow/MiniGame/IslandShop"));
+        stringsToShow = TextReader.TextsToShow(Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}MiniGames/IslandShop"));
         Debug.Log(stringsToShow[0]);
 
         for (int i = 0; i < container.transform.childCount; i++)
@@ -63,6 +64,7 @@ public class IslandShoppingManager : MonoBehaviour {
         goBackButton.onClick.AddListener(GoBack);
 
         SetCorrectButtons();
+        viewButton.GetComponentInChildren<Text>().text = stringsToShow[5];
     }
 
     // Update is called once per frame

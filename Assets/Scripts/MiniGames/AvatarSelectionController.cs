@@ -29,6 +29,7 @@ public class AvatarSelectionController : MonoBehaviour {
 	void Start ()
     {
         sessionManager = FindObjectOfType<SessionManager>();
+        textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}MiniGames/AvatarSelection");
         stringToShow = TextReader.TextsToShow(textAsset);
         instructionText.text = stringToShow[0];
         noButton.onClick.AddListener(RegretSelection);

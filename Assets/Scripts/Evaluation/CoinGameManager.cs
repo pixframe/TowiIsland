@@ -109,7 +109,8 @@ public class CoinGameManager : MonoBehaviour {
     void Start() {
         evaluationController = FindObjectOfType<EvaluationController>();
         audioManager = FindObjectOfType<AudioManager>();
-        audioInScene = Resources.LoadAll<AudioClip>("Audios/Evaluation/Scene_6");
+        textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Evaluation/Evaluation_06/Evaluation_Scene6");
+        audioInScene = Resources.LoadAll<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Evaluation/Scene_6");
         audioManager.PlayClip(audioInScene[0]);
         stringsToShow = TextReader.TextsToShow(textAsset);
         storyCam.SetActive(true);

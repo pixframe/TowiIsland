@@ -35,7 +35,7 @@ public class SessionManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
         //if(main)
-        PlayerPrefs.DeleteAll ();
+        //PlayerPrefs.DeleteAll ();
         string version = Application.version;
         if (PlayerPrefs.GetString(Keys.Version_Last_Season) != version)
         {

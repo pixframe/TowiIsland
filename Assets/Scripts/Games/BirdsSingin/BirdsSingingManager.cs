@@ -137,7 +137,8 @@ public class BirdsSingingManager : MonoBehaviour {
             levelSaver = GetComponent<LevelSaver>();
         }
         GetLevel();
-        instructionsClips = Resources.LoadAll<AudioClip>("Audios/Games/Birds");
+        textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/Birds/BirdsText");
+        instructionsClips = Resources.LoadAll<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Games/Birds");
         maxLevelPerDifficulty = 9 + (difficulty * 3);
         stringsToShow = TextReader.TextsToShow(textAsset);
         pauser = FindObjectOfType<PauseTheGame>();

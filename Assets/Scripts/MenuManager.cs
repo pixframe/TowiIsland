@@ -10,12 +10,12 @@ public class MenuManager : MonoBehaviour {
 
     //this assets contains all the information that we need to create the text of the first menu
     [Header("Texts To Show")]
-    public TextAsset textOfScene;
-    public TextAsset textOfAll;
-    public TextAsset textBefore;
-    public TextAsset textAddable;
-    public TextAsset creditsAsset;
-    public TextAsset warningAsset;
+    TextAsset loginTextAsset;
+    TextAsset textOfAll;
+    TextAsset textBefore;
+    TextAsset textAddable;
+    TextAsset creditsAsset;
+    TextAsset warningAsset;
     string[] lines;
 
     //this region contains all the ui elements of this menu
@@ -25,6 +25,7 @@ public class MenuManager : MonoBehaviour {
     public Button evaluationButton;
     public Button gamesButton;
     public Button aboutButton;
+    public Button configButton;
     public Button kidsButton;
     public Button singOutButton;
     public Button escapeButton;
@@ -124,6 +125,9 @@ public class MenuManager : MonoBehaviour {
     public GameObject loadingCanvas;
     public Text loadingText;
 
+    [Header("Config")]
+    public GameObject configCanvas;
+    ConfigMenu configMenu;
     #endregion
 
     AudioManager audioManager;
@@ -229,12 +233,8 @@ public class MenuManager : MonoBehaviour {
         subscriptionsManager = GetComponent<SubscriptionsWays>();
         sessionManager = FindObjectOfType<SessionManager>();
         myIAPManager = FindObjectOfType<MyIAPManager>();
-        TextReader.FillCommon(textOfAll);
-        TextReader.FillAddables(textAddable);
-        TextReader.FillBefore(textBefore);
-        lines = TextReader.TextsToShow(textOfScene);
-        warningLines = TextReader.TextsToShow(warningAsset);
-        WriteTheTexts();
+        configMenu = new ConfigMenu(configCanvas);
+        UpdateTexts();
         ButtonSetUp();
         if (FindObjectOfType<DemoKey>())
         {
@@ -244,6 +244,27 @@ public class MenuManager : MonoBehaviour {
         {
             escapeButton.gameObject.SetActive(false);
         }
+    }
+
+    void UpdateTexts()
+    {
+        SetLanguageResources();
+        WriteTheTexts();
+    }
+
+    void SetLanguageResources()
+    {
+        loginTextAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Login/Login");
+        warningAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Login/Warnings");
+        textOfAll = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Login/CommonStrings");
+        textAddable = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Login/AddableStrings");
+        textBefore = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Login/BeforeStrings");
+
+        TextReader.FillCommon(textOfAll);
+        TextReader.FillAddables(textAddable);
+        TextReader.FillBefore(textBefore);
+        lines = TextReader.TextsToShow(loginTextAsset);
+        warningLines = TextReader.TextsToShow(warningAsset);
     }
 
     //here we set almost every button in the ui with the correspondent function to do
@@ -272,6 +293,11 @@ public class MenuManager : MonoBehaviour {
         moreAccountsNeedsButton.onClick.AddListener(MoreSubscriptions);
         shopInWeb.onClick.AddListener(MoreSubscriptions);
         escapeButton.onClick.AddListener(EscapeApplication);
+        configMenu.languageButton.onClick.AddListener(ShowLenguages);
+        configButton.onClick.AddListener(ShowConfig);
+        configMenu.englishLanguageButton.onClick.AddListener(() => SetLanguageOfGame(configMenu.englishLanguageButton.transform.GetSiblingIndex()));
+        configMenu.spanishLanguageButton.onClick.AddListener(() => SetLanguageOfGame(configMenu.spanishLanguageButton.transform.GetSiblingIndex()));
+        configMenu.automaticButton.onClick.AddListener(SetDeviceLanguage);
     }
 
     #endregion
@@ -292,6 +318,8 @@ public class MenuManager : MonoBehaviour {
         shopCanvas.SetActive(false);
         loadingCanvas.SetActive(false);
         newKidPanel.SetActive(false);
+        escapeButton.gameObject.SetActive(false);
+        configMenu.panel.SetActive(false);
     }
 
     //we show the game menu if the player has acces to it
@@ -301,6 +329,14 @@ public class MenuManager : MonoBehaviour {
         gameCanvas.SetActive(true);
 		kidNameText.text = sessionManager.activeKid.name;
         IsTestIsAvailable();
+        if (SystemInfo.deviceType == DeviceType.Handheld)
+        {
+            escapeButton.gameObject.SetActive(false);
+        }
+        else
+        {
+            escapeButton.gameObject.SetActive(true);
+        }
     }
 
     //we show the log in menu for if the player has not sing in on log in
@@ -309,6 +345,14 @@ public class MenuManager : MonoBehaviour {
         HideAllCanvas();
         logInMenu.SetActive(true);
         accountCanvas.SetActive(true);
+        if (SystemInfo.deviceType == DeviceType.Handheld)
+        {
+            escapeButton.gameObject.SetActive(false);
+        }
+        else
+        {
+            escapeButton.gameObject.SetActive(true);
+        }
     }
 
     //we give the player the log in format
@@ -616,8 +660,23 @@ public class MenuManager : MonoBehaviour {
         loadingCanvas.SetActive(true);
     }
 
+    void ShowConfig()
+    {
+        HideAllCanvas();
+        configMenu.panel.SetActive(true);
+        configMenu.languageButtonHandler.SetActive(false);
+        configMenu.languageButton.gameObject.SetActive(true);
+        configMenu.backButton.onClick.RemoveAllListeners();
+        configMenu.backButton.onClick.AddListener(ShowGameMenu);
+    }
 
-
+    void ShowLenguages()
+    {
+        configMenu.languageButtonHandler.SetActive(true);
+        configMenu.languageButton.gameObject.SetActive(false);
+        configMenu.backButton.onClick.RemoveAllListeners();
+        configMenu.backButton.onClick.AddListener(ShowConfig);
+    }
 #endregion
 
 #region Button Functions
@@ -933,7 +992,20 @@ public class MenuManager : MonoBehaviour {
         //Debug.Log("We are creating a kid");
     }
 
-#endregion
+    void SetLanguageOfGame(int index)
+    {
+        PlayerPrefs.SetInt(Keys.DeviceLenguage, 1);
+        PlayerPrefs.SetInt(Keys.Selected_Language, index);
+        UpdateTexts();
+    }
+
+    void SetDeviceLanguage()
+    {
+        PlayerPrefs.SetInt(Keys.DeviceLenguage, 0);
+        UpdateTexts();
+    }
+
+    #endregion
 
     //This will set all the texts need for the menus
     void WriteTheTexts()
@@ -971,6 +1043,11 @@ public class MenuManager : MonoBehaviour {
         WriteTheText(shopInWeb, 29);
         WriteTheText(prepaidButton, 36);
         WriteTheText(moreAccountsNeedsButton, 39);
+        WriteTheText(configButton, 46);
+        WriteTheText(configMenu.languageButton, 47);
+        WriteTheText(configMenu.englishLanguageButton, 48);
+        WriteTheText(configMenu.spanishLanguageButton, 49);
+        WriteTheText(configMenu.automaticButton, 50);
         warningButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
         newKidButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
     }
@@ -1283,5 +1360,27 @@ public class MenuManager : MonoBehaviour {
     void EscapeApplication() {
         Application.Quit();
         Debug.Log("shoul exit now");
+    }
+}
+
+struct ConfigMenu
+{
+    public GameObject panel;
+    public Button languageButton;
+    public GameObject languageButtonHandler;
+    public Button englishLanguageButton;
+    public Button spanishLanguageButton;
+    public Button automaticButton;
+    public Button backButton;
+
+    public ConfigMenu(GameObject mainPanel)
+    {
+        panel = mainPanel;
+        languageButton = panel.transform.GetChild(0).GetComponent<Button>();
+        languageButtonHandler = panel.transform.GetChild(1).gameObject;
+        englishLanguageButton = languageButtonHandler.transform.GetChild(0).GetComponent<Button>();
+        spanishLanguageButton = languageButtonHandler.transform.GetChild(1).GetComponent<Button>();
+        automaticButton = languageButtonHandler.transform.GetChild(languageButtonHandler.transform.childCount - 1).GetComponent<Button>();
+        backButton = panel.transform.GetChild(2).GetComponent<Button>();
     }
 }

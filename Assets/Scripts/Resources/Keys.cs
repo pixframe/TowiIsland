@@ -49,4 +49,10 @@ public class Keys : MonoBehaviour {
     public static string Sand_Complete_Level_Int = "SaCo";
     public static string Sand_Identify_Level_Int = "SaId";
     public static string Sand_First = "SaFi";
+
+    //Lenguages
+    public static string DeviceLenguage = "dvl";
+    public static string Language_English = "en";
+    public static string Language_Spanish = "es";
+    public static string Selected_Language = "sln";
 }

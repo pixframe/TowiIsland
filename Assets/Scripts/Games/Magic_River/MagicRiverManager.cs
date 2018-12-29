@@ -18,9 +18,9 @@ public class MagicRiverManager : MonoBehaviour {
     public GameObject[] beachObjects;
 
     [Header("Text Assets")]
-    public TextAsset textAsset;
-    public TextAsset beachTextAsset;
-    public TextAsset forestTextAsset;
+    TextAsset textAsset;
+    TextAsset beachTextAsset;
+    TextAsset forestTextAsset;
     string[] stringsToShow;
     string[] beachStrings;
     string[] forestStrings;
@@ -35,8 +35,8 @@ public class MagicRiverManager : MonoBehaviour {
     LevelSaver levelSaver;
 
     AudioClip[] instructionsClips;
-    public AudioClip[] stimulusForestClips;
-    public AudioClip[] stimulusBeachClips;
+    AudioClip[] stimulusForestClips;
+    AudioClip[] stimulusBeachClips;
 
     GameObject objectToDrop;
     GameObject selectedObject;
@@ -109,6 +109,7 @@ public class MagicRiverManager : MonoBehaviour {
     int miniKidLevel = 9;
     int maxiKidLevel = 27;
     int totalTargets;
+    static int startingStimulustListPoint = 5;
 
     bool reverseMode;
     bool letItGoMode;
@@ -126,11 +127,26 @@ public class MagicRiverManager : MonoBehaviour {
             levelSaver = GetComponent<LevelSaver>();
         }
         audioManager = FindObjectOfType<AudioManager>();
-        instructionsClips = Resources.LoadAll<AudioClip>("Audios/Games/River");
+        textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/River/RiverText");
+        beachTextAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/River/BeachObjectsTextAsset");
+        forestTextAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/River/ForestObjectsTextAsset");
+        instructionsClips = Resources.LoadAll<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Games/River");
         GetLevel();
         stringsToShow = TextReader.TextsToShow(textAsset);
         beachStrings = TextReader.TextsToShow(beachTextAsset);
         forestStrings = TextReader.TextsToShow(forestTextAsset);
+
+        stimulusBeachClips = new AudioClip[beachStrings.Length];
+        stimulusForestClips = new AudioClip[forestStrings.Length];
+        for (int i = 0; i < stimulusBeachClips.Length; i++)
+        {
+            stimulusBeachClips[i] = Resources.Load<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Games/Stimulus/g_st_{(i + startingStimulustListPoint).ToString("00")}");
+        }
+        for (int i = 0; i < stimulusForestClips.Length; i++)
+        {
+            stimulusForestClips[i] = Resources.Load<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Games/Stimulus/g_st_{(i + startingStimulustListPoint + stimulusBeachClips.Length).ToString("00")}");
+        }
+
         pauser = FindObjectOfType<PauseTheGame>();
         startArea = transform.GetChild(0).transform;
         showerSpot = transform.GetChild(1).transform;

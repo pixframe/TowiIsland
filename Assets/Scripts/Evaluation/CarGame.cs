@@ -116,7 +116,8 @@ public class CarGame : MonoBehaviour {
     {
         evaluationController = FindObjectOfType<EvaluationController>();
         audioManager = FindObjectOfType<AudioManager>();
-        audioInScene = Resources.LoadAll<AudioClip>("Audios/Evaluation/Scene_3");
+        audioInScene = Resources.LoadAll<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Evaluation/Scene_3");
+        textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Evaluation/Evaluation_03/Evaluation_Scene3");
         stringsToShow = TextReader.TextsToShow(textAsset);
         evaluationController.StarCounting();
         Initialization();

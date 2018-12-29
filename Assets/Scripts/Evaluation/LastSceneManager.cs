@@ -23,13 +23,13 @@ public class LastSceneManager : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
+        textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Evaluation/Evaluation_08/Evaluation_Scene8");
+        audioInScene = Resources.LoadAll<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Evaluation/Scene_8");
         stringsToShow = TextReader.TextsToShow(textAsset);
         audioManager = FindObjectOfType<AudioManager>();
         evaluationController = FindObjectOfType<EvaluationController>();
         progressHandler = FindObjectOfType<ProgressHandler>();
         player = audioManager.GetComponent<AudioSource>();
-
-        audioInScene = Resources.LoadAll<AudioClip>("Audios/Evaluation/Scene_8");
 
         storyText.text = stringsToShow[0];
         audioManager.PlayClip(audioInScene[0]);

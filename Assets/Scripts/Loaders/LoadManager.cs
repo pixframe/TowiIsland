@@ -9,9 +9,15 @@ public class LoadManager : MonoBehaviour {
     AsyncOperation asyncLoad;
 
     public Image KiwiLoading;
+    public Text loadText;
+
+    string[] stringsToShow;
 
     // Use this for initialization
-    void Start () {
+    void Start ()
+    {
+        stringsToShow = TextReader.TextsToShow(Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Menus/Loading"));
+        loadText.text = $"{stringsToShow[0]}...";
         StartCoroutine(LoadTheNextScene());
 	}
 	

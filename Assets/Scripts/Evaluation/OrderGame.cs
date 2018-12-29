@@ -167,7 +167,8 @@ public class OrderGame : MonoBehaviour {
     void Start() {
         evaluationController = FindObjectOfType<EvaluationController>();
         audioManager = FindObjectOfType<AudioManager>();
-        audiosInScene = Resources.LoadAll<AudioClip>("Audios/Evaluation/Scene_7");
+        textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Evaluation/Evaluation_07/Evaluation_Scene7");
+        audiosInScene = Resources.LoadAll<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Evaluation/Scene_7");
         stringsToShow = TextReader.TextsToShow(textAsset);
         readyButton.gameObject.SetActive(false);
         audioManager.PlayClip(audiosInScene[0], audiosInScene[1]);

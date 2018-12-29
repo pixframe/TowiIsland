@@ -89,9 +89,10 @@ public class ArrowGameController : MonoBehaviour {
         whiteArrow.SetActive(false);
         evaluationController = FindObjectOfType<EvaluationController>();
         audioManager = FindObjectOfType<AudioManager>();
-        audioInScene = Resources.LoadAll<AudioClip>("Audios/Evaluation/Scene_5");
-        ohNoAudio = Resources.Load<AudioClip>("Audios/Evaluation/Frases/Frase_4");
-        veryGoodAudio = Resources.Load<AudioClip>("Audios/Evaluation/Frases/Frase_5");
+        textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Evaluation/Evaluation_05/Evaluation_Scene5");
+        audioInScene = Resources.LoadAll<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Evaluation/Scene_5");
+        ohNoAudio = Resources.Load<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Evaluation/Phrases/phrases_04");
+        veryGoodAudio = Resources.Load<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Evaluation/Phrases/phrases_05");
         probes = FindObjectOfType<FlashProbes>();
         arrowExplotion = FindObjectOfType<ParticleSystem>();
         if (probes != null)

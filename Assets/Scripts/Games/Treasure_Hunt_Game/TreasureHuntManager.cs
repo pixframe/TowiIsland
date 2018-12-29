@@ -133,7 +133,8 @@ public class TreasureHuntManager : MonoBehaviour {
             demokey = FindObjectOfType<DemoKey>();
         }
         audioManager = FindObjectOfType<AudioManager>();
-        instructionsClips = Resources.LoadAll<AudioClip>("Audios/Games/Treasure");
+        textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/Treasure/TreasureText");
+        instructionsClips = Resources.LoadAll<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Games/Treasure");
         cellPhone.SetActive(false);
         GetLevel();
         FillLists();

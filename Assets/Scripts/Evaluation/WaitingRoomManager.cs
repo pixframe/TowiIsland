@@ -145,6 +145,74 @@ public class WaitingRoomManager : MonoBehaviour {
     string[] stringsToShow;
     #endregion
 
+    #region Lists
+
+    List<int> orderOfStimulus = new List<int>
+    {
+        0,
+        45,
+        3,
+        9,
+        7,
+        6,
+        5,
+        44,
+        33,
+        18,
+        17,
+        37,
+        1,
+        20,
+        31,
+        19,
+        23,
+        25,
+        44,
+        22,
+        29,
+        32,
+        4,
+        43,
+        2,
+        30,
+        8,
+        15,
+        10,
+        17,
+        16,
+        34,
+        14,
+        29,
+        42,
+        21,
+        38,
+        13,
+        5,
+        35,
+        42,
+        12,
+        7,
+        9,
+        30,
+        11,
+        39,
+        26,
+        6,
+        25,
+        24,
+        40,
+        27,
+        41,
+        36,
+        28,
+        34,
+        37,
+        36,
+        0
+    };
+
+    #endregion
+
     #endregion
 
     #region Variables used in the data record
@@ -174,14 +242,16 @@ public class WaitingRoomManager : MonoBehaviour {
         audioManager = FindObjectOfType<AudioManager>();
         flashProbes = FindObjectOfType<FlashProbes>();
         rendi = feedbackImage.GetComponent<SpriteRenderer>();
+        textAssetForGameText = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Evaluation/Evaluation_04/Evaluation_Scene4");
         stringsToShow = TextReader.TextsToShow(textAssetForGameText);
         evaluationController.StarCounting();
-        audioInScene = Resources.LoadAll<AudioClip>("Audios/Evaluation/Scene_4");
-        tryAudio = Resources.Load<AudioClip>("Audios/Evaluation/Frases/Frase_0");
-        tryAgainAudio = Resources.Load<AudioClip>("Audios/Evaluation/Frases/Frase_1");
-        veryGoodAudio = Resources.Load<AudioClip>("Audios/Evaluation/Frases/Frase_2");
-        upsAudio = Resources.Load<AudioClip>("Audios/Evaluation/Frases/Frase_3");
-        cautionAudio = Resources.Load<AudioClip>("Audios/Evaluation/Frases/Frase_6");
+        flightSounds = Resources.LoadAll<AudioClip>(($"{LanguagePicker.BasicAudioRoute()}Evaluation/Stimulus/Flights"));
+        audioInScene = Resources.LoadAll<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Evaluation/Scene_4");
+        tryAudio = Resources.Load<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Evaluation/Phrases/phrases_00");
+        tryAgainAudio = Resources.Load<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Evaluation/Phrases/phrases_01");
+        veryGoodAudio = Resources.Load<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Evaluation/Phrases/phrases_05");
+        upsAudio = Resources.Load<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Evaluation/Phrases/phrases_03");
+        cautionAudio = Resources.Load<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Evaluation/Phrases/phrases_06");
         Cursor.visible = true;
         failTheTutorial = false;
         firstClick = true;
@@ -366,7 +436,7 @@ public class WaitingRoomManager : MonoBehaviour {
         if (!failTheTutorial)
         {
             instruccionPanel.SetActive(false);
-            audioManager.PlayClip(flightSounds[tutorialClips[tutorialIndex]]);
+            audioManager.PlayClip(flightSounds[orderOfStimulus[tutorialClips[tutorialIndex]]]);
             if (tutorialIndex == 1)
             {
                 clickTime = true;
@@ -393,7 +463,7 @@ public class WaitingRoomManager : MonoBehaviour {
         firstClick = false;
         instruccionPanel.SetActive(false);
         latencieTime = 0;
-        audioManager.PlayClip(flightSounds[flightNumberIndex]);
+        audioManager.PlayClip(flightSounds[orderOfStimulus[flightNumberIndex]]);
         readyButton.gameObject.SetActive(false);
         tutorialMode = false;
         clickTime = false;

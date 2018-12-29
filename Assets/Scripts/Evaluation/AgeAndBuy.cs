@@ -73,8 +73,8 @@ public class AgeAndBuy : MonoBehaviour {
 	void Start () {
         evaluationController = FindObjectOfType<EvaluationController>();
         audioManager = FindObjectOfType<AudioManager>();
-        audioInScene = Resources.LoadAll<AudioClip>("Audios/Evaluation/Scene_1");
-        extraAudio = Resources.Load<AudioClip>("Audios/Evaluation/Frases/Frase_1");
+        audioInScene = Resources.LoadAll<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Evaluation/Scene_1");
+        extraAudio = Resources.Load<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Evaluation/Phrases/phrases_01");
         audioManager.PlayClip(audioInScene[0]);
         SetTheText();
         isStoryTime = true;
@@ -251,6 +251,7 @@ public class AgeAndBuy : MonoBehaviour {
 
     //this set the correct input iin the lenguage
     void SetTheText(){
+        textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Evaluation/Evaluation_01/Evaluation_Scene1");
         textsOfGame = TextReader.TextsToShow(textAsset);
         for (int i = 0; i < translatables.Length;i++){
             translatables[i].text = textsOfGame[i];

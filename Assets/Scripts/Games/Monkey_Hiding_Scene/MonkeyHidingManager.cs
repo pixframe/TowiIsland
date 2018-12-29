@@ -69,7 +69,7 @@ public class MonkeyHidingManager : MonoBehaviour {
     LevelSaver levelSaver;
 
     AudioClip[] instructionsClips;
-    public AudioClip[] stimulusAudioClip;
+    AudioClip[] stimulusAudioClip;
 
     List<MonkeyController> monkeys = new List<MonkeyController>();
     List<MonkeyController> monkeysHolders = new List<MonkeyController>();
@@ -97,11 +97,17 @@ public class MonkeyHidingManager : MonoBehaviour {
             levelSaver = GetComponent<LevelSaver>();
         }
         audioManager = FindObjectOfType<AudioManager>();
-        instructionsClips = Resources.LoadAll<AudioClip>("Audios/Games/Monkeys");
-        Debug.Log(instructionsClips[0].name);
+        textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/Monkeys/MonkeyText");
+        objectsText = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/Monkeys/MonkeyObjects");
+        instructionsClips = Resources.LoadAll<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Games/Monkeys");
         GetLevel();
         stringsToShow = TextReader.TextsToShow(textAsset);
         stringOfObjects = TextReader.TextsToShow(objectsText);
+        stimulusAudioClip = new AudioClip[stringOfObjects.Length];
+        for (int i = 0; i < stringOfObjects.Length; i++)
+        {
+            stimulusAudioClip[i] = Resources.Load<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Games/Stimulus/g_st_0{i}");
+        }
         pauser = FindObjectOfType<PauseTheGame>();
         counting = true;
         if (firstTime == 0)

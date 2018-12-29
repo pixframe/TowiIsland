@@ -173,7 +173,8 @@ public class LavaGameManager : MonoBehaviour {
 
         GetLevels();
         FillTheLists();
-        instructionsClips = Resources.LoadAll<AudioClip>("Audios/Games/Lava");
+        textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/LavaGame/LavaText");
+        instructionsClips = Resources.LoadAll<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Games/Lava");
         firstRotation = buttonsOfObjects[0].transform.rotation;
         pauser = FindObjectOfType<PauseTheGame>();
         if (firstTime == 0)

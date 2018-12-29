@@ -18,6 +18,9 @@ public class GameMenusManager : MonoBehaviour {
     public GameObject normalCanvas;
     public GameObject miniShopGame;
 
+    string[] stringsToShow;
+    TextAsset textAsset;
+
     AudioPlayerForMenus player;
     GameCenterCamera centerCamera;
     SessionManager sessionManager;
@@ -27,6 +30,8 @@ public class GameMenusManager : MonoBehaviour {
     {
         sessionManager = FindObjectOfType<SessionManager>();
         gamesButton.transform.parent.gameObject.SetActive(false);
+        textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Menus/GameMenu");
+        stringsToShow = TextReader.TextsToShow(textAsset);
         player = FindObjectOfType<AudioPlayerForMenus>();
         player.GetComponent<AudioSource>().clip = Clips[0];
         player.GetComponent<AudioSource>().Play();
@@ -41,6 +46,7 @@ public class GameMenusManager : MonoBehaviour {
         }
         centerCamera.StartTheThingNow();
         ReturnToNormality();
+        WriteButtons();
     }
 
     public void FinishAnim()
@@ -54,6 +60,13 @@ public class GameMenusManager : MonoBehaviour {
 	void Update () {
 		
 	}
+
+    void WriteButtons()
+    {
+        avatarButton.transform.GetChild(1).GetComponentInChildren<Text>().text = stringsToShow[0];
+        gamesButton.transform.GetChild(1).GetComponentInChildren<Text>().text = stringsToShow[1];
+        shopButton.transform.GetChild(1).GetComponentInChildren<Text>().text = stringsToShow[2];
+    }
 
     void GoGamingZone()
     {

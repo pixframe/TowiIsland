@@ -114,7 +114,8 @@ public class SandDrawingController : MonoBehaviour {
             levelSaver = GetComponent<LevelSaver>();
         }
         audioManager = FindObjectOfType<AudioManager>();
-        instructionsClips = Resources.LoadAll<AudioClip>("Audios/Games/Sand");
+        textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/Sand/SandText");
+        instructionsClips = Resources.LoadAll<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Games/Sand");
         GetLevels();
         GetTheData();
 		w = Screen.width;
