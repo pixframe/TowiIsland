@@ -117,7 +117,7 @@ public class LavaGameManager : MonoBehaviour {
 
     #region Text
     //here will save all the game strings
-    public TextAsset textAsset;
+    TextAsset textAsset;
     //here will b ethe string procesed and ready to placed in the game
     string[] stringsToShow;
 
@@ -167,14 +167,14 @@ public class LavaGameManager : MonoBehaviour {
         sessionManager = FindObjectOfType<SessionManager>();
         levelSaver = GetComponent<LevelSaver>();
         audioManager = FindObjectOfType<AudioManager>();
-
+        textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/LavaGame/LavaText");
+        instructionsClips = Resources.LoadAll<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Games/Lava");
         //Here we declare that the max amout of possible answers equals the numbers of assays
         totalAnswers = numberOfAssays;
 
         GetLevels();
         FillTheLists();
-        textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/LavaGame/LavaText");
-        instructionsClips = Resources.LoadAll<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Games/Lava");
+
         firstRotation = buttonsOfObjects[0].transform.rotation;
         pauser = FindObjectOfType<PauseTheGame>();
         if (firstTime == 0)

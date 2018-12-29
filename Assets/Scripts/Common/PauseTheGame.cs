@@ -29,7 +29,7 @@ public class PauseTheGame : MonoBehaviour {
 	// Use this for initialization
 	void Awake ()
     {
-        textAsset = Resources.Load<TextAsset>("StringsToShow/Menus/PauseMenu");
+        textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Menus/PauseMenu");
 
         stringsToShow = TextReader.TextsToShow(textAsset);
 
