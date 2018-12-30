@@ -234,7 +234,6 @@ public class MenuManager : MonoBehaviour {
         sessionManager = FindObjectOfType<SessionManager>();
         myIAPManager = FindObjectOfType<MyIAPManager>();
         configMenu = new ConfigMenu(configCanvas);
-        UpdateTexts();
         ButtonSetUp();
         if (FindObjectOfType<DemoKey>())
         {
@@ -244,6 +243,7 @@ public class MenuManager : MonoBehaviour {
         {
             escapeButton.gameObject.SetActive(false);
         }
+        UpdateTexts();
     }
 
     void UpdateTexts()
@@ -1043,6 +1043,7 @@ public class MenuManager : MonoBehaviour {
         WriteTheText(shopInWeb, 29);
         WriteTheText(prepaidButton, 36);
         WriteTheText(moreAccountsNeedsButton, 39);
+        WriteTheText(creditText, 40);
         WriteTheText(configButton, 46);
         WriteTheText(configMenu.languageButton, 47);
         WriteTheText(configMenu.englishLanguageButton, 48);

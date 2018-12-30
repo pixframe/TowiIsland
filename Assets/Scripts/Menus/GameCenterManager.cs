@@ -82,6 +82,10 @@ public class GameCenterManager : MonoBehaviour {
             ageButton.onClick.AddListener(ChangeAge);
             ageValue.placeholder.GetComponent<Text>().text = "Age is " + sessionManager.activeKid.age.ToString("00");
         }
+        else
+        {
+            demoPanel.SetActive(false);
+        }
         ChildGames();
         audioPlayer = FindObjectOfType<AudioPlayerForMenus>();
 
@@ -110,6 +114,7 @@ public class GameCenterManager : MonoBehaviour {
         fowardPanel.gameObject.GetComponent<Button>().onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Right));
 
         currentPanel.playButton.GetComponentInChildren<Text>().text = stringsToShow[6];
+        warningPanel.GetComponentInChildren<Text>().text = stringsToShow[7];
     }
 
     void ChangeAge()

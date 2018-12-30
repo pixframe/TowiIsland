@@ -272,7 +272,8 @@ public class WaitingRoomManager : MonoBehaviour {
         {
             arrows[i] = arrowManager.transform.GetChild(i).GetComponent<SpriteRenderer>();
         }
-	}
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
+    }
 	
 	// Update is called once per frame
 	void Update () {

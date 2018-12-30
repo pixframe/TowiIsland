@@ -84,6 +84,7 @@ public class GameMenusManager : MonoBehaviour {
 
     void GoAvatars()
     {
+        Destroy(player.gameObject);
         PrefsKeys.SetNextScene("Avatar_Selection");
         SceneManager.LoadScene("Loader_Scene");
     }
