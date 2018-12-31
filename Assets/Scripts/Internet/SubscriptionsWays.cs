@@ -8,7 +8,7 @@ public class SubscriptionsWays : MonoBehaviour
 
     string codeURL = Keys.Api_Web_Key + "api/subscription/redeem_code/";
     string IAPURL = Keys.Api_Web_Key + "api/subscription/create/";
-    string activateKidURL = Keys.Api_Web_Key + "api/children/active/";
+    string activateKidURL = Keys.Api_Web_Key + "api/subscription/children/active/";
     string activateIAPRenew = Keys.Api_Web_Key + "api/subscription/children/update/";
     SessionManager sessionManager;
     MenuManager menuManager;
@@ -193,30 +193,21 @@ public class SubscriptionsWays : MonoBehaviour
 
         if (post.text != "")
         {
-            if (post.text.Contains("<h1>Not Found</h1><p>The requested URL /api/children/active/ was not found on this server.</p>"))
+            JSONObject jsonObj = JSONObject.Parse(post.text);
+            if (jsonObj.GetString("status") == "Succesful")
+            {
+                sessionManager.activeKid = sessionManager.GetKid(kidId);
+                sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                sessionManager.activeUser.suscriptionsLeft = (int)jsonObj.GetNumber("suscriptionsAvailables");
+                sessionManager.SaveSession();
+                menuManager.ShowGameMenu();
+                Debug.Log("its done");
+            }
+            else
             {
                 menuManager.ShowAccountWarning(0);
                 menuManager.ShowWarning(8);
             }
-            else
-            {
-                JSONObject jsonObj = JSONObject.Parse(post.text);
-                if (jsonObj.GetString("status") == "Succesful")
-                {
-                    sessionManager.activeKid = sessionManager.GetKid(kidId);
-                    sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
-                    sessionManager.activeUser.suscriptionsLeft = (int)jsonObj.GetNumber("suscriptionsAvailables");
-                    sessionManager.SaveSession();
-                    menuManager.ShowGameMenu();
-                    Debug.Log("its done");
-                }
-                else
-                {
-                    menuManager.ShowAccountWarning(0);
-                    menuManager.ShowWarning(8);
-                }
-            }
-            
         }
         else
         {
