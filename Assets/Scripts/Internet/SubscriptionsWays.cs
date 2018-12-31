@@ -193,26 +193,35 @@ public class SubscriptionsWays : MonoBehaviour
 
         if (post.text != "")
         {
-            JSONObject jsonObj = JSONObject.Parse(post.text);
-            if (jsonObj.GetString("status") == "Succesful")
+            if (post.text.Contains("<h1>Not Found</h1><p>The requested URL /api/children/active/ was not found on this server.</p>"))
             {
-                sessionManager.activeKid = sessionManager.GetKid(kidId);
-                sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
-                sessionManager.activeUser.suscriptionsLeft = (int)jsonObj.GetNumber("suscriptionsAvailables");
-                sessionManager.SaveSession();
-                menuManager.ShowGameMenu();
-                Debug.Log("its done");
+                menuManager.ShowAccountWarning(0);
+                menuManager.ShowWarning(8);
             }
             else
             {
-                menuManager.ShowAccountWarning(0);
-                menuManager.ShowWarning(9);
+                JSONObject jsonObj = JSONObject.Parse(post.text);
+                if (jsonObj.GetString("status") == "Succesful")
+                {
+                    sessionManager.activeKid = sessionManager.GetKid(kidId);
+                    sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                    sessionManager.activeUser.suscriptionsLeft = (int)jsonObj.GetNumber("suscriptionsAvailables");
+                    sessionManager.SaveSession();
+                    menuManager.ShowGameMenu();
+                    Debug.Log("its done");
+                }
+                else
+                {
+                    menuManager.ShowAccountWarning(0);
+                    menuManager.ShowWarning(8);
+                }
             }
+            
         }
         else
         {
             menuManager.ShowAccountWarning(0);
-            menuManager.ShowWarning(9);
+            menuManager.ShowWarning(8);
         }
     }
 

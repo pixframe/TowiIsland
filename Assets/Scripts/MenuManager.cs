@@ -1049,6 +1049,7 @@ public class MenuManager : MonoBehaviour {
         WriteTheText(configMenu.englishLanguageButton, 48);
         WriteTheText(configMenu.spanishLanguageButton, 49);
         WriteTheText(configMenu.automaticButton, 50);
+        WriteTheText(changeProfileButton, 51);
         warningButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
         newKidButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
     }
@@ -1083,10 +1084,10 @@ public class MenuManager : MonoBehaviour {
     {
         warningPanel.SetActive(true);
         warningText.text = warningLines[numberOfWarning];
-        if (numberOfWarning == 8)
+        /*if (numberOfWarning == 8)
         {
             ShowGameMenu();
-        }
+        }*/
         if(numberOfWarning == 11)
         {
             ShowWarning(11);
