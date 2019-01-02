@@ -252,6 +252,12 @@ public class MenuManager : MonoBehaviour {
         WriteTheTexts();
     }
 
+    void UpdateTexts(bool upadateLanguages)
+    {
+        SetLanguageResources();
+        WriteTheTexts();
+    }
+
     void SetLanguageResources()
     {
         loginTextAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Login/Login");
@@ -263,6 +269,21 @@ public class MenuManager : MonoBehaviour {
         TextReader.FillCommon(textOfAll);
         TextReader.FillAddables(textAddable);
         TextReader.FillBefore(textBefore);
+        lines = TextReader.TextsToShow(loginTextAsset);
+        warningLines = TextReader.TextsToShow(warningAsset);
+    }
+
+    void SetLanguageResources(bool updateLanguages)
+    {
+        loginTextAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Login/Login");
+        warningAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Login/Warnings");
+        textOfAll = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Login/CommonStrings");
+        textAddable = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Login/AddableStrings");
+        textBefore = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Login/BeforeStrings");
+
+        TextReader.FillCommon(textOfAll, true);
+        TextReader.FillAddables(textAddable, true);
+        TextReader.FillBefore(textBefore, true);
         lines = TextReader.TextsToShow(loginTextAsset);
         warningLines = TextReader.TextsToShow(warningAsset);
     }
@@ -373,8 +394,7 @@ public class MenuManager : MonoBehaviour {
 
     public void ShowDisclaimer()
     {
-#if UNITY_IOS
-        if (Application.platform == RuntimePlatform.IPhonePlayer)
+        /*if (Application.platform == RuntimePlatform.IPhonePlayer)
         {
             if (!UnityEngine.iOS.Device.generation.ToString().Contains("iPad"))
             {
@@ -397,17 +417,34 @@ public class MenuManager : MonoBehaviour {
             {
                 ShowTheDisclaimer();
             }
-        }
-#endif
-        if (Application.platform == RuntimePlatform.Android && !IsTablet())
+        }*/
+        if (SystemInfo.deviceType == DeviceType.Handheld && !IsTablet())
         {
-            ShowTheDisclaimer();
+            ShowBiggerScreenMessage();
         }
         else
         {
             ShowTheDisclaimer();
         }
 
+    }
+
+    void ShowBiggerScreenMessage()
+    {
+        HideAllCanvas();
+        subscribeCanvas.SetActive(true);
+        subscribeAnotherCountButton.gameObject.SetActive(false);
+        changeProfileButton.gameObject.SetActive(false);
+        subscribeButton.gameObject.SetActive(false);
+        continueEvaluationButton.gameObject.SetActive(false);
+        escapeEvaluationButton.gameObject.SetActive(true);
+        WriteTheText(subscribeText, 45);
+        warningLogo.gameObject.SetActive(true);
+        suscripctionLogo.gameObject.SetActive(false);
+        WriteTheText(escapeEvaluationButton, 41);
+        WriteTheText(continueEvaluationButton, 42);
+        escapeEvaluationButton.onClick.RemoveAllListeners();
+        escapeEvaluationButton.onClick.AddListener(ShowGameMenu);
     }
 
     void ShowTheDisclaimer()
@@ -996,13 +1033,13 @@ public class MenuManager : MonoBehaviour {
     {
         PlayerPrefs.SetInt(Keys.DeviceLenguage, 1);
         PlayerPrefs.SetInt(Keys.Selected_Language, index);
-        UpdateTexts();
+        UpdateTexts(true);
     }
 
     void SetDeviceLanguage()
     {
         PlayerPrefs.SetInt(Keys.DeviceLenguage, 0);
-        UpdateTexts();
+        UpdateTexts(true);
     }
 
     #endregion

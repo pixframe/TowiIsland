@@ -50,6 +50,30 @@ public class TextReader : MonoBehaviour {
         }
     }
 
+    public static void FillCommon(TextAsset asset, bool changeStrings)
+    {
+        if (changeStrings)
+        {
+            commonStrings = asset.text.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+        }
+    }
+
+    public static void FillAddables(TextAsset asset, bool changeStrings)
+    {
+        if (changeStrings)
+        {
+            addableStrings = asset.text.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+        }
+    }
+
+    public static void FillBefore(TextAsset asset, bool changeStrings)
+    {
+        if (changeStrings)
+        {
+            beforeStrings = asset.text.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+        }
+    }
+
     public static string AddStrings(int index, string firstString)
     {
         //here we will add some strings to reuse some reusable strings
