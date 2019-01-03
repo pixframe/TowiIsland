@@ -282,6 +282,7 @@ public class SandDrawingController : MonoBehaviour {
         if (sessionManager != null)
         {
             string a = "1" + levelFill.ToString("00") + levelIdentyfy.ToString("00") + levelCompletion.ToString("00");
+            Debug.Log($"this is a {a}");
             int sublevel = int.Parse(a);
             accuracyPercentage = (accuracyPercentage * 100) / 500;
 

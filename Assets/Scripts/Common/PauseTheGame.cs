@@ -44,14 +44,16 @@ public class PauseTheGame : MonoBehaviour {
         goMenuButton = miniPausePanel.transform.GetChild(2).GetComponent<Button>();
         cancelButton = miniPausePanel.transform.GetChild(3).GetComponent<Button>();
 
-        pauseText.text = stringsToShow[0];
-        goBackButton.GetComponentInChildren<Text>().text = stringsToShow[1];
-        goMenuButton.GetComponentInChildren<Text>().text = stringsToShow[2];
-
         howToPlayButton = transform.GetChild(2).GetComponent<Button>();
         playButton = transform.GetChild(3).GetComponent<Button>();
         kiwiEarningPanel = new KiwiEarningPanel(transform.GetChild(4).gameObject);
 
+        pauseText.text = stringsToShow[0];
+        goBackButton.GetComponentInChildren<Text>().text = stringsToShow[1];
+        kiwiEarningPanel.continueButton.GetComponentInChildren<Text>().text = stringsToShow[1];
+        goMenuButton.GetComponentInChildren<Text>().text = stringsToShow[2];
+        playButton.GetComponentInChildren<Text>().text = stringsToShow[3];
+        howToPlayButton.GetComponentInChildren<Text>().text = stringsToShow[4];
         pauseButton.onClick.AddListener(PauseButton);
         goMenuButton.onClick.AddListener(GoBackIsland);
         goBackButton.onClick.AddListener(GoBackGame);
