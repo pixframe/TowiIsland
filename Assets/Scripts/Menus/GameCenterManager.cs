@@ -70,6 +70,12 @@ public class GameCenterManager : MonoBehaviour {
         {
             Debug.Log("We need to update a profile");
             sessionManager.UpdateProfile(activeMissions);
+            int funelGame = PlayerPrefs.GetInt(Keys.Funnel_Games, 1);
+            if (funelGame < 7)
+            {
+                UnityEngine.Analytics.Analytics.CustomEvent($"game{funelGame}");
+                PlayerPrefs.SetInt(Keys.Funnel_Games, funelGame + 1);
+            }
         }
         if (FindObjectOfType<DemoKey>())
         {
@@ -107,6 +113,7 @@ public class GameCenterManager : MonoBehaviour {
         t2.callback.AddListener((data) => { SecondTouch((PointerEventData)data); });
         eventTrigger.triggers.Add(t2);
         goBackButton.onClick.AddListener(GoBackScene);
+        warningPanel.GetComponentInChildren<Button>().onClick.AddListener(GoBackScene);
 
         ChangeMenus();
 

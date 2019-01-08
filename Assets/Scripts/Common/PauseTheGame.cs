@@ -39,7 +39,7 @@ public class PauseTheGame : MonoBehaviour {
         pausePanel = transform.GetChild(1).gameObject;
 
         miniPausePanel = pausePanel.transform.GetChild(0).gameObject;
-        pauseText = miniPausePanel.transform.GetChild(0).GetComponent<Text>();
+        pauseText = miniPausePanel.transform.GetChild(0).GetComponentInChildren<Text>();
         goBackButton = miniPausePanel.transform.GetChild(1).GetComponent<Button>();
         goMenuButton = miniPausePanel.transform.GetChild(2).GetComponent<Button>();
         cancelButton = miniPausePanel.transform.GetChild(3).GetComponent<Button>();

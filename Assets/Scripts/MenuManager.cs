@@ -31,6 +31,7 @@ public class MenuManager : MonoBehaviour {
     public Button escapeButton;
 	public Text kidNameText;
     public Text savigDirectionText;
+    public Image avatarImageToDisplay;
 
     [Header("Log in UI")]
     public GameObject logInMenu;
@@ -120,6 +121,7 @@ public class MenuManager : MonoBehaviour {
     public InputField newKidMonth;
     public InputField newKidYear;
     public Button newKidButton;
+    public Button newKidBackButton;
 
     [Header("Loading")]
     public GameObject loadingCanvas;
@@ -306,6 +308,7 @@ public class MenuManager : MonoBehaviour {
         aboutButton.onClick.AddListener(ShowCredits);
         exitCredits.onClick.AddListener(ShowGameMenu);
         selectionKidBackButton.onClick.AddListener(CloseKids);
+        newKidBackButton.onClick.AddListener(CloseKids);
         subscribeAnotherCountButton.onClick.AddListener(CloseSession);
         warningButton.onClick.AddListener(HideWarning);
         addKidButton.onClick.AddListener(AddKidShower);
@@ -343,12 +346,25 @@ public class MenuManager : MonoBehaviour {
         configMenu.panel.SetActive(false);
     }
 
+    void UpdateKidInMenu()
+    {
+        kidNameText.text = sessionManager.activeKid.name;
+        if (sessionManager.activeKid.avatar != null)
+        {
+            avatarImageToDisplay.sprite = Resources.Load<Sprite>($"Icons/{sessionManager.activeKid.avatar}");
+        }
+        else
+        {
+            avatarImageToDisplay.sprite = Resources.Load<Sprite>($"Icons/koala");
+        }
+    }
+
     //we show the game menu if the player has acces to it
     public void ShowGameMenu()
     {
         HideAllCanvas();
         gameCanvas.SetActive(true);
-		kidNameText.text = sessionManager.activeKid.name;
+        UpdateKidInMenu();
         IsTestIsAvailable();
         if (SystemInfo.deviceType == DeviceType.Handheld)
         {
@@ -536,7 +552,7 @@ public class MenuManager : MonoBehaviour {
 
         if (sessionManager.activeUser != null)
         {
-            List<GameObject> kidos = new List<GameObject>();
+            List<KidProfileCanvas> kidos = new List<KidProfileCanvas>();
             float deltaSize = miniKidContainer.GetComponent<RectTransform>().sizeDelta.x;
             miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
             for (int i = 0; i < miniKidContainer.transform.childCount; i++)
@@ -547,29 +563,30 @@ public class MenuManager : MonoBehaviour {
             Debug.Log(kidsNumber + " this are kids numebrs");
             for (int i = 0; i < kidsNumber; i++)
             {
-                kidos.Add(Instantiate(miniKidCanvas, miniKidContainer.transform));
-                float addableSize = kidos[i].GetComponent<RectTransform>().sizeDelta.x * 2f;
+                GameObject objectToInstance = Instantiate(miniKidCanvas, miniKidContainer.transform);
+                kidos.Add(new KidProfileCanvas(objectToInstance));
+                float addableSize = kidos[i].mainCanvas.GetComponent<RectTransform>().sizeDelta.x * 2f;
                 miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(miniKidContainer.GetComponent<RectTransform>().sizeDelta.x + addableSize, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
-                kidos[i].GetComponent<RectTransform>().parent = miniKidContainer.GetComponent<RectTransform>();
+                kidos[i].mainCanvas.GetComponent<RectTransform>().parent = miniKidContainer.GetComponent<RectTransform>();
                 if (i > 0)
                 {
-                    Vector2 pos = kidos[i - 1].GetComponent<RectTransform>().localPosition;
+                    Vector2 pos = kidos[i - 1].mainCanvas.GetComponent<RectTransform>().localPosition;
                     float positionOfCanvitas = pos.x + addableSize;
-                    kidos[i].GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, pos.y);
+                    kidos[i].mainCanvas.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, pos.y);
                 }
                 else
                 {
                     float positionOfCanvitas = addableSize / 2;
-                    kidos[i].GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, kidos[i].GetComponent<RectTransform>().localPosition.y);
+                    kidos[i].mainCanvas.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, kidos[i].mainCanvas.GetComponent<RectTransform>().localPosition.y);
                 }
-                kidos[i].GetComponentInChildren<Text>().text = sessionManager.activeUser.kids[i].name;
+                kidos[i].PutKidName(sessionManager.activeUser.kids[i].name);
                 string parentkey = sessionManager.activeUser.kids[i].userkey;
                 int id = sessionManager.activeUser.kids[i].id;
-                kidos[i].GetComponent<Button>().onClick.AddListener(() => SetKidProfile(parentkey, id));
+                kidos[i].buttonOfProfile.onClick.AddListener(() => SetKidProfile(parentkey, id));
+                kidos[i].ChangeAvatar(sessionManager.activeUser.kids[i].avatar);
                 if (!sessionManager.activeUser.kids[i].isActive)
                 {
-                    kidos[i].transform.GetChild(0).GetComponent<Image>().color = Color.grey;
-                    kidos[i].transform.GetChild(2).GetComponent<Image>().color = Color.grey;
+                    kidos[i].PutInGrey();
                 }
             }
         }
@@ -871,7 +888,7 @@ public class MenuManager : MonoBehaviour {
         if (sessionManager.activeUser != null)
         {
             
-            List<GameObject> kidos = new List<GameObject>();
+            List<KidProfileCanvas> kidos = new List<KidProfileCanvas>();
             float deltaSize = miniKidContainer.GetComponent<RectTransform>().sizeDelta.x;
             miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
             for (int i = 0; i < miniKidContainer.transform.childCount; i++)
@@ -882,50 +899,49 @@ public class MenuManager : MonoBehaviour {
             Debug.Log(kidsNumber + " this are kids numebrs");
             for (int i = 0; i < kidsNumber; i++)
             {
-                kidos.Add(Instantiate(miniKidCanvas, miniKidContainer.transform));
-                float addableSize = kidos[i].GetComponent<RectTransform>().sizeDelta.x * 2f;
+                GameObject theObject = Instantiate(miniKidCanvas, miniKidContainer.transform);
+                kidos.Add(new KidProfileCanvas(theObject));
+                float addableSize = kidos[i].mainCanvas.GetComponent<RectTransform>().sizeDelta.x * 2f;
                 miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(miniKidContainer.GetComponent<RectTransform>().sizeDelta.x + addableSize, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
-                kidos[i].GetComponent<RectTransform>().parent = miniKidContainer.GetComponent<RectTransform>();
+                kidos[i].mainCanvas.GetComponent<RectTransform>().parent = miniKidContainer.GetComponent<RectTransform>();
                 if (i > 0)
                 {
-                    Vector2 pos = kidos[i - 1].GetComponent<RectTransform>().localPosition;
+                    Vector2 pos = kidos[i - 1].mainCanvas.GetComponent<RectTransform>().localPosition;
                     float positionOfCanvitas = pos.x + addableSize;
-                    kidos[i].GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, pos.y);
+                    kidos[i].mainCanvas.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, pos.y);
                 }
                 else
                 {
                     float positionOfCanvitas = addableSize / 2;
-                    kidos[i].GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, kidos[i].GetComponent<RectTransform>().localPosition.y);
+                    kidos[i].mainCanvas.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, kidos[i].mainCanvas.GetComponent<RectTransform>().localPosition.y);
                 }
-                kidos[i].GetComponentInChildren<Text>().text = sessionManager.activeUser.kids[i].name;
+                kidos[i].PutKidName(sessionManager.activeUser.kids[i].name);
                 string parentkey = sessionManager.activeUser.kids[i].userkey;
                 int id = sessionManager.activeUser.kids[i].id;
-                Button kidoButton = kidos[i].GetComponent<Button>();
-                kidoButton.onClick.AddListener(() => SetKidIdToSubscriptionPlan(id, kidoButton));
-                kidos[i].transform.GetChild(0).GetComponent<Image>().color = Color.grey;
-                kidos[i].transform.GetChild(2).GetComponent<Image>().color = Color.grey;
+                kidos[i].buttonOfProfile.onClick.AddListener(() => SetKidIdToSubscriptionPlan(id, kidos[i]));
+                kidos[i].PutInGrey();
+                kidos[i].ChangeAvatar(sessionManager.activeUser.kids[i].avatar);
             }
         }
         sessionManager.SaveSession();
     }
 
-    void SetKidIdToSubscriptionPlan(int id, Button button)
+    void SetKidIdToSubscriptionPlan(int id, KidProfileCanvas profileCanvas)
     {
         if (ids.Contains(id))
         {
             ids.Remove(id);
-            button.transform.GetChild(0).GetComponent<Image>().color = Color.grey;
-            button.transform.GetChild(2).GetComponent<Image>().color = Color.grey;
-            miniCanvitas.Remove(button);
+            profileCanvas.PutInGrey();
+            miniCanvitas.Remove(profileCanvas.buttonOfProfile);
         }
         else
         {
             ids.Add(id);
-            button.transform.GetChild(0).GetComponent<Image>().color = Color.white;
+            profileCanvas.avatarImage.color = Color.white;
             Color farben;
             ColorUtility.TryParseHtmlString("#AB6021", out farben);
-            button.transform.GetChild(2).GetComponent<Image>().color = farben;
-            miniCanvitas.Add(button);
+            profileCanvas.buttonOfProfile.transform.GetChild(2).GetComponent<Image>().color = farben;
+            miniCanvitas.Add(profileCanvas.buttonOfProfile);
             if (miniCanvitas.Count > numKids)
             {
                 miniCanvitas[0].transform.GetChild(0).GetComponent<Image>().color = Color.grey;
@@ -987,7 +1003,14 @@ public class MenuManager : MonoBehaviour {
     {
         if (sessionManager.activeKid != null)
         {
-            ShowGameMenu();
+            if (sessionManager.activeKid.isActive)
+            {
+                ShowGameMenu();
+            }
+            else
+            {
+                ShowAccountWarning(0);
+            }
         }
         else
         {
@@ -1059,6 +1082,7 @@ public class MenuManager : MonoBehaviour {
         WriteTheText(logInButton, 8);
         WriteTheText(forgotPassButton, 9);
         WriteTheText(kidNameInput, 10);
+        WriteTheText(newKidNameInput, 10);
         WriteTheText(dadMailInput, 11);
         WriteTheText(emailLogInInput, 11);
         WriteTheText(dadPassInput, 12);
@@ -1087,6 +1111,7 @@ public class MenuManager : MonoBehaviour {
         WriteTheText(configMenu.spanishLanguageButton, 49);
         WriteTheText(configMenu.automaticButton, 50);
         WriteTheText(changeProfileButton, 51);
+        WriteTheText(loadingText, 52);
         warningButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
         newKidButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
     }
@@ -1421,5 +1446,49 @@ struct ConfigMenu
         spanishLanguageButton = languageButtonHandler.transform.GetChild(1).GetComponent<Button>();
         automaticButton = languageButtonHandler.transform.GetChild(languageButtonHandler.transform.childCount - 1).GetComponent<Button>();
         backButton = panel.transform.GetChild(2).GetComponent<Button>();
+    }
+}
+
+class KidProfileCanvas
+{
+    public GameObject mainCanvas;
+    public Button buttonOfProfile;
+    public Image avatarImage;
+    public Image frameImage;
+    public Image billboardImage;
+    public Text nameText;
+
+    public KidProfileCanvas(GameObject canvas)
+    {
+        mainCanvas = canvas;
+        buttonOfProfile = mainCanvas.GetComponent<Button>();
+        avatarImage = mainCanvas.transform.GetChild(0).GetComponent<Image>();
+        frameImage = mainCanvas.transform.GetChild(1).GetComponent<Image>();
+        billboardImage = mainCanvas.transform.GetChild(2).GetComponent<Image>();
+        nameText = billboardImage.GetComponentInChildren<Text>();
+    }
+
+    public void PutInGrey()
+    {
+        avatarImage.color = Color.grey;
+        frameImage.color = Color.grey;
+        billboardImage.color = Color.grey;
+    }
+
+    public void ChangeAvatar(string avatarData)
+    {
+        if (avatarData != null)
+        {
+            avatarImage.sprite = Resources.Load<Sprite>($"Icons/{avatarData}");
+        }
+        else
+        {
+            avatarImage.sprite = Resources.Load<Sprite>($"Icons/koala");
+        }
+    }
+
+    public void PutKidName(string kidName)
+    {
+        nameText.text = kidName;
     }
 }

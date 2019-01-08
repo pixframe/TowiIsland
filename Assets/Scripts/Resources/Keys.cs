@@ -55,4 +55,8 @@ public class Keys : MonoBehaviour {
     public static string Language_English = "en";
     public static string Language_Spanish = "es";
     public static string Selected_Language = "sln";
+
+    //Funnel
+    public static string Funnel_Games = "funGam";
+
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using Boomlagoon.JSON;
+using UnityEngine.Analytics;
 
 public class LogInScript : MonoBehaviour {
     #region Variables
@@ -235,6 +236,7 @@ public class LogInScript : MonoBehaviour {
             if (jsonObject.GetValue("code").Str == "200")
             {
                 PostLogin(email, password);
+                Analytics.CustomEvent("register");
             }
             else
             {

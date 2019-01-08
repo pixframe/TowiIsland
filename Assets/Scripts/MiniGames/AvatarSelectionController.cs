@@ -34,8 +34,6 @@ public class AvatarSelectionController : MonoBehaviour {
         instructionText.text = stringToShow[0];
         noButton.onClick.AddListener(RegretSelection);
         yesButton.onClick.AddListener(SetTheCorrectCharacter);
-        noButton.GetComponentInChildren<Text>().text = stringToShow[4];
-        yesButton.GetComponentInChildren<Text>().text = stringToShow[3];
         noButton.gameObject.SetActive(false);
         yesButton.gameObject.SetActive(false);
 		returnButton.onClick.AddListener(GoBackMenu);

@@ -17,22 +17,45 @@ public class SessionManager : MonoBehaviour
     string syncLevelsURL = Keys.Api_Web_Key + "api/levels/children/";
     string updateProfileURL = Keys.Api_Web_Key + "api/profile/update/";
     public List<Kid> temporalKids;
-    public static int numberOfSessionManager = 0;
     MenuManager menuManager;
 
     string idStrings;
     int kidsIAP;
 
+    //Firebase.FirebaseApp firebaseApp;
+
     void Awake()
     {
-        numberOfSessionManager++;
-        if (numberOfSessionManager > 1)
+        if (FindObjectsOfType<SessionManager>().Length > 1)
         {
             Destroy(this.gameObject);
         }
         else
         {
             DontDestroyOnLoad(gameObject);
+        }
+        if (SystemInfo.deviceType == DeviceType.Handheld)
+        {
+            /*Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => {
+                var dependencyStatus = task.Result;
+                if (dependencyStatus == Firebase.DependencyStatus.Available)
+                {
+                    // Create and hold a reference to your FirebaseApp, i.e.
+                    //   app = Firebase.FirebaseApp.DefaultInstance;
+                    // where app is a Firebase.FirebaseApp property of your application class.
+                    firebaseApp = Firebase.FirebaseApp.DefaultInstance;
+                    // Set a flag here indicating that Firebase is ready to use by your
+                    // application.
+                    Debug.Log("This is ok");
+                    GameObject.FindGameObjectWithTag("Coin").SetActive(true);
+                }
+                else
+                {
+                    Debug.LogError($"Could not resolve all Firebase dependencies: {dependencyStatus}");
+                    // Firebase Unity SDK is not safe to use here
+                    GameObject.FindGameObjectWithTag("Coin").SetActive(false);
+                }
+            });*/
         }
         //if(main)
         //PlayerPrefs.DeleteAll ();
@@ -618,7 +641,13 @@ public class SessionManager : MonoBehaviour
         data.Add("arenaFirstTime", activeKid.sandFirst);
         data.Add("sombrasFirstTime", activeKid.lavaFirst);
         data.Add("bolitaFirstTime", activeKid.monkeyFirst);
+        data.Add("tesoroLevelSet", true);
         data.Add("arenaLevelSet", activeKid.sandLevelSet);
+        data.Add("arbolLevelSet", true);
+        data.Add("arenaLevelSet2", true);
+        data.Add("sombrasLevelSet", true);
+        data.Add("bolitaLevelSet", true);
+        data.Add("rioLevelSet", true);
         string shopingList = "";
         for (int i = 0; i < activeKid.buyedIslandObjects.Count; i++)
         {
@@ -679,7 +708,13 @@ public class SessionManager : MonoBehaviour
         data.Add("arenaFirstTime", activeKid.sandFirst);
         data.Add("sombrasFirstTime", activeKid.lavaFirst);
         data.Add("bolitaFirstTime", activeKid.monkeyFirst);
+        data.Add("tesoroLevelSet", true);
         data.Add("arenaLevelSet", activeKid.sandLevelSet);
+        data.Add("arbolLevelSet", true);
+        data.Add("arenaLevelSet2", true);
+        data.Add("sombrasLevelSet", true);
+        data.Add("bolitaLevelSet", true);
+        data.Add("rioLevelSet", true);
         string shopingList = "";
         for (int i = 0; i < activeKid.buyedIslandObjects.Count; i++)
         {

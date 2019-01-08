@@ -63,9 +63,9 @@ public class GameMenusManager : MonoBehaviour {
 
     void WriteButtons()
     {
-        avatarButton.transform.GetChild(1).GetComponentInChildren<Text>().text = stringsToShow[0];
-        gamesButton.transform.GetChild(1).GetComponentInChildren<Text>().text = stringsToShow[1];
-        shopButton.transform.GetChild(1).GetComponentInChildren<Text>().text = stringsToShow[2];
+        avatarButton.GetComponentInChildren<Text>().text = stringsToShow[0];
+        gamesButton.GetComponentInChildren<Text>().text = stringsToShow[1];
+        shopButton.GetComponentInChildren<Text>().text = stringsToShow[2];
     }
 
     void GoGamingZone()
