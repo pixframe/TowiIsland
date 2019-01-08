@@ -493,6 +493,7 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
 
     public void ConfirmPurchaseProduct(PurchaseEventArgs args)
     {
+        UnityEngine.Analytics.Analytics.CustomEvent("subscribe");
         m_StoreController.ConfirmPendingPurchase(args.purchasedProduct);
     }
 
