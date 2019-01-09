@@ -5,6 +5,7 @@ using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using Boomlagoon.JSON;
+using UnityEngine.Analytics;
 
 public class SessionManager : MonoBehaviour
 {
@@ -22,10 +23,18 @@ public class SessionManager : MonoBehaviour
     string idStrings;
     int kidsIAP;
 
-    //Firebase.FirebaseApp firebaseApp;
+    Firebase.FirebaseApp firebaseApp;
 
     void Awake()
     {
+        /*Analytics.CustomEvent("register");
+        for (int i = 1; i < 7; i++)
+        {
+            Analytics.CustomEvent($"game{i}");
+            Debug.Log($"current game is game{i}");
+        }
+        Analytics.CustomEvent("subscribe");
+        Debug.Log("We run the funnel fast");*/
         if (FindObjectsOfType<SessionManager>().Length > 1)
         {
             Destroy(this.gameObject);
@@ -36,7 +45,7 @@ public class SessionManager : MonoBehaviour
         }
         if (SystemInfo.deviceType == DeviceType.Handheld)
         {
-            /*Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => {
+            Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => {
                 var dependencyStatus = task.Result;
                 if (dependencyStatus == Firebase.DependencyStatus.Available)
                 {
@@ -47,15 +56,15 @@ public class SessionManager : MonoBehaviour
                     // Set a flag here indicating that Firebase is ready to use by your
                     // application.
                     Debug.Log("This is ok");
-                    GameObject.FindGameObjectWithTag("Coin").SetActive(true);
+                    //GameObject.FindGameObjectWithTag("Coin").GetComponent<UnityEngine.UI.Text>().text = "firebase is set All right";
                 }
                 else
                 {
                     Debug.LogError($"Could not resolve all Firebase dependencies: {dependencyStatus}");
                     // Firebase Unity SDK is not safe to use here
-                    GameObject.FindGameObjectWithTag("Coin").SetActive(false);
+                    //GameObject.FindGameObjectWithTag("Coin").GetComponent<UnityEngine.UI.Text>().text = $"firebase is not correctly set: {dependencyStatus}";
                 }
-            });*/
+            });
         }
         //if(main)
         //PlayerPrefs.DeleteAll ();
