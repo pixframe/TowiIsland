@@ -74,6 +74,7 @@ public class LogInScript : MonoBehaviour {
             JSONObject jsonObject = JSONObject.Parse(hs_post.text);
             JSONArray kids = jsonObject.GetValue("children").Array;
 
+            Debug.Log(kids.ToString());
             sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetValue("id").Number);
             sessionManager.AddKids(kids);
             sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
@@ -131,8 +132,6 @@ public class LogInScript : MonoBehaviour {
         // Post the URL to the site and create a download object to get the result.
         WWW hs_post = new WWW(post_url, form);
         yield return hs_post; // Wait until the download is done
-
-        Debug.Log(hs_post.text);
 
         if (hs_post.error == null)
         {

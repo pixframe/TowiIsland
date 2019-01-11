@@ -301,7 +301,6 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
     public void OnInitialized(IStoreController controller, IExtensionProvider extensions)
     {
         // Purchasing has succeeded initializing. Collect our Purchasing references.
-        Debug.Log("OnInitialized: PASS");
 
         // Overall Purchasing system, configured with products for this application.
         m_StoreController = controller;
@@ -310,22 +309,10 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
         m_AppleExtensions = extensions.GetExtension<IAppleExtensions>();
         m_GooglePlayStoreExtensions = extensions.GetExtension<IGooglePlayStoreExtensions>();
         Dictionary<string, string> introductory_info_dict = m_AppleExtensions.GetIntroductoryPriceDictionary();
-        Debug.Log("Available items:");
         foreach (var item in controller.products.all)
         {
             if (item.availableToPurchase)
             {
-                Debug.Log(string.Join(" - ",
-                    new[]
-                    {
-                        item.metadata.localizedTitle,
-                        item.metadata.localizedDescription,
-                        item.metadata.isoCurrencyCode,
-                        item.metadata.localizedPrice.ToString(),
-                        item.metadata.localizedPriceString,
-                        item.transactionID,
-                        item.receipt
-                    }));
                 if (item.receipt != null)
                 {
                     if (item.definition.type == ProductType.Subscription)
@@ -335,9 +322,6 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
                             string intro_json = (introductory_info_dict == null || !introductory_info_dict.ContainsKey(item.definition.storeSpecificId)) ? null : introductory_info_dict[item.definition.storeSpecificId];
                             SubscriptionManager p = new SubscriptionManager(item, intro_json);
                             SubscriptionInfo info = p.getSubscriptionInfo();
-                            Debbugger debbugger = FindObjectOfType<Debbugger>();
-                            debbugger.Debbugg("Have and active subscription " + info.isSubscribed().ToString(), "lime");
-                            debbugger.Debbugg("is active up to " + info.getExpireDate(), "lime");
 
                             if (info.isSubscribed() == Result.True)
                             {
@@ -409,8 +393,7 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
                 }
                 else
                 {
-                    Debug.Log("the product should have a valid receipt");
-                    Debug.Log("id of product is " == item.definition.id);
+
                 }
             }
         }

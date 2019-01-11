@@ -115,7 +115,7 @@ public class SessionManager : MonoBehaviour
             }
             else
             {
-                string userS = PlayerPrefs.GetString("activeUser", "");
+                string userS = PlayerPrefs.GetString("activeUser");
                 if (userS != "")
                 {
                     activeUser = GetUser(userS);
@@ -509,7 +509,6 @@ public class SessionManager : MonoBehaviour
 
         WWWForm form = new WWWForm();
         form.AddField("userKey", key);
-        Debug.Log("\"userKey \" , " + key);
 
         WWW hs_post = new WWW(post_url, form);
         yield return hs_post;
@@ -533,14 +532,7 @@ public class SessionManager : MonoBehaviour
 
                 int index = activeUser.kids.Count - 1;
                 activeUser.kids[index].kiwis = (int)kidObj.GetNumber("kiwis");
-                if (kidObj.GetString("avatar") != null)
-                {
-                    activeUser.kids[index].avatar = kidObj.GetString("avatar");
-                }
-                else
-                {
-                    activeUser.kids[index].avatar = "koala";
-                }
+                activeUser.kids[index].avatar = kidObj.GetString("avatar");
                 activeUser.kids[index].avatarClothes = kidObj.GetString("avatarClothes");
                 activeUser.kids[index].ownedItems = kidObj.GetString("ownedItems");
                 activeUser.kids[index].age = (int)kidObj.GetNumber("age");
@@ -781,7 +773,6 @@ public class SessionManager : MonoBehaviour
         if (hs_post.error == null)
         {
             JSONObject response = JSONObject.Parse(hs_post.text);
-            Debug.Log(hs_post.text);
             if (response["code"].Str == "200")
             {
 
@@ -856,8 +847,7 @@ public class SessionManager : MonoBehaviour
                 sessionMng.SaveSession();
 
                 main.UpdateBlocked();*/
-            }
-            Debug.Log(hs_post.text);
+            }  
         }
         else
         {

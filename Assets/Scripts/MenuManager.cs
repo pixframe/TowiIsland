@@ -560,7 +560,6 @@ public class MenuManager : MonoBehaviour {
                 Destroy(miniKidContainer.transform.GetChild(i).gameObject);
             }
             int kidsNumber = sessionManager.activeUser.kids.Count;
-            Debug.Log(kidsNumber + " this are kids numebrs");
             for (int i = 0; i < kidsNumber; i++)
             {
                 GameObject objectToInstance = Instantiate(miniKidCanvas, miniKidContainer.transform);
@@ -1072,7 +1071,6 @@ public class MenuManager : MonoBehaviour {
     {
         WriteTheText(evaluationButton, 0);
         WriteTheText(gamesButton, 1);
-        WriteTheText(aboutButton, 2);
         WriteTheText(singOutButton, 3);
         WriteTheText(subscribeAnotherCountButton, 3);
         WriteTheText(gotAccountButton, 4);
@@ -1105,7 +1103,6 @@ public class MenuManager : MonoBehaviour {
         WriteTheText(prepaidButton, 36);
         WriteTheText(moreAccountsNeedsButton, 39);
         WriteTheText(creditText, 40);
-        WriteTheText(configButton, 46);
         WriteTheText(configMenu.languageButton, 47);
         WriteTheText(configMenu.englishLanguageButton, 48);
         WriteTheText(configMenu.spanishLanguageButton, 49);
@@ -1477,7 +1474,7 @@ class KidProfileCanvas
 
     public void ChangeAvatar(string avatarData)
     {
-        if (avatarData != null)
+        if (avatarData != "")
         {
             avatarImage.sprite = Resources.Load<Sprite>($"Icons/{avatarData}");
         }
