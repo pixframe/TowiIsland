@@ -29,6 +29,7 @@ public class MenuManager : MonoBehaviour {
     public Button kidsButton;
     public Button singOutButton;
     public Button escapeButton;
+    public Button buyButton;
 	public Text kidNameText;
     public Text savigDirectionText;
     public Image avatarImageToDisplay;
@@ -303,7 +304,7 @@ public class MenuManager : MonoBehaviour {
         returnLogInButton.onClick.AddListener(GoBack);
         singInButton.onClick.AddListener(CreateUser);
         termsAndConditionsButton.onClick.AddListener(GoToTermsAndConditions);
-        singOutButton.onClick.AddListener(CloseSession);
+        singOutButton.onClick.AddListener(ShowTheCloseLog);
         kidsButton.onClick.AddListener(SetKidsProfiles);
         aboutButton.onClick.AddListener(ShowCredits);
         exitCredits.onClick.AddListener(ShowGameMenu);
@@ -316,12 +317,13 @@ public class MenuManager : MonoBehaviour {
         newKidButton.onClick.AddListener(CreateAKid);
         moreAccountsNeedsButton.onClick.AddListener(MoreSubscriptions);
         shopInWeb.onClick.AddListener(MoreSubscriptions);
-        escapeButton.onClick.AddListener(EscapeApplication);
+        escapeButton.onClick.AddListener(ShowTheEscapeApp);
         configMenu.languageButton.onClick.AddListener(ShowLenguages);
         configButton.onClick.AddListener(ShowConfig);
         configMenu.englishLanguageButton.onClick.AddListener(() => SetLanguageOfGame(configMenu.englishLanguageButton.transform.GetSiblingIndex()));
         configMenu.spanishLanguageButton.onClick.AddListener(() => SetLanguageOfGame(configMenu.spanishLanguageButton.transform.GetSiblingIndex()));
         configMenu.automaticButton.onClick.AddListener(SetDeviceLanguage);
+        buyButton.onClick.AddListener(() => ShowShop(1));
     }
 
     #endregion
@@ -481,6 +483,46 @@ public class MenuManager : MonoBehaviour {
         escapeEvaluationButton.onClick.RemoveAllListeners();
         continueEvaluationButton.onClick.AddListener(LoadEvaluation);
         escapeEvaluationButton.onClick.AddListener(ShowGameMenu);
+    }
+
+    void ShowTheCloseLog()
+    {
+        HideAllCanvas();
+        subscribeCanvas.SetActive(true);
+        subscribeAnotherCountButton.gameObject.SetActive(false);
+        changeProfileButton.gameObject.SetActive(false);
+        subscribeButton.gameObject.SetActive(false);
+        continueEvaluationButton.gameObject.SetActive(true);
+        escapeEvaluationButton.gameObject.SetActive(true);
+        WriteTheText(subscribeText, 53);
+        warningLogo.gameObject.SetActive(true);
+        suscripctionLogo.gameObject.SetActive(false);
+        WriteTheText(escapeEvaluationButton, 54);
+        WriteTheText(continueEvaluationButton, 55);
+        continueEvaluationButton.onClick.RemoveAllListeners();
+        escapeEvaluationButton.onClick.RemoveAllListeners();
+        continueEvaluationButton.onClick.AddListener(ShowGameMenu);
+        escapeEvaluationButton.onClick.AddListener(CloseSession);
+    }
+
+    void ShowTheEscapeApp()
+    {
+        HideAllCanvas();
+        subscribeCanvas.SetActive(true);
+        subscribeAnotherCountButton.gameObject.SetActive(false);
+        changeProfileButton.gameObject.SetActive(false);
+        subscribeButton.gameObject.SetActive(false);
+        continueEvaluationButton.gameObject.SetActive(true);
+        escapeEvaluationButton.gameObject.SetActive(true);
+        WriteTheText(subscribeText, 53);
+        warningLogo.gameObject.SetActive(true);
+        suscripctionLogo.gameObject.SetActive(false);
+        WriteTheText(escapeEvaluationButton, 54);
+        WriteTheText(continueEvaluationButton, 55);
+        continueEvaluationButton.onClick.RemoveAllListeners();
+        escapeEvaluationButton.onClick.RemoveAllListeners();
+        continueEvaluationButton.onClick.AddListener(ShowGameMenu);
+        escapeEvaluationButton.onClick.AddListener(ShowTheEscapeApp);
     }
 
     public void ShowIOSDisclaimer()
@@ -730,6 +772,7 @@ public class MenuManager : MonoBehaviour {
         configMenu.backButton.onClick.RemoveAllListeners();
         configMenu.backButton.onClick.AddListener(ShowConfig);
     }
+
 #endregion
 
 #region Button Functions
@@ -1071,7 +1114,6 @@ public class MenuManager : MonoBehaviour {
     {
         WriteTheText(evaluationButton, 0);
         WriteTheText(gamesButton, 1);
-        WriteTheText(singOutButton, 3);
         WriteTheText(subscribeAnotherCountButton, 3);
         WriteTheText(gotAccountButton, 4);
         WriteTheText(createAccountButton, 5);
@@ -1109,6 +1151,7 @@ public class MenuManager : MonoBehaviour {
         WriteTheText(configMenu.automaticButton, 50);
         WriteTheText(changeProfileButton, 51);
         WriteTheText(loadingText, 52);
+        WriteTheText(buyButton, 57);
         warningButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
         newKidButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
     }
@@ -1190,6 +1233,15 @@ public class MenuManager : MonoBehaviour {
             else
             {
                 evaluationButton.gameObject.SetActive(false);
+            }
+
+            if (sessionManager.activeKid.isActive)
+            {
+                buyButton.gameObject.SetActive(false);
+            }
+            else
+            {
+                buyButton.gameObject.SetActive(true);
             }
         }
     }
