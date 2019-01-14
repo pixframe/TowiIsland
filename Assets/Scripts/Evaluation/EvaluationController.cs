@@ -311,7 +311,6 @@ public class EvaluationController : MonoBehaviour
     }
 
     //this will save the progress of the coins game
-    //todo 7*8 COINS
     public void SaveCoinsProgress(int good, int bad, int gX, int bX, int score, List<int> coins, List<float> latencies,List<float> goodLatencies ,List<float> badLatencies, int coinsLevel, int pauses)
     {
         saveHandler.AddLevelData("coins_level", coinsLevel);

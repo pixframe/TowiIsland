@@ -486,7 +486,6 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
         {
             menuManager.SetKidProfilesToAddASubscription(1, "monthly_inApp", args);
             return PurchaseProcessingResult.Pending;
-            // TODO: The subscription item has been successfully purchased, grant this to the player.
         }
         else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionTwo, StringComparison.Ordinal))
         {

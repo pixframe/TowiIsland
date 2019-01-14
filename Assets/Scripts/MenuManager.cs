@@ -22,17 +22,8 @@ public class MenuManager : MonoBehaviour {
     #region UI Elements
     [Header("Game UI")]
     public GameObject gameCanvas;
-    public Button evaluationButton;
-    public Button gamesButton;
-    public Button aboutButton;
-    public Button configButton;
-    public Button kidsButton;
-    public Button singOutButton;
     public Button escapeButton;
-    public Button buyButton;
-	public Text kidNameText;
-    public Text savigDirectionText;
-    public Image avatarImageToDisplay;
+    GameMenu gameMenuObject;
 
     [Header("Log in UI")]
     public GameObject logInMenu;
@@ -108,6 +99,7 @@ public class MenuManager : MonoBehaviour {
     public Button moreAccountsNeedsButton;
     public Dropdown quantityKidsDrop;
     public Button shopInWeb;
+    public Text legalText;
 
     [Header("Warnings")]
     public Text warningText;
@@ -211,7 +203,6 @@ public class MenuManager : MonoBehaviour {
                 //Destroy(FindObjectOfType<AudioManager>().gameObject);
             }
             key = FindObjectOfType<DemoKey>();
-            savigDirectionText.text = Application.persistentDataPath + "/emergencysave.txt";
         }
         else
         {
@@ -237,15 +228,19 @@ public class MenuManager : MonoBehaviour {
         sessionManager = FindObjectOfType<SessionManager>();
         myIAPManager = FindObjectOfType<MyIAPManager>();
         configMenu = new ConfigMenu(configCanvas);
+        gameMenuObject = new GameMenu(gameCanvas, this);
         ButtonSetUp();
+
         if (FindObjectOfType<DemoKey>())
         {
             key = FindObjectOfType<DemoKey>();
         }
+
         if (SystemInfo.deviceType == DeviceType.Handheld)
         {
             escapeButton.gameObject.SetActive(false);
         }
+
         UpdateTexts();
     }
 
@@ -294,8 +289,6 @@ public class MenuManager : MonoBehaviour {
     //here we set almost every button in the ui with the correspondent function to do
     void ButtonSetUp()
     {
-        evaluationButton.onClick.AddListener(ShowDisclaimer);
-        gamesButton.onClick.AddListener(LoadGameMenus);
         gotAccountButton.onClick.AddListener(LogInMenuActive);
         createAccountButton.onClick.AddListener(CreateAccount);
         singInBackButton.onClick.AddListener(ShowLogIn);
@@ -304,9 +297,6 @@ public class MenuManager : MonoBehaviour {
         returnLogInButton.onClick.AddListener(GoBack);
         singInButton.onClick.AddListener(CreateUser);
         termsAndConditionsButton.onClick.AddListener(GoToTermsAndConditions);
-        singOutButton.onClick.AddListener(ShowTheCloseLog);
-        kidsButton.onClick.AddListener(SetKidsProfiles);
-        aboutButton.onClick.AddListener(ShowCredits);
         exitCredits.onClick.AddListener(ShowGameMenu);
         selectionKidBackButton.onClick.AddListener(CloseKids);
         newKidBackButton.onClick.AddListener(CloseKids);
@@ -319,266 +309,14 @@ public class MenuManager : MonoBehaviour {
         shopInWeb.onClick.AddListener(MoreSubscriptions);
         escapeButton.onClick.AddListener(ShowTheEscapeApp);
         configMenu.languageButton.onClick.AddListener(ShowLenguages);
-        configButton.onClick.AddListener(ShowConfig);
         configMenu.englishLanguageButton.onClick.AddListener(() => SetLanguageOfGame(configMenu.englishLanguageButton.transform.GetSiblingIndex()));
         configMenu.spanishLanguageButton.onClick.AddListener(() => SetLanguageOfGame(configMenu.spanishLanguageButton.transform.GetSiblingIndex()));
         configMenu.automaticButton.onClick.AddListener(SetDeviceLanguage);
-        buyButton.onClick.AddListener(() => ShowShop(1));
     }
 
     #endregion
 
-    #region Shower Functions
-
-    public void HideAllCanvas()
-    {
-        gameCanvas.SetActive(false);
-        logInMenu.SetActive(false);
-        accountCanvas.SetActive(false);
-        logInCanavas.SetActive(false);
-        singInCanvas.SetActive(false);
-        kidsPanel.SetActive(false);
-        creditCanvas.SetActive(false);
-        subscribeCanvas.SetActive(false);
-        warningPanel.SetActive(false);
-        shopCanvas.SetActive(false);
-        loadingCanvas.SetActive(false);
-        newKidPanel.SetActive(false);
-        escapeButton.gameObject.SetActive(false);
-        configMenu.panel.SetActive(false);
-    }
-
-    void UpdateKidInMenu()
-    {
-        kidNameText.text = sessionManager.activeKid.name;
-        if (sessionManager.activeKid.avatar != null)
-        {
-            avatarImageToDisplay.sprite = Resources.Load<Sprite>($"Icons/{sessionManager.activeKid.avatar}");
-        }
-        else
-        {
-            avatarImageToDisplay.sprite = Resources.Load<Sprite>($"Icons/koala");
-        }
-    }
-
-    //we show the game menu if the player has acces to it
-    public void ShowGameMenu()
-    {
-        HideAllCanvas();
-        gameCanvas.SetActive(true);
-        UpdateKidInMenu();
-        IsTestIsAvailable();
-        if (SystemInfo.deviceType == DeviceType.Handheld)
-        {
-            escapeButton.gameObject.SetActive(false);
-        }
-        else
-        {
-            escapeButton.gameObject.SetActive(true);
-        }
-    }
-
-    //we show the log in menu for if the player has not sing in on log in
-    public void ShowLogIn()
-    {
-        HideAllCanvas();
-        logInMenu.SetActive(true);
-        accountCanvas.SetActive(true);
-        if (SystemInfo.deviceType == DeviceType.Handheld)
-        {
-            escapeButton.gameObject.SetActive(false);
-        }
-        else
-        {
-            escapeButton.gameObject.SetActive(true);
-        }
-    }
-
-    //we give the player the log in format
-    public void LogInMenuActive()
-    {
-        HideAllCanvas();
-        logInMenu.SetActive(true);
-        logInCanavas.SetActive(true);
-    }
-
-    //we give the user the create account format
-    public void CreateAccount()
-    {
-        HideAllCanvas();
-        logInMenu.SetActive(true);
-        singInCanvas.SetActive(true);
-    }
-
-    public void ShowDisclaimer()
-    {
-        /*if (Application.platform == RuntimePlatform.IPhonePlayer)
-        {
-            if (!UnityEngine.iOS.Device.generation.ToString().Contains("iPad"))
-            {
-                HideAllCanvas();
-                subscribeCanvas.SetActive(true);
-                subscribeAnotherCountButton.gameObject.SetActive(false);
-                changeProfileButton.gameObject.SetActive(false);
-                subscribeButton.gameObject.SetActive(false);
-                continueEvaluationButton.gameObject.SetActive(false);
-                escapeEvaluationButton.gameObject.SetActive(true);
-                WriteTheText(subscribeText, 45);
-                warningLogo.gameObject.SetActive(true);
-                suscripctionLogo.gameObject.SetActive(false);
-                WriteTheText(escapeEvaluationButton, 41);
-                WriteTheText(continueEvaluationButton, 42);
-                escapeEvaluationButton.onClick.RemoveAllListeners();
-                escapeEvaluationButton.onClick.AddListener(ShowGameMenu);
-            }
-            else
-            {
-                ShowTheDisclaimer();
-            }
-        }*/
-        if (SystemInfo.deviceType == DeviceType.Handheld && !IsTablet())
-        {
-            ShowBiggerScreenMessage();
-        }
-        else
-        {
-            ShowTheDisclaimer();
-        }
-
-    }
-
-    void ShowBiggerScreenMessage()
-    {
-        HideAllCanvas();
-        subscribeCanvas.SetActive(true);
-        subscribeAnotherCountButton.gameObject.SetActive(false);
-        changeProfileButton.gameObject.SetActive(false);
-        subscribeButton.gameObject.SetActive(false);
-        continueEvaluationButton.gameObject.SetActive(false);
-        escapeEvaluationButton.gameObject.SetActive(true);
-        WriteTheText(subscribeText, 45);
-        warningLogo.gameObject.SetActive(true);
-        suscripctionLogo.gameObject.SetActive(false);
-        WriteTheText(escapeEvaluationButton, 41);
-        WriteTheText(continueEvaluationButton, 42);
-        escapeEvaluationButton.onClick.RemoveAllListeners();
-        escapeEvaluationButton.onClick.AddListener(ShowGameMenu);
-    }
-
-    void ShowTheDisclaimer()
-    {
-        HideAllCanvas();
-        subscribeCanvas.SetActive(true);
-        subscribeAnotherCountButton.gameObject.SetActive(false);
-        changeProfileButton.gameObject.SetActive(false);
-        subscribeButton.gameObject.SetActive(false);
-        continueEvaluationButton.gameObject.SetActive(true);
-        escapeEvaluationButton.gameObject.SetActive(true);
-        WriteTheText(subscribeText, 26);
-        warningLogo.gameObject.SetActive(true);
-        suscripctionLogo.gameObject.SetActive(false);
-        WriteTheText(escapeEvaluationButton, 41);
-        WriteTheText(continueEvaluationButton, 42);
-        continueEvaluationButton.onClick.RemoveAllListeners();
-        escapeEvaluationButton.onClick.RemoveAllListeners();
-        continueEvaluationButton.onClick.AddListener(LoadEvaluation);
-        escapeEvaluationButton.onClick.AddListener(ShowGameMenu);
-    }
-
-    void ShowTheCloseLog()
-    {
-        HideAllCanvas();
-        subscribeCanvas.SetActive(true);
-        subscribeAnotherCountButton.gameObject.SetActive(false);
-        changeProfileButton.gameObject.SetActive(false);
-        subscribeButton.gameObject.SetActive(false);
-        continueEvaluationButton.gameObject.SetActive(true);
-        escapeEvaluationButton.gameObject.SetActive(true);
-        WriteTheText(subscribeText, 53);
-        warningLogo.gameObject.SetActive(true);
-        suscripctionLogo.gameObject.SetActive(false);
-        WriteTheText(escapeEvaluationButton, 54);
-        WriteTheText(continueEvaluationButton, 55);
-        continueEvaluationButton.onClick.RemoveAllListeners();
-        escapeEvaluationButton.onClick.RemoveAllListeners();
-        continueEvaluationButton.onClick.AddListener(ShowGameMenu);
-        escapeEvaluationButton.onClick.AddListener(CloseSession);
-    }
-
-    void ShowTheEscapeApp()
-    {
-        HideAllCanvas();
-        subscribeCanvas.SetActive(true);
-        subscribeAnotherCountButton.gameObject.SetActive(false);
-        changeProfileButton.gameObject.SetActive(false);
-        subscribeButton.gameObject.SetActive(false);
-        continueEvaluationButton.gameObject.SetActive(true);
-        escapeEvaluationButton.gameObject.SetActive(true);
-        WriteTheText(subscribeText, 53);
-        warningLogo.gameObject.SetActive(true);
-        suscripctionLogo.gameObject.SetActive(false);
-        WriteTheText(escapeEvaluationButton, 54);
-        WriteTheText(continueEvaluationButton, 55);
-        continueEvaluationButton.onClick.RemoveAllListeners();
-        escapeEvaluationButton.onClick.RemoveAllListeners();
-        continueEvaluationButton.onClick.AddListener(ShowGameMenu);
-        escapeEvaluationButton.onClick.AddListener(ShowTheEscapeApp);
-    }
-
-    public void ShowIOSDisclaimer()
-    {
-        HideAllCanvas();
-        subscribeCanvas.SetActive(true);
-        subscribeAnotherCountButton.gameObject.SetActive(false);
-        changeProfileButton.gameObject.SetActive(false);
-        subscribeButton.gameObject.SetActive(false);
-        continueEvaluationButton.gameObject.SetActive(true);
-        escapeEvaluationButton.gameObject.SetActive(true);
-        WriteTheText(subscribeText, 44);
-        warningLogo.gameObject.SetActive(false);
-        suscripctionLogo.gameObject.SetActive(true);
-        WriteTheText(escapeEvaluationButton, 42);
-        WriteTheText(continueEvaluationButton, 41);
-        continueEvaluationButton.onClick.RemoveAllListeners();
-        escapeEvaluationButton.onClick.RemoveAllListeners();
-        continueEvaluationButton.onClick.AddListener(() => ShowShop(0));
-        escapeEvaluationButton.onClick.AddListener(ShopIAP);
-    }
-
-    //We show the player that his accoount has not that privelage
-    public void ShowAccountWarning(int typeOfWarning)
-    {
-        HideAllCanvas();
-        subscribeCanvas.SetActive(true);
-        subscribeButton.onClick.RemoveAllListeners();
-        subscribeAnotherCountButton.gameObject.SetActive(true);
-        changeProfileButton.gameObject.SetActive(true);
-        subscribeButton.gameObject.SetActive(true);
-        continueEvaluationButton.gameObject.SetActive(false);
-        escapeEvaluationButton.gameObject.SetActive(false);
-        warningLogo.gameObject.SetActive(false);
-        suscripctionLogo.gameObject.SetActive(true);
-        WriteTheText(subscribeButton, 29);
-        if (sessionManager.activeUser.suscriptionsLeft < 1)
-        {
-            if (typeOfWarning == 0)
-            {
-                subscribeButton.onClick.AddListener(() => ShowShop(0));
-                WriteTheText(subscribeText, 25);
-            }
-            else if (typeOfWarning == 1)
-            {
-                subscribeButton.onClick.AddListener(() => ShowShop(1));
-                WriteTheText(subscribeText, 27);
-            }
-        }
-        else
-        {
-            subscribeButton.onClick.AddListener(GiveASuscription);
-            WriteTheText(subscribeText, 28);
-        }
-
-    }
+    #region Set Functions
 
     //we show the kids that are available for the player
     public void SetKidsProfiles()
@@ -620,7 +358,7 @@ public class MenuManager : MonoBehaviour {
                     float positionOfCanvitas = addableSize / 2;
                     kidos[i].mainCanvas.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, kidos[i].mainCanvas.GetComponent<RectTransform>().localPosition.y);
                 }
-                kidos[i].PutKidName(sessionManager.activeUser.kids[i].name);
+                kidos[i].SetKidName(sessionManager.activeUser.kids[i].name);
                 string parentkey = sessionManager.activeUser.kids[i].userkey;
                 int id = sessionManager.activeUser.kids[i].id;
                 kidos[i].buttonOfProfile.onClick.AddListener(() => SetKidProfile(parentkey, id));
@@ -635,15 +373,241 @@ public class MenuManager : MonoBehaviour {
         sessionManager.SaveSession();
     }
 
+    #endregion
+
+    #region Show Functions
+
+    public void HideAllCanvas()
+    {
+        gameMenuObject.HideThisMenu();
+        logInMenu.SetActive(false);
+        accountCanvas.SetActive(false);
+        logInCanavas.SetActive(false);
+        singInCanvas.SetActive(false);
+        kidsPanel.SetActive(false);
+        creditCanvas.SetActive(false);
+        subscribeCanvas.SetActive(false);
+        warningPanel.SetActive(false);
+        shopCanvas.SetActive(false);
+        loadingCanvas.SetActive(false);
+        newKidPanel.SetActive(false);
+        escapeButton.gameObject.SetActive(false);
+        configMenu.panel.SetActive(false);
+    }
+
+    void UpdateKidInMenu()
+    {
+        gameMenuObject.kidProfile.SetKidName(sessionManager.activeKid.name);
+        gameMenuObject.kidProfile.ChangeAvatar(sessionManager.activeKid.avatar);
+    }
+
+    public void ShowEscapeButton()
+    {
+        if (SystemInfo.deviceType == DeviceType.Handheld)
+        {
+            escapeButton.gameObject.SetActive(false);
+        }
+        else
+        {
+            escapeButton.gameObject.SetActive(true);
+        }
+    }
+
+    //we show the game menu if the player has acces to it
+    public void ShowGameMenu()
+    {
+        HideAllCanvas();
+        if (key)
+        {
+            gameMenuObject.ShowThisMenu(true);
+        }
+        else
+        {
+            gameMenuObject.ShowThisMenu(sessionManager.activeKid.isActive);
+        }
+
+        UpdateKidInMenu();
+        IsTestIsAvailable();
+        ShowEscapeButton();
+    }
+
+    //we show the log in menu for if the player has not sing in on log in
+    public void ShowLogIn()
+    {
+        HideAllCanvas();
+        logInMenu.SetActive(true);
+        accountCanvas.SetActive(true);
+        ShowEscapeButton();
+    }
+
+    //we give the player the log in format
+    public void LogInMenuActive()
+    {
+        HideAllCanvas();
+        logInMenu.SetActive(true);
+        logInCanavas.SetActive(true);
+    }
+
+    //we give the user the create account format
+    public void CreateAccount()
+    {
+        HideAllCanvas();
+        logInMenu.SetActive(true);
+        singInCanvas.SetActive(true);
+    }
+
+    public void ShowDisclaimer()
+    {
+        if (SystemInfo.deviceType == DeviceType.Handheld && !IsTablet())
+        {
+            ShowBiggerScreenMessage();
+        }
+        else
+        {
+            ShowTheDisclaimer();
+        }
+    }
+
+    void ShowBiggerScreenMessage()
+    {
+        HideAllCanvas();
+        subscribeCanvas.SetActive(true);
+        subscribeAnotherCountButton.gameObject.SetActive(false);
+        changeProfileButton.gameObject.SetActive(false);
+        subscribeButton.gameObject.SetActive(false);
+        continueEvaluationButton.gameObject.SetActive(false);
+        escapeEvaluationButton.gameObject.SetActive(true);
+        WriteTheText(subscribeText, 45);
+        warningLogo.gameObject.SetActive(true);
+        suscripctionLogo.gameObject.SetActive(false);
+        WriteTheText(escapeEvaluationButton, 41);
+        WriteTheText(continueEvaluationButton, 42);
+        escapeEvaluationButton.onClick.RemoveAllListeners();
+        escapeEvaluationButton.onClick.AddListener(ShowGameMenu);
+    }
+
+    public void ShowYouHaveASuscription()
+    {
+        HideAllCanvas();
+        subscribeCanvas.SetActive(true);
+        subscribeAnotherCountButton.gameObject.SetActive(false);
+        changeProfileButton.gameObject.SetActive(false);
+        subscribeButton.gameObject.SetActive(false);
+        continueEvaluationButton.gameObject.SetActive(false);
+        escapeEvaluationButton.gameObject.SetActive(true);
+        WriteTheText(subscribeText, 58);
+        warningLogo.gameObject.SetActive(true);
+        suscripctionLogo.gameObject.SetActive(false);
+        WriteTheText(escapeEvaluationButton, 41);
+        WriteTheText(continueEvaluationButton, 42);
+        escapeEvaluationButton.onClick.RemoveAllListeners();
+        escapeEvaluationButton.onClick.AddListener(ShowGameMenu);
+    }
+
+    void ShowTheDisclaimer()
+    {
+        HideAllCanvas();
+        subscribeCanvas.SetActive(true);
+        subscribeAnotherCountButton.gameObject.SetActive(false);
+        changeProfileButton.gameObject.SetActive(false);
+        subscribeButton.gameObject.SetActive(false);
+        continueEvaluationButton.gameObject.SetActive(true);
+        escapeEvaluationButton.gameObject.SetActive(true);
+        WriteTheText(subscribeText, 26);
+        warningLogo.gameObject.SetActive(true);
+        suscripctionLogo.gameObject.SetActive(false);
+        WriteTheText(escapeEvaluationButton, 41);
+        WriteTheText(continueEvaluationButton, 42);
+        continueEvaluationButton.onClick.RemoveAllListeners();
+        escapeEvaluationButton.onClick.RemoveAllListeners();
+        continueEvaluationButton.onClick.AddListener(LoadEvaluation);
+        escapeEvaluationButton.onClick.AddListener(ShowGameMenu);
+    }
+
+    public void ShowSingOutWarning()
+    {
+        HideAllCanvas();
+        subscribeCanvas.SetActive(true);
+        subscribeAnotherCountButton.gameObject.SetActive(false);
+        changeProfileButton.gameObject.SetActive(false);
+        subscribeButton.gameObject.SetActive(false);
+        continueEvaluationButton.gameObject.SetActive(true);
+        escapeEvaluationButton.gameObject.SetActive(true);
+        WriteTheText(subscribeText, 53);
+        warningLogo.gameObject.SetActive(true);
+        suscripctionLogo.gameObject.SetActive(false);
+        WriteTheText(escapeEvaluationButton, 54);
+        WriteTheText(continueEvaluationButton, 55);
+        continueEvaluationButton.onClick.RemoveAllListeners();
+        escapeEvaluationButton.onClick.RemoveAllListeners();
+        continueEvaluationButton.onClick.AddListener(ShowGameMenu);
+        escapeEvaluationButton.onClick.AddListener(CloseSession);
+    }
+
+    void ShowTheEscapeApp()
+    {
+        HideAllCanvas();
+        subscribeCanvas.SetActive(true);
+        subscribeAnotherCountButton.gameObject.SetActive(false);
+        changeProfileButton.gameObject.SetActive(false);
+        subscribeButton.gameObject.SetActive(false);
+        continueEvaluationButton.gameObject.SetActive(true);
+        escapeEvaluationButton.gameObject.SetActive(true);
+        WriteTheText(subscribeText, 53);
+        warningLogo.gameObject.SetActive(true);
+        suscripctionLogo.gameObject.SetActive(false);
+        WriteTheText(escapeEvaluationButton, 54);
+        WriteTheText(continueEvaluationButton, 55);
+        continueEvaluationButton.onClick.RemoveAllListeners();
+        escapeEvaluationButton.onClick.RemoveAllListeners();
+        continueEvaluationButton.onClick.AddListener(ShowGameMenu);
+        escapeEvaluationButton.onClick.AddListener(ShowTheEscapeApp);
+    }
+
+    //We show the player that his accoount has not that privelage
+    public void ShowAccountWarning(int typeOfWarning)
+    {
+        HideAllCanvas();
+        subscribeCanvas.SetActive(true);
+        subscribeButton.onClick.RemoveAllListeners();
+        subscribeAnotherCountButton.gameObject.SetActive(true);
+        changeProfileButton.gameObject.SetActive(true);
+        subscribeButton.gameObject.SetActive(true);
+        continueEvaluationButton.gameObject.SetActive(false);
+        escapeEvaluationButton.gameObject.SetActive(false);
+        warningLogo.gameObject.SetActive(false);
+        suscripctionLogo.gameObject.SetActive(true);
+        WriteTheText(subscribeButton, 29);
+        if (sessionManager.activeUser.suscriptionsLeft < 1)
+        {
+            if (typeOfWarning == 0)
+            {
+                subscribeButton.onClick.AddListener(() => ShowShop(0));
+                WriteTheText(subscribeText, 25);
+            }
+            else if (typeOfWarning == 1)
+            {
+                subscribeButton.onClick.AddListener(() => ShowShop(1));
+                WriteTheText(subscribeText, 27);
+            }
+        }
+        else
+        {
+            subscribeButton.onClick.AddListener(GiveASuscription);
+            WriteTheText(subscribeText, 28);
+        }
+
+    }
+
     //we shoe the genius that make this game
-    void ShowCredits()
+    public void ShowCredits()
     {
         HideAllCanvas();
         creditCanvas.SetActive(true);
     }
 
     //we show the shop and gives them the option to buy
-    void ShowShop(int shopForNewKid)
+    public void ShowShop(int shopForNewKid)
     {
 
         HideAllCanvas();
@@ -711,14 +675,7 @@ public class MenuManager : MonoBehaviour {
         shopBackButton.onClick.RemoveAllListeners();
         shopIAPButton.onClick.RemoveAllListeners();
         shopBackButton.onClick.AddListener(()=>ShowShop(showShop));
-        if (Application.platform == RuntimePlatform.IPhonePlayer)
-        {
-            shopIAPButton.onClick.AddListener(() => IOSExtraStep(showShop));
-        }
-        else
-        {
-            shopIAPButton.onClick.AddListener(ShopIAP);
-        }
+        shopIAPButton.onClick.AddListener(ShopIAP);
     }
 
     void ShopIAP()
@@ -755,7 +712,7 @@ public class MenuManager : MonoBehaviour {
         loadingCanvas.SetActive(true);
     }
 
-    void ShowConfig()
+    public void ShowSettings()
     {
         HideAllCanvas();
         configMenu.panel.SetActive(true);
@@ -770,7 +727,7 @@ public class MenuManager : MonoBehaviour {
         configMenu.languageButtonHandler.SetActive(true);
         configMenu.languageButton.gameObject.SetActive(false);
         configMenu.backButton.onClick.RemoveAllListeners();
-        configMenu.backButton.onClick.AddListener(ShowConfig);
+        configMenu.backButton.onClick.AddListener(ShowSettings);
     }
 
 #endregion
@@ -802,7 +759,7 @@ public class MenuManager : MonoBehaviour {
     }
 
     //this one is to go to the menu center
-    void LoadGameMenus()
+    public void LoadGameMenus()
     {
         PrefsKeys.SetNextScene("GameMenus");
         SceneManager.LoadScene("Loader_Scene");
@@ -903,15 +860,7 @@ public class MenuManager : MonoBehaviour {
     void SetKidProfile(string parentKey, int id)
     {
         sessionManager.SetKid(parentKey, id);
-        if (sessionManager.activeKid.isActive)
-        {
-            IsTestIsAvailable();
-            ShowGameMenu();
-        }
-        else
-        {
-            ShowAccountWarning(0);
-        }
+        ShowGameMenu();
     }
 
     //this will set all available kids to show wich of them you will add to your subscription plan
@@ -957,7 +906,7 @@ public class MenuManager : MonoBehaviour {
                     float positionOfCanvitas = addableSize / 2;
                     kidos[i].mainCanvas.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, kidos[i].mainCanvas.GetComponent<RectTransform>().localPosition.y);
                 }
-                kidos[i].PutKidName(sessionManager.activeUser.kids[i].name);
+                kidos[i].SetKidName(sessionManager.activeUser.kids[i].name);
                 string parentkey = sessionManager.activeUser.kids[i].userkey;
                 int id = sessionManager.activeUser.kids[i].id;
                 kidos[i].buttonOfProfile.onClick.AddListener(() => SetKidIdToSubscriptionPlan(id, kidos[i]));
@@ -1045,14 +994,7 @@ public class MenuManager : MonoBehaviour {
     {
         if (sessionManager.activeKid != null)
         {
-            if (sessionManager.activeKid.isActive)
-            {
-                ShowGameMenu();
-            }
-            else
-            {
-                ShowAccountWarning(0);
-            }
+            ShowGameMenu();
         }
         else
         {
@@ -1112,8 +1054,8 @@ public class MenuManager : MonoBehaviour {
     //This will set all the texts need for the menus
     void WriteTheTexts()
     {
-        WriteTheText(evaluationButton, 0);
-        WriteTheText(gamesButton, 1);
+        WriteTheText(gameMenuObject.evaluationButton, 0);
+        WriteTheText(gameMenuObject.gamesButton, 1);
         WriteTheText(subscribeAnotherCountButton, 3);
         WriteTheText(gotAccountButton, 4);
         WriteTheText(createAccountButton, 5);
@@ -1151,7 +1093,7 @@ public class MenuManager : MonoBehaviour {
         WriteTheText(configMenu.automaticButton, 50);
         WriteTheText(changeProfileButton, 51);
         WriteTheText(loadingText, 52);
-        WriteTheText(buyButton, 57);
+        WriteTheText(gameMenuObject.buyButton, 57);
         warningButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
         newKidButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
     }
@@ -1228,51 +1170,25 @@ public class MenuManager : MonoBehaviour {
         {
             if (sessionManager.activeKid.testAvailable)
             {
-                evaluationButton.gameObject.SetActive(true);
+                gameMenuObject.evaluationButton.gameObject.SetActive(true);
             }
             else
             {
-                evaluationButton.gameObject.SetActive(false);
-            }
-
-            if (sessionManager.activeKid.isActive)
-            {
-                buyButton.gameObject.SetActive(false);
-            }
-            else
-            {
-                buyButton.gameObject.SetActive(true);
+                gameMenuObject.evaluationButton.gameObject.SetActive(false);
             }
         }
-    }
-
-    void IOSExtraStep(int showShop)
-    {
-        HideAllCanvas();
-        subscribeCanvas.SetActive(true);
-        subscribeAnotherCountButton.gameObject.SetActive(false);
-        changeProfileButton.gameObject.SetActive(false);
-        subscribeButton.gameObject.SetActive(false);
-        continueEvaluationButton.gameObject.SetActive(false);
-        escapeEvaluationButton.gameObject.SetActive(true);
-        WriteTheText(subscribeText, 44);
-        warningLogo.gameObject.SetActive(true);
-        suscripctionLogo.gameObject.SetActive(true);
-        WriteTheText(escapeEvaluationButton, 41);
-        WriteTheText(continueEvaluationButton, 42);
-        escapeEvaluationButton.onClick.RemoveAllListeners();
-        continueEvaluationButton.onClick.AddListener(() => ShowShop(showShop));
-        escapeEvaluationButton.onClick.AddListener(ShopIAP);
     }
 
     //This will set the shop
     void SetShop()
     {
-        if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.Windows)
+        if (SystemInfo.deviceType == DeviceType.Desktop)
         {
             oneMonthButton.gameObject.SetActive(false);
             threeMonthButton.gameObject.SetActive(false);
+            legalText.gameObject.SetActive(false);
             shopInWeb.gameObject.SetActive(true);
+            prepaidButton.gameObject.SetActive(true);
         }
         else
         {
@@ -1280,12 +1196,15 @@ public class MenuManager : MonoBehaviour {
             {
                 oneMonthButton.gameObject.SetActive(true);
                 threeMonthButton.gameObject.SetActive(true);
+                prepaidButton.gameObject.SetActive(true);
                 shopInWeb.gameObject.SetActive(false);
+                legalText.gameObject.SetActive(false);
                 oneMonthButton.GetComponentInChildren<Text>().text = lines[33] + " " + myIAPManager.CostInCurrency(1) + lines[35];
                 threeMonthButton.GetComponentInChildren<Text>().text = lines[34] + " " + myIAPManager.CostInCurrency(3) + lines[35];
                 if (Application.platform == RuntimePlatform.IPhonePlayer)
                 {
                     prepaidButton.gameObject.SetActive(false);
+                    legalText.gameObject.SetActive(true);
                 }
             }
             else
@@ -1536,8 +1455,89 @@ class KidProfileCanvas
         }
     }
 
-    public void PutKidName(string kidName)
+    public void SetKidName(string kidName)
     {
         nameText.text = kidName;
     }
+}
+
+class GameMenu
+{
+    GameObject mainCanvas;
+    MenuManager manager;
+    Image logoIcon;
+    public Button gamesButton;
+    public Button evaluationButton;
+    public Button buyButton;
+    public KidProfileCanvas kidProfile;
+    Button singOutButton;
+    Button settingsButton;
+    Button aboutButton;
+
+
+    public GameMenu(GameObject panel, MenuManager managerToRelay)
+    {
+        manager = managerToRelay;
+        mainCanvas = panel;
+        logoIcon = mainCanvas.transform.GetChild(0).GetComponent<Image>();
+        gamesButton = mainCanvas.transform.GetChild(1).GetComponent<Button>();
+        evaluationButton = mainCanvas.transform.GetChild(2).GetComponent<Button>();
+        buyButton = mainCanvas.transform.GetChild(3).GetComponent<Button>();
+        kidProfile = new KidProfileCanvas(mainCanvas.transform.GetChild(4).gameObject);
+        singOutButton = mainCanvas.transform.GetChild(5).GetComponent<Button>();
+        settingsButton = mainCanvas.transform.GetChild(6).GetComponent<Button>();
+        aboutButton = mainCanvas.transform.GetChild(7).GetComponent<Button>();
+        SetStaticButtonFuctions();
+    }
+
+    public void ShowThisMenu(bool isActiveTheCurrentKid)
+    {
+        mainCanvas.SetActive(true);
+        SetDynamicButtonFunctions(isActiveTheCurrentKid);
+    }
+
+    public void HideThisMenu()
+    {
+        mainCanvas.SetActive(false);
+    }
+
+    void SetStaticButtonFuctions()
+    {
+        aboutButton.onClick.AddListener(manager.ShowCredits);
+        settingsButton.onClick.AddListener(manager.ShowSettings);
+        kidProfile.buttonOfProfile.onClick.AddListener(manager.SetKidsProfiles);
+        singOutButton.onClick.AddListener(manager.ShowSingOutWarning);
+    }
+
+    public void SetDynamicButtonFunctions(bool isActiveTheCurrentKid)
+    {
+        gamesButton.onClick.RemoveAllListeners();
+        evaluationButton.onClick.RemoveAllListeners();
+        buyButton.onClick.RemoveAllListeners();
+
+        if (isActiveTheCurrentKid)
+        {
+            gamesButton.onClick.AddListener(manager.LoadGameMenus);
+            evaluationButton.onClick.AddListener(manager.ShowDisclaimer);
+            buyButton.onClick.AddListener(manager.ShowYouHaveASuscription);
+            SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
+            SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
+        }
+        else
+        {
+            gamesButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
+            evaluationButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
+            buyButton.onClick.AddListener(() => manager.ShowShop(1));
+            SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
+            SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
+        }
+    }
+
+    void SetImageColor(Image imageToChange, string colorToSet)
+    {
+        Color colorToPut;
+        ColorUtility.TryParseHtmlString(colorToSet, out colorToPut);
+        imageToChange.color = colorToPut;
+    }
+
 }

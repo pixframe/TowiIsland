@@ -148,14 +148,7 @@ public class LogInScript : MonoBehaviour {
             {
                 if (sessionManager.activeKid != null)
                 {
-                    if (sessionManager.activeKid.isActive)
-                    {
-                        menuController.ShowGameMenu();
-                    }
-                    else
-                    {
-                        menuController.ShowAccountWarning(0);
-                    }
+                    menuController.ShowGameMenu();
                 }
                 else
                 {
