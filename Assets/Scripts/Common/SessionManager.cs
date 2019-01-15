@@ -979,6 +979,7 @@ public class SessionManager : MonoBehaviour
         public bool needSync;
         public bool testAvailable;
         public bool isActive;
+        public bool isInTrial;
         public bool isIAPSubscribed;
 
         public List<int> buyedIslandObjects;
@@ -1055,7 +1056,8 @@ public class SessionManager : MonoBehaviour
             anyFirstTime = true;
             needSync = false;
             testAvailable = true;
-            isActive = active || trial;
+            isActive = active;
+            isInTrial = trial;
             isIAPSubscribed = false;
             buyedIslandObjects = new List<int>();
 

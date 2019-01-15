@@ -83,23 +83,13 @@ public class MenuManager : MonoBehaviour {
     public Button changeProfileButton;
     public Button continueEvaluationButton;
     public Button escapeEvaluationButton;
+    public Button subscribeBackButton;
     public Image suscripctionLogo;
     public Image warningLogo;
 
     [Header("Shop Button")]
     public GameObject shopCanvas;
-    public Button oneMonthButton;
-    public Button threeMonthButton;
-    public Button prepaidButton;
-    public Button sendCardButton;
-    public InputField inputPrepaidCode;
-    public Text codeText;
-    public Button shopBackButton;
-    public Button shopIAPButton;
-    public Button moreAccountsNeedsButton;
-    public Dropdown quantityKidsDrop;
-    public Button shopInWeb;
-    public Text legalText;
+    ShopMenu shopMenu;
 
     [Header("Warnings")]
     public Text warningText;
@@ -228,7 +218,9 @@ public class MenuManager : MonoBehaviour {
         sessionManager = FindObjectOfType<SessionManager>();
         myIAPManager = FindObjectOfType<MyIAPManager>();
         configMenu = new ConfigMenu(configCanvas);
+        UpdateTexts();
         gameMenuObject = new GameMenu(gameCanvas, this);
+        shopMenu = new ShopMenu(shopCanvas, this);
         ButtonSetUp();
 
         if (FindObjectOfType<DemoKey>())
@@ -240,8 +232,6 @@ public class MenuManager : MonoBehaviour {
         {
             escapeButton.gameObject.SetActive(false);
         }
-
-        UpdateTexts();
     }
 
     void UpdateTexts()
@@ -305,10 +295,9 @@ public class MenuManager : MonoBehaviour {
         addKidButton.onClick.AddListener(AddKidShower);
         changeProfileButton.onClick.AddListener(SetKidsProfiles);
         newKidButton.onClick.AddListener(CreateAKid);
-        moreAccountsNeedsButton.onClick.AddListener(MoreSubscriptions);
-        shopInWeb.onClick.AddListener(MoreSubscriptions);
         escapeButton.onClick.AddListener(ShowTheEscapeApp);
         configMenu.languageButton.onClick.AddListener(ShowLenguages);
+        subscribeBackButton.onClick.AddListener(ShowGameMenu);
         configMenu.englishLanguageButton.onClick.AddListener(() => SetLanguageOfGame(configMenu.englishLanguageButton.transform.GetSiblingIndex()));
         configMenu.spanishLanguageButton.onClick.AddListener(() => SetLanguageOfGame(configMenu.spanishLanguageButton.transform.GetSiblingIndex()));
         configMenu.automaticButton.onClick.AddListener(SetDeviceLanguage);
@@ -373,6 +362,40 @@ public class MenuManager : MonoBehaviour {
         sessionManager.SaveSession();
     }
 
+    //This will set the shop
+    public void SetShop(int isAShopForNewKid)
+    {
+
+        if (SystemInfo.deviceType == DeviceType.Desktop)
+        {
+            shopMenu.SetWebShop(isAShopForNewKid);
+        }
+        else
+        {
+            shopMenu.oneMonthButton.GetComponentInChildren<Text>().text = $"{lines[33]} {myIAPManager.CostInCurrency(1)} {lines[35]}";
+            shopMenu.threeMonthButton.GetComponentInChildren<Text>().text = $"{lines[34]} {myIAPManager.CostInCurrency(1)} {lines[35]}";
+            if (Application.platform == RuntimePlatform.IPhonePlayer)
+            {
+                shopMenu.SetIOSShop(isAShopForNewKid);
+            }
+            else
+            {
+                shopMenu.SetAndroidShop(isAShopForNewKid);
+            }
+            //TODO get exeptions
+            /*if (sessionManager.activeUser.isPossibleBuyIAP)
+            {
+
+            }
+            else
+            {
+                oneMonthButton.gameObject.SetActive(false);
+                threeMonthButton.gameObject.SetActive(false);
+                shopInWeb.gameObject.SetActive(true);
+            }*/
+        }
+    }
+
     #endregion
 
     #region Show Functions
@@ -380,6 +403,7 @@ public class MenuManager : MonoBehaviour {
     public void HideAllCanvas()
     {
         gameMenuObject.HideThisMenu();
+        shopMenu.HideThisMenu();
         logInMenu.SetActive(false);
         accountCanvas.SetActive(false);
         logInCanavas.SetActive(false);
@@ -388,7 +412,6 @@ public class MenuManager : MonoBehaviour {
         creditCanvas.SetActive(false);
         subscribeCanvas.SetActive(false);
         warningPanel.SetActive(false);
-        shopCanvas.SetActive(false);
         loadingCanvas.SetActive(false);
         newKidPanel.SetActive(false);
         escapeButton.gameObject.SetActive(false);
@@ -419,11 +442,11 @@ public class MenuManager : MonoBehaviour {
         HideAllCanvas();
         if (key)
         {
-            gameMenuObject.ShowThisMenu(true, true);
+            gameMenuObject.ShowThisMenu(true, false, IsEvaluationAvilable(), true);
         }
         else
         {
-            gameMenuObject.ShowThisMenu(sessionManager.activeKid.isActive, sessionManager.activeKid.anyFirstTime);
+            gameMenuObject.ShowThisMenu(sessionManager.activeKid.isActive, sessionManager.activeKid.isInTrial, IsEvaluationAvilable(), sessionManager.activeKid.anyFirstTime);
         }
 
         UpdateKidInMenu();
@@ -553,7 +576,7 @@ public class MenuManager : MonoBehaviour {
         subscribeButton.gameObject.SetActive(false);
         continueEvaluationButton.gameObject.SetActive(true);
         escapeEvaluationButton.gameObject.SetActive(true);
-        WriteTheText(subscribeText, 53);
+        WriteTheText(subscribeText, 56);
         warningLogo.gameObject.SetActive(true);
         suscripctionLogo.gameObject.SetActive(false);
         WriteTheText(escapeEvaluationButton, 54);
@@ -577,6 +600,7 @@ public class MenuManager : MonoBehaviour {
         escapeEvaluationButton.gameObject.SetActive(false);
         warningLogo.gameObject.SetActive(false);
         suscripctionLogo.gameObject.SetActive(true);
+        subscribeBackButton.onClick.AddListener(ShowGameMenu);
         WriteTheText(subscribeButton, 29);
         if (sessionManager.activeUser.suscriptionsLeft < 1)
         {
@@ -609,92 +633,38 @@ public class MenuManager : MonoBehaviour {
     //we show the shop and gives them the option to buy
     public void ShowShop(int shopForNewKid)
     {
-
         HideAllCanvas();
-        shopCanvas.SetActive(true);
-        prepaidButton.gameObject.SetActive(true);
-        inputPrepaidCode.gameObject.SetActive(false);
-        sendCardButton.gameObject.SetActive(false);
-        codeText.gameObject.SetActive(false);
-        quantityKidsDrop.gameObject.SetActive(false);
-        moreAccountsNeedsButton.gameObject.SetActive(false);
-        shopIAPButton.gameObject.SetActive(false);
-        SetShop();
-
-        sendCardButton.onClick.RemoveAllListeners();
-        prepaidButton.onClick.RemoveAllListeners();
-        oneMonthButton.onClick.RemoveAllListeners();
-        threeMonthButton.onClick.RemoveAllListeners();
-        shopBackButton.onClick.RemoveAllListeners();
-        sendCardButton.onClick.AddListener(() => ChangeAPrePaidCode(shopForNewKid));
-        prepaidButton.onClick.AddListener(() => ShopWithCode(shopForNewKid));
-        oneMonthButton.onClick.AddListener(() => ShopNumOfKids(shopForNewKid, 1));
-        threeMonthButton.onClick.AddListener(() => ShopNumOfKids(shopForNewKid, 3));
-        if (sessionManager.activeKid.isActive) 
-        {
-            shopBackButton.onClick.AddListener(ShowGameMenu);
-        }
-        else
-        {
-            shopBackButton.onClick.AddListener(() => ShowAccountWarning(shopForNewKid));
-        }
+        shopMenu.ShowThisMenu();
+        SetShop(shopForNewKid);
     }
 
     //we start the proceess of purchasing a suscription with a prepaid code
     public void ShopWithCode(int showShop)
     {
         HideAllCanvas();
-        shopCanvas.SetActive(true);
-        oneMonthButton.gameObject.SetActive(false);
-        threeMonthButton.gameObject.SetActive(false);
-        prepaidButton.gameObject.SetActive(false);
-        shopInWeb.gameObject.SetActive(false);
-        inputPrepaidCode.gameObject.SetActive(true);
-        sendCardButton.gameObject.SetActive(true);
-        codeText.gameObject.SetActive(true);
-        WriteTheText(codeText, 37);
-        quantityKidsDrop.gameObject.SetActive(false);
-        moreAccountsNeedsButton.gameObject.SetActive(false);
-        shopIAPButton.gameObject.SetActive(false);
-
-        shopBackButton.onClick.RemoveAllListeners();
-        shopBackButton.onClick.AddListener(() => ShowShop(showShop));
+        shopMenu.ShowThisMenu();
+        shopMenu.SetChangePrepaidCode(showShop);
     }
 
     //we let the player to shop with the InAppPurchase system this only works up to 5 kids
-    void ShopNumOfKids(int showShop, int months)
+    public void ShopNumOfKids(int showShop, int months)
     {
         HideAllCanvas();
-        shopCanvas.SetActive(true);
-        oneMonthButton.gameObject.SetActive(false);
-        threeMonthButton.gameObject.SetActive(false);
-        prepaidButton.gameObject.SetActive(false);
-        shopInWeb.gameObject.SetActive(false);
-        inputPrepaidCode.gameObject.SetActive(false);
-        sendCardButton.gameObject.SetActive(false);
-        codeText.gameObject.SetActive(true);
-        WriteTheText(codeText, 38);
-        quantityKidsDrop.gameObject.SetActive(true);
-        moreAccountsNeedsButton.gameObject.SetActive(true);
-        shopIAPButton.gameObject.SetActive(true);
-
+        shopMenu.ShowThisMenu();
+        shopMenu.SetNumberShopKid(showShop);
         monthsOfSubs = months;
-        shopBackButton.onClick.RemoveAllListeners();
-        shopIAPButton.onClick.RemoveAllListeners();
-        shopBackButton.onClick.AddListener(()=>ShowShop(showShop));
-        shopIAPButton.onClick.AddListener(ShopIAP);
     }
 
-    void ShopIAP()
+    public void ShopIAP()
     {
-        numKids = quantityKidsDrop.value + 1;
+        int numberOfKids = shopMenu.kidsNumberDropdown.value + 1;
         if (monthsOfSubs == 1)
         {
-            myIAPManager.BuySubscriptionOneMonth(numKids);
+            myIAPManager.BuySubscriptionOneMonth(numberOfKids);
         }
         else
         {
-            myIAPManager.BuySubscriptionThreeMonths(numKids);
+            myIAPManager.BuySubscriptionThreeMonths(numberOfKids);
         }
     }
 
@@ -850,16 +820,16 @@ public class MenuManager : MonoBehaviour {
     }
 
     //this one tries to change a code for the active kid
-    void ChangeAPrePaidCode(int isNewChild)
+    public void ChangeAPrePaidCode(int isNewChild)
     {
         ShowLoading();
         if (isNewChild == 0)
         {
-            subscriptionsManager.SendACode(sessionManager.activeUser.id, sessionManager.activeKid.id, inputPrepaidCode.text, isNewChild);
+            subscriptionsManager.SendACode(sessionManager.activeUser.id, sessionManager.activeKid.id, shopMenu.prepaidInput.text, isNewChild);
         }
         else
         {
-            subscriptionsManager.SendACode(sessionManager.activeUser.id, inputPrepaidCode.text,isNewChild);
+            subscriptionsManager.SendACode(sessionManager.activeUser.id, shopMenu.prepaidInput.text, isNewChild);
         }
     }
 
@@ -1061,8 +1031,6 @@ public class MenuManager : MonoBehaviour {
     //This will set all the texts need for the menus
     void WriteTheTexts()
     {
-        WriteTheText(gameMenuObject.evaluationButton, 0);
-        WriteTheText(gameMenuObject.gamesButton, 1);
         WriteTheText(subscribeAnotherCountButton, 3);
         WriteTheText(gotAccountButton, 4);
         WriteTheText(createAccountButton, 5);
@@ -1090,9 +1058,6 @@ public class MenuManager : MonoBehaviour {
         WriteTheText(kidMoreText, 20);
         WriteTheText(acceptTermsAndConditionText, 21);
         WriteTheText(termsAndConditionsButton, 22);
-        WriteTheText(shopInWeb, 29);
-        WriteTheText(prepaidButton, 36);
-        WriteTheText(moreAccountsNeedsButton, 39);
         WriteTheText(creditText, 40);
         WriteTheText(configMenu.languageButton, 47);
         WriteTheText(configMenu.englishLanguageButton, 48);
@@ -1100,32 +1065,31 @@ public class MenuManager : MonoBehaviour {
         WriteTheText(configMenu.automaticButton, 50);
         WriteTheText(changeProfileButton, 51);
         WriteTheText(loadingText, 52);
-        WriteTheText(gameMenuObject.buyButton, 57);
         warningButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
         newKidButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
     }
 
     //This metods will set the text accordingly with the type of objects
     //This is for buttons
-    void WriteTheText(Button but, int index)
+    public void WriteTheText(Button but, int index)
     {
         but.GetComponentInChildren<Text>().text = lines[index];
     }
 
     //This for Text
-    void WriteTheText(Text text, int index)
+    public void WriteTheText(Text text, int index)
     {
         text.text = lines[index];
     }
 
     //This for Dopdowns
-    void WriteTheText(Dropdown drop, int dropIndex, int index)
+    public void WriteTheText(Dropdown drop, int dropIndex, int index)
     {
         drop.options[dropIndex].text = lines[index];
     }
 
     //This for InputField placeholders
-    void WriteTheText(InputField field, int index)
+    public void WriteTheText(InputField field, int index)
     {
         field.placeholder.GetComponent<Text>().text = lines[index];
     }
@@ -1145,7 +1109,7 @@ public class MenuManager : MonoBehaviour {
         }
     }
 
-    public void MoreSubscriptions()
+    public void GoToWebSubscriptions()
     {
         Application.OpenURL(Keys.Api_Web_Key + "subscripciones/");
     }
@@ -1186,42 +1150,6 @@ public class MenuManager : MonoBehaviour {
         }
     }
 
-    //This will set the shop
-    void SetShop()
-    {
-        if (SystemInfo.deviceType == DeviceType.Desktop)
-        {
-            oneMonthButton.gameObject.SetActive(false);
-            threeMonthButton.gameObject.SetActive(false);
-            legalText.gameObject.SetActive(false);
-            shopInWeb.gameObject.SetActive(true);
-            prepaidButton.gameObject.SetActive(true);
-        }
-        else
-        {
-            if (sessionManager.activeUser.isPossibleBuyIAP)
-            {
-                oneMonthButton.gameObject.SetActive(true);
-                threeMonthButton.gameObject.SetActive(true);
-                prepaidButton.gameObject.SetActive(true);
-                shopInWeb.gameObject.SetActive(false);
-                legalText.gameObject.SetActive(false);
-                oneMonthButton.GetComponentInChildren<Text>().text = lines[33] + " " + myIAPManager.CostInCurrency(1) + lines[35];
-                threeMonthButton.GetComponentInChildren<Text>().text = lines[34] + " " + myIAPManager.CostInCurrency(3) + lines[35];
-                if (Application.platform == RuntimePlatform.IPhonePlayer)
-                {
-                    prepaidButton.gameObject.SetActive(false);
-                    legalText.gameObject.SetActive(true);
-                }
-            }
-            else
-            {
-                oneMonthButton.gameObject.SetActive(false);
-                threeMonthButton.gameObject.SetActive(false);
-                shopInWeb.gameObject.SetActive(true);
-            }
-        }
-    }
 
     //This is what happens if you are buyinhg in windows
     void ShopWindows()
@@ -1396,6 +1324,11 @@ public class MenuManager : MonoBehaviour {
     }
 
 
+    bool IsEvaluationAvilable()
+    {
+        return IsTablet() && sessionManager.activeKid.testAvailable;
+    }
+
     void EscapeApplication() {
         Application.Quit();
         Debug.Log("shoul exit now");
@@ -1497,10 +1430,10 @@ class GameMenu
         SetStaticButtonFuctions();
     }
 
-    public void ShowThisMenu(bool isActiveTheCurrentKid, bool isInTrial)
+    public void ShowThisMenu(bool isActiveTheCurrentKid, bool isInTrial, bool isEvaluationAvailable, bool isLeftTrial)
     {
         mainCanvas.SetActive(true);
-        SetDynamicButtonFunctions(isActiveTheCurrentKid, isInTrial);
+        SetDynamicButtonFunctions(isActiveTheCurrentKid, isInTrial, isEvaluationAvailable, isLeftTrial);
     }
 
     public void HideThisMenu()
@@ -1516,30 +1449,57 @@ class GameMenu
         singOutButton.onClick.AddListener(manager.ShowSingOutWarning);
     }
 
-    public void SetDynamicButtonFunctions(bool isActiveTheCurrentKid, bool isInTrail)
+    public void SetDynamicButtonFunctions(bool isActiveTheCurrentKid, bool isInTrail, bool evaluationAvailable, bool isLeftTrial)
     {
         gamesButton.onClick.RemoveAllListeners();
         evaluationButton.onClick.RemoveAllListeners();
         buyButton.onClick.RemoveAllListeners();
+        manager.WriteTheText(evaluationButton, 0);
 
-        if (isActiveTheCurrentKid || isInTrail)
+        if (evaluationAvailable)
         {
+            evaluationButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            evaluationButton.gameObject.SetActive(false);
+        }
+
+        if (isActiveTheCurrentKid)
+        {
+            manager.WriteTheText(gamesButton, 1);
+            manager.WriteTheText(buyButton, 57);
+
             gamesButton.onClick.AddListener(manager.LoadGameMenus);
             evaluationButton.onClick.AddListener(manager.ShowDisclaimer);
-            if (isInTrail) 
-            {
-                buyButton.onClick.AddListener(() => manager.ShowShop(1));
-            }
-            else 
-            {
-                buyButton.onClick.AddListener(manager.ShowYouHaveASuscription);
-            }
+            buyButton.onClick.AddListener(manager.ShowYouHaveASuscription);
 
             SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
             SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
         }
+        else if (isInTrail)
+        {
+            manager.WriteTheText(gamesButton, 59);
+            manager.WriteTheText(buyButton, 29);
+            if (isLeftTrial)
+            {
+                gamesButton.onClick.AddListener(manager.LoadGameMenus);
+                SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
+                evaluationButton.gameObject.SetActive(false);
+            }
+            else
+            {
+                gamesButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
+                evaluationButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
+                buyButton.onClick.AddListener(() => manager.ShowShop(1));
+                SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
+                SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
+            }
+        }
         else
         {
+            manager.WriteTheText(gamesButton, 59);
+            manager.WriteTheText(buyButton, 29);
             gamesButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
             evaluationButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
             buyButton.onClick.AddListener(() => manager.ShowShop(1));
@@ -1553,6 +1513,172 @@ class GameMenu
         Color colorToPut;
         ColorUtility.TryParseHtmlString(colorToSet, out colorToPut);
         imageToChange.color = colorToPut;
+    }
+}
+
+class ShopMenu
+{
+    GameObject mainCanvas;
+    MenuManager manager;
+    GameObject mainPanel;
+    Button backButton;
+
+    Text shopText;
+    Button shopButton;
+
+    Button shopWebButton;
+    public Button oneMonthButton;
+    public Button threeMonthButton;
+    Button gotCardButton;
+    Text legalText;
+
+    public InputField prepaidInput;
+
+    public Dropdown kidsNumberDropdown;
+    Button moreKidsButton;
+
+    public ShopMenu(GameObject canvas, MenuManager menuManager)
+    {
+        mainCanvas = canvas;
+        manager = menuManager;
+        mainPanel = mainCanvas.transform.GetChild(0).gameObject;
+        backButton = mainCanvas.transform.GetChild(1).GetComponent<Button>();
+
+        shopText = mainPanel.transform.GetChild(1).GetComponent<Text>();
+        shopButton = mainPanel.transform.GetChild(2).GetComponent<Button>();
+
+        shopWebButton = mainPanel.transform.GetChild(3).GetComponent<Button>();
+        oneMonthButton = mainPanel.transform.GetChild(4).GetComponent<Button>();
+        threeMonthButton = mainPanel.transform.GetChild(5).GetComponent<Button>();
+        gotCardButton = mainPanel.transform.GetChild(6).GetComponent<Button>();
+        legalText = mainPanel.transform.GetChild(7).GetComponent<Text>();
+
+        prepaidInput = mainPanel.transform.GetChild(8).GetComponent<InputField>();
+
+        kidsNumberDropdown = mainPanel.transform.GetChild(9).GetComponent<Dropdown>();
+        moreKidsButton = mainPanel.transform.GetChild(10).GetComponent<Button>();
+
+        SetStaticButtonFunctions();
+        SetStaticTexts();
+    }
+
+    public void ShowThisMenu()
+    {
+        mainCanvas.SetActive(true);
+    }
+
+    public void HideThisMenu()
+    {
+        mainCanvas.SetActive(false);
+    }
+
+    void SetStaticButtonFunctions()
+    {
+        shopWebButton.onClick.AddListener(manager.GoToWebSubscriptions);
+        moreKidsButton.onClick.AddListener(manager.GoToWebSubscriptions);
+    }
+
+    void SetStaticTexts()
+    {
+        manager.WriteTheText(shopWebButton, 29);
+        manager.WriteTheText(gotCardButton, 36);
+        manager.WriteTheText(moreKidsButton, 39);
+        manager.WriteTheText(legalText, 44);
+    }
+
+    void HideAllComponents()
+    {
+        shopText.gameObject.SetActive(false);
+        shopButton.gameObject.SetActive(false);
+        shopWebButton.gameObject.SetActive(false);
+        oneMonthButton.gameObject.SetActive(false);
+        threeMonthButton.gameObject.SetActive(false);
+        gotCardButton.gameObject.SetActive(false);
+        legalText.gameObject.SetActive(false);
+        prepaidInput.gameObject.SetActive(false);
+        kidsNumberDropdown.gameObject.SetActive(false);
+        moreKidsButton.gameObject.SetActive(false);
+    }
+
+    public void SetWebShop(int isAShopForNewKid)
+    {
+        HideAllComponents();
+        shopWebButton.gameObject.SetActive(true);
+        gotCardButton.gameObject.SetActive(true);
+
+        SetFunctionalIAPButtons(isAShopForNewKid);
+    }
+
+    public void SetIOSShop(int isAShopForNewKid)
+    {
+        HideAllComponents();
+        oneMonthButton.gameObject.SetActive(true);
+        threeMonthButton.gameObject.SetActive(true);
+        legalText.gameObject.SetActive(true);
+
+        SetFunctionalIAPButtons(isAShopForNewKid);
+    }
+
+    public void SetAndroidShop(int isAShopForNewKid)
+    {
+        HideAllComponents();
+        oneMonthButton.gameObject.SetActive(true);
+        threeMonthButton.gameObject.SetActive(true);
+        gotCardButton.gameObject.SetActive(true);
+
+        SetFunctionalIAPButtons(isAShopForNewKid);
+    }
+
+    public void SetNumberShopKid(int isAShopForNewKid)
+    {
+        HideAllComponents();
+        shopButton.gameObject.SetActive(true);
+        shopText.gameObject.SetActive(true);
+        kidsNumberDropdown.gameObject.SetActive(true);
+        moreKidsButton.gameObject.SetActive(true);
+
+        manager.WriteTheText(shopText, 38);
+        manager.WriteTheText(shopButton, 29);
+
+        shopButton.onClick.RemoveAllListeners();
+        shopButton.onClick.AddListener(manager.ShopIAP);
+
+        SetBackButtonSecondStep(isAShopForNewKid);
+    }
+
+    public void SetChangePrepaidCode(int isAShopForNewKid)
+    {
+        HideAllComponents();
+        shopButton.gameObject.SetActive(true);
+        shopText.gameObject.SetActive(true);
+        prepaidInput.gameObject.SetActive(true);
+
+        manager.WriteTheText(shopText, 37);
+        manager.WriteTheText(shopButton, 60);
+
+        shopButton.onClick.RemoveAllListeners();
+        shopButton.onClick.AddListener(() => manager.ChangeAPrePaidCode(isAShopForNewKid));
+
+        SetBackButtonSecondStep(isAShopForNewKid);
+    }
+
+    void SetFunctionalIAPButtons(int isAShopForNewKid)
+    {
+        oneMonthButton.onClick.RemoveAllListeners();
+        threeMonthButton.onClick.RemoveAllListeners();
+        gotCardButton.onClick.RemoveAllListeners();
+        backButton.onClick.RemoveAllListeners();
+
+        backButton.onClick.AddListener(manager.ShowGameMenu);
+        gotCardButton.onClick.AddListener(() => manager.ShopWithCode(isAShopForNewKid));
+        oneMonthButton.onClick.AddListener(() => manager.ShopNumOfKids(isAShopForNewKid, 1));
+        threeMonthButton.onClick.AddListener(() => manager.ShopNumOfKids(isAShopForNewKid, 3));
+    }
+
+    void SetBackButtonSecondStep(int isAShopForNewKid)
+    {
+        backButton.onClick.RemoveAllListeners();
+        backButton.onClick.AddListener(() => manager.ShowShop(isAShopForNewKid));
     }
 
 }
