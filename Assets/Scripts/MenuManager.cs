@@ -373,7 +373,7 @@ public class MenuManager : MonoBehaviour {
         else
         {
             shopMenu.oneMonthButton.GetComponentInChildren<Text>().text = $"{lines[33]} {myIAPManager.CostInCurrency(1)} {lines[35]}";
-            shopMenu.threeMonthButton.GetComponentInChildren<Text>().text = $"{lines[34]} {myIAPManager.CostInCurrency(1)} {lines[35]}";
+            shopMenu.threeMonthButton.GetComponentInChildren<Text>().text = $"{lines[34]} {myIAPManager.CostInCurrency(3)} {lines[35]}";
             if (Application.platform == RuntimePlatform.IPhonePlayer)
             {
                 shopMenu.SetIOSShop(isAShopForNewKid);
@@ -450,7 +450,6 @@ public class MenuManager : MonoBehaviour {
         }
 
         UpdateKidInMenu();
-        IsTestIsAvailable();
         ShowEscapeButton();
     }
 
@@ -1134,23 +1133,6 @@ public class MenuManager : MonoBehaviour {
         PlayerPrefs.SetString(Keys.Active_User_Key, sessionManager.activeUser.userkey);
     }
 
-    //this method shows if a kid has the evaluation available for playing
-    void IsTestIsAvailable()
-    {
-        if (sessionManager.activeKid != null)
-        {
-            if (sessionManager.activeKid.testAvailable)
-            {
-                gameMenuObject.evaluationButton.gameObject.SetActive(true);
-            }
-            else
-            {
-                gameMenuObject.evaluationButton.gameObject.SetActive(false);
-            }
-        }
-    }
-
-
     //This is what happens if you are buyinhg in windows
     void ShopWindows()
     {
@@ -1318,15 +1300,19 @@ public class MenuManager : MonoBehaviour {
         float screenHeight = Screen.height / Screen.dpi;
         float diagonalInches = Mathf.Sqrt(Mathf.Pow(screenWidth, 2) + Mathf.Pow(screenHeight, 2));
 
-        Debug.Log("Getting device inches: " + diagonalInches);
-
         return diagonalInches > 6.5f;
     }
 
 
     bool IsEvaluationAvilable()
     {
-        return IsTablet() && sessionManager.activeKid.testAvailable;
+        bool returner = false;
+        if (IsTablet() && sessionManager.activeKid.testAvailable) 
+        {
+            returner = true;
+        }
+
+        return returner;
     }
 
     void EscapeApplication() {
@@ -1485,7 +1471,6 @@ class GameMenu
             {
                 gamesButton.onClick.AddListener(manager.LoadGameMenus);
                 SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
-                evaluationButton.gameObject.SetActive(false);
             }
             else
             {
