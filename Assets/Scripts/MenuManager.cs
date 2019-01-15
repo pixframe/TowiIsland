@@ -419,11 +419,11 @@ public class MenuManager : MonoBehaviour {
         HideAllCanvas();
         if (key)
         {
-            gameMenuObject.ShowThisMenu(true);
+            gameMenuObject.ShowThisMenu(true, true);
         }
         else
         {
-            gameMenuObject.ShowThisMenu(sessionManager.activeKid.isActive);
+            gameMenuObject.ShowThisMenu(sessionManager.activeKid.isActive, sessionManager.activeKid.anyFirstTime);
         }
 
         UpdateKidInMenu();
@@ -630,7 +630,14 @@ public class MenuManager : MonoBehaviour {
         prepaidButton.onClick.AddListener(() => ShopWithCode(shopForNewKid));
         oneMonthButton.onClick.AddListener(() => ShopNumOfKids(shopForNewKid, 1));
         threeMonthButton.onClick.AddListener(() => ShopNumOfKids(shopForNewKid, 3));
-        shopBackButton.onClick.AddListener(() => ShowAccountWarning(shopForNewKid));
+        if (sessionManager.activeKid.isActive) 
+        {
+            shopBackButton.onClick.AddListener(ShowGameMenu);
+        }
+        else
+        {
+            shopBackButton.onClick.AddListener(() => ShowAccountWarning(shopForNewKid));
+        }
     }
 
     //we start the proceess of purchasing a suscription with a prepaid code
@@ -1490,10 +1497,10 @@ class GameMenu
         SetStaticButtonFuctions();
     }
 
-    public void ShowThisMenu(bool isActiveTheCurrentKid)
+    public void ShowThisMenu(bool isActiveTheCurrentKid, bool isInTrial)
     {
         mainCanvas.SetActive(true);
-        SetDynamicButtonFunctions(isActiveTheCurrentKid);
+        SetDynamicButtonFunctions(isActiveTheCurrentKid, isInTrial);
     }
 
     public void HideThisMenu()
@@ -1509,17 +1516,25 @@ class GameMenu
         singOutButton.onClick.AddListener(manager.ShowSingOutWarning);
     }
 
-    public void SetDynamicButtonFunctions(bool isActiveTheCurrentKid)
+    public void SetDynamicButtonFunctions(bool isActiveTheCurrentKid, bool isInTrail)
     {
         gamesButton.onClick.RemoveAllListeners();
         evaluationButton.onClick.RemoveAllListeners();
         buyButton.onClick.RemoveAllListeners();
 
-        if (isActiveTheCurrentKid)
+        if (isActiveTheCurrentKid || isInTrail)
         {
             gamesButton.onClick.AddListener(manager.LoadGameMenus);
             evaluationButton.onClick.AddListener(manager.ShowDisclaimer);
-            buyButton.onClick.AddListener(manager.ShowYouHaveASuscription);
+            if (isInTrail) 
+            {
+                buyButton.onClick.AddListener(() => manager.ShowShop(1));
+            }
+            else 
+            {
+                buyButton.onClick.AddListener(manager.ShowYouHaveASuscription);
+            }
+
             SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
             SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
         }
