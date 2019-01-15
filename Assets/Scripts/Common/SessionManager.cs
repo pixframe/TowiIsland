@@ -532,7 +532,14 @@ public class SessionManager : MonoBehaviour
 
                 int index = activeUser.kids.Count - 1;
                 activeUser.kids[index].kiwis = (int)kidObj.GetNumber("kiwis");
-                activeUser.kids[index].avatar = kidObj.GetString("avatar");
+                if (kidObj.GetString("avatar") != null)
+                {
+                    activeUser.kids[index].avatar = kidObj.GetString("avatar").ToLower();
+                }
+                else
+                {
+                    activeUser.kids[index].avatar = "koala";
+                }
                 activeUser.kids[index].avatarClothes = kidObj.GetString("avatarClothes");
                 activeUser.kids[index].ownedItems = kidObj.GetString("ownedItems");
                 activeUser.kids[index].age = (int)kidObj.GetNumber("age");

@@ -1465,15 +1465,17 @@ class GameMenu
         }
         else if (isInTrail)
         {
-            manager.WriteTheText(gamesButton, 59);
             manager.WriteTheText(buyButton, 29);
             if (isLeftTrial)
             {
+                manager.WriteTheText(gamesButton, 59);
                 gamesButton.onClick.AddListener(manager.LoadGameMenus);
                 SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
+                buyButton.onClick.AddListener(() => manager.ShowShop(1));
             }
             else
             {
+                manager.WriteTheText(gamesButton, 1);
                 gamesButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
                 evaluationButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
                 buyButton.onClick.AddListener(() => manager.ShowShop(1));
@@ -1483,7 +1485,7 @@ class GameMenu
         }
         else
         {
-            manager.WriteTheText(gamesButton, 59);
+            manager.WriteTheText(gamesButton, 1);
             manager.WriteTheText(buyButton, 29);
             gamesButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
             evaluationButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
