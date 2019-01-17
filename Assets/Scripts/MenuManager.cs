@@ -244,6 +244,7 @@ public class MenuManager : MonoBehaviour {
     {
         SetLanguageResources();
         WriteTheTexts();
+        shopMenu.SetStaticTexts();
     }
 
     void SetLanguageResources()
@@ -369,6 +370,10 @@ public class MenuManager : MonoBehaviour {
         if (SystemInfo.deviceType == DeviceType.Desktop)
         {
             shopMenu.SetWebShop(isAShopForNewKid);
+
+            //This code is used to try ios shop in the editor but to realease version should be always commented
+            //shopMenu.oneMonthButton.GetComponentInChildren<Text>().text = $"{lines[33]}\n{myIAPManager.CostInCurrency(1)} {lines[35]}";
+            //shopMenu.threeMonthButton.GetComponentInChildren<Text>().text = $"{lines[34]}\n{myIAPManager.CostInCurrency(3)} {lines[35]}";
             //shopMenu.SetIOSShop(isAShopForNewKid);
         }
         else
@@ -1579,7 +1584,7 @@ class ShopMenu
         privacyPolicyButton.onClick.AddListener(manager.GoPrivacyPolicy);
     }
 
-    void SetStaticTexts()
+    public void SetStaticTexts()
     {
         manager.WriteTheText(shopWebButton, 29);
         manager.WriteTheText(gotCardButton, 36);
