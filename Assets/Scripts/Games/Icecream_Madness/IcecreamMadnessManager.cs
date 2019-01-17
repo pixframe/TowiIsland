@@ -19,8 +19,8 @@ public class IcecreamMadnessManager : MonoBehaviour {
     List<string> tableNames = new List<string>();
 
     Dictionary<string, int> tableMapPositions = new Dictionary<string, int>();
-    readonly Dictionary<string, string> plusCornerPositions = new Dictionary<string, string> { { "C1", "U1" }, { "C2", "R5" }, { "C3", "D7" }, { "C4", "L1" } };
-    readonly Dictionary<string, string> lessCornerPositions = new Dictionary<string, string> { { "C1", "L5" }, { "C2", "U7" }, { "C3", "R1" }, { "C4", "D1" } };
+    readonly Dictionary<string, string> plusCornerPositions = new Dictionary<string, string> { { "C1", "U1" }, { "C2", "R1" }, { "C3", "D1" }, { "C4", "L1" } };
+    readonly Dictionary<string, string> lessCornerPositions = new Dictionary<string, string> { { "C1", "L5" }, { "C2", "U7" }, { "C3", "R5" }, { "C4", "D7" } };
 
     int maxAmountOfOrdersAtTheSameTime = 5;
 
@@ -139,11 +139,11 @@ public class IcecreamMadnessManager : MonoBehaviour {
         if (ordersList.Count < 5)
         {
             Debug.Log("Create An order");
-            IceCreamOrders tempOrder = new IceCreamOrders(Instantiate(Resources.Load<GameObject>("IcecreamMadness/Prefabs/Order"), Canvas.transform));
+            IceCreamOrders tempOrder = new IceCreamOrders(Instantiate(Resources.Load<GameObject>("IcecreamMadness/Prefabs/Order"), Canvas.transform.GetChild(0)));
             int randomConatainer = Random.Range(0, kindOfContainer.Count);
             int randomCookedMeal = Random.Range(0, kindOfCookedMeals.Count);
             int randomTooping = Random.Range(0, availableToppings.Count);
-            tempOrder.SetAnOrder(kindOfContainer[randomConatainer], kindOfCookedMeals[randomCookedMeal], availableToppings[randomTooping],5.0f);
+            tempOrder.SetAnOrder(kindOfContainer[randomConatainer], kindOfCookedMeals[randomCookedMeal], availableToppings[randomTooping],20.0f);
             tempOrder.SetOrderPosistion(ordersList.Count);
             ordersList.Add(tempOrder);
             tempOrder.order.name = ("Order " + ordersList.Count);
@@ -184,7 +184,10 @@ public class IcecreamMadnessManager : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
-		
+        foreach (IceCreamOrders order in ordersList)
+        {
+            order.ChangeTimeStatus();
+        }
 	}
 
     void ClearTables()
@@ -236,7 +239,7 @@ class IceCreamOrders
     {
         if (orderType[0] != null) {
             container.sprite = ChangeImage(FoodDicctionary.Containers.ShapeOfConatiner((int)orderType[0]));
-            container.color = FoodDicctionary.Containers.ColorOfContainer((int)orderType[0]);
+            container.color = Color.white;
         }
         if (orderType[1] != null)
         {
@@ -252,7 +255,7 @@ class IceCreamOrders
 
     Sprite ChangeImage(string shape)
     {
-        return Resources.Load<Sprite>("IcecreamMadness/Icons/" + shape);
+        return Resources.Load<Sprite>($"IcecreamMadness/Sprites/{shape}");
     }
 
     public void SetOrderPosistion(int number)
@@ -284,5 +287,7 @@ class IceCreamOrders
     public void ChangeTimeStatus()
     {
         time -= Time.deltaTime;
+        float percentageTimeLeft = time / totalTime;
+        dynamicBar.fillAmount = percentageTimeLeft;
     }
 }

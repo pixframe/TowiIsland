@@ -14,7 +14,7 @@ public class TableIcreamMachine : TableInstrument
     public override void Initializing()
     {
         base.Initializing();
-        spriteRenderer.color = Color.magenta;
+        CreateAUpperSprite("Icecream/Machine");
     }
 
     override public void DoTheAction()

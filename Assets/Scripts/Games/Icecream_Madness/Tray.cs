@@ -30,7 +30,7 @@ public class Tray : MonoBehaviour {
         {
             typeOfObjects[0] = containerNumber;
             containerSpriteRenderer.color = colorToPut;
-            containerSpriteRenderer.sprite = Resources.Load<Sprite>("IcecreamMadness/Icons/" + spriteName);
+            containerSpriteRenderer.sprite = Resources.Load<Sprite>($"{FoodDicctionary.prefabSpriteDirection}{spriteName}");
             hasAContainer = true;
             SetImage();
             return true;
@@ -58,7 +58,7 @@ public class Tray : MonoBehaviour {
         {
             typeOfObjects[1] = cookIngridients;
             foodSpriteRender.color = colorToPut;
-            foodSpriteRender.sprite = Resources.Load<Sprite>("IcecreamMadness/Icons/" + spriteName);
+            foodSpriteRender.sprite = Resources.Load<Sprite>($"{FoodDicctionary.prefabSpriteDirection}{spriteName}");
             hasACookIngridient = true;
             SetImage();
             return true;
@@ -76,7 +76,7 @@ public class Tray : MonoBehaviour {
         {
             typeOfObjects[1] = ingridientNumber;
             foodSpriteRender.color = colorToPut;
-            foodSpriteRender.sprite = Resources.Load<Sprite>("IcecreamMadness/Icons/" + spriteName);
+            foodSpriteRender.sprite = Resources.Load<Sprite>($"{FoodDicctionary.prefabSpriteDirection}{spriteName}");
             hasARawIngridient = true;
             SetImage();
             return true;
@@ -99,7 +99,7 @@ public class Tray : MonoBehaviour {
         {
             typeOfObjects[2] = toppingNumber;
             toppingSpriteRenderer.color = colorToPut;
-            toppingSpriteRenderer.sprite = Resources.Load<Sprite>("IcecreamMadness/Icons/" + spriteName);
+            toppingSpriteRenderer.sprite = Resources.Load<Sprite>($"{FoodDicctionary.prefabSpriteDirection}{spriteName}");
             hasATopping = true;
             SetImage();
             return true;

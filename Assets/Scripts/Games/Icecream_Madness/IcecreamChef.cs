@@ -7,10 +7,10 @@ public class IcecreamChef : MonoBehaviour {
     bool hasSomething;
     bool move;
 
-    float minx = -4.4f;
-    float maxx = 4.46f;
-    float miny = -0.86f;
-    float maxy = 4.04f;
+    float minx = -4.84f;
+    float maxx = 4.84f;
+    float miny = -3f;
+    float maxy = 2.47f;
 
     public Transform trayPositioner;
     Table tableToGo;

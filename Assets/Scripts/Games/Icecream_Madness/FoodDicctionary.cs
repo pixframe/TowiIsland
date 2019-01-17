@@ -3,6 +3,8 @@ using System.Collections;
 
 public class FoodDicctionary
 {
+    public static string prefabSpriteDirection = "IcecreamMadness/Sprites/";
+
     public class Containers
     {
         public enum KindOfContainer { Waffel, Glass, Dish };
@@ -12,7 +14,7 @@ public class FoodDicctionary
             switch ((KindOfContainer)kindOfContainer)
             {
                 case KindOfContainer.Waffel:
-                    return "Cube";
+                    return "Icecream/Base";
                 case KindOfContainer.Glass:
                     return "Cube";
                 case KindOfContainer.Dish:
@@ -129,10 +131,11 @@ public class FoodDicctionary
 
         static public string ShapeOfCookedMeal(int kindOfCookedMeal)
         {
+            string finalString = "/Cooked";
             switch ((KindOfCookedMeal)kindOfCookedMeal)
             {
                 case KindOfCookedMeal.Icecream:
-                    return "Circle";
+                    return $"Icecream{finalString}";
                 case KindOfCookedMeal.Smoothie:
                     return "Circle";
                 case KindOfCookedMeal.Waffle:

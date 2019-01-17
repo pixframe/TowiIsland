@@ -12,6 +12,9 @@ public class Table : MonoBehaviour {
     protected GameObject trayOn;
 
     protected Transform trayPositioner;
+    protected Transform machinePositioner;
+
+    protected Vector3 sizeOfUpperSprite = new Vector3(1f, 1f, 1f);
 	// Use this for initialization
 	void Start ()
     {
@@ -24,6 +27,7 @@ public class Table : MonoBehaviour {
         manager = FindObjectOfType<IcecreamMadnessManager>();
         chef = FindObjectOfType<IcecreamChef>();
         trayPositioner = transform.GetChild(0);
+        machinePositioner = transform.GetChild(1);
     }
 
 	// Update is called once per frame
@@ -31,15 +35,26 @@ public class Table : MonoBehaviour {
 
 	}
 
+    public void CreateAUpperSprite(string KindOfSprite)
+    {
+        GameObject colorShower = new GameObject();
+        colorShower.transform.parent = trayPositioner;   
+        colorShower.transform.localScale = sizeOfUpperSprite;
+        colorShower.transform.position = colorShower.transform.parent.position;
+        SpriteRenderer spr = colorShower.AddComponent<SpriteRenderer>();
+        spr.sprite = Resources.Load<Sprite>($"{FoodDicctionary.prefabSpriteDirection}{KindOfSprite}");
+        spr.sortingOrder = spriteRenderer.sortingOrder + 1;
+    }
+
     public void CreateAUpperSprite(Color colorOfSprite, string KindOfSprite)
     {
         GameObject colorShower = new GameObject();
         colorShower.transform.parent = transform.GetChild(0);
-        colorShower.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+        colorShower.transform.localScale = sizeOfUpperSprite;
         colorShower.transform.position = colorShower.transform.parent.position;
         SpriteRenderer spr = colorShower.AddComponent<SpriteRenderer>();
         spr.color = colorOfSprite;
-        spr.sprite = Resources.Load<Sprite>("IcecreamMadness/Icons/" + KindOfSprite);
+        spr.sprite = Resources.Load<Sprite>($"{FoodDicctionary.prefabSpriteDirection}{KindOfSprite}");
         spr.sortingOrder = spriteRenderer.sortingOrder + 1;
         Debug.Log("Finish the creation");
     }
