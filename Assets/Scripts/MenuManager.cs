@@ -369,11 +369,12 @@ public class MenuManager : MonoBehaviour {
         if (SystemInfo.deviceType == DeviceType.Desktop)
         {
             shopMenu.SetWebShop(isAShopForNewKid);
+            //shopMenu.SetIOSShop(isAShopForNewKid);
         }
         else
         {
-            shopMenu.oneMonthButton.GetComponentInChildren<Text>().text = $"{lines[33]} {myIAPManager.CostInCurrency(1)} {lines[35]}";
-            shopMenu.threeMonthButton.GetComponentInChildren<Text>().text = $"{lines[34]} {myIAPManager.CostInCurrency(3)} {lines[35]}";
+            shopMenu.oneMonthButton.GetComponentInChildren<Text>().text = $"{lines[33]}\n{myIAPManager.CostInCurrency(1)} {lines[35]}";
+            shopMenu.threeMonthButton.GetComponentInChildren<Text>().text = $"{lines[34]}\n{myIAPManager.CostInCurrency(3)} {lines[35]}";
             if (Application.platform == RuntimePlatform.IPhonePlayer)
             {
                 shopMenu.SetIOSShop(isAShopForNewKid);
@@ -960,9 +961,14 @@ public class MenuManager : MonoBehaviour {
     }
 
     //this will send the app to terms and conditions
-    void GoToTermsAndConditions()
+    public void GoToTermsAndConditions()
     {
-        Application.OpenURL("http://towi.com.mx/index.php/aviso-de-privacidad/");
+        Application.OpenURL("https://towi.com.mx/terminos-y-condiciones/");
+    }
+
+    public void GoPrivacyPolicy() 
+    {
+        Application.OpenURL("https://towi.com.mx/aviso-de-privacidad/");
     }
 
     //This will not set any active kids
@@ -1524,6 +1530,9 @@ class ShopMenu
     public Dropdown kidsNumberDropdown;
     Button moreKidsButton;
 
+    Button termsAndConditionsButton;
+    Button privacyPolicyButton;
+
     public ShopMenu(GameObject canvas, MenuManager menuManager)
     {
         mainCanvas = canvas;
@@ -1545,6 +1554,9 @@ class ShopMenu
         kidsNumberDropdown = mainPanel.transform.GetChild(9).GetComponent<Dropdown>();
         moreKidsButton = mainPanel.transform.GetChild(10).GetComponent<Button>();
 
+        termsAndConditionsButton = mainPanel.transform.GetChild(11).GetComponent<Button>();
+        privacyPolicyButton = mainPanel.transform.GetChild(12).GetComponent<Button>();
+
         SetStaticButtonFunctions();
         SetStaticTexts();
     }
@@ -1563,6 +1575,8 @@ class ShopMenu
     {
         shopWebButton.onClick.AddListener(manager.GoToWebSubscriptions);
         moreKidsButton.onClick.AddListener(manager.GoToWebSubscriptions);
+        termsAndConditionsButton.onClick.AddListener(manager.GoToTermsAndConditions);
+        privacyPolicyButton.onClick.AddListener(manager.GoPrivacyPolicy);
     }
 
     void SetStaticTexts()
@@ -1571,20 +1585,16 @@ class ShopMenu
         manager.WriteTheText(gotCardButton, 36);
         manager.WriteTheText(moreKidsButton, 39);
         manager.WriteTheText(legalText, 44);
+        manager.WriteTheText(termsAndConditionsButton, 22);
+        manager.WriteTheText(privacyPolicyButton, 61);
     }
 
     void HideAllComponents()
     {
-        shopText.gameObject.SetActive(false);
-        shopButton.gameObject.SetActive(false);
-        shopWebButton.gameObject.SetActive(false);
-        oneMonthButton.gameObject.SetActive(false);
-        threeMonthButton.gameObject.SetActive(false);
-        gotCardButton.gameObject.SetActive(false);
-        legalText.gameObject.SetActive(false);
-        prepaidInput.gameObject.SetActive(false);
-        kidsNumberDropdown.gameObject.SetActive(false);
-        moreKidsButton.gameObject.SetActive(false);
+        for(int i = 0; i < mainPanel.transform.childCount; i++) 
+        {
+            mainPanel.transform.GetChild(i).gameObject.SetActive(false);
+        }
     }
 
     public void SetWebShop(int isAShopForNewKid)
@@ -1602,6 +1612,8 @@ class ShopMenu
         oneMonthButton.gameObject.SetActive(true);
         threeMonthButton.gameObject.SetActive(true);
         legalText.gameObject.SetActive(true);
+        termsAndConditionsButton.gameObject.SetActive(true);
+        privacyPolicyButton.gameObject.SetActive(true);
 
         SetFunctionalIAPButtons(isAShopForNewKid);
     }
