@@ -79,6 +79,9 @@ public class IcecreamMadnessManager : MonoBehaviour {
         FullTables[tableMapPositions[tempTablenames[randomTrashPlace]]].AddComponent<TableTrash>();
         tempTablenames.Remove(tempTablenames[randomTrashPlace]);
 
+        tempTablenames.RemoveAt(0);
+        tempTablenames.RemoveAt(0);
+
         //Create all the toppings that will be avilable
         var tempToppings = possibleToppings;
         for (int i = 0; i < amountOfTopings; i++)

@@ -50,9 +50,37 @@ public class FoodDicctionary
 
     public class RawIngridients
     {
-        public enum KindOfRawIngridient { Ice, Eggs, Milk, Flour, Mango, Kiwi, Berry, Banana, Strawbeery }
+        public enum KindOfRawIngridient { Ice, Eggs, Milk, Flour, Pineapple, Kiwi, Coconut, Banana, Strawberry }
 
         public static string ShapeOfRawIngridient(int kindOfRawIngridient)
+        {
+            string before = "Full";
+            switch ((KindOfRawIngridient)kindOfRawIngridient)
+            {
+                case KindOfRawIngridient.Ice:
+                    return "Hexa";
+                case KindOfRawIngridient.Eggs:
+                    return "Hexa";
+                case KindOfRawIngridient.Milk:
+                    return "Hexa";
+                case KindOfRawIngridient.Flour:
+                    return "Hexa";
+                case KindOfRawIngridient.Pineapple:
+                    return $"{before}Pineapple";
+                case KindOfRawIngridient.Kiwi:
+                    return $"{before}Kiwi";
+                case KindOfRawIngridient.Coconut:
+                    return $"{before}Coconut";
+                case KindOfRawIngridient.Banana:
+                    return $"{before}Banana";
+                case KindOfRawIngridient.Strawberry:
+                    return $"{before}Strawberry";
+                default:
+                    return "Hexa";
+            }
+        }
+
+        public static string ShapeOfContainerTable(int kindOfRawIngridient)
         {
             switch ((KindOfRawIngridient)kindOfRawIngridient)
             {
@@ -64,16 +92,16 @@ public class FoodDicctionary
                     return "Hexa";
                 case KindOfRawIngridient.Flour:
                     return "Hexa";
-                case KindOfRawIngridient.Mango:
-                    return "Hexa";
+                case KindOfRawIngridient.Pineapple:
+                    return "Topping";
                 case KindOfRawIngridient.Kiwi:
-                    return "Hexa";
-                case KindOfRawIngridient.Berry:
-                    return "Hexa";
+                    return "Topping";
+                case KindOfRawIngridient.Coconut:
+                    return "Topping";
                 case KindOfRawIngridient.Banana:
-                    return "Hexa";
-                case KindOfRawIngridient.Strawbeery:
-                    return "Hexa";
+                    return "Topping";
+                case KindOfRawIngridient.Strawberry:
+                    return "Topping";
                 default:
                     return "Hexa";
             }
@@ -97,19 +125,19 @@ public class FoodDicctionary
                 case KindOfRawIngridient.Flour:
                     ColorUtility.TryParseHtmlString("#CEE389", out colorToPut);
                     break;
-                case KindOfRawIngridient.Mango:
+                case KindOfRawIngridient.Pineapple:
                     colorToPut = Color.red;
                     break;
                 case KindOfRawIngridient.Kiwi:
                     colorToPut = Color.green;
                     break;
-                case KindOfRawIngridient.Berry:
+                case KindOfRawIngridient.Coconut:
                     ColorUtility.TryParseHtmlString("#A100D3", out colorToPut);
                     break;
                 case KindOfRawIngridient.Banana:
                     colorToPut = Color.yellow;
                     break;
-                case KindOfRawIngridient.Strawbeery:
+                case KindOfRawIngridient.Strawberry:
                     ColorUtility.TryParseHtmlString("#FF00C1", out colorToPut);
                     break;
                 default:
@@ -175,15 +203,15 @@ public class FoodDicctionary
         {
             switch ((RawIngridients.KindOfRawIngridient)kindOfTopping)
             {
-                case RawIngridients.KindOfRawIngridient.Mango:
+                case RawIngridients.KindOfRawIngridient.Pineapple:
                     return "Triangle";
                 case RawIngridients.KindOfRawIngridient.Kiwi:
                     return "Triangle";
-                case RawIngridients.KindOfRawIngridient.Berry:
+                case RawIngridients.KindOfRawIngridient.Coconut:
                     return "Triangle";
                 case RawIngridients.KindOfRawIngridient.Banana:
                     return "Triangle";
-                case RawIngridients.KindOfRawIngridient.Strawbeery:
+                case RawIngridients.KindOfRawIngridient.Strawberry:
                     return "Triangle";
                 default:
                     return "Triangle";

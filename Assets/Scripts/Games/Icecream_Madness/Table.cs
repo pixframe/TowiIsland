@@ -35,6 +35,31 @@ public class Table : MonoBehaviour {
 
 	}
 
+    public void ChangeTableSprite(string direction)
+    {
+        spriteRenderer.sprite = Resources.Load<Sprite>($"{FoodDicctionary.prefabSpriteDirection}Table/{direction}");
+    }
+
+    public void CreateALogo(string spriteName)
+    {
+        GameObject newLogo = new GameObject();
+        newLogo.transform.parent = trayPositioner;
+        newLogo.transform.localScale = sizeOfUpperSprite;
+        newLogo.transform.position = newLogo.transform.parent.position;
+        newLogo.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+        SpriteRenderer spr = newLogo.AddComponent<SpriteRenderer>();
+        Sprite[] sprites = Resources.LoadAll<Sprite>($"{FoodDicctionary.prefabSpriteDirection}Ingredients/Ingredients");
+        var dictSprites = new Dictionary<string, Sprite>();
+
+        foreach (Sprite sprite in sprites)
+        {
+            dictSprites.Add(sprite.name, sprite);
+        }
+
+        spr.sprite = dictSprites[spriteName];
+        spr.sortingOrder = spriteRenderer.sortingOrder + 1;
+    }
+
     public void CreateAUpperSprite(string KindOfSprite)
     {
         GameObject colorShower = new GameObject();
