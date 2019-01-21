@@ -549,6 +549,7 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
     {
         // A product purchase attempt did not succeed. Check failureReason for more detail. Consider sharing 
         // this reason with the user to guide their troubleshooting actions.
+        FindObjectOfType<MenuManager>().ShopNumOfKids();
         FindObjectOfType<MenuManager>().ShowWarning(8);
         Debug.Log(string.Format("OnPurchaseFailed: FAIL. Product: '{0}', PurchaseFailureReason: {1}", product.definition.storeSpecificId, failureReason));
     }

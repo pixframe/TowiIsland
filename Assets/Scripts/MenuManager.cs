@@ -660,8 +660,15 @@ public class MenuManager : MonoBehaviour {
         monthsOfSubs = months;
     }
 
+    public void ShopNumOfKids()
+    {
+        HideAllCanvas();
+        shopMenu.ShowThisMenu();
+    }
+
     public void ShopIAP()
     {
+        ShowLoading();
         int numberOfKids = shopMenu.kidsNumberDropdown.value + 1;
         if (monthsOfSubs == 1)
         {
@@ -1476,7 +1483,7 @@ class GameMenu
         }
         else if (isInTrail)
         {
-            manager.WriteTheText(buyButton, 29);
+            manager.WriteTheText(buyButton, 62);
             if (isLeftTrial)
             {
                 manager.WriteTheText(gamesButton, 59);
@@ -1497,7 +1504,7 @@ class GameMenu
         else
         {
             manager.WriteTheText(gamesButton, 1);
-            manager.WriteTheText(buyButton, 29);
+            manager.WriteTheText(buyButton, 62);
             gamesButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
             evaluationButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
             buyButton.onClick.AddListener(() => manager.ShowShop(1));
@@ -1648,6 +1655,15 @@ class ShopMenu
         shopButton.onClick.AddListener(manager.ShopIAP);
 
         SetBackButtonSecondStep(isAShopForNewKid);
+    }
+
+    public void SetNumberShopKid()
+    {
+        HideAllComponents();
+        shopButton.gameObject.SetActive(true);
+        shopText.gameObject.SetActive(true);
+        kidsNumberDropdown.gameObject.SetActive(true);
+        moreKidsButton.gameObject.SetActive(true);
     }
 
     public void SetChangePrepaidCode(int isAShopForNewKid)
