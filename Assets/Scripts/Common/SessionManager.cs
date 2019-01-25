@@ -908,6 +908,8 @@ public class SessionManager : MonoBehaviour
         public int dontSyncSombras;
         public int dontSyncTesoro;
 
+        public DateTime offlineSubscription;
+
         public string avatar;
         public string avatarClothes;
 
@@ -1004,6 +1006,17 @@ public class SessionManager : MonoBehaviour
             dontSyncDondeQuedoLaBolita = 0;
             dontSyncSombras = 0;
             dontSyncTesoro = 0;
+
+            if (active)
+            {
+                offlineSubscription = DateTime.Today.AddDays(7);
+            }
+            else
+            {
+                offlineSubscription = DateTime.Today.AddDays(-365);
+            }
+
+            Debug.Log($"{this.name} suscription expires in {offlineSubscription}");
 
             avatar = "";
             avatarClothes = "";

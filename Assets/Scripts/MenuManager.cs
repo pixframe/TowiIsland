@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -145,6 +147,17 @@ public class MenuManager : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
+        ShowLoading();
+
+        //if (key == null)
+        //{
+        //    StartCoroutine(CheckInternetConnection("www.towi.com.mx.zx"));
+        //}
+        //else
+        //{
+        //    ShowGameMenu();
+        //}
+
         if (key == null)
         {
             if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
@@ -200,10 +213,132 @@ public class MenuManager : MonoBehaviour {
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    IEnumerator CheckInternetConnection(string resource)
     {
+        WWWForm newForm = new WWWForm();
+        using (UnityWebRequest newRequest = UnityWebRequest.Get(resource))
+        {
+            yield return newRequest.SendWebRequest();
 
+            if (newRequest.isNetworkError)
+            {
+                NoInternetAvailableLogin();
+            }
+            else
+            {
+                InternetAvailableLogin();
+            }
+        }
+    }
+
+    void InternetAvailableLogin()
+    {
+        if (PlayerPrefs.GetInt(Keys.Logged_Session) == 0)
+        {
+
+            if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
+            {
+                string user = PlayerPrefs.GetString(Keys.Active_User_Key);
+                if (user != "_local")
+                {
+                    if (user != "")
+                    {
+                        logInScript.IsActive(user);
+                    }
+                    else
+                    {
+                        ShowLogIn();
+                    }
+                }
+                else
+                {
+                    ShowGameMenu();
+                    PlayerPrefs.SetInt(Keys.Logged_Session, 1);
+                }
+            }
+            else
+            {
+                ShowLogIn();
+            }
+        }
+        else
+        {
+            if (sessionManager.activeKid.offlineSubscription < DateTime.Today)
+            {
+                string user = PlayerPrefs.GetString(Keys.Active_User_Key);
+                logInScript.IsActive(user);
+            }
+            else
+            {
+                ShowGameMenu();
+            }
+        }
+    }
+
+    void NoInternetAvailableLogin()
+    {
+        if (PlayerPrefs.GetInt(Keys.Logged_Session) == 0)
+        {
+            if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
+            {
+                if (DateTime.Compare(sessionManager.activeKid.offlineSubscription, DateTime.Today) < 0)
+                {
+                    ShowNeedConectionToPlay();
+                }
+                else
+                {
+                    if (DateTime.Compare(DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Play_Time)), DateTime.Today) >= 0)
+                    {
+                        if (sessionManager.activeKid.activeMissions.Count <= 0)
+                        {
+                            if (DateTime.Compare(DateTime.Today, DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Fetch_Time))) > 0)
+                            {
+                                //TODO Create new levels for children if they are offline
+                                Debug.Log("Here we create a new activities");
+                            }
+                        }
+                        Debug.Log("Suscription is still available");
+                        sessionManager.LoadActiveUser(Keys.Active_User_Key);
+                        ShowGameMenu();
+                    }
+                    else
+                    {
+                        ShowNeedConectionToPlay();
+                    }
+                }
+            }
+            else
+            {
+                ShowLogIn();
+            }
+        }
+        else
+        {
+            if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
+            {
+                if (DateTime.Compare(sessionManager.activeKid.offlineSubscription, DateTime.Today) < 0)
+                {
+                    ShowNeedConectionToPlay();
+                }
+                else
+                {
+                    if (DateTime.Compare(DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Play_Time)), DateTime.Today) >= 0)
+                    {
+                        Debug.Log("Suscription is still available");
+                        sessionManager.LoadActiveUser(Keys.Active_User_Key);
+                        ShowGameMenu();
+                    }
+                    else
+                    {
+                        ShowNeedConectionToPlay();
+                    }
+                }
+            }
+            else
+            {
+                ShowLogIn();
+            }
+        }
     }
 
     #region Functions
@@ -445,6 +580,7 @@ public class MenuManager : MonoBehaviour {
     //we show the game menu if the player has acces to it
     public void ShowGameMenu()
     {
+        PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString());
         HideAllCanvas();
         if (key)
         {
@@ -455,6 +591,14 @@ public class MenuManager : MonoBehaviour {
             gameMenuObject.ShowThisMenu(sessionManager.activeKid.isActive, sessionManager.activeKid.isInTrial, IsEvaluationAvilable(), sessionManager.activeKid.anyFirstTime);
         }
 
+        UpdateKidInMenu();
+        ShowEscapeButton();
+    }
+
+    void ShowNeedConectionToPlay()
+    {
+        HideAllCanvas();
+        gameMenuObject.ShowThisMenu();
         UpdateKidInMenu();
         ShowEscapeButton();
     }
@@ -1259,7 +1403,7 @@ public class MenuManager : MonoBehaviour {
             }
         }
     }
-#endregion
+    #endregion
 
     //this class will check if a email is well set
     class EmailVerificationUtility
@@ -1434,6 +1578,23 @@ class GameMenu
         SetStaticButtonFuctions();
     }
 
+    public void ShowThisMenu()
+    {
+        mainCanvas.SetActive(true);
+
+        gamesButton.onClick.RemoveAllListeners();
+        evaluationButton.onClick.RemoveAllListeners();
+        buyButton.onClick.RemoveAllListeners();
+
+        gamesButton.onClick.AddListener(() => manager.ShowWarning(0));
+        evaluationButton.onClick.AddListener(() => manager.ShowWarning(0));
+        buyButton.onClick.AddListener(() => manager.ShowWarning(0));
+
+        SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
+        SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
+        SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
+    }
+
     public void ShowThisMenu(bool isActiveTheCurrentKid, bool isInTrial, bool isEvaluationAvailable, bool isLeftTrial)
     {
         mainCanvas.SetActive(true);
@@ -1478,7 +1639,8 @@ class GameMenu
             evaluationButton.onClick.AddListener(manager.ShowDisclaimer);
             buyButton.onClick.AddListener(manager.ShowYouHaveASuscription);
 
-            SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
+            SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
+            SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
             SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
         }
         else if (isInTrail)
@@ -1508,8 +1670,9 @@ class GameMenu
             gamesButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
             evaluationButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
             buyButton.onClick.AddListener(() => manager.ShowShop(1));
-            SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
-            SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
+            SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
+            SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
+            SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
         }
     }
 

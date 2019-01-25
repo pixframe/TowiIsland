@@ -70,6 +70,8 @@ public class LogInScript : MonoBehaviour {
         //this is what is do if there is no error
         if (hs_post.error == null)
         {
+            PlayerPrefs.SetInt(Keys.Logged_Session, 1);
+
             //we get a JSON object from the server  
             JSONObject jsonObject = JSONObject.Parse(hs_post.text);
             JSONArray kids = jsonObject.GetValue("children").Array;
@@ -135,6 +137,8 @@ public class LogInScript : MonoBehaviour {
 
         if (hs_post.error == null)
         {
+            PlayerPrefs.SetInt(Keys.Logged_Session, 1);
+
             JSONObject jsonObject = JSONObject.Parse(hs_post.text);
             //menuController.ShowGameMenu();
 

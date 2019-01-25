@@ -22,7 +22,8 @@ public class LoadManager : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
         if (asyncLoad != null) {
             KiwiLoading.fillAmount = asyncLoad.progress;
             if (asyncLoad.progress >= 0.9f) {
