@@ -8,6 +8,7 @@ public class TableFinish : Table
 	void Start ()
     {
         Initializing();
+        ChangeTableSprite("Talavera");
 	}
 
     // Update is called once per frame
@@ -19,7 +20,7 @@ public class TableFinish : Table
     public override void Initializing()
     {
         base.Initializing();
-        spriteRenderer.color = Color.black;
+        spriteRenderer.color = Color.white;
         Debug.Log("This are finish tables");
     }
 

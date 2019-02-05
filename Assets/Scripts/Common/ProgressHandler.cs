@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using Boomlagoon.JSON;
 using System.Collections.Generic;
@@ -487,20 +488,32 @@ public class ProgressHandler : MonoBehaviour {
         Debug.Log(data.ToString());
         form.AddField("jsonToDb", data.ToString());
 
-        WWW hs_post = new WWW(postSuperURL, form);
-
-        yield return hs_post;
-
-        Debug.Log(hs_post.text);
-        if (hs_post.error == null)
+        using (UnityWebRequest request = UnityWebRequest.Post(postSuperURL, form))
         {
-            Debug.Log("Super Ok");
+            yield return request.SendWebRequest();
+
+            if (request.isNetworkError || request.isHttpError)
+            {
+                EmergencySave();
+            }
+
+            lastSceneManager.MoveToMenu();
         }
-        else
-        {
-            EmergencySave();
-        }
-        lastSceneManager.MoveToMenu();
+
+        //WWW hs_post = new WWW(postSuperURL, form);
+
+        //yield return hs_post;
+
+        //Debug.Log(hs_post.text);
+        //if (hs_post.error == null)
+        //{
+        //    Debug.Log("Super Ok");
+        //}
+        //else
+        //{
+        //    EmergencySave();
+        //}
+        //lastSceneManager.MoveToMenu();
     }
 
     public void PostProgress(bool rank){
@@ -725,8 +738,7 @@ public class ProgressHandler : MonoBehaviour {
         string content = data.ToString();
 
         //This will set the path of where the emergency data will be save
-        string path = Application.persistentDataPath + "/" + PlayerPrefs.GetInt(Keys.Emergency_Save).ToString() + "_emergencysave.txt";
-        PlayerPrefs.SetInt(Keys.Emergency_Save, PlayerPrefs.GetInt(Keys.Emergency_Save) + 1);
+        string path = $"{Application.persistentDataPath}/{sessionMng.activeKid.id}_evaluation_local_save.json";
 
         //We crete the file or overwrited
         File.WriteAllText(path, content);

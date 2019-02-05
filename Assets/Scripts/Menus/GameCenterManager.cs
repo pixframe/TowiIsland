@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 
@@ -68,14 +69,7 @@ public class GameCenterManager : MonoBehaviour {
         sessionManager = FindObjectOfType<SessionManager>();
         if (sessionManager.activeKid.needSync)
         {
-            Debug.Log("We need to update a profile");
-            sessionManager.UpdateProfile(activeMissions);
-            int funelGame = PlayerPrefs.GetInt(Keys.Funnel_Games, 1);
-            if (funelGame < 7)
-            {
-                UnityEngine.Analytics.Analytics.CustomEvent($"game{funelGame}");
-                PlayerPrefs.SetInt(Keys.Funnel_Games, funelGame + 1);
-            }
+            CheckInternetConnection("www.towi.com.mx");
         }
         if (FindObjectOfType<DemoKey>())
         {
@@ -468,6 +462,41 @@ public class GameCenterManager : MonoBehaviour {
         asyncLoad = SceneManager.LoadSceneAsync("Loader_Scene");
         asyncLoad.allowSceneActivation = false;
         yield return asyncLoad;
+    }
+
+    IEnumerator CheckInternetConnection(string resource)
+    {
+        WWWForm newForm = new WWWForm();
+        using (UnityWebRequest newRequest = UnityWebRequest.Get(resource))
+        {
+            yield return newRequest.SendWebRequest();
+
+            if (newRequest.isNetworkError)
+            {
+                InternetAvailableUpdate();
+            }
+            else
+            {
+                InternetAvailableUpdate();
+            }
+        }
+    }
+
+    void InternetAvailableUpdate()
+    {
+        Debug.Log("Theres internet there");
+        sessionManager.UpdateProfile(activeMissions);
+        int funelGame = PlayerPrefs.GetInt(Keys.Funnel_Games, 1);
+        if (funelGame < 7)
+        {
+            UnityEngine.Analytics.Analytics.CustomEvent($"game{funelGame}");
+            PlayerPrefs.SetInt(Keys.Funnel_Games, funelGame + 1);
+        }
+    }
+
+    void NotAvailableUpdate()
+    {
+        
     }
 }
 

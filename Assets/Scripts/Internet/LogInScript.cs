@@ -2,6 +2,7 @@
 using UnityEngine;
 using Boomlagoon.JSON;
 using UnityEngine.Analytics;
+using UnityEngine.Networking;
 
 public class LogInScript : MonoBehaviour {
     #region Variables
@@ -64,50 +65,96 @@ public class LogInScript : MonoBehaviour {
 
 
         //Post the URL to the site and download a result
-        WWW hs_post = new WWW(post_url, form);
-        yield return hs_post;
-
-        //this is what is do if there is no error
-        if (hs_post.error == null)
+        using (UnityWebRequest request = UnityWebRequest.Post(post_url, form))
         {
-            PlayerPrefs.SetInt(Keys.Logged_Session, 1);
+            yield return request.SendWebRequest();
 
-            //we get a JSON object from the server  
-            JSONObject jsonObject = JSONObject.Parse(hs_post.text);
-            JSONArray kids = jsonObject.GetValue("children").Array;
-
-            Debug.Log(kids.ToString());
-            sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetValue("id").Number);
-            sessionManager.AddKids(kids);
-            sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
-            menuController.LoggedNow();
-            sessionManager.activeUser.trialAccount = false;
-            sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
-            sessionManager.SaveSession();
-            menuController.SetKidsProfiles();
-            //we check if the accses is allow by a key
-        }
-        else if (hs_post.text == "")
-        {
-            menuController.LogInMenuActive();
-            menuController.ShowWarning(9);
-        }
-        else
-        {
-            menuController.LogInMenuActive();
-            JSONObject jsonObj = JSONObject.Parse(hs_post.text);
-            Debug.Log(jsonObj.ToString());
-            string error = jsonObj.GetString("status");
-            if (error == "USER_NOT_FOUND")
+            if (request.isNetworkError)
             {
-                menuController.ShowWarning(2);
+                menuController.LogInMenuActive();
+                menuController.ShowWarning(9);
+            }
+            else if (request.isHttpError)
+            {
+                menuController.LogInMenuActive();
+                JSONObject jsonObj = JSONObject.Parse(request.downloadHandler.text);
+                Debug.Log(jsonObj.ToString());
+                string error = jsonObj.GetString("status");
+                if (error == "USER_NOT_FOUND")
+                {
+                    menuController.ShowWarning(2);
+                }
+                else
+                {
+                    menuController.ShowWarning(3);
+                }
+                Debug.Log(error);
             }
             else
             {
-                menuController.ShowWarning(3);
+                PlayerPrefs.SetInt(Keys.Logged_Session, 1);
+
+                Debug.Log(request.ToString());
+                //we get a JSON object from the server  
+                JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
+                JSONArray kids = jsonObject.GetValue("children").Array;
+
+                Debug.Log(kids.ToString());
+                sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetValue("id").Number);
+                sessionManager.AddKids(kids);
+                sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                menuController.LoggedNow();
+                sessionManager.activeUser.trialAccount = false;
+                sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
+                sessionManager.SaveSession();
+                menuController.SetKidsProfiles();
+                //we check if the accses is allow by a key
             }
-            Debug.Log(error);
         }
+        //    WWW hs_post = new WWW(post_url, form);
+        //yield return hs_post;
+
+        ////this is what is do if there is no error
+        //if (hs_post.error == null)
+        //{
+        //    PlayerPrefs.SetInt(Keys.Logged_Session, 1);
+
+        //    //we get a JSON object from the server  
+        //    JSONObject jsonObject = JSONObject.Parse(hs_post.text);
+        //    JSONArray kids = jsonObject.GetValue("children").Array;
+
+        //    Debug.Log(kids.ToString());
+        //    sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetValue("id").Number);
+        //    sessionManager.AddKids(kids);
+        //    sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+        //    menuController.LoggedNow();
+        //    sessionManager.activeUser.trialAccount = false;
+        //    sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
+        //    sessionManager.SaveSession();
+        //    menuController.SetKidsProfiles();
+        //    //we check if the accses is allow by a key
+        //}
+        //else if (hs_post.text == "")
+        //{
+        //    menuController.LogInMenuActive();
+        //    menuController.ShowWarning(9);
+        //}
+        //else
+        //{
+        //    menuController.LogInMenuActive();
+        //    JSONObject jsonObj = JSONObject.Parse(hs_post.text);
+        //    Debug.Log(jsonObj.ToString());
+        //    string error = jsonObj.GetString("status");
+        //    if (error == "USER_NOT_FOUND")
+        //    {
+        //        menuController.ShowWarning(2);
+        //    }
+        //    else
+        //    {
+        //        menuController.ShowWarning(3);
+        //    }
+        //    Debug.Log(error);
+        //}
     }
 
     public void IsActive(string user)

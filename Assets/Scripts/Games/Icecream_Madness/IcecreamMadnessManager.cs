@@ -241,18 +241,15 @@ class IceCreamOrders
     void SetImage()
     {
         if (orderType[0] != null) {
-            container.sprite = ChangeImage(FoodDicctionary.Containers.ShapeOfConatiner((int)orderType[0]));
-            container.color = Color.white;
+            container.sprite = LoadSprite.GetSpriteFromSpriteSheet($"{FoodDicctionary.prefabSpriteDirection}{FoodDicctionary.containersDirection}", FoodDicctionary.Containers.ShapeOfConatiner((int)orderType[0]));
         }
         if (orderType[1] != null)
         {
-            cookedMeal.sprite = ChangeImage(FoodDicctionary.CookedMeal.ShapeOfCookedMeal((int)orderType[1]));
-            cookedMeal.color = FoodDicctionary.CookedMeal.ColorOfCookedMeal((int)orderType[1]);
+            cookedMeal.sprite = LoadSprite.GetSpriteFromSpriteSheet($"{FoodDicctionary.prefabSpriteDirection}{FoodDicctionary.cookedMealDirection}", FoodDicctionary.CookedMeal.ShapeOfCookedMeal((int)orderType[1]));
         }
         if (orderType[2] != null)
         {
-            topping.sprite = ChangeImage(FoodDicctionary.Toppings.ShapeOfTopping((int)orderType[2]));
-            topping.color = FoodDicctionary.RawIngridients.ColorOfRawIngridient((int)orderType[2]);
+            topping.sprite = LoadSprite.GetSpriteFromSpriteSheet($"{FoodDicctionary.prefabSpriteDirection}{FoodDicctionary.toppingDirection}", FoodDicctionary.Toppings.ShapeOfTopping((int)orderType[2]));
         }
     }
 

@@ -1,16 +1,10 @@
 fileFormatVersion: 2
-guid: 814844a54a145304081d0aa616854afc
+guid: 0d490f40edb9c4745be1808316914b59
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Kiwi
-    21300002: Strawberry
-    21300004: Pineapple
-    21300006: Coconut
-    21300008: Banana
-    21300010: Flour
-    21300012: Ice
-    21300014: Egg
-    21300016: Milk
+    21300000: Glass
+    21300002: WaffleCone
+    21300004: Dish
   externalObjects: {}
   serializedVersion: 7
   mipmaps:
@@ -54,7 +48,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 150
+  spritePixelsToUnits: 175
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -137,181 +131,61 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Kiwi
+      name: Glass
       rect:
         serializedVersion: 2
-        x: 12
-        y: 355
-        width: 139
-        height: 138
+        x: 0
+        y: 256
+        width: 256
+        height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 059615804ea41cd47849c82ae0e663f8
+      spriteID: cc153ac6bb770d5449dc70429e8d53cb
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Strawberry
+      name: WaffleCone
       rect:
         serializedVersion: 2
-        x: 193
-        y: 357
-        width: 134
-        height: 141
+        x: 256
+        y: 256
+        width: 256
+        height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 92d9c076a95a5694f8fa86b3c4f620bf
+      spriteID: f9cf1b9b67a523341b595c05750916b6
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Pineapple
+      name: Dish
       rect:
         serializedVersion: 2
-        x: 375
-        y: 346
-        width: 105
-        height: 162
+        x: 0
+        y: 1
+        width: 256
+        height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c3509eac40270a24eaab70eaa2e83144
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Coconut
-      rect:
-        serializedVersion: 2
-        x: 11
-        y: 182
-        width: 148
-        height: 117
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 99492e33542c27f4a93681d381f576c5
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Banana
-      rect:
-        serializedVersion: 2
-        x: 181
-        y: 181
-        width: 140
-        height: 152
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d023bd3a919f73e42b09be0538080cfb
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Flour
-      rect:
-        serializedVersion: 2
-        x: 362
-        y: 181
-        width: 126
-        height: 152
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 0445898ce4fbadc468d9c11918eb59bd
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Ice
-      rect:
-        serializedVersion: 2
-        x: 9
-        y: 36
-        width: 152
-        height: 100
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: cb9a8daca8ed9ab48959d7304fdc3f82
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Egg
-      rect:
-        serializedVersion: 2
-        x: 208
-        y: 21
-        width: 95
-        height: 130
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b9495d935c632bc46948103cabcd808d
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Milk
-      rect:
-        serializedVersion: 2
-        x: 386
-        y: 3
-        width: 82
-        height: 164
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 24241fe696c759e4a95bd75c7f9be084
+      spriteID: f7bc4b017f1dc344e99b8110e20fe562
       vertices: []
       indices: 
       edges: []
@@ -319,7 +193,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 3c74641db8bcdf341bb90c7af79bb4df
+    spriteID: 2d9b8712ac512de46a54e89f190e54ca
     vertices: []
     indices: 
     edges: []

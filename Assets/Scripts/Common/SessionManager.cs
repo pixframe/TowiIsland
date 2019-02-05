@@ -972,6 +972,8 @@ public class SessionManager : MonoBehaviour
         public int extraField1;
         public int extraField2;
 
+        public int dataToSave;
+
         public bool syncProfile = true;
 
         public bool birdsFirst;
@@ -1066,6 +1068,8 @@ public class SessionManager : MonoBehaviour
             xmlTesoro = "";
 
             syncProfile = true;
+
+            dataToSave = 0;
 
             birdsFirst = true;
             lavaFirst = true;

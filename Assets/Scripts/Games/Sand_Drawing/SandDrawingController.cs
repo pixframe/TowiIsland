@@ -294,14 +294,14 @@ public class SandDrawingController : MonoBehaviour {
             sessionManager.activeKid.playedSand = 1;
             sessionManager.activeKid.needSync = true;
 
-            levelSaver.AddLevelData("level", levelGame);
-            levelSaver.AddLevelData("sublevel", levelFill);
-            levelSaver.AddLevelData("sublevel", levelIdentyfy);
-            levelSaver.AddLevelData("sublevel", levelCompletion);
-            levelSaver.AddLevelData("time", time);
-            levelSaver.AddLevelData("passed", passLevels);
-            levelSaver.AddLevelData("repeated", repeatedLevels);
-            levelSaver.AddLevelData("accuracy", accuracyPercentage);
+            //levelSaver.AddLevelData("level", levelGame);
+            //levelSaver.AddLevelData("sublevel", levelFill);
+            //levelSaver.AddLevelData("sublevel", levelIdentyfy);
+            //levelSaver.AddLevelData("sublevel", levelCompletion);
+            //levelSaver.AddLevelData("time", time);
+            //levelSaver.AddLevelData("passed", passLevels);
+            //levelSaver.AddLevelData("repeated", repeatedLevels);
+            //levelSaver.AddLevelData("accuracy", accuracyPercentage);
 
             //Version 2
             sessionManager.activeKid.sandSessions++;

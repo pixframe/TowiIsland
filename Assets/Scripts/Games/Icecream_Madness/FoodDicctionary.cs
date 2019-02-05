@@ -4,6 +4,11 @@ using System.Collections;
 public class FoodDicctionary
 {
     public static string prefabSpriteDirection = "IcecreamMadness/Sprites/";
+    public static string logoDirection = "Logos/Logos";
+    public static string ingredientDirection = "Ingredients/Ingredients";
+    public static string containersDirection = "Containers/Containers";
+    public static string cookedMealDirection = "Cooked/Cooked";
+    public static string toppingDirection = "Toppings/Toppings";
 
     public class Containers
     {
@@ -14,11 +19,11 @@ public class FoodDicctionary
             switch ((KindOfContainer)kindOfContainer)
             {
                 case KindOfContainer.Waffel:
-                    return "Icecream/Base";
+                    return "WaffleCone";
                 case KindOfContainer.Glass:
-                    return "Cube";
+                    return "Glass";
                 case KindOfContainer.Dish:
-                    return "Cube";
+                    return "Dish";
                 default:
                     return "Cube";
             }
@@ -46,6 +51,8 @@ public class FoodDicctionary
             return colorToPut;
         }
 
+
+        public static string ContainerTable = "Container";
     }
 
     public class RawIngridients
@@ -54,7 +61,6 @@ public class FoodDicctionary
 
         public static string ShapeOfRawIngridient(int kindOfRawIngridient)
         {
-            string before = "Full";
             switch ((KindOfRawIngridient)kindOfRawIngridient)
             {
                 case KindOfRawIngridient.Ice:
@@ -66,15 +72,15 @@ public class FoodDicctionary
                 case KindOfRawIngridient.Flour:
                     return "Hexa";
                 case KindOfRawIngridient.Pineapple:
-                    return $"{before}Pineapple";
+                    return "Pineapple";
                 case KindOfRawIngridient.Kiwi:
-                    return $"{before}Kiwi";
+                    return "Kiwi";
                 case KindOfRawIngridient.Coconut:
-                    return $"{before}Coconut";
+                    return "Coconut";
                 case KindOfRawIngridient.Banana:
-                    return $"{before}Banana";
+                    return "Banana";
                 case KindOfRawIngridient.Strawberry:
-                    return $"{before}Strawberry";
+                    return "Strawberry";
                 default:
                     return "Hexa";
             }
@@ -82,28 +88,14 @@ public class FoodDicctionary
 
         public static string ShapeOfContainerTable(int kindOfRawIngridient)
         {
-            switch ((KindOfRawIngridient)kindOfRawIngridient)
+
+            if (kindOfRawIngridient < 4)
             {
-                case KindOfRawIngridient.Ice:
-                    return "Hexa";
-                case KindOfRawIngridient.Eggs:
-                    return "Hexa";
-                case KindOfRawIngridient.Milk:
-                    return "Hexa";
-                case KindOfRawIngridient.Flour:
-                    return "Hexa";
-                case KindOfRawIngridient.Pineapple:
-                    return "Topping";
-                case KindOfRawIngridient.Kiwi:
-                    return "Topping";
-                case KindOfRawIngridient.Coconut:
-                    return "Topping";
-                case KindOfRawIngridient.Banana:
-                    return "Topping";
-                case KindOfRawIngridient.Strawberry:
-                    return "Topping";
-                default:
-                    return "Hexa";
+                return "Ingredients";
+            }
+            else
+            {
+                return "Topping";
             }
         }
 
@@ -159,15 +151,14 @@ public class FoodDicctionary
 
         static public string ShapeOfCookedMeal(int kindOfCookedMeal)
         {
-            string finalString = "/Cooked";
             switch ((KindOfCookedMeal)kindOfCookedMeal)
             {
                 case KindOfCookedMeal.Icecream:
-                    return $"Icecream{finalString}";
+                    return "Icecream";
                 case KindOfCookedMeal.Smoothie:
-                    return "Circle";
+                    return "Smoothie";
                 case KindOfCookedMeal.Waffle:
-                    return "Circle";
+                    return "Waffle";
                 default:
                     return "Circle";
             }
@@ -204,15 +195,15 @@ public class FoodDicctionary
             switch ((RawIngridients.KindOfRawIngridient)kindOfTopping)
             {
                 case RawIngridients.KindOfRawIngridient.Pineapple:
-                    return "Triangle";
+                    return "Pineapple";
                 case RawIngridients.KindOfRawIngridient.Kiwi:
-                    return "Triangle";
+                    return "Kiwi";
                 case RawIngridients.KindOfRawIngridient.Coconut:
-                    return "Triangle";
+                    return "Coconut";
                 case RawIngridients.KindOfRawIngridient.Banana:
-                    return "Triangle";
+                    return "Banana";
                 case RawIngridients.KindOfRawIngridient.Strawberry:
-                    return "Triangle";
+                    return "Strawberry";
                 default:
                     return "Triangle";
             }

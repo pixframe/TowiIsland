@@ -1,12 +1,8 @@
 fileFormatVersion: 2
-guid: 68da20f2ff0fb044fb358e4c1f4ff60a
+guid: c7840abe6492bec46b0d878403673db7
 TextureImporter:
   fileIDToRecycleName:
-    21300000: SlicedCoconut
-    21300002: SlicedStrawberry
-    21300004: SlicedKiwi
-    21300006: SlicedPineapple
-    21300008: SliceBanana
+    21300000: Frente_Servicio_0
   externalObjects: {}
   serializedVersion: 7
   mipmaps:
@@ -50,7 +46,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 250
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -65,7 +61,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 2
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
@@ -76,7 +72,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
   - serializedVersion: 2
     buildTarget: Standalone
-    maxTextureSize: 2048
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
@@ -87,7 +83,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
   - serializedVersion: 2
     buildTarget: iPhone
-    maxTextureSize: 2048
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
@@ -98,7 +94,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
   - serializedVersion: 2
     buildTarget: Android
-    maxTextureSize: 2048
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
@@ -109,7 +105,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
   - serializedVersion: 2
     buildTarget: Windows Store Apps
-    maxTextureSize: 2048
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
@@ -120,7 +116,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
   - serializedVersion: 2
     buildTarget: WebGL
-    maxTextureSize: 2048
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
@@ -133,101 +129,21 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: SlicedCoconut
+      name: Frente_Servicio_0
       rect:
         serializedVersion: 2
-        x: 7
-        y: 155
-        width: 73
-        height: 76
+        x: 12
+        y: 24
+        width: 490
+        height: 437
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e5509ee6130c017448a710473e512071
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SlicedStrawberry
-      rect:
-        serializedVersion: 2
-        x: 100
-        y: 155
-        width: 72
-        height: 76
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 066e625d3ea84e34eb4437b98e803abe
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SlicedKiwi
-      rect:
-        serializedVersion: 2
-        x: 11
-        y: 29
-        width: 73
-        height: 79
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: a21c170bfd163c84ea9ad89cfbfad70e
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SlicedPineapple
-      rect:
-        serializedVersion: 2
-        x: 100
-        y: 29
-        width: 72
-        height: 75
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 4b3412563ceda544bb38f7eb6915c77f
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SliceBanana
-      rect:
-        serializedVersion: 2
-        x: 184
-        y: 28
-        width: 65
-        height: 65
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: e31d8e46eab7a414c91190b0ff8d1381
+      spriteID: 338e36780b431b54d86741d4626904a7
       vertices: []
       indices: 
       edges: []
@@ -235,7 +151,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 2566306348d93004c9b93ab62c68e745
+    spriteID: 237d6c4a7309bcd42b0e047e49140367
     vertices: []
     indices: 
     edges: []

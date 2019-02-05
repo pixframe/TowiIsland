@@ -6,8 +6,6 @@ public class TableIngredients : Table
 {
 
     public int ingridientNumber;
-    Color colorToPut;
-    string tableShape;
     string ingridientShape;
 
     // Use this for initialization
@@ -23,22 +21,9 @@ public class TableIngredients : Table
 
         ChangeTheColor("FFFFFF");
 
-        colorToPut = FoodDicctionary.RawIngridients.ColorOfRawIngridient(ingridientNumber);
-
-        if (gameObject.name.Contains("D") || gameObject.name.Contains("U"))
-        {
-            tableShape = "Center/";
-        }
-        else
-        {
-            tableShape = "Lateral/";
-        }
-
-        tableShape += FoodDicctionary.RawIngridients.ShapeOfContainerTable(ingridientNumber);
         ingridientShape = FoodDicctionary.RawIngridients.ShapeOfRawIngridient(ingridientNumber);
-        Debug.Log(ingridientShape);
 
-        ChangeTableSprite(tableShape);
+        ChangeTableSprite(FoodDicctionary.RawIngridients.ShapeOfContainerTable(ingridientNumber));
 
         CreateALogo(ingridientShape);
     }
@@ -64,7 +49,7 @@ public class TableIngredients : Table
         {
             Debug.Log("Grab The Ingrdient");
             Tray newTray = Instantiate(Resources.Load<GameObject>("IcecreamMadness/Prefabs/Tray"), chef.trayPositioner.transform).GetComponent<Tray>();
-            newTray.SetARawIngridient(ingridientNumber, tableShape, colorToPut);
+            newTray.SetARawIngridient(ingridientNumber, ingridientShape);
             chef.GrabATray(newTray.gameObject);
             Debug.Log("Grab The Ingrdient 2");
         }

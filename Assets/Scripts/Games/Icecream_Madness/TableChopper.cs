@@ -84,7 +84,7 @@ public class TableChopper : TableInstrument
         yield return new WaitForSeconds(timeToComplete);
         thingsAreMade = true;
         workingMachine = false;
-        trayToReturn.TransformIngridientToTopping("Triangle");
+        trayToReturn.TransformIngridientToTopping();
         Debug.Log("Done");
     }
 }

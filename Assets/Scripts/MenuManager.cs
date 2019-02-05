@@ -133,6 +133,7 @@ public class MenuManager : MonoBehaviour {
     int numKids;
     int monthsOfSubs;
     int availableKidsInSubscription;
+    int logoPushes;
 
     List<int> ids = new List<int>();
     List<Button> miniCanvitas = new List<Button>();
@@ -149,68 +150,68 @@ public class MenuManager : MonoBehaviour {
     {
         ShowLoading();
 
-        //if (key == null)
-        //{
-        //    StartCoroutine(CheckInternetConnection("www.towi.com.mx.zx"));
-        //}
-        //else
-        //{
-        //    ShowGameMenu();
-        //}
-
         if (key == null)
         {
-            if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
-            {
-
-                string user = PlayerPrefs.GetString(Keys.Active_User_Key);
-                if (user != "_local")
-                {
-                    if (user != "")
-                    {
-                        ShowLoading();
-                        logInScript.IsActive(user);
-                    }
-                    else
-                    {
-                        ShowLogIn();
-                    }
-                }
-                else
-                {
-                    if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
-                    {
-                        ShowGameMenu();
-                    }
-                    else
-                    {
-                        ShowLogIn();
-                    }
-                }
-            }
-            else
-            {
-                if (alreadyLogged)
-                {
-                    ShowGameMenu();
-                }
-                else
-                {
-                    ShowLogIn();
-                }
-            }
-
-            if (FindObjectOfType<EvaluationController>())
-            {
-                Destroy(FindObjectOfType<EvaluationController>().gameObject);
-                //Destroy(FindObjectOfType<AudioManager>().gameObject);
-            }
-            key = FindObjectOfType<DemoKey>();
+            StartCoroutine(CheckInternetConnection("www.towi.com.mx"));
         }
         else
         {
             ShowGameMenu();
         }
+
+        //if (key == null)
+        //{
+        //    if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
+        //    {
+
+        //        string user = PlayerPrefs.GetString(Keys.Active_User_Key);
+        //        if (user != "_local")
+        //        {
+        //            if (user != "")
+        //            {
+        //                ShowLoading();
+        //                logInScript.IsActive(user);
+        //            }
+        //            else
+        //            {
+        //                ShowLogIn();
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
+        //            {
+        //                ShowGameMenu();
+        //            }
+        //            else
+        //            {
+        //                ShowLogIn();
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (alreadyLogged)
+        //        {
+        //            ShowGameMenu();
+        //        }
+        //        else
+        //        {
+        //            ShowLogIn();
+        //        }
+        //    }
+
+        //    if (FindObjectOfType<EvaluationController>())
+        //    {
+        //        Destroy(FindObjectOfType<EvaluationController>().gameObject);
+        //        //Destroy(FindObjectOfType<AudioManager>().gameObject);
+        //    }
+        //    key = FindObjectOfType<DemoKey>();
+        //}
+        //else
+        //{
+        //    ShowGameMenu();
+        //}
     }
 
     IEnumerator CheckInternetConnection(string resource)
@@ -252,6 +253,7 @@ public class MenuManager : MonoBehaviour {
                 }
                 else
                 {
+                    
                     ShowGameMenu();
                     PlayerPrefs.SetInt(Keys.Logged_Session, 1);
                 }
@@ -437,6 +439,7 @@ public class MenuManager : MonoBehaviour {
         configMenu.englishLanguageButton.onClick.AddListener(() => SetLanguageOfGame(configMenu.englishLanguageButton.transform.GetSiblingIndex()));
         configMenu.spanishLanguageButton.onClick.AddListener(() => SetLanguageOfGame(configMenu.spanishLanguageButton.transform.GetSiblingIndex()));
         configMenu.automaticButton.onClick.AddListener(SetDeviceLanguage);
+        configMenu.logoButton.onClick.AddListener(ShowTextRoute);
     }
 
     #endregion
@@ -850,7 +853,10 @@ public class MenuManager : MonoBehaviour {
         HideAllCanvas();
         configMenu.panel.SetActive(true);
         configMenu.languageButtonHandler.SetActive(false);
+        configMenu.logoButton.gameObject.SetActive(true);
+        configMenu.textRoute.gameObject.SetActive(false);
         configMenu.languageButton.gameObject.SetActive(true);
+        logoPushes = 0;
         configMenu.backButton.onClick.RemoveAllListeners();
         configMenu.backButton.onClick.AddListener(ShowGameMenu);
     }
@@ -863,9 +869,19 @@ public class MenuManager : MonoBehaviour {
         configMenu.backButton.onClick.AddListener(ShowSettings);
     }
 
-#endregion
+    public void ShowTextRoute()
+    {
+        logoPushes++;
+        if (logoPushes > 11)
+        {
+            configMenu.textRoute.gameObject.SetActive(true);
+            configMenu.textRoute.text = $"{Application.persistentDataPath}/{sessionManager.activeKid.id}_evaluation_local_save.json";
+        }
+    }
 
-#region Button Functions
+    #endregion
+
+    #region Button Functions
 
     //this one is used to load the evaluation
     void LoadEvaluation()
@@ -1145,6 +1161,7 @@ public class MenuManager : MonoBehaviour {
     {
         PlayerPrefs.SetInt(Keys.Logged_In, 0);
         PlayerPrefs.SetString("sessions", "");
+        PlayerPrefs.SetInt(Keys.Logged_Session, 0);
         ShowLogIn();
         sessionManager.StartAgain();
         alreadyLogged = false;
@@ -1492,6 +1509,8 @@ struct ConfigMenu
     public Button spanishLanguageButton;
     public Button automaticButton;
     public Button backButton;
+    public Button logoButton;
+    public Text textRoute;
 
     public ConfigMenu(GameObject mainPanel)
     {
@@ -1502,6 +1521,8 @@ struct ConfigMenu
         spanishLanguageButton = languageButtonHandler.transform.GetChild(1).GetComponent<Button>();
         automaticButton = languageButtonHandler.transform.GetChild(languageButtonHandler.transform.childCount - 1).GetComponent<Button>();
         backButton = panel.transform.GetChild(2).GetComponent<Button>();
+        logoButton = panel.transform.GetChild(3).GetComponent<Button>();
+        textRoute = panel.transform.GetChild(4).GetComponent<Text>();
     }
 }
 

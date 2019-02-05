@@ -37,7 +37,31 @@ public class Table : MonoBehaviour {
 
     public void ChangeTableSprite(string direction)
     {
-        spriteRenderer.sprite = Resources.Load<Sprite>($"{FoodDicctionary.prefabSpriteDirection}Table/{direction}");
+        string tableShape;
+
+        if (gameObject.name.Contains("D") || gameObject.name.Contains("U"))
+        {
+            tableShape = "Center/";
+        }
+        else if (gameObject.name.Contains("C"))
+        {
+            tableShape = "Corner/";
+            if (gameObject.name.Contains("1") || gameObject.name.Contains("2"))
+            {
+                tableShape += "Back/";
+            }
+            else
+            {
+                tableShape += "Front/";
+            }
+        }
+        else
+        {
+            tableShape = "Lateral/";
+        }
+        string diren = $"{FoodDicctionary.prefabSpriteDirection}Table/{tableShape}{direction}";
+        Debug.Log($"dir is {diren}");
+        spriteRenderer.sprite = Resources.Load<Sprite>($"{FoodDicctionary.prefabSpriteDirection}Table/{tableShape}{direction}");
     }
 
     public void CreateALogo(string spriteName)
@@ -48,15 +72,8 @@ public class Table : MonoBehaviour {
         newLogo.transform.position = newLogo.transform.parent.position;
         newLogo.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
         SpriteRenderer spr = newLogo.AddComponent<SpriteRenderer>();
-        Sprite[] sprites = Resources.LoadAll<Sprite>($"{FoodDicctionary.prefabSpriteDirection}Ingredients/Ingredients");
-        var dictSprites = new Dictionary<string, Sprite>();
-
-        foreach (Sprite sprite in sprites)
-        {
-            dictSprites.Add(sprite.name, sprite);
-        }
-
-        spr.sprite = dictSprites[spriteName];
+        
+        spr.sprite = LoadSprite.GetSpriteFromSpriteSheet($"{FoodDicctionary.prefabSpriteDirection}Logos/Logos", spriteName);
         spr.sortingOrder = spriteRenderer.sortingOrder + 1;
     }
 

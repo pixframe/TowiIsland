@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using Boomlagoon.JSON;
 using System.Collections.Generic;
 using System;
+using System.IO;
 
 public class LevelSaver : MonoBehaviour {
 
@@ -291,13 +293,13 @@ public class LevelSaver : MonoBehaviour {
             { "device", SystemInfo.deviceType.ToString()},
             { "version", Application.version },
             //version 2
-            { "game_key", gameKey },
-            { "parent_id", sessionManager.activeUser.id },
-            { "kid_id", kidKey },
-            { "passed_Levels", passedLevels},
-            { "repetaed_levels", repeatedLevels},
-            { "played_levels", playedLevels },
-            { "sesession_time",Mathf.Round(gameTime * 100) / 100 },
+            //{ "game_key", gameKey },
+            //{ "parent_id", sessionManager.activeUser.id },
+            //{ "kid_id", kidKey },
+            //{ "passed_Levels", passedLevels},
+            //{ "repetaed_levels", repeatedLevels},
+            //{ "played_levels", playedLevels },
+            //{ "sesession_time",Mathf.Round(gameTime * 100) / 100 },
             { "session_number",  sessionNumber}
         };
         DateTime nowT = DateTime.Now;
@@ -309,8 +311,37 @@ public class LevelSaver : MonoBehaviour {
     {
         saving = true;
         jsonToSend.Add("jsonToDb", data);
-        StartCoroutine(PostScores());
+        StartCoroutine(CheckInternetConecction("www.towi.com.mx"));
     }
+
+    public void SaveDataOffline()
+    {
+        string dataToSave = jsonToSend.ToString();
+
+        string path = $"{Application.persistentDataPath}{sessionManager.activeKid.name}_{sessionManager.activeKid.dataToSave.ToString()}_data.txt";
+        sessionManager.activeKid.dataToSave++;
+
+        File.WriteAllText(path, dataToSave);
+    }
+
+    IEnumerator CheckInternetConecction(string resource)
+    {
+        WWWForm form = new WWWForm();
+        using (UnityWebRequest newRequest = UnityWebRequest.Get(resource))
+        {
+            yield return newRequest.SendWebRequest();
+
+            if (newRequest.isNetworkError)
+            {
+                SaveDataOffline();
+            }
+            else
+            {
+                StartCoroutine(PostScores());
+            }
+        }
+    }
+
     // remember to use StartCoroutine when calling this function!
     IEnumerator PostScores()
     {
@@ -323,77 +354,53 @@ public class LevelSaver : MonoBehaviour {
         WWWForm form = new WWWForm();
         //form.AddField("data", data.ToString());
         form.AddField("jsonToDb", data.ToString());
-        Debug.Log(form.data.ToString());
         Debug.Log(data.ToString());
 
-        // Post the URL to the site and create a download object to get the result.
-        WWW hs_post = new WWW(post_url, form);
-        yield return hs_post; // Wait until the download is done
-        Debug.Log(hs_post.text);
-        if (hs_post.error == null)
+        using (UnityWebRequest request = UnityWebRequest.Post(postURL, form))
         {
-            JSONObject response = JSONObject.Parse(hs_post.text);
-            Debug.Log(response["code"].Str);
-            if (response["code"].Str != "200")
+            yield return request.SendWebRequest();
+
+            if (request.isNetworkError || request.isHttpError)
             {
-                //SavePending();
+                Debug.Log($"the error has the next messsage {request.downloadHandler.text}");
             }
             else
             {
-                switch (game)
+                JSONObject response = JSONObject.Parse(request.downloadHandler.text);
+                Debug.Log(response["code"].Str);
+                if (response["code"].Str != "200")
                 {
-                    case "ArbolMusical":
-                        sessionManager.activeKid.dontSyncArbolMusical = 0;
-                        break;
-                    case "Rio":
-                        sessionManager.activeKid.dontSyncRio = 0;
-                        break;
-                    case "ArenaMagica":
-                        sessionManager.activeKid.dontSyncArenaMagica = 0;
-                        break;
-                    case "DondeQuedoLaBolita":
-                        sessionManager.activeKid.dontSyncDondeQuedoLaBolita = 0;
-                        break;
-                    case "JuegoDeSombras":
-                        sessionManager.activeKid.dontSyncSombras = 0;
-                        break;
-                    case "Tesoro":
-                        sessionManager.activeKid.dontSyncTesoro = 0;
-                        break;
+                    //SavePending();
+                    Debug.Log($"the error has the next messsage {request.downloadHandler.text}");
                 }
-                sessionManager.SaveSession();
-
-                //post_url = rankURL;
-
-                /*form = new WWWForm();
-                form.AddField("userKey", key);
-                form.AddField("cid", kidKey);
-                form.AddField("gameKey", game);
-                DateTime tempDate = DateTime.Today;
-                string dateString = String.Format("{0:0000}-{1:00}-{2:00}", (int)tempDate.Year, tempDate.Month, tempDate.Day);
-                Debug.Log(dateString);
-                form.AddField("date", dateString);
-                hs_post = new WWW(post_url, form);
-                yield return hs_post;
-
-                if (hs_post.error == null)
+                else
                 {
-                    response = JSONObject.Parse(hs_post.text);
-                    Debug.Log(response["code"].Str);
-                    if (response["code"].Str != "200")
+                    switch (game)
                     {
-
+                        case "ArbolMusical":
+                            sessionManager.activeKid.dontSyncArbolMusical = 0;
+                            break;
+                        case "Rio":
+                            sessionManager.activeKid.dontSyncRio = 0;
+                            break;
+                        case "ArenaMagica":
+                            sessionManager.activeKid.dontSyncArenaMagica = 0;
+                            break;
+                        case "DondeQuedoLaBolita":
+                            sessionManager.activeKid.dontSyncDondeQuedoLaBolita = 0;
+                            break;
+                        case "JuegoDeSombras":
+                            sessionManager.activeKid.dontSyncSombras = 0;
+                            break;
+                        case "Tesoro":
+                            sessionManager.activeKid.dontSyncTesoro = 0;
+                            break;
                     }
-                }*/
+                    sessionManager.SaveSession();
+                }
+                Debug.Log($"the response was {request.downloadHandler.text}");
+                //print("There was an error posting the high score: " + hs_post.error);
             }
-            Debug.Log(hs_post.text);
-            //print("There was an error posting the high score: " + hs_post.error);
         }
-        else
-        {
-            Debug.Log(hs_post.error);
-            //SavePending();
-        }
-        saving = false;
     }
 }

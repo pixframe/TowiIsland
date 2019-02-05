@@ -5,7 +5,6 @@ using UnityEngine;
 public class TableContainers : Table
 {
     public int kindOfContainer = 0;
-    Color colorToPut;
     string shape;
 
     // Use this for initialization
@@ -13,10 +12,13 @@ public class TableContainers : Table
     {
         Initializing();
 
-        colorToPut = FoodDicctionary.Containers.ColorOfContainer(kindOfContainer);
         shape = FoodDicctionary.Containers.ShapeOfConatiner(kindOfContainer);
 
-        CreateAUpperSprite(colorToPut, shape);
+        ChangeTheColor("FFFFFF");
+
+        CreateALogo(FoodDicctionary.Containers.ShapeOfConatiner(kindOfContainer));
+
+        ChangeTableSprite(FoodDicctionary.Containers.ContainerTable);
     }
 
     public override void Initializing()
@@ -34,7 +36,7 @@ public class TableContainers : Table
     override public void DoTheAction()
     {
         Tray newTray = Instantiate(Resources.Load<GameObject>("IcecreamMadness/Prefabs/Tray"), chef.trayPositioner.transform).GetComponent<Tray>();
-        newTray.SetAContainer(kindOfContainer, shape, colorToPut);
+        newTray.SetAContainer(kindOfContainer, shape);
         if (!chef.IsHoldingSomething())
         {
             chef.GrabATray(newTray.gameObject);

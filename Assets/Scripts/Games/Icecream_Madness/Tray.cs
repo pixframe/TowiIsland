@@ -23,14 +23,13 @@ public class Tray : MonoBehaviour {
         toppingSpriteRenderer = foodSpriteRender.transform.GetChild(0).GetComponent<SpriteRenderer>();
     }
 
-    public bool SetAContainer(int containerNumber, string spriteName, Color colorToPut)
+    public bool SetAContainer(int containerNumber, string spriteName)
     {
         Initialization();
         if (!hasARawIngridient)
         {
             typeOfObjects[0] = containerNumber;
-            containerSpriteRenderer.color = colorToPut;
-            containerSpriteRenderer.sprite = Resources.Load<Sprite>($"{FoodDicctionary.prefabSpriteDirection}{spriteName}");
+            containerSpriteRenderer.sprite = LoadSprite.GetSpriteFromSpriteSheet($"{FoodDicctionary.prefabSpriteDirection}{FoodDicctionary.containersDirection}", spriteName);
             hasAContainer = true;
             SetImage();
             return true;
@@ -69,14 +68,16 @@ public class Tray : MonoBehaviour {
         }
     }
 
-    public bool SetARawIngridient(int ingridientNumber , string spriteName, Color colorToPut)
+    public bool SetARawIngridient(int ingridientNumber , string spriteName)
     {
         Initialization();
         if (!hasARawIngridient && !hasACookIngridient && !hasABaseFood && !hasATopping && !hasAContainer)
         {
+            DisableAllRenderers();
+            foodSpriteRender.enabled = true;
+
             typeOfObjects[1] = ingridientNumber;
-            foodSpriteRender.color = colorToPut;
-            foodSpriteRender.sprite = Resources.Load<Sprite>($"{FoodDicctionary.prefabSpriteDirection}{spriteName}");
+            foodSpriteRender.sprite = LoadSprite.GetSpriteFromSpriteSheet($"{FoodDicctionary.prefabSpriteDirection}{FoodDicctionary.ingredientDirection}", spriteName);
             hasARawIngridient = true;
             SetImage();
             return true;
@@ -92,14 +93,13 @@ public class Tray : MonoBehaviour {
         return hasARawIngridient;
     }
 
-    public bool SetAToping(int toppingNumber , string spriteName, Color colorToPut)
+    public bool SetAToping(int toppingNumber , string spriteName)
     {
         Initialization();
         if (!hasARawIngridient || !hasATopping)
         {
             typeOfObjects[2] = toppingNumber;
-            toppingSpriteRenderer.color = colorToPut;
-            toppingSpriteRenderer.sprite = Resources.Load<Sprite>($"{FoodDicctionary.prefabSpriteDirection}{spriteName}");
+            toppingSpriteRenderer.sprite = LoadSprite.GetSpriteFromSpriteSheet($"{FoodDicctionary.prefabSpriteDirection}{FoodDicctionary.toppingDirection}", spriteName);
             hasATopping = true;
             SetImage();
             return true;
@@ -121,12 +121,13 @@ public class Tray : MonoBehaviour {
         return (int)typeOfObjects[1];
     }
 
-    public void TransformIngridientToTopping(string shape)
+    public void TransformIngridientToTopping()
     {
+        string shape = FoodDicctionary.RawIngridients.ShapeOfRawIngridient((int)typeOfObjects[1]);
         hasARawIngridient = false;
         typeOfObjects[2] = typeOfObjects[1];
         typeOfObjects[1] = null;
-        SetAToping((int)typeOfObjects[2], shape, foodSpriteRender.color);
+        SetAToping((int)typeOfObjects[2], shape);
     }
 
     void SetImage()
@@ -202,14 +203,14 @@ public class Tray : MonoBehaviour {
         Destroy(trayToMerge.gameObject);
         if (typeOfObjects[0] != null)
         {
-            SetAContainer((int)typeOfObjects[0], FoodDicctionary.Containers.ShapeOfConatiner((int)typeOfObjects[0]), FoodDicctionary.Containers.ColorOfContainer((int)typeOfObjects[0]));
+            SetAContainer((int)typeOfObjects[0], FoodDicctionary.Containers.ShapeOfConatiner((int)typeOfObjects[0]));
         }
         if (typeOfObjects[1] != null)
         {
         }
         if (typeOfObjects[2] != null)
         {
-            SetAToping((int)typeOfObjects[2], FoodDicctionary.Toppings.ShapeOfTopping((int)typeOfObjects[2]), FoodDicctionary.RawIngridients.ColorOfRawIngridient((int)typeOfObjects[2]));
+            SetAToping((int)typeOfObjects[2], FoodDicctionary.Toppings.ShapeOfTopping((int)typeOfObjects[2]));
         }
         SetImage();
     }
@@ -224,5 +225,12 @@ public class Tray : MonoBehaviour {
     public int?[] GetMadeComposition()
     {
         return typeOfObjects;
+    }
+
+    void DisableAllRenderers()
+    {
+        containerSpriteRenderer.enabled = false;
+        foodSpriteRender.enabled = false;
+        toppingSpriteRenderer.enabled = false;
     }
 }
