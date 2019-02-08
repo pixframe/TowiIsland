@@ -222,7 +222,6 @@ public class LavaGameManager : MonoBehaviour {
                 {
                     //Its in the phase of eraser vapors because the variable phase tells wich its the next phase and not the current one
                     latency += Time.deltaTime;
-                    Debug.Log("latencie is " + latency);
                 }
                 if (rotate)
                 {
@@ -346,7 +345,7 @@ public class LavaGameManager : MonoBehaviour {
             levelSaver.AddLevelData("numofoptions", 3);
             levelSaver.AddLevelData("options", "options that were show");
             levelSaver.AddLevelData("correct", goodAnswer);
-            levelSaver.AddLevelData("time", time);
+            levelSaver.AddLevelData("time", (int)time);
             levelSaver.AddLevelData("latencies", latencies);
             //Version 2 
             sessionManager.activeKid.lavaSessions++;    
@@ -371,11 +370,11 @@ public class LavaGameManager : MonoBehaviour {
             levelSaver.AddLevelData("correct_answers", goodAnswer);
             levelSaver.AddLevelData("bad_answers", badAnswer);
             levelSaver.AddLevelData("miss_answers", missedAnswer);
-            levelSaver.AddLevelData("latencies", latencies);
-            levelSaver.AddLevelData("played_levels", levelsPlayed);
+            levelSaver.AddLevelDataAsString("latencies", latencies);
+            levelSaver.AddLevelDataAsString("played_levels", levelsPlayed);
             levelSaver.AddLevelData("played_difficulty", difficultiesPlayed);
+            levelSaver.AddLevelData("session_time", (int)time);
 
-            levelSaver.SetLevel();
             levelSaver.CreateSaveBlock("JuegoDeSombras", time, passLevels, repeatedLevels, passLevels+repeatedLevels, sessionManager.activeKid.lavaSessions);
             levelSaver.AddLevelsToBlock();
             levelSaver.PostProgress();
@@ -857,8 +856,6 @@ public class LavaGameManager : MonoBehaviour {
         }
 
         level = levelInput - (difficulty * baseLevelDifficulty);
-
-        Debug.Log("Level is " + level + " Difficulty is " + difficulty);
     }
 
     /// <summary>

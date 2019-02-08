@@ -225,15 +225,15 @@ public class MonkeyHidingManager : MonoBehaviour {
             sessionManager.activeKid.playedMonkey = 1;
             sessionManager.activeKid.needSync = true;
 
-            levelSaver.AddLevelData("level", difficulty);
-            levelSaver.AddLevelData("sublevel", level);
-            levelSaver.AddLevelData("time", time);
-            levelSaver.AddLevelData("numofmonkeys", 5);
-            levelSaver.AddLevelData("numofobjects", 2);
-            levelSaver.AddLevelData("instructions", "find");
-            levelSaver.AddLevelData("numofmovements", 14);
-            levelSaver.AddLevelData("timeofmovements", 10);
-            levelSaver.AddLevelData("correct", goodAnswer);
+            //levelSaver.AddLevelData("level", difficulty);
+            //levelSaver.AddLevelData("sublevel", level);
+            //levelSaver.AddLevelData("time", time);
+            //levelSaver.AddLevelData("numofmonkeys", 5);
+            //levelSaver.AddLevelData("numofobjects", 2);
+            //levelSaver.AddLevelData("instructions", "find");
+            //levelSaver.AddLevelData("numofmovements", 14);
+            //levelSaver.AddLevelData("timeofmovements", 10);
+            //levelSaver.AddLevelData("correct", goodAnswer);
 
             //Verison 2
             sessionManager.activeKid.monkeySessions++;
@@ -250,11 +250,12 @@ public class MonkeyHidingManager : MonoBehaviour {
             levelSaver.AddLevelData("errors_monkeys", badAnswer);
             levelSaver.AddLevelData("session_correct_percentage", goodAnswer * 20);
             levelSaver.AddLevelData("session_errors_percentage", badAnswer * 20);
-            levelSaver.AddLevelData("latency", latencies);
-            levelSaver.AddLevelData("played_levels", playedLevels);
-            levelSaver.AddLevelData("played_difficulty", playedDifficulty);
+            levelSaver.AddLevelDataAsString("latency", latencies);
+            levelSaver.AddLevelDataAsString("played_levels", playedLevels);
+            levelSaver.AddLevelDataAsString("played_difficulty", playedDifficulty);
+            levelSaver.AddLevelData("session_number", difficulty);
+            levelSaver.AddLevelData("session_time", time);
 
-            levelSaver.SetLevel();
             levelSaver.CreateSaveBlock("DondeQuedoLaBolita", time, passLevels, repeatedLevels, passLevels - repeatedLevels, sessionManager.activeKid.monkeySessions);
             levelSaver.AddLevelsToBlock();
             levelSaver.PostProgress();

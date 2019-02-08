@@ -21,6 +21,7 @@ public class GameCenterManager : MonoBehaviour {
     public GameObject fowardPanel;
     public GameObject centerPanel;
     public GameObject warningPanel;
+    public GameObject loadingCanvas;
 
     GamePanel previosPanel;
     GamePanel nextPanel;
@@ -67,28 +68,7 @@ public class GameCenterManager : MonoBehaviour {
     {
         StartCoroutine(LoadLoader());
         sessionManager = FindObjectOfType<SessionManager>();
-        if (sessionManager.activeKid.needSync)
-        {
-            CheckInternetConnection("www.towi.com.mx");
-        }
-        if (FindObjectOfType<DemoKey>())
-        {
-            key = FindObjectOfType<DemoKey>();
-            demoPanel.SetActive(true);
-            difficultySlider.value = key.GetDifficulty();
-            difficultySlider.onValueChanged.AddListener(delegate { key.SetDifficulty((int)difficultySlider.value); });
-            flisActivation.isOn = key.IsFLISOn();
-            flisActivation.onValueChanged.AddListener(delegate { key.ChangeFLIS(); });
-            ageButton.onClick.AddListener(ChangeAge);
-            ageValue.placeholder.GetComponent<Text>().text = "Age is " + sessionManager.activeKid.age.ToString("00");
-        }
-        else
-        {
-            demoPanel.SetActive(false);
-        }
-        ChildGames();
         audioPlayer = FindObjectOfType<AudioPlayerForMenus>();
-
         textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Menus/GameSelectionIsland");
         stringsToShow = TextReader.TextsToShow(textAsset);
         previosPanel = new GamePanel(backPanel);
@@ -106,16 +86,81 @@ public class GameCenterManager : MonoBehaviour {
         t2.eventID = EventTriggerType.EndDrag;
         t2.callback.AddListener((data) => { SecondTouch((PointerEventData)data); });
         eventTrigger.triggers.Add(t2);
+
         goBackButton.onClick.AddListener(GoBackScene);
         warningPanel.GetComponentInChildren<Button>().onClick.AddListener(GoBackScene);
-
-        ChangeMenus();
 
         backPanel.gameObject.GetComponent<Button>().onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Left));
         fowardPanel.gameObject.GetComponent<Button>().onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Right));
 
         currentPanel.playButton.GetComponentInChildren<Text>().text = stringsToShow[6];
         warningPanel.GetComponentInChildren<Text>().text = stringsToShow[7];
+
+        ChildGames();
+        ShowLoaderCanvas();
+
+        if (FindObjectOfType<DemoKey>())
+        {
+            key = FindObjectOfType<DemoKey>();
+            demoPanel.SetActive(true);
+            difficultySlider.value = key.GetDifficulty();
+            difficultySlider.onValueChanged.AddListener(delegate { key.SetDifficulty((int)difficultySlider.value); });
+            flisActivation.isOn = key.IsFLISOn();
+            flisActivation.onValueChanged.AddListener(delegate { key.ChangeFLIS(); });
+            ageButton.onClick.AddListener(ChangeAge);
+            ageValue.placeholder.GetComponent<Text>().text = "Age is " + sessionManager.activeKid.age.ToString("00");
+            ChangeMenus();
+        }
+        else
+        {
+            demoPanel.SetActive(false);
+            if (sessionManager.activeKid.needSync)
+            {
+                Debug.Log("This user need a sync ");
+                StartCoroutine(CheckInternetConnection(Keys.Api_Web_Key + Keys.Try_Connection_Key));
+            }
+            else
+            {
+                ChangeMenus();
+            }
+        }
+
+    }
+
+    IEnumerator CheckInternetConnection(string resource)
+    {
+        WWWForm newForm = new WWWForm();
+        using (UnityWebRequest newRequest = UnityWebRequest.Get(resource))
+        {
+            Debug.Log("Checking internet connection");
+            yield return newRequest.SendWebRequest();
+
+            if (newRequest.isNetworkError)
+            {
+                NotAvailableUpdate();
+            }
+            else
+            {
+                InternetAvailableUpdate();
+            }
+        }
+    }
+
+    void InternetAvailableUpdate()
+    {
+        Debug.Log("Theres internet there");
+        sessionManager.UpdateProfile(activeMissions);
+        int funelGame = PlayerPrefs.GetInt(Keys.Funnel_Games, 1);
+        if (funelGame < 7)
+        {
+            UnityEngine.Analytics.Analytics.CustomEvent($"game{funelGame}");
+            PlayerPrefs.SetInt(Keys.Funnel_Games, funelGame + 1);
+        }
+    }
+
+    void NotAvailableUpdate()
+    {
+        Debug.Log("We have no internet now man");
     }
 
     void ChangeAge()
@@ -160,50 +205,51 @@ public class GameCenterManager : MonoBehaviour {
             else
             {
                 stations.Clear();
+                List<int> removeMissionsIndex = new List<int>();
                 for (int i = 0; i < sessionManager.activeKid.activeMissions.Count; i++)
                 {
                     switch (sessionManager.activeKid.activeMissions[i])
                     {
-                        case "ArbolMusical":
+                        case Keys.Bird_Game_Name:
                             if (sessionManager.activeKid.playedBird == 0)
                             {
                                 stations.Add(0);
-                                activeMissions.Add("ArbolMusical");
+                                activeMissions.Add(Keys.Bird_Game_Name);
                             }
                             break;
-                        case "ArenaMagica":
+                        case Keys.Sand_Game_Name:
                             if (sessionManager.activeKid.playedSand == 0)
                             {
                                 stations.Add(1);
-                                activeMissions.Add("ArenaMagica");
+                                activeMissions.Add(Keys.Sand_Game_Name);
                             }
                             break;
-                        case "Tesoro":
+                        case Keys.Treasure_Game_Name:
                             if (sessionManager.activeKid.playedTreasure == 0)
                             {
                                 stations.Add(2);
-                                activeMissions.Add("Tesoro");
+                                activeMissions.Add(Keys.Treasure_Game_Name);
                             }
                             break;
-                        case "DondeQuedoLaBolita":
+                        case Keys.Monkey_Game_Name:
                             if (sessionManager.activeKid.playedMonkey == 0)
                             {
                                 stations.Add(3);
-                                activeMissions.Add("DondeQuedoLaBolita");
+                                activeMissions.Add(Keys.Monkey_Game_Name);
                             }
                             break;
-                        case "Rio":
+                        case Keys.River_Game_Name:
                             if (sessionManager.activeKid.playedRiver == 0)
                             {
                                 stations.Add(4);
-                                activeMissions.Add("Rio");
+                                activeMissions.Add(Keys.River_Game_Name);
                             }
                             break;
-                        case "JuegoDeSombras":
+                        case Keys.Lava_Game_Name:
                             if (sessionManager.activeKid.playedLava == 0)
                             {
                                 stations.Add(5);
-                                activeMissions.Add("JuegoDeSombras");
+                                activeMissions.Add(Keys.Lava_Game_Name);
                             }
                             break;
                         default:
@@ -215,6 +261,13 @@ public class GameCenterManager : MonoBehaviour {
                             break;
                     }
                 }
+
+                string activeMissionToDebug = "";
+                foreach (string s in activeMissions)
+                {
+                    activeMissionToDebug += $"{s}, ";
+                }
+                Debug.Log($"The active mission are {activeMissionToDebug}");
             }
         }
     }
@@ -248,8 +301,13 @@ public class GameCenterManager : MonoBehaviour {
 
 	}
 
-    void ChangeMenus()
+    public void ChangeMenus()
     {
+        goBackButton.gameObject.SetActive(true);
+        loadingCanvas.SetActive(false);
+        backPanel.SetActive(true);
+        centerPanel.SetActive(true);
+        fowardPanel.SetActive(true);
         if (stations.Count < 1)
         {
             if (sessionManager.activeKid.anyFirstTime)
@@ -464,39 +522,14 @@ public class GameCenterManager : MonoBehaviour {
         yield return asyncLoad;
     }
 
-    IEnumerator CheckInternetConnection(string resource)
+    void ShowLoaderCanvas()
     {
-        WWWForm newForm = new WWWForm();
-        using (UnityWebRequest newRequest = UnityWebRequest.Get(resource))
-        {
-            yield return newRequest.SendWebRequest();
-
-            if (newRequest.isNetworkError)
-            {
-                InternetAvailableUpdate();
-            }
-            else
-            {
-                InternetAvailableUpdate();
-            }
-        }
-    }
-
-    void InternetAvailableUpdate()
-    {
-        Debug.Log("Theres internet there");
-        sessionManager.UpdateProfile(activeMissions);
-        int funelGame = PlayerPrefs.GetInt(Keys.Funnel_Games, 1);
-        if (funelGame < 7)
-        {
-            UnityEngine.Analytics.Analytics.CustomEvent($"game{funelGame}");
-            PlayerPrefs.SetInt(Keys.Funnel_Games, funelGame + 1);
-        }
-    }
-
-    void NotAvailableUpdate()
-    {
-        
+        backPanel.SetActive(false);
+        centerPanel.SetActive(false);
+        fowardPanel.SetActive(false);
+        warningPanel.SetActive(false);
+        goBackButton.gameObject.SetActive(false);
+        loadingCanvas.SetActive(true);
     }
 }
 

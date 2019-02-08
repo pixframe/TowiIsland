@@ -10,6 +10,7 @@ public class PauseTheGame : MonoBehaviour {
     GameObject pausePanel;
     GameObject miniPausePanel;
     GameObject dontTouchPanel;
+    GameObject loadingPanel;
     Text pauseText;
     Button goBackButton;
     Button goMenuButton;
@@ -22,6 +23,8 @@ public class PauseTheGame : MonoBehaviour {
 
     [System.NonSerialized]
     public bool needTutorial;
+
+    bool isDataSend = false;
 
     TextAsset textAsset;
     string[] stringsToShow;
@@ -47,6 +50,7 @@ public class PauseTheGame : MonoBehaviour {
         howToPlayButton = transform.GetChild(2).GetComponent<Button>();
         playButton = transform.GetChild(3).GetComponent<Button>();
         kiwiEarningPanel = new KiwiEarningPanel(transform.GetChild(4).gameObject);
+        loadingPanel = transform.GetChild(5).gameObject;
 
         pauseText.text = stringsToShow[0];
         goBackButton.GetComponentInChildren<Text>().text = stringsToShow[1];
@@ -91,36 +95,37 @@ public class PauseTheGame : MonoBehaviour {
             Time.timeScale = 1;
         }
 
-        ReturnHome();
+        SendInmiediatlyToIsland();
+    }
+
+    void HideAllPanels()
+    {
+        pauseButton.gameObject.SetActive(false);
+        pausePanel.SetActive(false);
+        dontTouchPanel.SetActive(false);
+        howToPlayButton.gameObject.SetActive(false);
+        playButton.gameObject.SetActive(false);
+        kiwiEarningPanel.mainPanel.SetActive(false);
+        loadingPanel.SetActive(false);
     }
 
     public void WantTutorial()
     {
-        pauseButton.gameObject.SetActive(false);
-        pausePanel.SetActive(false);
-        dontTouchPanel.SetActive(false);
+        HideAllPanels();
+        pauseButton.gameObject.SetActive(true);
         howToPlayButton.gameObject.SetActive(true);
         playButton.gameObject.SetActive(true);
-        kiwiEarningPanel.mainPanel.SetActive(false);
     }
 
     public void HideTutorialButtons()
     {
+        HideAllPanels();
         pauseButton.gameObject.SetActive(true);
-        pausePanel.SetActive(false);
-        dontTouchPanel.SetActive(false);
-        howToPlayButton.gameObject.SetActive(false);
-        playButton.gameObject.SetActive(false);
-        kiwiEarningPanel.mainPanel.SetActive(false);
     }
 
     public void ShowKiwiEarnings(int kiwisEarn)
     {
-        pauseButton.gameObject.SetActive(false);
-        pausePanel.SetActive(false);
-        dontTouchPanel.SetActive(false);
-        howToPlayButton.gameObject.SetActive(false);
-        playButton.gameObject.SetActive(false);
+        HideAllPanels();
         kiwiEarningPanel.mainPanel.SetActive(true);
 
         if (kiwisEarn < 1)
@@ -135,7 +140,31 @@ public class PauseTheGame : MonoBehaviour {
         kiwiEarningPanel.continueButton.onClick.AddListener(ReturnHome);
     }
 
+    void ShowLoadingScreen()
+    {
+        HideAllPanels();
+        loadingPanel.SetActive(true);
+    }
+
+    public void DataIsSend()
+    {
+        isDataSend = true;
+    }
+
     void ReturnHome()
+    {
+        ShowLoadingScreen();
+        StartCoroutine(GoToTheGameCenterWhenDataIsSend());
+    }
+
+    IEnumerator GoToTheGameCenterWhenDataIsSend()
+    {
+        yield return new WaitUntil(() => isDataSend == true);
+
+        SendInmiediatlyToIsland();
+    }
+
+    void SendInmiediatlyToIsland()
     {
         PrefsKeys.SetNextScene("GameCenter");
         SceneManager.LoadScene("Loader_Scene");

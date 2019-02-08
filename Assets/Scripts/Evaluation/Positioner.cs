@@ -5,6 +5,7 @@ using UnityEngine;
 public class Positioner : MonoBehaviour {
 
     bool ocuppied;
+    bool isAvailableInThisTry;
     string objectName;
     BoxCollider coli;
     Vector3 originalSize;
@@ -23,12 +24,19 @@ public class Positioner : MonoBehaviour {
 
     //this will check if the collider is free to be ocuppied by an object
     public bool CanFillTheCollider(string data) {
-        if (!IsOcuppied())
+        if (isAvailableInThisTry)
         {
-            if (data == objectName)
+            if (!IsOcuppied())
             {
-                ocuppied = true;
-                return true;
+                if (data == objectName)
+                {
+                    ocuppied = true;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
@@ -39,7 +47,6 @@ public class Positioner : MonoBehaviour {
         {
             return false;
         }
-
     }
 
     //this will tell if the collider its full with an object
@@ -107,5 +114,10 @@ public class Positioner : MonoBehaviour {
     //this will get the name of the collider
     public string GetTheName() {
         return objectName;
+    }
+
+    public void SetAvailable()
+    {
+        isAvailableInThisTry = true;
     }
 }

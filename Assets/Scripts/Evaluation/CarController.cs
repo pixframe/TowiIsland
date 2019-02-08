@@ -120,6 +120,8 @@ public class CarController : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        transform.localPosition = new Vector3(Mathf.Clamp(transform.localPosition.x, -1.5f, 11f), Mathf.Clamp(transform.localPosition.y, -0.4f, 9.2f), transform.localPosition.z);
+
         if (SystemInfo.deviceType == DeviceType.Handheld)
         {
             if (Input.GetMouseButton(0))

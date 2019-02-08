@@ -286,21 +286,21 @@ public class MagicRiverManager : MonoBehaviour {
             sessionManager.activeKid.needSync = true;
 
 
-            levelSaver.AddLevelData("level", difficulty);
-            levelSaver.AddLevelData("sublevel", level);
-            levelSaver.AddLevelData("time", time);
-            levelSaver.AddLevelData("tutorial", 1);
-            levelSaver.AddLevelData("reverse", 2);
-            levelSaver.AddLevelData("speed", 1);
-            levelSaver.AddLevelData("correctobjects", totalCorrects);
-            levelSaver.AddLevelData("incorrectobjects", totalIncorrects);
-            levelSaver.AddLevelData("levelobjects", "15");
-            levelSaver.AddLevelData("availableobjects", "15");
-            levelSaver.AddLevelData("neutralobjects", "find");
-            levelSaver.AddLevelData("forceforestobjects", "14");
-            levelSaver.AddLevelData("forcebeachforest", "10");
-            levelSaver.AddLevelData("specialreverseobjects", "totalReverse");
-            levelSaver.AddLevelData("specialleaveobjects", "totalSpecials");
+            //levelSaver.AddLevelData("level", difficulty);
+            //levelSaver.AddLevelData("sublevel", level);
+            //levelSaver.AddLevelData("time", time);
+            //levelSaver.AddLevelData("tutorial", 1);
+            //levelSaver.AddLevelData("reverse", 2);
+            //levelSaver.AddLevelData("speed", 1);
+            //levelSaver.AddLevelData("correctobjects", totalCorrects);
+            //levelSaver.AddLevelData("incorrectobjects", totalIncorrects);
+            //levelSaver.AddLevelData("levelobjects", "15");
+            //levelSaver.AddLevelData("availableobjects", "15");
+            //levelSaver.AddLevelData("neutralobjects", "find");
+            //levelSaver.AddLevelData("forceforestobjects", "14");
+            //levelSaver.AddLevelData("forcebeachforest", "10");
+            //levelSaver.AddLevelData("specialreverseobjects", "totalReverse");
+            //levelSaver.AddLevelData("specialleaveobjects", "totalSpecials");
 
             //Version 2
             sessionManager.activeKid.riverSessions++;
@@ -314,13 +314,12 @@ public class MagicRiverManager : MonoBehaviour {
             levelSaver.AddLevelData("current_difficulty", difficulty);
             levelSaver.AddLevelData("session_correct_total", (totalCorrects * 100) / (numberOfObjectToDrop * totalNumberOfAssays));
             levelSaver.AddLevelData("session_errors_total", (totalIncorrects* 100) / (numberOfObjectToDrop * totalNumberOfAssays));
-            levelSaver.AddLevelData("played_levels", playedLevels);
-            levelSaver.AddLevelData("played_difficulty", playedDifficulty);
+            levelSaver.AddLevelDataAsString("played_levels", playedLevels);
+            levelSaver.AddLevelDataAsString("played_difficulty", playedDifficulty);
             levelSaver.AddLevelData("target_total", totalTargets);
             levelSaver.AddLevelData("target_correct", totalCorrectTargets);
             levelSaver.AddLevelData("target_errors", totalIncorrectTargets);
 
-            levelSaver.SetLevel();
             levelSaver.CreateSaveBlock("Rio", time, passLevels, repeatedLevels, 5, sessionManager.activeKid.riverSessions);
             levelSaver.AddLevelsToBlock();
             levelSaver.PostProgress();

@@ -28,8 +28,6 @@ public class MiniIslandController : MonoBehaviour {
 
         }
 
-        Debug.Log(buyedObjects.Count);
-
         for (int i = 0; i < transform.childCount - 1; i++)
         {
             transform.GetChild(i + 1).gameObject.SetActive(buyedObjects[i]);

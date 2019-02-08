@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -276,18 +278,18 @@ public class BirdsSingingManager : MonoBehaviour {
 
             //levelSaver.AddLevelData("sessioncorrect_percentage")
             //levelSaver.AddLevelData("sessioncorrect_percentage")
-            levelSaver.AddLevelData("birds", 5);
-            levelSaver.AddLevelData("nests", 5);
-            levelSaver.AddLevelData("level", difficulty);
-            levelSaver.AddLevelData("sublevel", level);
-            levelSaver.AddLevelData("tutorial", tutorialLook);
-            levelSaver.AddLevelData("sound", "null");
-            levelSaver.AddLevelData("birdsound", "null");
-            levelSaver.AddLevelData("time", time);
-            levelSaver.AddLevelData("birdlistenedpre", 0);
-            levelSaver.AddLevelData("birdlistened", 0);
-            levelSaver.AddLevelData("errors", 0);
-            levelSaver.AddLevelData("correct", 0);
+            //levelSaver.AddLevelData("birds", 5);
+            //levelSaver.AddLevelData("nests", 5);
+            //levelSaver.AddLevelData("level", difficulty);
+            //levelSaver.AddLevelData("sublevel", level);
+            //levelSaver.AddLevelData("tutorial", tutorialLook);
+            //levelSaver.AddLevelData("sound", "null");
+            //levelSaver.AddLevelData("birdsound", "null");
+            //levelSaver.AddLevelData("time", time);
+            //levelSaver.AddLevelData("birdlistenedpre", 0);
+            //levelSaver.AddLevelData("birdlistened", 0);
+            //levelSaver.AddLevelData("errors", 0);
+            //levelSaver.AddLevelData("correct", 0);
 
             //Version 2
             sessionManager.activeKid.birdsSessions++;
@@ -297,11 +299,13 @@ public class BirdsSingingManager : MonoBehaviour {
                 levelSaver.AddLevelData("initial_level", level);
                 levelSaver.AddLevelData("initial_difficulty", difficulty);
             }
-            levelSaver.AddLevelData("final_Level", level);
-            levelSaver.AddLevelData("final_Difficulty", difficulty);
+            levelSaver.AddLevelData("current_level", level);
+            levelSaver.AddLevelData("current_difficulty", difficulty);
             var goodBefore = new List<int>();
             var badBefore = new List<int>();
             int interactions = 0;
+
+
             for (int i = 0; i < goodAnswers.Count; i++)
             {
                 goodBefore.Add(goodAnswers[i] - goodAnswersAfterClue[i]);
@@ -311,18 +315,19 @@ public class BirdsSingingManager : MonoBehaviour {
             }
             levelSaver.AddLevelData("session_correct_percentage", (goods * 100)/interactions);
             levelSaver.AddLevelData("session_errors_percentage",(errors * 100)/interactions);
-            levelSaver.AddLevelData("correct_before_clue", goodBefore);
-            levelSaver.AddLevelData("errors_before_clue", badBefore);
-            levelSaver.AddLevelData("correct_after_clue", goodAnswersAfterClue);
-            levelSaver.AddLevelData("errors_after_clue", badAnswersAfterClue);
-            levelSaver.AddLevelData("total_clues", cluesToSend);
-            levelSaver.AddLevelData("total_correct", goodAnswers);
-            levelSaver.AddLevelData("total_correct", goodAnswers);
-            levelSaver.AddLevelData("played_levels", levelsPLayed);
-            levelSaver.AddLevelData("played_difficulty", difficultyPlayed);
-            levelSaver.AddLevelData("essay_time", assaysTimes);
+            levelSaver.AddLevelDataAsString("correct_before_clue", goodBefore);
+            levelSaver.AddLevelDataAsString("errors_before_clue", badBefore);
+            levelSaver.AddLevelDataAsString("correct_after_clue", goodAnswersAfterClue);
+            levelSaver.AddLevelDataAsString("errors_after_clue", badAnswersAfterClue);
+            levelSaver.AddLevelDataAsString("dad_bird_listened_pre", birdsBeforePair);
+            levelSaver.AddLevelDataAsString("dad_bird_listened_post", birdsAfterPair);
+            levelSaver.AddLevelData("total_clues", cluesToSend.Sum());
+            levelSaver.AddLevelData("total_correct", goodAnswers.Sum());
+            levelSaver.AddLevelData("total_errors", badAnswers.Sum());
+            levelSaver.AddLevelDataAsString("played_levels", levelsPLayed);
+            levelSaver.AddLevelDataAsString("played_difficulty", difficultyPlayed);
+            levelSaver.AddLevelDataAsString("essay_time", assaysTimes);
 
-            levelSaver.SetLevel();
             levelSaver.CreateSaveBlock("ArbolMusical", time, passLevels, repeatedLevels, 5, sessionManager.activeKid.birdsSessions);
             levelSaver.AddLevelsToBlock();
             levelSaver.PostProgress();

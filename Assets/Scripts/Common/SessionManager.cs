@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using Boomlagoon.JSON;
 using UnityEngine.Analytics;
+using UnityEngine.Networking;
 
 public class SessionManager : MonoBehaviour
 {
@@ -15,7 +16,7 @@ public class SessionManager : MonoBehaviour
     public Kid activeKid;
     public bool main = false;
     string syncProfileURL = Keys.Api_Web_Key + "api/profile/sync/";
-    string syncLevelsURL = Keys.Api_Web_Key + "api/levels/children/";
+    string syncLevelsURL = Keys.Api_Web_Key + "api/v2/levels/children/";
     string updateProfileURL = Keys.Api_Web_Key + "api/profile/update/";
     public List<Kid> temporalKids;
     MenuManager menuManager;
@@ -510,108 +511,207 @@ public class SessionManager : MonoBehaviour
         WWWForm form = new WWWForm();
         form.AddField("userKey", key);
 
-        WWW hs_post = new WWW(post_url, form);
-        yield return hs_post;
-		Debug.Log(hs_post.text);
-        if (hs_post.error == null)
+        using (UnityWebRequest request = UnityWebRequest.Post(syncProfileURL, form))
         {
-            JSONArray kids = JSONArray.Parse(hs_post.text);
-            activeUser.kids.Clear();
-            bool setType = false;
-            bool needStoreSync = false;
-            for (int i = 0; i < kids.Length; i++)
+            yield return request.SendWebRequest();
+
+            if (request.isNetworkError)
             {
-                JSONObject kidObj = kids[i].Obj;
-                JSONArray activeMissions = kidObj.GetArray("activeMissions");
-                JSONArray buyedItems = kidObj.GetArray("islandShoppingList");
+                Debug.Log(request.downloadHandler.text);
+            }
+            else
+            {
+                Debug.Log($"this is the sync response: \n{request.downloadHandler.text}");
+                JSONArray kids = JSONArray.Parse(request.downloadHandler.text);
+                activeUser.kids.Clear();
+                bool setType = false;
+                bool needStoreSync = false;
+                for (int i = 0; i < kids.Length; i++)
+                {
+                    JSONObject kidObj = kids[i].Obj;
+                    JSONArray activeMissions = kidObj.GetArray("activeMissions");
+                    JSONArray buyedItems = kidObj.GetArray("islandShoppingList");
 
-                int cid = (int)kidObj.GetNumber("cid");
-                string kidName = kidObj.GetString("name");
+                    int cid = (int)kidObj.GetNumber("cid");
+                    string kidName = kidObj.GetString("name");
 
-                AddKid(cid, kidName, activeUser.userkey, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial"));
+                    AddKid(cid, kidName, activeUser.userkey, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial"));
 
-                int index = activeUser.kids.Count - 1;
-                activeUser.kids[index].kiwis = (int)kidObj.GetNumber("kiwis");
-                if (kidObj.GetString("avatar") != null)
-                {
-                    activeUser.kids[index].avatar = kidObj.GetString("avatar").ToLower();
-                }
-                else
-                {
-                    activeUser.kids[index].avatar = "koala";
-                }
-                activeUser.kids[index].avatarClothes = kidObj.GetString("avatarClothes");
-                activeUser.kids[index].ownedItems = kidObj.GetString("ownedItems");
-                activeUser.kids[index].age = (int)kidObj.GetNumber("age");
-                activeUser.kids[index].activeMissions.Clear();
-
-                for (int o = 0; o < activeMissions.Length; o++)
-                {
-                    activeUser.kids[index].activeMissions.Add(activeMissions[o].Str);
-                }
-
-                activeUser.kids[index].activeDay = (int)kidObj.GetNumber("activeDay");
-                activeUser.kids[index].ageSet = true;
-                activeUser.kids[index].birdsFirst = kidObj.GetBoolean("arbolFirstTime");
-                activeUser.kids[index].lavaFirst = kidObj.GetBoolean("sombrasFirstTime");
-                activeUser.kids[index].monkeyFirst = kidObj.GetBoolean("bolitaFirstTime");
-                activeUser.kids[index].riverFirst = kidObj.GetBoolean("rioFirstTime");
-                activeUser.kids[index].sandFirst = kidObj.GetBoolean("arenaFirstTime");
-                activeUser.kids[index].treasureFirst = kidObj.GetBoolean("tesoroFirstTime");
-                activeUser.kids[index].testAvailable = kidObj.GetBoolean("testAvailable");
-                activeUser.kids[index].sandLevelSet = kidObj.GetBoolean("arenaLevelSet");
-
-                for (int o = 0; o < buyedItems.Length; o++)
-                {
-                    activeUser.kids[index].buyedIslandObjects.Add((int)buyedItems[o].Number);
-                }
-
-                if (activeUser.kids[index].birdsFirst || activeUser.kids[index].lavaFirst || activeUser.kids[index].monkeyFirst || activeUser.kids[index].riverFirst || activeUser.kids[index].sandFirst || activeUser.kids[index].treasureFirst)
-                {
-                    activeUser.kids[index].anyFirstTime = true;
-                }
-                else
-                {
-                    activeUser.kids[index].anyFirstTime = false;
-                }
-                string tyep = kidObj.GetString("suscriptionType");
-                if (tyep == "monthly" || tyep == "quarterly")
-                {
-                    setType = true;
-                }
-                else if (tyep == "monthly_inApp" || tyep == "quarterly_inApp")
-                {
-                    activeUser.kids[index].isIAPSubscribed = true;
-                }
-                if (activeKid != null)
-                {
-                    if (activeKid.id == cid)
+                    int index = activeUser.kids.Count - 1;
+                    activeUser.kids[index].kiwis = (int)kidObj.GetNumber("kiwis");
+                    if (kidObj.GetString("avatar") != null)
                     {
-                        SyncChildLevels();
+                        activeUser.kids[index].avatar = kidObj.GetString("avatar").ToLower();
+                    }
+                    else
+                    {
+                        activeUser.kids[index].avatar = "koala";
+                    }
+                    activeUser.kids[index].avatarClothes = kidObj.GetString("avatarClothes");
+                    activeUser.kids[index].ownedItems = kidObj.GetString("ownedItems");
+                    activeUser.kids[index].age = (int)kidObj.GetNumber("age");
+                    activeUser.kids[index].activeMissions.Clear();
+
+                    for (int o = 0; o < activeMissions.Length; o++)
+                    {
+                        activeUser.kids[index].activeMissions.Add(activeMissions[o].Str);
+                    }
+
+                    activeUser.kids[index].activeDay = (int)kidObj.GetNumber("activeDay");
+                    activeUser.kids[index].ageSet = true;
+                    activeUser.kids[index].birdsFirst = kidObj.GetBoolean("arbolFirstTime");
+                    activeUser.kids[index].lavaFirst = kidObj.GetBoolean("sombrasFirstTime");
+                    activeUser.kids[index].monkeyFirst = kidObj.GetBoolean("bolitaFirstTime");
+                    activeUser.kids[index].riverFirst = kidObj.GetBoolean("rioFirstTime");
+                    activeUser.kids[index].sandFirst = kidObj.GetBoolean("arenaFirstTime");
+                    activeUser.kids[index].treasureFirst = kidObj.GetBoolean("tesoroFirstTime");
+                    activeUser.kids[index].testAvailable = kidObj.GetBoolean("testAvailable");
+                    activeUser.kids[index].sandLevelSet = kidObj.GetBoolean("arenaLevelSet");
+
+                    for (int o = 0; o < buyedItems.Length; o++)
+                    {
+                        activeUser.kids[index].buyedIslandObjects.Add((int)buyedItems[o].Number);
+                    }
+
+                    if (activeUser.kids[index].birdsFirst || activeUser.kids[index].lavaFirst || activeUser.kids[index].monkeyFirst || activeUser.kids[index].riverFirst || activeUser.kids[index].sandFirst || activeUser.kids[index].treasureFirst)
+                    {
+                        activeUser.kids[index].anyFirstTime = true;
+                    }
+                    else
+                    {
+                        activeUser.kids[index].anyFirstTime = false;
+                    }
+                    string tyep = kidObj.GetString("suscriptionType");
+                    if (tyep == "monthly" || tyep == "quarterly")
+                    {
+                        setType = true;
+                    }
+                    else if (tyep == "monthly_inApp" || tyep == "quarterly_inApp")
+                    {
+                        activeUser.kids[index].isIAPSubscribed = true;
+                    }
+                    if (activeKid != null)
+                    {
+                        if (activeKid.id == cid)
+                        {
+                            SyncChildLevels();
+                        }
                     }
                 }
+                if (!setType)
+                {
+                    activeUser.isPossibleBuyIAP = true;
+                }
+                if (needStoreSync)
+                {
+                    idStrings = GetKidsIds();
+                    menuManager.UpdateIAPSubscription(idStrings, kidsIAP);
+                }
+                SaveSession();
             }
-            if (!setType)
-            {
-                activeUser.isPossibleBuyIAP = true;
-            }
-            if (needStoreSync)
-            {
-                idStrings = GetKidsIds();
-                menuManager.UpdateIAPSubscription(idStrings, kidsIAP);
-            }
-            SaveSession();
-            /*if (jsonObject.GetValue("code").Str == "200")
-            {
-                JSONArray kids = jsonObject.GetValue("profiles").Array;
+        }
+  //      WWW hs_post = new WWW(post_url, form);
+  //      yield return hs_post;
+		//Debug.Log(hs_post.text);
+  //      if (hs_post.error == null)
+  //      {
+  //          JSONArray kids = JSONArray.Parse(hs_post.text);
+  //          activeUser.kids.Clear();
+  //          bool setType = false;
+  //          bool needStoreSync = false;
+  //          for (int i = 0; i < kids.Length; i++)
+  //          {
+  //              JSONObject kidObj = kids[i].Obj;
+  //              JSONArray activeMissions = kidObj.GetArray("activeMissions");
+  //              JSONArray buyedItems = kidObj.GetArray("islandShoppingList");
 
-            }*/
-        }
-        else
-        {
-            Debug.Log(hs_post.error);
-            Debug.Log(hs_post.text);
-        }
+  //              int cid = (int)kidObj.GetNumber("cid");
+  //              string kidName = kidObj.GetString("name");
+
+  //              AddKid(cid, kidName, activeUser.userkey, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial"));
+
+  //              int index = activeUser.kids.Count - 1;
+  //              activeUser.kids[index].kiwis = (int)kidObj.GetNumber("kiwis");
+  //              if (kidObj.GetString("avatar") != null)
+  //              {
+  //                  activeUser.kids[index].avatar = kidObj.GetString("avatar").ToLower();
+  //              }
+  //              else
+  //              {
+  //                  activeUser.kids[index].avatar = "koala";
+  //              }
+  //              activeUser.kids[index].avatarClothes = kidObj.GetString("avatarClothes");
+  //              activeUser.kids[index].ownedItems = kidObj.GetString("ownedItems");
+  //              activeUser.kids[index].age = (int)kidObj.GetNumber("age");
+  //              activeUser.kids[index].activeMissions.Clear();
+
+  //              for (int o = 0; o < activeMissions.Length; o++)
+  //              {
+  //                  activeUser.kids[index].activeMissions.Add(activeMissions[o].Str);
+  //              }
+
+  //              activeUser.kids[index].activeDay = (int)kidObj.GetNumber("activeDay");
+  //              activeUser.kids[index].ageSet = true;
+  //              activeUser.kids[index].birdsFirst = kidObj.GetBoolean("arbolFirstTime");
+  //              activeUser.kids[index].lavaFirst = kidObj.GetBoolean("sombrasFirstTime");
+  //              activeUser.kids[index].monkeyFirst = kidObj.GetBoolean("bolitaFirstTime");
+  //              activeUser.kids[index].riverFirst = kidObj.GetBoolean("rioFirstTime");
+  //              activeUser.kids[index].sandFirst = kidObj.GetBoolean("arenaFirstTime");
+  //              activeUser.kids[index].treasureFirst = kidObj.GetBoolean("tesoroFirstTime");
+  //              activeUser.kids[index].testAvailable = kidObj.GetBoolean("testAvailable");
+  //              activeUser.kids[index].sandLevelSet = kidObj.GetBoolean("arenaLevelSet");
+
+  //              for (int o = 0; o < buyedItems.Length; o++)
+  //              {
+  //                  activeUser.kids[index].buyedIslandObjects.Add((int)buyedItems[o].Number);
+  //              }
+
+  //              if (activeUser.kids[index].birdsFirst || activeUser.kids[index].lavaFirst || activeUser.kids[index].monkeyFirst || activeUser.kids[index].riverFirst || activeUser.kids[index].sandFirst || activeUser.kids[index].treasureFirst)
+  //              {
+  //                  activeUser.kids[index].anyFirstTime = true;
+  //              }
+  //              else
+  //              {
+  //                  activeUser.kids[index].anyFirstTime = false;
+  //              }
+  //              string tyep = kidObj.GetString("suscriptionType");
+  //              if (tyep == "monthly" || tyep == "quarterly")
+  //              {
+  //                  setType = true;
+  //              }
+  //              else if (tyep == "monthly_inApp" || tyep == "quarterly_inApp")
+  //              {
+  //                  activeUser.kids[index].isIAPSubscribed = true;
+  //              }
+  //              if (activeKid != null)
+  //              {
+  //                  if (activeKid.id == cid)
+  //                  {
+  //                      SyncChildLevels();
+  //                  }
+  //              }
+  //          }
+  //          if (!setType)
+  //          {
+  //              activeUser.isPossibleBuyIAP = true;
+  //          }
+  //          if (needStoreSync)
+  //          {
+  //              idStrings = GetKidsIds();
+  //              menuManager.UpdateIAPSubscription(idStrings, kidsIAP);
+  //          }
+  //          SaveSession();
+  //          /*if (jsonObject.GetValue("code").Str == "200")
+  //          {
+  //              JSONArray kids = jsonObject.GetValue("profiles").Array;
+
+  //          }*/
+  //      }
+  //      else
+  //      {
+  //          Debug.Log(hs_post.error);
+  //          Debug.Log(hs_post.text);
+  //      }
     }
 
     public void UpdateProfile()
@@ -626,103 +726,89 @@ public class SessionManager : MonoBehaviour
 
     IEnumerator PostUpdateProfile(List<string> activeMissionsActive)
     {
-        string post_url = updateProfileURL;
-        JSONObject data = new JSONObject();
         JSONArray array = new JSONArray();
 
+        activeKid.activeMissions.Clear();
         for (int i = 0; i < activeMissionsActive.Count; i++)
         {
             array.Add(activeMissionsActive[i]);
+            activeKid.activeMissions.Add(activeMissionsActive[i]);
         }
 
-        data.Add("cid", activeKid.id);
-        data.Add("kiwis", activeKid.kiwis);
-        data.Add("avatar", activeKid.avatar);
-        data.Add("avatarclothes", activeKid.avatarClothes);
-        data.Add("activeDay", activeKid.activeDay);
-        data.Add("owneditems", activeKid.ownedItems);
-        data.Add("activemissions", array);
-        data.Add("activeday", activeKid.activeDay);
-        data.Add("rioFirstTime", activeKid.riverFirst);
-        data.Add("tesoroFirstTime", activeKid.treasureFirst);
-        data.Add("arbolFirstTime", activeKid.birdsFirst);
-        data.Add("arenaFirstTime", activeKid.sandFirst);
-        data.Add("sombrasFirstTime", activeKid.lavaFirst);
-        data.Add("bolitaFirstTime", activeKid.monkeyFirst);
-        data.Add("tesoroLevelSet", true);
-        data.Add("arenaLevelSet", activeKid.sandLevelSet);
-        data.Add("arbolLevelSet", true);
-        data.Add("arenaLevelSet2", true);
-        data.Add("sombrasLevelSet", true);
-        data.Add("bolitaLevelSet", true);
-        data.Add("rioLevelSet", true);
-        string shopingList = "";
-        for (int i = 0; i < activeKid.buyedIslandObjects.Count; i++)
-        {
-            if (i == 0)
-            {
-                shopingList += activeKid.buyedIslandObjects[i].ToString();
-            }
-            else
-            {
-                shopingList += "," + activeKid.buyedIslandObjects[i].ToString();
-            }
-        }
-        data.Add("islandShoppingList", shopingList);
-        data.Add("userKey", activeKid.userkey);
+        JSONObject data = UpdateJsaonData(array);
+
         Debug.Log(data.ToString());
+
         WWWForm form = new WWWForm();
         form.AddField("jsonToDb", data.ToString());
 
-        WWW hs_post = new WWW(post_url, form);
-        yield return hs_post;
-
-        Debug.Log(hs_post.text);
-
-        if (hs_post.error == null)
+        using (UnityWebRequest request = UnityWebRequest.Post(updateProfileURL, form))
         {
-            activeKid.needSync = false;
-        }
-        else
-        {
-            Debug.Log(hs_post.error);
-            activeKid.syncProfile = false;
+            yield return request.SendWebRequest();
+            if (request.isNetworkError)
+            {
+                if (FindObjectOfType<GameCenterManager>())
+                {
+                    FindObjectOfType<GameCenterManager>().ChangeMenus();
+                }
+                activeKid.syncProfile = false;
+                Debug.Log(request.downloadHandler.text);
+            }
+            else
+            {
+                if (FindObjectOfType<GameCenterManager>())
+                {
+                    FindObjectOfType<GameCenterManager>().ChangeMenus();
+                }
+                activeKid.needSync = false;
+            }
         }
         SaveSession();
     }
 
     IEnumerator PostUpdateProfile()
     {
-        string post_url = updateProfileURL;
-        JSONObject data = new JSONObject();
         JSONArray array = new JSONArray();
+        Debug.Log("Updating profile");
 
         for (int i = 0; i < activeKid.activeMissions.Count; i++)
         {
             array.Add(activeKid.activeMissions[i]);
         }
 
-        data.Add("cid", activeKid.id);
-        data.Add("kiwis", activeKid.kiwis);
-        data.Add("avatar", activeKid.avatar);
-        data.Add("avatarclothes", activeKid.avatarClothes);
-        data.Add("activeDay", activeKid.activeDay);
-        data.Add("owneditems", activeKid.ownedItems);
-        data.Add("activemissions", array);
-        data.Add("activeday", activeKid.activeDay);
-        data.Add("rioFirstTime", activeKid.riverFirst);
-        data.Add("tesoroFirstTime", activeKid.treasureFirst);
-        data.Add("arbolFirstTime", activeKid.birdsFirst);
-        data.Add("arenaFirstTime", activeKid.sandFirst);
-        data.Add("sombrasFirstTime", activeKid.lavaFirst);
-        data.Add("bolitaFirstTime", activeKid.monkeyFirst);
-        data.Add("tesoroLevelSet", true);
-        data.Add("arenaLevelSet", activeKid.sandLevelSet);
-        data.Add("arbolLevelSet", true);
-        data.Add("arenaLevelSet2", true);
-        data.Add("sombrasLevelSet", true);
-        data.Add("bolitaLevelSet", true);
-        data.Add("rioLevelSet", true);
+        JSONObject data = UpdateJsaonData(array);
+
+        Debug.Log(data.ToString());
+
+        WWWForm form = new WWWForm();
+        form.AddField("jsonToDb", data.ToString());
+
+        using (UnityWebRequest request = UnityWebRequest.Post(updateProfileURL, form))
+        {
+            yield return request.SendWebRequest();
+            if (request.isNetworkError)
+            {
+                if (FindObjectOfType<GameCenterManager>())
+                {
+                    FindObjectOfType<GameCenterManager>().ChangeMenus();
+                }
+                activeKid.syncProfile = false;
+                Debug.Log(request.downloadHandler.text);
+            }
+            else
+            {
+                if (FindObjectOfType<GameCenterManager>())
+                {
+                    FindObjectOfType<GameCenterManager>().ChangeMenus();
+                }
+                activeKid.needSync = false;
+            }
+        }
+        SaveSession();
+    }
+
+    JSONObject UpdateJsaonData(JSONArray array)
+    {
         string shopingList = "";
         for (int i = 0; i < activeKid.buyedIslandObjects.Count; i++)
         {
@@ -735,28 +821,35 @@ public class SessionManager : MonoBehaviour
                 shopingList += "," + activeKid.buyedIslandObjects[i].ToString();
             }
         }
-        data.Add("islandShoppingList", shopingList);
-        data.Add("userKey", activeKid.userkey);
-        Debug.Log(data.ToString());
-        WWWForm form = new WWWForm();
-        form.AddField("jsonToDb", data.ToString());
 
-        WWW hs_post = new WWW(post_url, form);
-        yield return hs_post;
-
-        Debug.Log(hs_post.text);
-
-        if (hs_post.error == null)
+        JSONObject data = new JSONObject
         {
-            activeKid.needSync = false;
-            JSONObject jsonObj = JSONObject.Parse(hs_post.text);
-        }
-        else
-        {
-            Debug.Log(hs_post.error);
-            activeKid.syncProfile = false;
-        }
-        SaveSession();
+            { "cid", activeKid.id },
+            { "kiwis", activeKid.kiwis },
+            { "avatar", activeKid.avatar },
+            { "avatarclothes", activeKid.avatarClothes },
+            { "activeDay", activeKid.activeDay },
+            { "owneditems", activeKid.ownedItems },
+            { "activemissions", array },
+            { "activeday", activeKid.activeDay },
+            { "rioFirstTime", activeKid.riverFirst },
+            { "tesoroFirstTime", activeKid.treasureFirst },
+            { "arbolFirstTime", activeKid.birdsFirst },
+            { "arenaFirstTime", activeKid.sandFirst },
+            { "sombrasFirstTime", activeKid.lavaFirst },
+            { "bolitaFirstTime", activeKid.monkeyFirst },
+            { "tesoroLevelSet", true },
+            { "arenaLevelSet", activeKid.sandLevelSet },
+            { "arbolLevelSet", true },
+            { "arenaLevelSet2", true },
+            { "sombrasLevelSet", true },
+            { "bolitaLevelSet", true },
+            { "rioLevelSet", true },
+            { "islandShoppingList", shopingList },
+            { "userKey", activeKid.userkey }
+        };
+
+        return data;
     }
 
     public void SyncChildLevels()
@@ -1017,8 +1110,6 @@ public class SessionManager : MonoBehaviour
             {
                 offlineSubscription = DateTime.Today.AddDays(-365);
             }
-
-            Debug.Log($"{this.name} suscription expires in {offlineSubscription}");
 
             avatar = "";
             avatarClothes = "";

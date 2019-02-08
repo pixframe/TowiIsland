@@ -281,9 +281,6 @@ public class SandDrawingController : MonoBehaviour {
         countTime = true;
         if (sessionManager != null)
         {
-            string a = "1" + levelFill.ToString("00") + levelIdentyfy.ToString("00") + levelCompletion.ToString("00");
-            Debug.Log($"this is a {a}");
-            int sublevel = int.Parse(a);
             accuracyPercentage = (accuracyPercentage * 100) / 500;
 
             sessionManager.activeKid.sandDifficulty = levelGame;
@@ -331,9 +328,9 @@ public class SandDrawingController : MonoBehaviour {
                     levelSaver.AddLevelData("initial_level_clousre", levelCompletion);
                 }
             }
-            levelSaver.AddLevelData("time_percentage", drawingTimes);
-            levelSaver.AddLevelData("types_levels", typeOfGamesIndex);
-            levelSaver.AddLevelData("played_levels", levelsPlayed);
+            levelSaver.AddLevelDataAsString("time_percentage", drawingTimes);
+            levelSaver.AddLevelDataAsString("types_levels", typeOfGamesIndex);
+            levelSaver.AddLevelDataAsString("played_levels", levelsPlayed);
             levelSaver.AddLevelData("current_level", levelGame);
             levelSaver.AddLevelData("current_level_motor", levelFill);
             levelSaver.AddLevelData("current_level_overlapping", levelIdentyfy);
@@ -341,9 +338,9 @@ public class SandDrawingController : MonoBehaviour {
             levelSaver.AddLevelData("change_level_motor", levelFill - initialLevelFill);
             levelSaver.AddLevelData("change_level_overlapping", levelIdentyfy - initialLevelIdentify);
             levelSaver.AddLevelData("change_level_clousure", levelCompletion - initialLevelCompletion);
-            levelSaver.AddLevelData("accuracy", accuracies);
-            levelSaver.AddLevelData("overdraw", overdraws);
-            levelSaver.SetLevel();
+            levelSaver.AddLevelData("session_number", levelGame);
+            levelSaver.AddLevelDataAsString("accuracy", accuracies);
+            levelSaver.AddLevelDataAsString("overdraw", overdraws);
             levelSaver.CreateSaveBlock("ArenaMagica", time, passLevels, repeatedLevels, totalAssaysInTheGame, sessionManager.activeKid.sandSessions);
             levelSaver.AddLevelsToBlock();
             levelSaver.PostProgress();
@@ -570,6 +567,11 @@ public class SandDrawingController : MonoBehaviour {
                 {
                     secondTry = true;
                 }
+            }
+            else
+            {
+                secondTry = false;
+                newStimulus = false;
             }
         }
 
@@ -1136,7 +1138,6 @@ public class SandDrawingController : MonoBehaviour {
                         levelFill -= LevelDifficultyChange(totalLevelsNormal, assayIndex + 1);
                     }
                     levelFill = Mathf.Clamp(levelFill, 0, maxiKidLevel - 1);
-                    Debug.Log("The next level in fill is " + levelFill);
                 }
                 break;
             case TypeOfGame.Completion:
@@ -1165,7 +1166,6 @@ public class SandDrawingController : MonoBehaviour {
                         levelCompletion -= LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex + 2));
                     }
                     levelCompletion = Mathf.Clamp(levelCompletion, 0, maxiKidLevelSpecials - 1);
-                    Debug.Log("The next level in completion is " + levelCompletion);
                 }
                 break;
             case TypeOfGame.Identify:
@@ -1194,7 +1194,6 @@ public class SandDrawingController : MonoBehaviour {
                         levelIdentyfy -= LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex + 2));
                     }
                     levelIdentyfy = Mathf.Clamp(levelIdentyfy, 0, maxiKidLevelSpecials - 1);
-                    Debug.Log("The next level in completion is" + levelIdentyfy);
                 }
                 break;
         }

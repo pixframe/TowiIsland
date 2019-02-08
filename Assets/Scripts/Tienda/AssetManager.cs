@@ -157,10 +157,10 @@ public class AssetManager : MonoBehaviour
 					
 					switch(matparts[0])
 					{
-					case "name" 		:  print("name = " + matparts[1]); matitemObj.name = matparts[1];   break;
-					case "shader"   	:  print("shader = " + matparts[1]); matitemObj.shader = matparts[1]; break;
-					case "bump"     	:  print("bump = " + matparts[1]); matitemObj.bump = matparts[1]; break;
-					case "diffuse"		:  print("diffuse = " + matparts[1]); matitemObj.diffuse = matparts[1]; break;
+					case "name" 		:  matitemObj.name = matparts[1];   break;
+					case "shader"   	:  matitemObj.shader = matparts[1]; break;
+					case "bump"     	:  matitemObj.bump = matparts[1]; break;
+					case "diffuse"		:  matitemObj.diffuse = matparts[1]; break;
 					}
 				}
 				
@@ -200,7 +200,6 @@ public class AssetManager : MonoBehaviour
 					// Iterate through textures assigning to correct texture type
 					foreach (Texture2D texture2D in textures)
 					{
-						print (texture2D + " format = " + texture2D.format);
 						// Assign the textures to the correct texture types [diffuse, bump, etc]
 						if (materialMap[matname[0]].diffuse == texture2D.name)
 							matitem.SetTexture("_MainTex",texture2D);

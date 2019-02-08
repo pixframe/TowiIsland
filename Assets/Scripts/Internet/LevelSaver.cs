@@ -9,11 +9,11 @@ using System.IO;
 public class LevelSaver : MonoBehaviour {
 
     string secretKey = "$k1w1GAMES$";
-    string postURL = Keys.Api_Web_Key + "api/levels/create/";
+    string postURL = Keys.Api_Web_Key + "api/v2/levels/create/";
     JSONObject data;
     JSONObject item;
     JSONObject jsonToSend;
-    JSONArray levelsData;
+    JSONObject levelsData;
 
     bool saving = false;
 
@@ -27,7 +27,7 @@ public class LevelSaver : MonoBehaviour {
     void Start ()
     {
         data = new JSONObject();
-        levelsData = new JSONArray();
+        levelsData = new JSONObject();
         jsonToSend = new JSONObject();
 
         if (FindObjectOfType<SessionManager>())
@@ -256,9 +256,98 @@ public class LevelSaver : MonoBehaviour {
         item.Add(key, tempJsonArray);
     }
 
+    public void AddLevelDataAsString(string key, int[] listToConvert)
+    {
+        if (item == null)
+        {
+            item = new JSONObject();
+        }
+        string stringToAdd = "";
+        for (int i = 0; i < listToConvert.Length; i++)
+        {
+            if (i > 0)
+            {
+                stringToAdd += "";
+            }
+            stringToAdd += listToConvert[i].ToString();
+        }
+        item.Add(key, stringToAdd);
+    }
+
+    public void AddLevelDataAsString(string key, float[] listToConvert)
+    {
+        if (item == null)
+        {
+            item = new JSONObject();
+        }
+        string stringToAdd = "";
+        for (int i = 0; i < listToConvert.Length; i++)
+        {
+            if (i > 0)
+            {
+                stringToAdd += "";
+            }
+            stringToAdd += listToConvert[i].ToString();
+        }
+        item.Add(key, stringToAdd);
+    }
+
+    public void AddLevelDataAsString(string key, string[] listToConvert)
+    {
+        if (item == null)
+        {
+            item = new JSONObject();
+        }
+        string stringToAdd = "";
+        for (int i = 0; i < listToConvert.Length; i++)
+        {
+            if (i > 0)
+            {
+                stringToAdd += "";
+            }
+            stringToAdd += listToConvert[i].ToString();
+        }
+        item.Add(key, stringToAdd);
+    }
+
+    public void AddLevelDataAsString(string key, List<int> listToConvert)
+    {
+        if (item == null)
+        {
+            item = new JSONObject();
+        }
+        string stringToAdd = "";
+        for (int i = 0; i < listToConvert.Count; i++)
+        {
+            if (i > 0)
+            {
+                stringToAdd += "";
+            }
+            stringToAdd += listToConvert[i].ToString();
+        }
+        item.Add(key, stringToAdd);
+    }
+
+    public void AddLevelDataAsString(string key, List<float> listToConvert)
+    {
+        if (item == null)
+        {
+            item = new JSONObject();
+        }
+        string stringToAdd = "";
+        for (int i = 0; i < listToConvert.Count; i++)
+        {
+            if (i > 0)
+            {
+                stringToAdd += "";
+            }
+            stringToAdd += listToConvert[i].ToString();
+        }
+        item.Add(key, stringToAdd);
+    }
+
     public void SetLevel()
     {
-        levelsData.Add(item);
         //SaveFastData();
         item = new JSONObject();
     }
@@ -267,13 +356,13 @@ public class LevelSaver : MonoBehaviour {
     {
         if (data.ContainsKey("levels"))
         {
-            data["levels"] = levelsData;
+            data["levels"] = item;
         }
         else
         {
-            data.Add("levels", levelsData);
+            data.Add("levels", item);
         }
-        levelsData = new JSONArray();
+        levelsData = new JSONObject();
         //EmergencySave();
     }
 
@@ -283,28 +372,46 @@ public class LevelSaver : MonoBehaviour {
         JSONObject headerItem = new JSONObject
         {
 
-            { "parentid", sessionManager.activeUser.id },
-            { "cid", kidKey },
-            { "gameKey", gameKey },
-            { "gameTime", Mathf.Round(gameTime * 100) / 100 },
-            { "passedLevels", passedLevels },
-            { "repeatedLevels", repeatedLevels },
-            { "playedLevels", playedLevels },
+            //{ "parentid", sessionManager.activeUser.id },
+            //{ "cid", kidKey },
+            //{ "gameKey", gameKey },
+            //{ "gameTime", Mathf.Round(gameTime * 100) / 100 },
+            //{ "passedLevels", passedLevels },
+            //{ "repeatedLevels", repeatedLevels },
+            //{ "playedLevels", playedLevels },
             { "device", SystemInfo.deviceType.ToString()},
             { "version", Application.version },
             //version 2
-            //{ "game_key", gameKey },
-            //{ "parent_id", sessionManager.activeUser.id },
-            //{ "kid_id", kidKey },
-            //{ "passed_Levels", passedLevels},
-            //{ "repetaed_levels", repeatedLevels},
-            //{ "played_levels", playedLevels },
-            //{ "sesession_time",Mathf.Round(gameTime * 100) / 100 },
+            { "game_key", gameKey },
+            { "parent_id", sessionManager.activeUser.id },
+            { "kid_id", kidKey },
+            { "passed_levels", passedLevels},
+            { "repeated_levels", repeatedLevels},
+            { "played_levels", playedLevels},
+            { "session_time",Mathf.Round(gameTime * 100) / 100 },
+            { "game_time",(int)Mathf.Round(gameTime * 100) / 100 },
             { "session_number",  sessionNumber}
         };
         DateTime nowT = DateTime.Now;
         headerItem.Add("date", String.Format("{0:0000}-{1:00}-{2:00}T{3:00}:{4:00}:{5:00}", nowT.Year, nowT.Month, nowT.Day, nowT.Hour, nowT.Minute, nowT.Second));
         data.Add("header", headerItem);
+    }
+
+    public string ArrayToString(dynamic[] arrayToTransform)
+    {
+        string stringToReturn = "";
+        for (int i = 0; i < arrayToTransform.Length; i++)
+        {
+            if (i != 0)
+            {
+                stringToReturn += $",{arrayToTransform[i].ToString()}";
+            }
+            else
+            {
+                stringToReturn += arrayToTransform[i].ToString();
+            }
+        }
+        return stringToReturn;
     }
 
     public void PostProgress()
@@ -318,7 +425,7 @@ public class LevelSaver : MonoBehaviour {
     {
         string dataToSave = jsonToSend.ToString();
 
-        string path = $"{Application.persistentDataPath}{sessionManager.activeKid.name}_{sessionManager.activeKid.dataToSave.ToString()}_data.txt";
+        string path = $"{Application.persistentDataPath}{sessionManager.activeKid.name}_{sessionManager.activeKid.dataToSave.ToString()}_game_data.txt";
         sessionManager.activeKid.dataToSave++;
 
         File.WriteAllText(path, dataToSave);
@@ -339,6 +446,8 @@ public class LevelSaver : MonoBehaviour {
             {
                 StartCoroutine(PostScores());
             }
+
+            FindObjectOfType<PauseTheGame>().DataIsSend();
         }
     }
 
@@ -368,7 +477,7 @@ public class LevelSaver : MonoBehaviour {
             {
                 JSONObject response = JSONObject.Parse(request.downloadHandler.text);
                 Debug.Log(response["code"].Str);
-                if (response["code"].Str != "200")
+                if (response["code"].Str != "200" && response["code"].Str != "201")
                 {
                     //SavePending();
                     Debug.Log($"the error has the next messsage {request.downloadHandler.text}");

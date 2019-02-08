@@ -148,70 +148,71 @@ public class MenuManager : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-        ShowLoading();
 
-        if (key == null)
-        {
-            StartCoroutine(CheckInternetConnection("www.towi.com.mx"));
-        }
-        else
-        {
-            ShowGameMenu();
-        }
+        ShowLoading();
 
         //if (key == null)
         //{
-        //    if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
-        //    {
-
-        //        string user = PlayerPrefs.GetString(Keys.Active_User_Key);
-        //        if (user != "_local")
-        //        {
-        //            if (user != "")
-        //            {
-        //                ShowLoading();
-        //                logInScript.IsActive(user);
-        //            }
-        //            else
-        //            {
-        //                ShowLogIn();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
-        //            {
-        //                ShowGameMenu();
-        //            }
-        //            else
-        //            {
-        //                ShowLogIn();
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        if (alreadyLogged)
-        //        {
-        //            ShowGameMenu();
-        //        }
-        //        else
-        //        {
-        //            ShowLogIn();
-        //        }
-        //    }
-
-        //    if (FindObjectOfType<EvaluationController>())
-        //    {
-        //        Destroy(FindObjectOfType<EvaluationController>().gameObject);
-        //        //Destroy(FindObjectOfType<AudioManager>().gameObject);
-        //    }
-        //    key = FindObjectOfType<DemoKey>();
+        //    StartCoroutine(CheckInternetConnection(Keys.Api_Web_Key + Keys.Try_Connection_Key));
         //}
         //else
         //{
         //    ShowGameMenu();
         //}
+
+        if (key == null)
+        {
+            if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
+            {
+
+                string user = PlayerPrefs.GetString(Keys.Active_User_Key);
+                if (user != "_local")
+                {
+                    if (user != "")
+                    {
+                        ShowLoading();
+                        logInScript.IsActive(user);
+                    }
+                    else
+                    {
+                        ShowLogIn();
+                    }
+                }
+                else
+                {
+                    if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
+                    {
+                        ShowGameMenu();
+                    }
+                    else
+                    {
+                        ShowLogIn();
+                    }
+                }
+            }
+            else
+            {
+                if (alreadyLogged)
+                {
+                    ShowGameMenu();
+                }
+                else
+                {
+                    ShowLogIn();
+                }
+            }
+
+            if (FindObjectOfType<EvaluationController>())
+            {
+                Destroy(FindObjectOfType<EvaluationController>().gameObject);
+                //Destroy(FindObjectOfType<AudioManager>().gameObject);
+            }
+            key = FindObjectOfType<DemoKey>();
+        }
+        else
+        {
+            ShowGameMenu();
+        }
     }
 
     IEnumerator CheckInternetConnection(string resource)
@@ -239,6 +240,7 @@ public class MenuManager : MonoBehaviour {
 
             if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
             {
+                Debug.Log("its logged");
                 string user = PlayerPrefs.GetString(Keys.Active_User_Key);
                 if (user != "_local")
                 {

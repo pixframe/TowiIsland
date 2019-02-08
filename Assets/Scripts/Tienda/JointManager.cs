@@ -122,7 +122,6 @@ public class JointManager : MonoBehaviour
 						
 						//parent_bone.position=tempPos;
 						//parent_bone.rotation=tempRot;
-					    print ("mesh bone parent = " + mesh_bone.parent.name + " parent bone = " + parent_bone.name);
 					    break;
 					}
 			}

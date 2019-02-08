@@ -445,25 +445,25 @@ public class TreasureHuntManager : MonoBehaviour {
             sessionManager.activeKid.needSync = true;
             sessionManager.activeKid.kiwis += passLevels;
 
-            levelSaver.AddLevelData("level", difficulty);
-            levelSaver.AddLevelData("sublevel", level);
-            levelSaver.AddLevelData("time", time);
-            levelSaver.AddLevelData("tutorial", 1);
-            levelSaver.AddLevelData("passed", passLevels);
-            levelSaver.AddLevelData("playerobjects", "player objects");
-            levelSaver.AddLevelData("playerobjectsquantity", " quantity of objects");
-            levelSaver.AddLevelData("correctobjects", "objects corrects");
-            levelSaver.AddLevelData("correctobjectsquantity", "quantity of correct objects");
-            levelSaver.AddLevelData("spawnedobjects", "quantity of spawn objects");
-            levelSaver.AddLevelData("spawneddistractors", "quantity of spawned distractors");
-            levelSaver.AddLevelData("notsurecorrect", notSure);
-            levelSaver.AddLevelData("notsureincorrect", 0);
-            levelSaver.AddLevelData("minobjects", 3);
-            levelSaver.AddLevelData("maxobjects", 15);
-            levelSaver.AddLevelData("availableobjects", "15");
-            levelSaver.AddLevelData("availablecategories", "5");
-            levelSaver.AddLevelData("searchorders", "look for these objects");
-            levelSaver.AddLevelData("availabledistractors", "15");
+            //levelSaver.AddLevelData("level", difficulty);
+            //levelSaver.AddLevelData("sublevel", level);
+            //levelSaver.AddLevelData("time", time);
+            //levelSaver.AddLevelData("tutorial", 1);
+            //levelSaver.AddLevelData("passed", passLevels);
+            //levelSaver.AddLevelData("playerobjects", "player objects");
+            //levelSaver.AddLevelData("playerobjectsquantity", " quantity of objects");
+            //levelSaver.AddLevelData("correctobjects", "objects corrects");
+            //levelSaver.AddLevelData("correctobjectsquantity", "quantity of correct objects");
+            //levelSaver.AddLevelData("spawnedobjects", "quantity of spawn objects");
+            //levelSaver.AddLevelData("spawneddistractors", "quantity of spawned distractors");
+            //levelSaver.AddLevelData("notsurecorrect", notSure);
+            //levelSaver.AddLevelData("notsureincorrect", 0);
+            //levelSaver.AddLevelData("minobjects", 3);
+            //levelSaver.AddLevelData("maxobjects", 15);
+            //levelSaver.AddLevelData("availableobjects", "15");
+            //levelSaver.AddLevelData("availablecategories", "5");
+            //levelSaver.AddLevelData("searchorders", "look for these objects");
+            //levelSaver.AddLevelData("availabledistractors", "15");
 
             //Version 2
             sessionManager.activeKid.treasureSessions++;
@@ -479,13 +479,13 @@ public class TreasureHuntManager : MonoBehaviour {
             levelSaver.AddLevelData("session_errors_total", (errors * 100) / numberOfAnswers);
             levelSaver.AddLevelData("total_second_chances", secondChances);
             levelSaver.AddLevelData("diffrence_in_quantity", diferenceBetweenAskObjects);
-            levelSaver.AddLevelData("played_levels", playedLevels);
-            levelSaver.AddLevelData("played_difficulty", playedDifficulties);
+            levelSaver.AddLevelDataAsString("played_levels", playedLevels);
+            levelSaver.AddLevelDataAsString("played_difficulty", playedDifficulties);
             levelSaver.AddLevelData("session_minobjects", minimunObjects);
             levelSaver.AddLevelData("session_maxobjects", maximunObjects);
             levelSaver.AddLevelData("requestreminder", remainder);
+            levelSaver.AddLevelData("session_time", (int)time);
 
-            levelSaver.SetLevel();
             levelSaver.CreateSaveBlock("Tesoro", time, passLevels, repeatedLevels, 5, sessionManager.activeKid.treasureSessions);
             levelSaver.AddLevelsToBlock();
             levelSaver.PostProgress();

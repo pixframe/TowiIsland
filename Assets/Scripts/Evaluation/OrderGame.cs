@@ -439,6 +439,7 @@ public class OrderGame : MonoBehaviour {
         for (int i = 0; i < numberOfObjectsToShow; i++)
         {
             positionsHandler.transform.GetChild(i).gameObject.SetActive(true);
+            positionsHandler.transform.GetChild(i).GetComponent<Positioner>().SetAvailable();
         }
     }
 
@@ -738,6 +739,7 @@ public class OrderGame : MonoBehaviour {
     //this will trow the object if its not in the correct place
     void DropTheObjectToTheGround()
     {
+        Debug.Log("throw the object");
         selectedObject.GetComponent<ObjectToOrder>().SaveInPlace();
         selectedObject.GetComponent<ObjectToOrder>().FlyAhed(); 
     }

@@ -19,6 +19,7 @@ public class EvaluationController : MonoBehaviour
     float secctionTime;
     float totalTimeTest;
     bool countingSectionTime;
+    bool isDataSend;
     int ageOfTheCurrentPlayer;
     int tutorialsPlayed = 1;
 
@@ -93,7 +94,7 @@ public class EvaluationController : MonoBehaviour
         saveHandler.AddLevelData("boarding_latency", latencie);
         saveHandler.AddLevelData("boarding_age", ageOfPlayer);
         saveHandler.AddLevelData("boarding_birthday", birthOfPlayer);
-        saveHandler.AddLevelData("boarding_time1", secctionTime);
+        saveHandler.AddLevelData("boarding_time1", Mathf.Round(secctionTime));
 
         StopCounting();
         RestartSecctionTime();
@@ -105,7 +106,7 @@ public class EvaluationController : MonoBehaviour
         saveHandler.AddLevelData("boarding_name", playerName);
         saveHandler.AddLevelData("boarding_address", playerPlace);
         saveHandler.AddLevelData("boarding_currentdate", currentDate);
-        saveHandler.AddLevelData("boarding_time2", secctionTime);
+        saveHandler.AddLevelData("boarding_time2", Mathf.Round(secctionTime));
 
         StopCounting();
         RestartSecctionTime();
@@ -157,7 +158,7 @@ public class EvaluationController : MonoBehaviour
         saveHandler.AddLevelData("weather_object_packed", weatherList);
         saveHandler.AddLevelData("weather_latency", latency);
         //saveHandler.AddLevelData("weather_coherence", 9);
-        saveHandler.AddLevelData("weather_time", secctionTime);
+        saveHandler.AddLevelData("weather_time", Mathf.Round(secctionTime));
 
         StopCounting();
         RestartSecctionTime();
@@ -212,7 +213,7 @@ public class EvaluationController : MonoBehaviour
         saveHandler.AddLevelData("lab_mhits", IntDivider(totalHits, laberyntNumber));
         saveHandler.AddLevelData("lab_mcrosses", IntDivider(totalCrosses, laberyntNumber));
         saveHandler.AddLevelData("lab_mdeadends", IntDivider(totalDeadEnds, laberyntNumber));
-        saveHandler.AddLevelData("lab_time", secctionTime);
+        saveHandler.AddLevelData("lab_time", Mathf.Round(secctionTime));
 
         StopCounting();
         RestartSecctionTime();
@@ -294,7 +295,7 @@ public class EvaluationController : MonoBehaviour
         }
         prom = (lat / gBadL.Count);
         saveHandler.AddLevelData("flyplane_greenincorrect_mlatency", FloatDivider(lat, gBadL.Count));
-        saveHandler.AddLevelData("flyplane_time", secctionTime);
+        saveHandler.AddLevelData("flyplane_time", Mathf.Round(secctionTime));
 
         /*saveHandler.AddLevelData("flyPlanesLatencies", goodL);
         saveHandler.AddLevelData("flyPlanesBadLatencies", badL);
@@ -338,7 +339,7 @@ public class EvaluationController : MonoBehaviour
         saveHandler.AddLevelData("coins_incorrect_mlatency", FloatDivider(prom, badLatencies.Count));
 
         //saveHandler.AddLevelData("coins_pattern_type", 5);
-        saveHandler.AddLevelData("coins_time", secctionTime);
+        saveHandler.AddLevelData("coins_time", Mathf.Round(secctionTime));
 
         //saveHandler.AddLevelData("coinsLatencies", latencies);
 
@@ -388,7 +389,8 @@ public class EvaluationController : MonoBehaviour
         /*saveHandler.AddLevelData("arrange_primacy", firstObjects);
         saveHandler.AddLevelData("arrange_recence", lastObjects);*/
         saveHandler.AddLevelData("arrange_spacialprecision_score", positionScore);
-        saveHandler.AddLevelData("arrange_time", secctionTime);
+        saveHandler.AddLevelData("arrange_spacialprecision_sample", positionScore);
+        saveHandler.AddLevelData("arrange_time", Mathf.Round(secctionTime));
         saveHandler.AddLevelData("arrange_primacy", (firstPercentage / 3));
         saveHandler.AddLevelData("arrange_recence", (lastpercentage / 3));
         saveHandler.AddLevelData("arrange_perc_correct", (totalCorrects / (numberOfAssays * nOfStimulus)));
@@ -429,7 +431,18 @@ public class EvaluationController : MonoBehaviour
     {
         sessionManager.activeKid.needSync = true;
         sessionManager.activeKid.testAvailable = false;
+        StartCoroutine(FinishTheGame());
+    }
+
+    IEnumerator FinishTheGame()
+    {
+        yield return new WaitUntil(() => isDataSend);
         GoToNextScene("NewLogin");
+    }
+
+    public void DataIsSend()
+    {
+        isDataSend = true;
     }
 
     public void SaveFlashCarData(string name, int age, int[] hits, float[] latencies, float[] labtimes)

@@ -12,7 +12,7 @@ public class ProgressHandler : MonoBehaviour {
 	public string postURL = ""; //be sure to add a ? to your url
     string syncURL = "http://www.towi.com.mx/api/sync.php";
     string rankURL = "http://www.towi.com.mx/api/towi_index.php";
-    string postSuperURL = Keys.Api_Web_Key + "api/levels/assesment/";
+    string postSuperURL = Keys.Api_Web_Key + "api/v2/levels/assesment/";
     //string header;
     //string []data;
     //List<string>dataDynamic;
@@ -59,9 +59,13 @@ public class ProgressHandler : MonoBehaviour {
 		item.Add(key,value);
 	}
 	public void AddLevelData(string key,float value){
-		if (item==null)
-			item = new JSONObject ();
-		item.Add(key,value);
+        if (item == null)
+        {
+            item = new JSONObject();
+        }
+        int valueInteger = Mathf.RoundToInt(value * 1000);
+        float fToSave = (( valueInteger/ 1000f));
+		item.Add(key,fToSave.ToString());
 	}
 	public void AddLevelData(string key,string value){
 		if (item==null)
@@ -404,15 +408,15 @@ public class ProgressHandler : MonoBehaviour {
         game = gameKey;
         JSONObject headerItem = new JSONObject
         {
-            { "parentid", sessionMng.activeUser.id},
-            { "cid", kidKey },
-            { "gameKey", gameKey },
-            { "gameTime", Mathf.Round(gameTime * 100) / 100 },
+            { "parent_id", sessionMng.activeUser.id},
+            { "kid_id", kidKey },
+            { "game_key", gameKey },
+            { "game_time", (int)Mathf.Round(gameTime * 100) / 100 },
             { "device", SystemInfo.deviceType.ToString() },
             { "version", "5.0" },
-            { "passedLevels", 0},
-            { "repeatedLevels", 0},
-            { "playedLevels", 0},
+            { "passed_levels", 0},
+            { "repeated_levels", 0},
+            { "played_levels", 0},
         };
         DateTime nowT = DateTime.Now;
         headerItem.Add("date", String.Format("{0:0000}-{1:00}-{2:00}T{3:00}:{4:00}:{5:00}", nowT.Year, nowT.Month, nowT.Day, nowT.Hour, nowT.Minute, nowT.Second));
@@ -496,7 +500,11 @@ public class ProgressHandler : MonoBehaviour {
             {
                 EmergencySave();
             }
-
+            else
+            {
+                Debug.Log("This is done");
+            }
+            FindObjectOfType<EvaluationController>().DataIsSend();
             lastSceneManager.MoveToMenu();
         }
 
