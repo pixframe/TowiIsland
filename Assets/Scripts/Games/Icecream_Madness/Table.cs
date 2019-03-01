@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DragonBones;
 
 public class Table : MonoBehaviour {
 
@@ -9,10 +10,12 @@ public class Table : MonoBehaviour {
     protected IcecreamMadnessManager manager;
     protected IcecreamChef chef;
 
+    protected GameObject logo;
     protected GameObject trayOn;
+    protected GameObject machine;
 
-    protected Transform trayPositioner;
-    protected Transform machinePositioner;
+    protected UnityEngine.Transform trayPositioner;
+    protected UnityEngine.Transform machinePositioner;
 
     protected Vector3 sizeOfUpperSprite = new Vector3(1f, 1f, 1f);
 	// Use this for initialization
@@ -34,6 +37,25 @@ public class Table : MonoBehaviour {
 	void Update () {
 
 	}
+
+    public void ChangeTableColor()
+    {
+        if (!name.Contains("C"))
+        {
+            if (int.Parse(name[1].ToString()) % 2 == 0)
+            {
+                ChangeTheColor("FFFFFF");
+            }
+            else
+            {
+                ChangeTheColor("B9B9B9");
+            }
+        }
+        else
+        {
+            ChangeTheColor("FFFFFF");
+        }
+    }
 
     public void ChangeTableSprite(string direction)
     {
@@ -59,19 +81,18 @@ public class Table : MonoBehaviour {
         {
             tableShape = "Lateral/";
         }
-        string diren = $"{FoodDicctionary.prefabSpriteDirection}Table/{tableShape}{direction}";
-        Debug.Log($"dir is {diren}");
+
         spriteRenderer.sprite = Resources.Load<Sprite>($"{FoodDicctionary.prefabSpriteDirection}Table/{tableShape}{direction}");
     }
 
     public void CreateALogo(string spriteName)
     {
-        GameObject newLogo = new GameObject();
-        newLogo.transform.parent = trayPositioner;
-        newLogo.transform.localScale = sizeOfUpperSprite;
-        newLogo.transform.position = newLogo.transform.parent.position;
-        newLogo.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
-        SpriteRenderer spr = newLogo.AddComponent<SpriteRenderer>();
+        logo = new GameObject();
+        logo.transform.parent = trayPositioner;
+        logo.transform.localScale = sizeOfUpperSprite;
+        logo.transform.position = logo.transform.parent.position;
+        logo.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+        SpriteRenderer spr = logo.AddComponent<SpriteRenderer>();
         
         spr.sprite = LoadSprite.GetSpriteFromSpriteSheet($"{FoodDicctionary.prefabSpriteDirection}Logos/Logos", spriteName);
         spr.sortingOrder = spriteRenderer.sortingOrder + 1;
@@ -86,6 +107,17 @@ public class Table : MonoBehaviour {
         SpriteRenderer spr = colorShower.AddComponent<SpriteRenderer>();
         spr.sprite = Resources.Load<Sprite>($"{FoodDicctionary.prefabSpriteDirection}{KindOfSprite}");
         spr.sortingOrder = spriteRenderer.sortingOrder + 1;
+    }
+
+    public void CreateAMachine(string typeOfMachine)
+    {
+        machine = Instantiate(Resources.Load<GameObject>($"{FoodDicctionary.prefabGameObjectDirection}{FoodDicctionary.machinesDirection}{typeOfMachine}"));
+        machine.transform.parent = trayPositioner;
+        machine.transform.position = trayPositioner.transform.position;
+
+        UnityArmatureComponent armature = machine.GetComponentInChildren<UnityArmatureComponent>();
+        armature.sortingOrder = spriteRenderer.sortingOrder + 1;
+        armature.animation.Play("Idle");
     }
 
     public void CreateAUpperSprite(Color colorOfSprite, string KindOfSprite)
@@ -108,7 +140,6 @@ public class Table : MonoBehaviour {
 
     public void MoveToTheTable()
     {
-        Debug.Log("its clicked");
         chef.MoveTheChef(this);
     }
 
@@ -136,6 +167,10 @@ public class Table : MonoBehaviour {
         spriteRenderer.color = colorToShow;
     }
 
+    /// <summary>
+    /// Sets the tray as a game object on the table
+    /// </summary>
+    /// <param name="tray"></param>
     public void SetTray(GameObject tray)
     {
         trayOn = tray;
@@ -155,6 +190,8 @@ public class Table : MonoBehaviour {
             {
                 Debug.Log("Can merge trays");
                 chef.GetHoldingTray().MergeTrays(trayOn.GetComponent<Tray>());
+                hasSomethingOn = false;
+                trayOn = null;
             }
         }
     }
@@ -166,5 +203,26 @@ public class Table : MonoBehaviour {
             hasSomethingOn = true;
             chef.PutATray(trayPositioner);
         }
+    }
+
+    public void RestoreToOriginal()
+    {
+        if (logo != null)
+        {
+            Destroy(logo);
+            logo = null;
+        }
+        if (machine != null)
+        {
+            Destroy(machine);
+            machine = null;
+        }
+        if (trayOn != null)
+        {
+            Destroy(trayOn);
+            trayOn = null;
+        }
+
+        hasSomethingOn = false;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using DragonBones;
 using System.Collections;
 
 public class TableChopper : TableInstrument
@@ -19,8 +20,10 @@ public class TableChopper : TableInstrument
     public override void Initializing()
     {
         base.Initializing();
-        spriteRenderer.color = Color.blue;
-        numberOfIngridients = 1;
+        Debug.Log($"{name} this is a icecream machine table");
+
+        CreateAMachine(FoodDicctionary.chopperMachine);
+        armature = machine.transform.GetChild(0).GetComponent<UnityArmatureComponent>();
     }
 
     override public void DoTheAction()
@@ -44,6 +47,7 @@ public class TableChopper : TableInstrument
                         chef.GetHoldingTray().MergeTrays(trayToReturn);
                     }
                 }
+                ingredientsToInput.Clear();
             }
 
         }
@@ -54,12 +58,16 @@ public class TableChopper : TableInstrument
                 if (chef.IsHoldingSomething())
                 {
                     Tray holdTray = chef.GetHoldingTray();
-                    trayToReturn = holdTray;
                     if (holdTray.HasRawIngridient())
                     {
-                        StartTheChopper(holdTray.GetIngridient());
+                        if (holdTray.WhatKindOfIngridientsIs() > 3)
+                        {
+                            trayToReturn = holdTray;
+                            holdTray.HideAllImages();
+                            chef.PutATray(trayPositioner);
+                            StartTheChopper(holdTray.GetIngridient());
+                        }
                     }
-                    chef.PutATray(trayPositioner);
                 }
             }
         }
@@ -73,18 +81,22 @@ public class TableChopper : TableInstrument
             if (ingredientsToInput[0] > 3)
             {
                 thingGoodMade = true;
-                StartCoroutine(ChoppedTheToppings(3.0f));
+                StartCoroutine(ChoppedTheToppings());
             }
         }
     }
 
-    IEnumerator ChoppedTheToppings(float timeToComplete)
+    IEnumerator ChoppedTheToppings()
     {
         workingMachine = true;
-        yield return new WaitForSeconds(timeToComplete);
+        armature.armature.animation.Play(FoodDicctionary.Toppings.AnimationOfChopper(ingredientsToInput[0]),1);
+        while (armature.armature.animation.isPlaying)
+        {
+            yield return null;
+        }
         thingsAreMade = true;
         workingMachine = false;
         trayToReturn.TransformIngridientToTopping();
-        Debug.Log("Done");
+        armature.armature.animation.Play("Idle");
     }
 }

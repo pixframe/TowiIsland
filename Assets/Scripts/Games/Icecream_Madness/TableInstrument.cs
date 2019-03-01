@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DragonBones;
 
 public class TableInstrument : Table
 {
@@ -11,12 +12,14 @@ public class TableInstrument : Table
 
     [System.NonSerialized]
     public bool thingsAreMade;
-    public bool workingMachine;
+    public bool workingMachine = false;
     public bool thingGoodMade;
 
     protected Color colorToReturn;
 
     protected Tray trayToReturn;
+
+    public UnityArmatureComponent armature;
 
     // Use this for initialization
     void Start ()
@@ -27,6 +30,8 @@ public class TableInstrument : Table
     public override void Initializing()
     {
         base.Initializing();
+        ChangeTableSprite(FoodDicctionary.normalTable);
+        ChangeTableColor();
     }
 
 

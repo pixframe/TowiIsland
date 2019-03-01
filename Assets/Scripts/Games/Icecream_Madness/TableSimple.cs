@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿    using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,9 +9,16 @@ public class TableSimple : Table {
     {
         Initializing();
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+    public override void Initializing()
+    {
+        base.Initializing();
+        ChangeTableSprite(FoodDicctionary.normalTable);
+        ChangeTableColor();
+    }
+
+    // Update is called once per frame
+    void Update () {
 		
 	}
 

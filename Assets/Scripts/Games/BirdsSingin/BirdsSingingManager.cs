@@ -521,6 +521,7 @@ public class BirdsSingingManager : MonoBehaviour {
         audioManager.PlayClip(audioBank[bankNumber][currentNest[nestPlayIndex].GetTheNestSong()]);
         currentNest[nestPlayIndex].PlayTheNotes();
         nestPlayIndex++;
+        Debug.Log($"current amount of nest should be {nestsNumber - occupiedNest} but its {currentNest.Count}");
         if (nestPlayIndex < (nestsNumber - occupiedNest))
         {
             Invoke("PlayTheNestSongs", audioManager.ClipDuration() + 1.5f);

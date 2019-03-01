@@ -5,6 +5,7 @@ using Boomlagoon.JSON;
 using System.Collections.Generic;
 using System;
 using System.IO;
+using System.Globalization;
 
 public class LevelSaver : MonoBehaviour {
 
@@ -12,7 +13,6 @@ public class LevelSaver : MonoBehaviour {
     string postURL = Keys.Api_Web_Key + "api/v2/levels/create/";
     JSONObject data;
     JSONObject item;
-    JSONObject jsonToSend;
     JSONObject levelsData;
 
     bool saving = false;
@@ -23,12 +23,13 @@ public class LevelSaver : MonoBehaviour {
 
     SessionManager sessionManager;
 
+    CultureInfo invariantCulture = CultureInfo.InvariantCulture;
+
     // Use this for initialization
     void Start ()
     {
         data = new JSONObject();
         levelsData = new JSONObject();
-        jsonToSend = new JSONObject();
 
         if (FindObjectOfType<SessionManager>())
         {
@@ -60,7 +61,9 @@ public class LevelSaver : MonoBehaviour {
             item = new JSONObject();
         }
 
-        item.Add(key, value);
+        int valueInteger = Mathf.RoundToInt(value * 1000);
+        float fToSave = ((valueInteger / 1000f));
+        item.Add(key, fToSave.ToString(invariantCulture));
     }
     public void AddLevelData(string key, string value)
     {
@@ -122,7 +125,7 @@ public class LevelSaver : MonoBehaviour {
         JSONArray tempJsonArray = new JSONArray();
         for (int i = 0; i < value.Length; i++)
         {
-            tempJsonArray.Add(value[i]);
+            tempJsonArray.Add(value[i].ToString(invariantCulture));
         }
         item.Add(key, tempJsonArray);
     }
@@ -185,7 +188,7 @@ public class LevelSaver : MonoBehaviour {
         JSONArray tempJsonArray = new JSONArray();
         for (int i = 0; i < value.Count; i++)
         {
-            tempJsonArray.Add(value[i]);
+            tempJsonArray.Add(value[i].ToString(invariantCulture));
         }
         item.Add(key, tempJsonArray);
     }
@@ -287,7 +290,7 @@ public class LevelSaver : MonoBehaviour {
             {
                 stringToAdd += "";
             }
-            stringToAdd += listToConvert[i].ToString();
+            stringToAdd += listToConvert[i].ToString(invariantCulture);
         }
         item.Add(key, stringToAdd);
     }
@@ -341,7 +344,7 @@ public class LevelSaver : MonoBehaviour {
             {
                 stringToAdd += "";
             }
-            stringToAdd += listToConvert[i].ToString();
+            stringToAdd += listToConvert[i].ToString(invariantCulture);
         }
         item.Add(key, stringToAdd);
     }
@@ -368,6 +371,10 @@ public class LevelSaver : MonoBehaviour {
 
     public void CreateSaveBlock(string gameKey, float gameTime, int passedLevels, int repeatedLevels, int playedLevels, int sessionNumber)
     {
+        if (sessionManager == null) {
+            Debug.Log("We find no session manager");
+            sessionManager = FindObjectOfType<SessionManager>();
+        }
         game = gameKey;
         JSONObject headerItem = new JSONObject
         {
@@ -417,18 +424,24 @@ public class LevelSaver : MonoBehaviour {
     public void PostProgress()
     {
         saving = true;
-        jsonToSend.Add("jsonToDb", data);
         StartCoroutine(CheckInternetConecction("www.towi.com.mx"));
     }
 
     public void SaveDataOffline()
     {
-        string dataToSave = jsonToSend.ToString();
+        string dataToSave = data.ToString();
+        int gameSavedOffline = PlayerPrefs.GetInt(Keys.Games_Saved);
 
-        string path = $"{Application.persistentDataPath}{sessionManager.activeKid.name}_{sessionManager.activeKid.dataToSave.ToString()}_game_data.txt";
-        sessionManager.activeKid.dataToSave++;
+        string path = $"{Application.persistentDataPath}/{gameSavedOffline}_{Keys.Game_To_Save}";
+        gameSavedOffline++;
+
+        Debug.Log($"We have {gameSavedOffline} jsons to save");
 
         File.WriteAllText(path, dataToSave);
+
+        PlayerPrefs.SetInt(Keys.Games_Saved, gameSavedOffline);
+
+        sessionManager.SaveSession();
     }
 
     IEnumerator CheckInternetConecction(string resource)
@@ -472,6 +485,7 @@ public class LevelSaver : MonoBehaviour {
             if (request.isNetworkError || request.isHttpError)
             {
                 Debug.Log($"the error has the next messsage {request.downloadHandler.text}");
+                SaveDataOffline();
             }
             else
             {

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -13,7 +14,6 @@ public class EvaluationController : MonoBehaviour
     ProgressHandler saveHandler;
     DemoKey key;
     SessionManager sessionManager;
-
 
     //Need Variables to handle the excercises backend
     float secctionTime;
@@ -225,18 +225,21 @@ public class EvaluationController : MonoBehaviour
     {
         saveHandler.AddLevelData("waitroom_correct", good);
         saveHandler.AddLevelData("waitroom_incorrect", bad);
+
         float medium = 0;
         for (int i = 0; i < goodLatencies.Length; i++)
         {
             medium += goodLatencies[i];
         }
         saveHandler.AddLevelData("waitroom_correct_mlatency", FloatDivider(medium, goodLatencies.Length));
+
         medium = 0;
         for (int i = 0; i < badLatencies.Length; i++)
         {
             medium += badLatencies[i];
         }
         saveHandler.AddLevelData("waitroom_incorrect_mlatency", FloatDivider(medium, badLatencies.Length));
+
         saveHandler.AddLevelData("waitroom_tutorial", tutorialsPlayed);
 
         /*saveHandler.AddLevelData("waitRoomCorrectInScreen", goodInScreen);
@@ -278,7 +281,7 @@ public class EvaluationController : MonoBehaviour
             lat += badL[i];
         }
         prom = (lat / badL.Count);
-        saveHandler.AddLevelData("flyplane_incorrect_mlatency", FloatDivider(lat, gGoodL.Count));
+        saveHandler.AddLevelData("flyplane_incorrect_mlatency", FloatDivider(lat, badL.Count));
 
         lat = 0;
         for (int i = 0; i < gGoodL.Count; i++)
@@ -286,7 +289,7 @@ public class EvaluationController : MonoBehaviour
             lat += gGoodL[i];
         }
         prom = (lat / gGoodL.Count);
-        saveHandler.AddLevelData("flyplane_greencorrect_mlatency", FloatDivider(lat, badL.Count));
+        saveHandler.AddLevelData("flyplane_greencorrect_mlatency", FloatDivider(lat, gGoodL.Count));
 
         lat = 0;
         for (int i = 0; i < gBadL.Count; i++)
@@ -393,7 +396,7 @@ public class EvaluationController : MonoBehaviour
         saveHandler.AddLevelData("arrange_time", Mathf.Round(secctionTime));
         saveHandler.AddLevelData("arrange_primacy", (firstPercentage / 3));
         saveHandler.AddLevelData("arrange_recence", (lastpercentage / 3));
-        saveHandler.AddLevelData("arrange_perc_correct", (totalCorrects / (numberOfAssays * nOfStimulus)));
+        saveHandler.AddLevelData("arrange_perc_correct", ((totalCorrects / (numberOfAssays * nOfStimulus))*100f));
         for (int i = 0; i < 2; i++)
         {
             saveHandler.AddLevelData("arrange_storage_efficency" + (i+1).ToString(), goodReapeted[i].Count);

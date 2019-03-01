@@ -3,12 +3,30 @@ using System.Collections;
 
 public class FoodDicctionary
 {
+    public const float icecremPreparationTime = 50f;
+    public const float smoothiePreparationTime = 60f;
+    public const float wafflePreparationTime = 70f;
+
     public static string prefabSpriteDirection = "IcecreamMadness/Sprites/";
+    public static string prefabGameObjectDirection = "IcecreamMadness/Prefabs/";
+    public static string machinesDirection = "Machines/";
     public static string logoDirection = "Logos/Logos";
     public static string ingredientDirection = "Ingredients/Ingredients";
     public static string containersDirection = "Containers/Containers";
     public static string cookedMealDirection = "Cooked/Cooked";
     public static string toppingDirection = "Toppings/Toppings";
+    public const string toppingServedDirection = "ToppingsServed/";
+    public const string helperToppingDirection = "Helpers/Toppings";
+
+    public const string normalTable = "Normal";
+    public const string finishTable = "Talavera";
+    public const string trashTable = "Trash";
+
+
+    public const string icecreamMachine = "IcecreamMachine";
+    public const string blenderMachine = "Blender";
+    public const string trashMachine = "Cocodrile";
+    public const string chopperMachine = "Chopper";
 
     public class Containers
     {
@@ -57,28 +75,28 @@ public class FoodDicctionary
 
     public class RawIngridients
     {
-        public enum KindOfRawIngridient { Ice, Eggs, Milk, Flour, Pineapple, Kiwi, Coconut, Banana, Strawberry }
+        public enum KindOfRawIngridient { Ice, Eggs, Milk, Flour, Pineapple, Kiwi, Orange, Fig, Strawberry }
 
         public static string ShapeOfRawIngridient(int kindOfRawIngridient)
         {
             switch ((KindOfRawIngridient)kindOfRawIngridient)
             {
                 case KindOfRawIngridient.Ice:
-                    return "Hexa";
+                    return "Ice";
                 case KindOfRawIngridient.Eggs:
-                    return "Hexa";
+                    return "Eggs";
                 case KindOfRawIngridient.Milk:
-                    return "Hexa";
+                    return "Milk";
                 case KindOfRawIngridient.Flour:
-                    return "Hexa";
+                    return "Flour";
                 case KindOfRawIngridient.Pineapple:
                     return "Pineapple";
                 case KindOfRawIngridient.Kiwi:
                     return "Kiwi";
-                case KindOfRawIngridient.Coconut:
-                    return "Coconut";
-                case KindOfRawIngridient.Banana:
-                    return "Banana";
+                case KindOfRawIngridient.Orange:
+                    return "Orange";
+                case KindOfRawIngridient.Fig:
+                    return "Fig";
                 case KindOfRawIngridient.Strawberry:
                     return "Strawberry";
                 default:
@@ -91,7 +109,7 @@ public class FoodDicctionary
 
             if (kindOfRawIngridient < 4)
             {
-                return "Ingredients";
+                return "Ingredient";
             }
             else
             {
@@ -123,10 +141,10 @@ public class FoodDicctionary
                 case KindOfRawIngridient.Kiwi:
                     colorToPut = Color.green;
                     break;
-                case KindOfRawIngridient.Coconut:
+                case KindOfRawIngridient.Orange:
                     ColorUtility.TryParseHtmlString("#A100D3", out colorToPut);
                     break;
-                case KindOfRawIngridient.Banana:
+                case KindOfRawIngridient.Fig:
                     colorToPut = Color.yellow;
                     break;
                 case KindOfRawIngridient.Strawberry:
@@ -198,15 +216,64 @@ public class FoodDicctionary
                     return "Pineapple";
                 case RawIngridients.KindOfRawIngridient.Kiwi:
                     return "Kiwi";
-                case RawIngridients.KindOfRawIngridient.Coconut:
-                    return "Coconut";
-                case RawIngridients.KindOfRawIngridient.Banana:
-                    return "Banana";
+                case RawIngridients.KindOfRawIngridient.Orange:
+                    return "Orange";
+                case RawIngridients.KindOfRawIngridient.Fig:
+                    return "Fig";
                 case RawIngridients.KindOfRawIngridient.Strawberry:
                     return "Strawberry";
                 default:
                     return "Triangle";
             }
+        }
+
+        static public string AnimationOfChopper(int kindOfTopping)
+        {
+            switch ((RawIngridients.KindOfRawIngridient)kindOfTopping)
+            {
+                case RawIngridients.KindOfRawIngridient.Pineapple:
+                    return "Piña";
+                case RawIngridients.KindOfRawIngridient.Kiwi:
+                    return "Kiwi";
+                case RawIngridients.KindOfRawIngridient.Orange:
+                    return "Naranja";
+                case RawIngridients.KindOfRawIngridient.Fig:
+                    return "Higo";
+                case RawIngridients.KindOfRawIngridient.Strawberry:
+                    return "Fresa";
+                default:
+                    return "Triangle";
+            }
+        }
+
+        static public Color ColorOfSmoothie(int kindOfTopping)
+        {
+            string colorString = "";
+            switch ((RawIngridients.KindOfRawIngridient)kindOfTopping)
+            {
+                case RawIngridients.KindOfRawIngridient.Pineapple:
+                    colorString = "FBCF3B";
+                    break;
+                case RawIngridients.KindOfRawIngridient.Kiwi:
+                    colorString = "C0E654";
+                    break;
+                case RawIngridients.KindOfRawIngridient.Orange:
+                    colorString = "F9A94B";
+                    break;
+                case RawIngridients.KindOfRawIngridient.Fig:
+                    colorString = "A59CBB";
+                    break;
+                case RawIngridients.KindOfRawIngridient.Strawberry:
+                    colorString = "F28B7A";
+                    break;
+                default:
+                    colorString = "FBCF3B";
+                    break;
+            }
+
+            Color returner;
+            ColorUtility.TryParseHtmlString($"#{colorString}", out returner);
+            return returner;
         }
     }
 }

@@ -35,6 +35,11 @@ public class TableContainers : Table
 
     override public void DoTheAction()
     {
+        base.DoTheAction();
+    }
+
+    public override void DoTheActionIfTheresNothingOn()
+    {
         Tray newTray = Instantiate(Resources.Load<GameObject>("IcecreamMadness/Prefabs/Tray"), chef.trayPositioner.transform).GetComponent<Tray>();
         newTray.SetAContainer(kindOfContainer, shape);
         if (!chef.IsHoldingSomething())
@@ -53,5 +58,10 @@ public class TableContainers : Table
                 Destroy(newTray.gameObject);
             }
         }
+    }
+
+    public override void DoTheActionIfTheresSomethingOn()
+    {
+        base.DoTheActionIfTheresSomethingOn();
     }
 }

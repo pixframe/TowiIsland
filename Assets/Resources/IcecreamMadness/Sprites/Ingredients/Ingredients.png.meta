@@ -1,16 +1,16 @@
 fileFormatVersion: 2
-guid: 814844a54a145304081d0aa616854afc
+guid: 687b48c1bab52e34c9e66c481c90827b
 TextureImporter:
   fileIDToRecycleName:
     21300000: Kiwi
     21300002: Strawberry
     21300004: Pineapple
-    21300006: Coconut
-    21300008: Banana
-    21300010: Flour
-    21300012: Ice
-    21300014: Egg
-    21300016: Milk
+    21300006: Flour
+    21300008: Orange
+    21300010: Fig
+    21300012: Egg
+    21300014: Milk
+    21300016: Ice
   externalObjects: {}
   serializedVersion: 7
   mipmaps:
@@ -54,7 +54,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 150
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -140,18 +140,18 @@ TextureImporter:
       name: Kiwi
       rect:
         serializedVersion: 2
-        x: 12
-        y: 355
-        width: 139
-        height: 138
+        x: 16
+        y: 364
+        width: 133
+        height: 113
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 059615804ea41cd47849c82ae0e663f8
+      spriteID: c155f12d5a20d3d47a779f9b9f1c1b47
       vertices: []
       indices: 
       edges: []
@@ -160,18 +160,18 @@ TextureImporter:
       name: Strawberry
       rect:
         serializedVersion: 2
-        x: 193
-        y: 357
-        width: 134
-        height: 141
+        x: 201
+        y: 368
+        width: 110
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 92d9c076a95a5694f8fa86b3c4f620bf
+      spriteID: 80b9df836c8c711409f29be5940a193c
       vertices: []
       indices: 
       edges: []
@@ -180,58 +180,18 @@ TextureImporter:
       name: Pineapple
       rect:
         serializedVersion: 2
-        x: 375
-        y: 346
-        width: 105
-        height: 162
+        x: 372
+        y: 353
+        width: 113
+        height: 153
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c3509eac40270a24eaab70eaa2e83144
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Coconut
-      rect:
-        serializedVersion: 2
-        x: 11
-        y: 182
-        width: 148
-        height: 117
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 99492e33542c27f4a93681d381f576c5
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Banana
-      rect:
-        serializedVersion: 2
-        x: 181
-        y: 181
-        width: 140
-        height: 152
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d023bd3a919f73e42b09be0538080cfb
+      spriteID: 9045aef1bd32ea84a937ddf79beb8fdd
       vertices: []
       indices: 
       edges: []
@@ -240,38 +200,58 @@ TextureImporter:
       name: Flour
       rect:
         serializedVersion: 2
-        x: 362
-        y: 181
-        width: 126
-        height: 152
+        x: 361
+        y: 179
+        width: 128
+        height: 154
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0445898ce4fbadc468d9c11918eb59bd
+      spriteID: 01fff2a555c647745ba29779bc38be1b
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ice
+      name: Orange
       rect:
         serializedVersion: 2
-        x: 9
-        y: 36
-        width: 152
-        height: 100
+        x: 15
+        y: 189
+        width: 136
+        height: 122
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cb9a8daca8ed9ab48959d7304fdc3f82
+      spriteID: 1f8967f5e3af3d240a20b695f5b92242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fig
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 194
+        width: 113
+        height: 121
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 083036e7724925249a1e5f4bfff4f016
       vertices: []
       indices: 
       edges: []
@@ -280,18 +260,18 @@ TextureImporter:
       name: Egg
       rect:
         serializedVersion: 2
-        x: 208
-        y: 21
-        width: 95
-        height: 130
+        x: 207
+        y: 18
+        width: 97
+        height: 134
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b9495d935c632bc46948103cabcd808d
+      spriteID: ab1e01a3feef1a44880d61d2718837af
       vertices: []
       indices: 
       edges: []
@@ -300,18 +280,38 @@ TextureImporter:
       name: Milk
       rect:
         serializedVersion: 2
-        x: 386
-        y: 3
-        width: 82
-        height: 164
+        x: 383
+        y: 2
+        width: 86
+        height: 166
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 24241fe696c759e4a95bd75c7f9be084
+      spriteID: 0942bca2ed758584a888794d1843a8e9
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ice
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 25
+        width: 155
+        height: 114
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f1dedaadfb271441bb542c243214b78
       vertices: []
       indices: 
       edges: []
@@ -319,7 +319,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 3c74641db8bcdf341bb90c7af79bb4df
+    spriteID: e92a40c748c822e40a45d17245e8adc7
     vertices: []
     indices: 
     edges: []

@@ -4,12 +4,17 @@ using UnityEngine;
 
 public class TableFinish : Table
 {
+    ParticleSystem confettiSystem;
+    ParticleSystem crossesSystem;
+
 	// Use this for initialization
 	void Start ()
     {
         Initializing();
-        ChangeTableSprite("Talavera");
-	}
+        ChangeTableSprite(FoodDicctionary.finishTable);
+        confettiSystem = GameObject.FindGameObjectWithTag("Arrow").GetComponent<ParticleSystem>();
+        crossesSystem = GameObject.FindGameObjectWithTag("Ground").GetComponent<ParticleSystem>();
+    }
 
     // Update is called once per frame
     void Update ()
@@ -21,7 +26,6 @@ public class TableFinish : Table
     {
         base.Initializing();
         spriteRenderer.color = Color.white;
-        Debug.Log("This are finish tables");
     }
 
     override public void DoTheAction()
@@ -32,7 +36,16 @@ public class TableFinish : Table
             if (tempTray.HasAContainer())
             {
                 chef.PutATray(trayPositioner);
-                manager.CompareTrays(tempTray.GetMadeComposition());
+                if (manager.CompareTrays(tempTray.GetMadeComposition()))
+                {
+                    confettiSystem.transform.position = transform.position;
+                    confettiSystem.Play();
+                }
+                else
+                {
+                    crossesSystem.transform.position = transform.position;
+                    crossesSystem.Play();
+                }
             }
             else
             {

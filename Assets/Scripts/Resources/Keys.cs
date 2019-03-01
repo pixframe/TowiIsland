@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Keys : MonoBehaviour {
 
-    //public static string Api_Web_Key = "https://towi.nyx.mx:2443/";
-    public static string Api_Web_Key = "http://35.232.245.131/";
+    public static string Api_Web_Key = "https://towi.nyx.mx:2443/";
+    //public static string Api_Web_Key = "http://35.232.245.131/";
     public static string Try_Connection_Key = "api/levels/connection/";
 
     public static string Active_User_Key = "activeUser";
@@ -70,4 +70,9 @@ public class Keys : MonoBehaviour {
     //Funnel
     public static string Funnel_Games = "funGam";
 
+    //Data Save
+    public const string Game_To_Save = "_game_data.json";
+    public const string Evaluation_To_Save = "_evaluation_data.json";
+    public const string Evaluations_Saved = "evaSav";
+    public const string Games_Saved = "gamSav";
 }

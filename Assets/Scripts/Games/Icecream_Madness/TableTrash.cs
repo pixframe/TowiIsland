@@ -3,6 +3,9 @@ using System.Collections;
 
 public class TableTrash : Table
 {
+    string idleAnim = "Idle";
+    string trowAnim = "Chop";
+
 
     // Use this for initialization
     void Start()
@@ -19,7 +22,15 @@ public class TableTrash : Table
     public override void Initializing()
     {
         base.Initializing();
+        ChangeTableSprite(FoodDicctionary.trashTable);
+        CreateAMachine(FoodDicctionary.trashMachine);
+    }
 
-        spriteRenderer.color = Color.green;
+    public override void DoTheAction()
+    {
+        if (chef.IsHoldingSomething())
+        {
+            chef.PutATray(trayPositioner);
+        }
     }
 }

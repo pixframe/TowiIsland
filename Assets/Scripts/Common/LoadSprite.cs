@@ -6,8 +6,6 @@ public class LoadSprite
 {
     public static Sprite GetSpriteFromSpriteSheet(string spritesheetRoute, string spriteName)
     {
-        Debug.Log($"The route of the sprite is {spritesheetRoute} and the sprite to get is {spriteName}");
-
         var sprites = Resources.LoadAll<Sprite>(spritesheetRoute);
 
         var spriteDicctionary = new Dictionary<string, Sprite>();

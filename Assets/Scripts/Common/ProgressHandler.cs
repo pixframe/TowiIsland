@@ -5,6 +5,7 @@ using Boomlagoon.JSON;
 using System.Collections.Generic;
 using System;
 using System.IO;
+using System.Globalization;
 
 public class ProgressHandler : MonoBehaviour {
 	
@@ -24,21 +25,19 @@ public class ProgressHandler : MonoBehaviour {
 	private string game;
 	private int kidKey;
 	public bool saving=false;
-	SessionManager sessionMng;
+	SessionManager sessionManager;
     LastSceneManager lastSceneManager;
 	bool localGame;
-	
-	public string ToString(){
-		return data.ToString();
-	}
+
+    CultureInfo invariantCulture = CultureInfo.InvariantCulture;
 
 	void OnEnable()
 	{
-        sessionMng = FindObjectOfType<SessionManager>();
-        if (sessionMng != null)
+        sessionManager = FindObjectOfType<SessionManager>();
+        if (sessionManager != null)
         {
-            key = sessionMng.activeKid.userkey;
-            kidKey = sessionMng.activeKid.id;
+            key = sessionManager.activeKid.userkey;
+            kidKey = sessionManager.activeKid.id;
         }
         data = new JSONObject();
         levelsData = new JSONObject();
@@ -48,15 +47,18 @@ public class ProgressHandler : MonoBehaviour {
 		//dataDynamic=new List<string>();
 		//StartCoroutine(GetScores());
 	}
-	void Start(){
-		Debug.Log(DateTime.Today.ToString());
+
+	void Start()
+    {
 		if(!localGame)
 			Sync ();
 	}
-	public void AddLevelData(string key,int value){
+
+	public void AddLevelData(string key,int value)
+    {
 		if (item==null)
 			item = new JSONObject ();
-		item.Add(key,value);
+        item.Add(key, value);
 	}
 	public void AddLevelData(string key,float value){
         if (item == null)
@@ -65,18 +67,21 @@ public class ProgressHandler : MonoBehaviour {
         }
         int valueInteger = Mathf.RoundToInt(value * 1000);
         float fToSave = (( valueInteger/ 1000f));
-		item.Add(key,fToSave.ToString());
+        item.Add(key, fToSave.ToString(invariantCulture));
 	}
+
 	public void AddLevelData(string key,string value){
 		if (item==null)
 			item = new JSONObject ();
 		item.Add(key,value);
 	}
+
 	public void AddLevelData(string key,bool value){
 		if (item==null)
 			item = new JSONObject ();
-		item.Add(key,value);
+        item.Add(key, value);
 	}
+
 	public void AddLevelData(string key,string[] value){
         if (item == null)
         {
@@ -104,7 +109,7 @@ public class ProgressHandler : MonoBehaviour {
 
         for (int i = 0; i < value.Length; i++)
         {
-            stringToGo += value[i].ToString() + ",";
+            stringToGo += value[i].ToString(invariantCulture) + ",";
         }
 
         item.Add(key, stringToGo);
@@ -121,7 +126,7 @@ public class ProgressHandler : MonoBehaviour {
 
         for (int i = 0; i < value.Length; i++)
         {
-            stringToGo += value[i].ToString() + ",";
+            stringToGo += value[i].ToString(invariantCulture) + ",";
         }
 
         item.Add(key, stringToGo);
@@ -187,7 +192,7 @@ public class ProgressHandler : MonoBehaviour {
 
         for (int i = 0; i < value.Count; i++)
         {
-            stringToGo += value[i].ToString() + ",";
+            stringToGo += value[i].ToString(invariantCulture) + ",";
         }
 
         item.Add(key, stringToGo);
@@ -385,7 +390,6 @@ public class ProgressHandler : MonoBehaviour {
             data.Add("levels", item);
 		}
         levelsData = new JSONObject();
-        EmergencySave();
 	}
 
 	public void CreateSaveBlock(string gameKey,float gameTime,int passedLevels,int repeatedLevels,int playedLevels){
@@ -408,7 +412,7 @@ public class ProgressHandler : MonoBehaviour {
         game = gameKey;
         JSONObject headerItem = new JSONObject
         {
-            { "parent_id", sessionMng.activeUser.id},
+            { "parent_id", sessionManager.activeUser.id},
             { "kid_id", kidKey },
             { "game_key", gameKey },
             { "game_time", (int)Mathf.Round(gameTime * 100) / 100 },
@@ -489,11 +493,11 @@ public class ProgressHandler : MonoBehaviour {
     IEnumerator PostEvaluation()
     {
         WWWForm form = new WWWForm();
-        Debug.Log(data.ToString());
         form.AddField("jsonToDb", data.ToString());
-
+        Debug.Log($"the form is \n{form.ToString()}");
         using (UnityWebRequest request = UnityWebRequest.Post(postSuperURL, form))
         {
+            Debug.Log(request.ToString());
             yield return request.SendWebRequest();
 
             if (request.isNetworkError || request.isHttpError)
@@ -507,21 +511,6 @@ public class ProgressHandler : MonoBehaviour {
             FindObjectOfType<EvaluationController>().DataIsSend();
             lastSceneManager.MoveToMenu();
         }
-
-        //WWW hs_post = new WWW(postSuperURL, form);
-
-        //yield return hs_post;
-
-        //Debug.Log(hs_post.text);
-        //if (hs_post.error == null)
-        //{
-        //    Debug.Log("Super Ok");
-        //}
-        //else
-        //{
-        //    EmergencySave();
-        //}
-        //lastSceneManager.MoveToMenu();
     }
 
     public void PostProgress(bool rank){
@@ -558,25 +547,25 @@ public class ProgressHandler : MonoBehaviour {
 				switch(game)
 				{
 					case "ArbolMusical":
-						sessionMng.activeKid.dontSyncArbolMusical=0;
+						sessionManager.activeKid.dontSyncArbolMusical=0;
 					break;
 					case "Rio":
-						sessionMng.activeKid.dontSyncRio=0;
+						sessionManager.activeKid.dontSyncRio=0;
 					break;
 					case "ArenaMagica":
-						sessionMng.activeKid.dontSyncArenaMagica=0;
+						sessionManager.activeKid.dontSyncArenaMagica=0;
 					break;
 					case "DondeQuedoLaBolita":
-						sessionMng.activeKid.dontSyncDondeQuedoLaBolita=0;
+						sessionManager.activeKid.dontSyncDondeQuedoLaBolita=0;
 					break;
 					case "JuegoDeSombras":
-						sessionMng.activeKid.dontSyncSombras=0;
+						sessionManager.activeKid.dontSyncSombras=0;
 					break;
 					case "Tesoro":
-						sessionMng.activeKid.dontSyncTesoro=0;
+						sessionManager.activeKid.dontSyncTesoro=0;
 					break;
 				}
-				sessionMng.SaveSession();
+				sessionManager.SaveSession();
 
 				post_url = rankURL;
 
@@ -640,13 +629,13 @@ public class ProgressHandler : MonoBehaviour {
 			{
 				Debug.Log("Sync Incomplete");
 				Debug.Log(syncData.ToString());
-				sessionMng.activeKid.offlineData=syncData.ToString();
-				sessionMng.SaveSession();
+				sessionManager.activeKid.offlineData=syncData.ToString();
+				sessionManager.SaveSession();
 			}else{
 				Debug.Log("Sync Complete");
 				Debug.Log(syncData.ToString());
-				sessionMng.activeKid.offlineData="";
-				sessionMng.SaveSession();
+				sessionManager.activeKid.offlineData="";
+				sessionManager.SaveSession();
 			}
 		} else 
 		{
@@ -656,9 +645,9 @@ public class ProgressHandler : MonoBehaviour {
 	}
 	 
 	void SavePending(){
-        if (sessionMng)
+        if (sessionManager)
         {
-            string offlineData = sessionMng.activeKid.offlineData;
+            string offlineData = sessionManager.activeKid.offlineData;
             if (offlineData != "")
             {
                 JSONObject jsonOffline = JSONObject.Parse(offlineData);
@@ -666,8 +655,8 @@ public class ProgressHandler : MonoBehaviour {
                 jsonOffline.GetArray("pending");
                 jsonOfflineArray.Add(data);
                 jsonOffline["pending"] = jsonOfflineArray;
-                sessionMng.activeKid.offlineData = jsonOffline.ToString();
-                sessionMng.SaveSession();
+                sessionManager.activeKid.offlineData = jsonOffline.ToString();
+                sessionManager.SaveSession();
             }
             else
             {
@@ -675,19 +664,19 @@ public class ProgressHandler : MonoBehaviour {
                 JSONArray jsonOfflineArray = new JSONArray();
                 jsonOfflineArray.Add(data);
                 jsonOffline.Add("pending", jsonOfflineArray);
-                sessionMng.activeKid.offlineData = jsonOffline.ToString();
-                sessionMng.SaveSession();
+                sessionManager.activeKid.offlineData = jsonOffline.ToString();
+                sessionManager.SaveSession();
             }
-            JSONObject jsontemp = JSONObject.Parse(sessionMng.activeKid.offlineData);
+            JSONObject jsontemp = JSONObject.Parse(sessionManager.activeKid.offlineData);
             Debug.Log(jsontemp.ToString());
             Debug.Log(jsontemp["pending"].ToString());
         }
 	}
 
 	void Sync(){
-		if(!localGame && sessionMng)
+		if(!localGame && sessionManager)
 		{
-			string pendingData = sessionMng.activeKid.offlineData;
+			string pendingData = sessionManager.activeKid.offlineData;
 			if(pendingData!="")
 			{
 				JSONObject jsonData=JSONObject.Parse(pendingData);
@@ -742,14 +731,20 @@ public class ProgressHandler : MonoBehaviour {
 
     public void EmergencySave()
     {
-        //Here will set all the content that will be shared
-        string content = data.ToString();
 
-        //This will set the path of where the emergency data will be save
-        string path = $"{Application.persistentDataPath}/{sessionMng.activeKid.id}_evaluation_local_save.json";
+        string dataToSave = data.ToString();
+        int evaluationSavedOffline = PlayerPrefs.GetInt(Keys.Evaluations_Saved);
 
-        //We crete the file or overwrited
-        File.WriteAllText(path, content);
+        string path = $"{Application.persistentDataPath}/{evaluationSavedOffline}_{Keys.Evaluation_To_Save}";
+        evaluationSavedOffline++;
+
+        Debug.Log($"We have {evaluationSavedOffline} jsons to save");
+
+        File.WriteAllText(path, dataToSave);
+
+        PlayerPrefs.SetInt(Keys.Games_Saved, evaluationSavedOffline);
+
+        sessionManager.SaveSession();
 
     }
 

@@ -19,8 +19,6 @@ public class TableIngredients : Table
     {
         base.Initializing();
 
-        ChangeTheColor("FFFFFF");
-
         ingridientShape = FoodDicctionary.RawIngridients.ShapeOfRawIngridient(ingridientNumber);
 
         ChangeTableSprite(FoodDicctionary.RawIngridients.ShapeOfContainerTable(ingridientNumber));

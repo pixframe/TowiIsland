@@ -125,6 +125,10 @@ public class AgeAndBuy : MonoBehaviour {
         if(IsInputCorrect()){
             ageOfPlayer = int.Parse(ageInput.text);
             DateFormat();
+            if (birthdayDateOfPlayer == "")
+            {
+                birthdayDateOfPlayer = "NA";
+            }
             evaluationController.SaveAgeProgress(ageOfPlayer, birthdayDateOfPlayer, latencyTimer);
             StartBuyActivity();
         }

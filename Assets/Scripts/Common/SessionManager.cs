@@ -24,6 +24,8 @@ public class SessionManager : MonoBehaviour
     string idStrings;
     int kidsIAP;
 
+    bool downlodingData;
+
     Firebase.FirebaseApp firebaseApp;
 
     void Awake()
@@ -128,6 +130,11 @@ public class SessionManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    public bool IsDownlodingData()
+    {
+        return downlodingData;
     }
 
     public int GetNumberOfUsers()
@@ -479,6 +486,7 @@ public class SessionManager : MonoBehaviour
     {
         //Get the data
         string data = PlayerPrefs.GetString("sessions");
+        Debug.Log(data);
         //If not blank then load it
         if (!string.IsNullOrEmpty(data))
         {
@@ -507,9 +515,12 @@ public class SessionManager : MonoBehaviour
     IEnumerator PostSyncProfiles(string key)
     {
         string post_url = syncProfileURL;
+        downlodingData = true;
 
         WWWForm form = new WWWForm();
         form.AddField("userKey", key);
+
+        Debug.Log("We are syncing the game");
 
         using (UnityWebRequest request = UnityWebRequest.Post(syncProfileURL, form))
         {
@@ -523,9 +534,16 @@ public class SessionManager : MonoBehaviour
             {
                 Debug.Log($"this is the sync response: \n{request.downloadHandler.text}");
                 JSONArray kids = JSONArray.Parse(request.downloadHandler.text);
-                activeUser.kids.Clear();
                 bool setType = false;
                 bool needStoreSync = false;
+
+                var cidsOfActiveKids = new List<int>();
+
+                foreach (Kid k in activeUser.kids)
+                {
+                    cidsOfActiveKids.Add(k.id);
+                }
+
                 for (int i = 0; i < kids.Length; i++)
                 {
                     JSONObject kidObj = kids[i].Obj;
@@ -534,10 +552,18 @@ public class SessionManager : MonoBehaviour
 
                     int cid = (int)kidObj.GetNumber("cid");
                     string kidName = kidObj.GetString("name");
+                    int index;
 
-                    AddKid(cid, kidName, activeUser.userkey, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial"));
+                    if (!cidsOfActiveKids.Contains(cid))
+                    {
+                        AddKid(cid, kidName, activeUser.userkey, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial"));
+                        index = activeUser.kids.Count - 1;
+                    }
+                    else
+                    {
+                        index = cidsOfActiveKids.IndexOf(cid);
+                    }
 
-                    int index = activeUser.kids.Count - 1;
                     activeUser.kids[index].kiwis = (int)kidObj.GetNumber("kiwis");
                     if (kidObj.GetString("avatar") != null)
                     {
@@ -610,108 +636,6 @@ public class SessionManager : MonoBehaviour
                 SaveSession();
             }
         }
-  //      WWW hs_post = new WWW(post_url, form);
-  //      yield return hs_post;
-		//Debug.Log(hs_post.text);
-  //      if (hs_post.error == null)
-  //      {
-  //          JSONArray kids = JSONArray.Parse(hs_post.text);
-  //          activeUser.kids.Clear();
-  //          bool setType = false;
-  //          bool needStoreSync = false;
-  //          for (int i = 0; i < kids.Length; i++)
-  //          {
-  //              JSONObject kidObj = kids[i].Obj;
-  //              JSONArray activeMissions = kidObj.GetArray("activeMissions");
-  //              JSONArray buyedItems = kidObj.GetArray("islandShoppingList");
-
-  //              int cid = (int)kidObj.GetNumber("cid");
-  //              string kidName = kidObj.GetString("name");
-
-  //              AddKid(cid, kidName, activeUser.userkey, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial"));
-
-  //              int index = activeUser.kids.Count - 1;
-  //              activeUser.kids[index].kiwis = (int)kidObj.GetNumber("kiwis");
-  //              if (kidObj.GetString("avatar") != null)
-  //              {
-  //                  activeUser.kids[index].avatar = kidObj.GetString("avatar").ToLower();
-  //              }
-  //              else
-  //              {
-  //                  activeUser.kids[index].avatar = "koala";
-  //              }
-  //              activeUser.kids[index].avatarClothes = kidObj.GetString("avatarClothes");
-  //              activeUser.kids[index].ownedItems = kidObj.GetString("ownedItems");
-  //              activeUser.kids[index].age = (int)kidObj.GetNumber("age");
-  //              activeUser.kids[index].activeMissions.Clear();
-
-  //              for (int o = 0; o < activeMissions.Length; o++)
-  //              {
-  //                  activeUser.kids[index].activeMissions.Add(activeMissions[o].Str);
-  //              }
-
-  //              activeUser.kids[index].activeDay = (int)kidObj.GetNumber("activeDay");
-  //              activeUser.kids[index].ageSet = true;
-  //              activeUser.kids[index].birdsFirst = kidObj.GetBoolean("arbolFirstTime");
-  //              activeUser.kids[index].lavaFirst = kidObj.GetBoolean("sombrasFirstTime");
-  //              activeUser.kids[index].monkeyFirst = kidObj.GetBoolean("bolitaFirstTime");
-  //              activeUser.kids[index].riverFirst = kidObj.GetBoolean("rioFirstTime");
-  //              activeUser.kids[index].sandFirst = kidObj.GetBoolean("arenaFirstTime");
-  //              activeUser.kids[index].treasureFirst = kidObj.GetBoolean("tesoroFirstTime");
-  //              activeUser.kids[index].testAvailable = kidObj.GetBoolean("testAvailable");
-  //              activeUser.kids[index].sandLevelSet = kidObj.GetBoolean("arenaLevelSet");
-
-  //              for (int o = 0; o < buyedItems.Length; o++)
-  //              {
-  //                  activeUser.kids[index].buyedIslandObjects.Add((int)buyedItems[o].Number);
-  //              }
-
-  //              if (activeUser.kids[index].birdsFirst || activeUser.kids[index].lavaFirst || activeUser.kids[index].monkeyFirst || activeUser.kids[index].riverFirst || activeUser.kids[index].sandFirst || activeUser.kids[index].treasureFirst)
-  //              {
-  //                  activeUser.kids[index].anyFirstTime = true;
-  //              }
-  //              else
-  //              {
-  //                  activeUser.kids[index].anyFirstTime = false;
-  //              }
-  //              string tyep = kidObj.GetString("suscriptionType");
-  //              if (tyep == "monthly" || tyep == "quarterly")
-  //              {
-  //                  setType = true;
-  //              }
-  //              else if (tyep == "monthly_inApp" || tyep == "quarterly_inApp")
-  //              {
-  //                  activeUser.kids[index].isIAPSubscribed = true;
-  //              }
-  //              if (activeKid != null)
-  //              {
-  //                  if (activeKid.id == cid)
-  //                  {
-  //                      SyncChildLevels();
-  //                  }
-  //              }
-  //          }
-  //          if (!setType)
-  //          {
-  //              activeUser.isPossibleBuyIAP = true;
-  //          }
-  //          if (needStoreSync)
-  //          {
-  //              idStrings = GetKidsIds();
-  //              menuManager.UpdateIAPSubscription(idStrings, kidsIAP);
-  //          }
-  //          SaveSession();
-  //          /*if (jsonObject.GetValue("code").Str == "200")
-  //          {
-  //              JSONArray kids = jsonObject.GetValue("profiles").Array;
-
-  //          }*/
-  //      }
-  //      else
-  //      {
-  //          Debug.Log(hs_post.error);
-  //          Debug.Log(hs_post.text);
-  //      }
     }
 
     public void UpdateProfile()
@@ -859,6 +783,7 @@ public class SessionManager : MonoBehaviour
 
     IEnumerator PostChildSyncLevels()
     {
+        downlodingData = true;
         string post_url = syncLevelsURL;
         DateTime today = DateTime.Now;
 
@@ -867,95 +792,120 @@ public class SessionManager : MonoBehaviour
         form.AddField("cid", activeKid.id);
         form.AddField("date", String.Format("{0:0000}-{1:00}-{2:00}", today.Year, today.Month, today.Day));
         //WWW hs_post = new WWW(post_url);
-        WWW hs_post = new WWW(post_url, form);
-        yield return hs_post;
 
-        if (hs_post.error == null)
+        using (UnityWebRequest request = UnityWebRequest.Post(syncLevelsURL, form))
         {
-            JSONObject response = JSONObject.Parse(hs_post.text);
-            if (response["code"].Str == "200")
+            yield return request.SendWebRequest();
+            if (request.isHttpError || request.isNetworkError)
             {
 
-                activeKid.birdsDifficulty = (int)response["arbolMusicalLevel"].Number;
-                activeKid.birdsLevel = (int)response["arbolMusicalSublevel"].Number;
-                activeKid.riverDifficulty = (int)response["rioLevel"].Number;
-                activeKid.riverLevel = (int)response["rioSublevel"].Number;
-                activeKid.sandDifficulty = (int)response["arenaMagicaLevel"].Number;
-                activeKid.sandLevel = (int)response["arenaMagicaSublevel"].Number;
-                activeKid.sandLevel2 = (int)response["arenaMagicaSublevel2"].Number;
-                activeKid.sandLevel3 = (int)response["arenaMagicaSublevel3"].Number;
-                activeKid.monkeyDifficulty = (int)response["monkeyLevel"].Number;
-                activeKid.monkeyLevel = (int)response["monkeySublevel"].Number;
-                activeKid.lavaDifficulty = (int)response["sombrasLevel"].Number;
-                activeKid.laveLevel = (int)response["sombrasSublevel"].Number;
-                activeKid.treasureDifficulty = (int)response["tesoroLevel"].Number;
-                activeKid.treasureLevel = (int)response["tesoroSublevel"].Number;
+            }
+            else
+            {
+                JSONObject response = JSONObject.Parse(request.downloadHandler.text);
 
+                //Birds Level Set
+                int birdsDifficulty = (int)response["arbolMusicalLevel"].Number;
+                int birdsLevel = (int)response["arbolMusicalSublevel"].Number;
+                SetTheCorrectLevel(ref activeKid.birdsDifficulty, ref activeKid.birdsLevel, birdsDifficulty, birdsLevel);
 
+                //River Level Set
+                int riverDifficulty = (int)response["rioLevel"].Number;
+                int riverLevel = (int)response["rioSublevel"].Number;
+                SetTheCorrectLevel(ref activeKid.riverDifficulty, ref activeKid.riverLevel, riverDifficulty, riverLevel);
 
-                /*if (activeKid.dontSyncArbolMusical == 0)
-                {
-                    activeKid.arbolMusicalLevel = (int)response["arbolMusicalLevel"].Number;
-                    activeKid.arbolMusicalSublevel = (int)response["arbolMusicalSublevel"].Number;
-                }
-                if (activeKid.dontSyncRio == 0)
-                {
-                    activeKid.rioLevel = int.Parse(response["rioLevel"].Str);
-                    activeKid.rioSublevel = int.Parse(response["rioSublevel"].Str);
-                }
-                if (activeKid.dontSyncArenaMagica == 0)
-                {
-                    activeKid.arenaMagicaLevel = int.Parse(response["arenaMagicaLevel"].Str);
-                    activeKid.arenaMagicaSublevel = int.Parse(response["arenaMagicaSublevel"].Str);
-                }
-                if (activeKid.dontSyncDondeQuedoLaBolita == 0)
-                {
-                    activeKid.monkeyLevel = int.Parse(response["monkeyLevel"].Str);
-                    activeKid.monkeySublevel = int.Parse(response["monkeySublevel"].Str);
-                }
-                if (activeKid.dontSyncSombras == 0)
-                {
-                    activeKid.sombrasLevel = int.Parse(response["sombrasLevel"].Str);
-                    activeKid.sombrasSublevel = int.Parse(response["sombrasSublevel"].Str);
-                }
-                if (activeKid.dontSyncTesoro == 0)
-                {
-                    activeKid.tesoroLevel = int.Parse(response["tesoroLevel"].Str);
-                    activeKid.tesoroSublevel = int.Parse(response["tesoroSublevel"].Str);
-                }*/
+                //Monkey Level Set
+                int monekeyDifficulty = (int)response["monkeyLevel"].Number;
+                int monekeyLevel = (int)response["monkeySublevel"].Number;
+                SetTheCorrectLevel(ref activeKid.monkeyDifficulty, ref activeKid.monkeyLevel, monekeyDifficulty, monekeyLevel);
 
-                /*activeKid.playedArbolMusical = int.Parse(response["arbolToday"].Str);
-                activeKid.playedRio = int.Parse(response["rioToday"].Str);
-                activeKid.playedArenaMagica = int.Parse(response["arenaToday"].Str);
-                activeKid.playedDondeQuedoLaBolita = int.Parse(response["monkeyToday"].Str);
-                activeKid.playedSombras = int.Parse(response["sombrasToday"].Str);
-                activeKid.playedTesoro = int.Parse(response["tesoroToday"].Str);*/
+                //Lava Level Set
+                int lavaDifficulty = (int)response["sombrasLevel"].Number;
+                int lavaLevel = (int)response["sombrasSublevel"].Number;
+                SetTheCorrectLevel(ref activeKid.lavaDifficulty, ref activeKid.laveLevel, lavaDifficulty, lavaLevel);
 
-                /*if (sessionMng.activeKid.playedArbolMusical >= TopArbolMusical)
-                    sessionMng.activeKid.blockedArbolMusical = 1;
-                if (sessionMng.activeKid.playedRio >= TopRio)
-                    sessionMng.activeKid.blockedRio = 1;
-                if (sessionMng.activeKid.playedArenaMagica >= TopArenaMagica)
-                    sessionMng.activeKid.blockedArenaMagica = 1;
-                if (sessionMng.activeKid.playedDondeQuedoLaBolita >= TopMonkey)
-                    sessionMng.activeKid.blockedDondeQuedoLaBolita = 1;
-                if (sessionMng.activeKid.playedSombras >= TopSombras)
-                    sessionMng.activeKid.blockedSombras = 1;
-                if (sessionMng.activeKid.playedTesoro >= TopTesoro)
-                    sessionMng.activeKid.blockedTesoro = 1;
+                //Treasure Level Set
+                int treasureDifficulty = (int)response["tesoroLevel"].Number;
+                int treasureLevel = (int)response["tesoroSublevel"].Number;
+                SetTheCorrectLevel(ref activeKid.treasureDifficulty, ref activeKid.treasureLevel, treasureDifficulty, treasureLevel);
 
-                sessionMng.SaveSession();
+                //Sand Level Set
+                int sandDifficulty = (int)response["arenaMagicaLevel"].Number;
+                int sandLevelA = (int)response["arenaMagicaSublevel"].Number;
+                int sandLevelB = (int)response["arenaMagicaSublevel2"].Number;
+                int sandLevelC = (int)response["arenaMagicaSublevel3"].Number;
+                SetTheCorrectLevel(ref activeKid.sandDifficulty, sandDifficulty);
+                SetTheCorrectLevel(ref activeKid.sandLevel, sandLevelA);
+                SetTheCorrectLevel(ref activeKid.sandLevel2, sandLevelB);
+                SetTheCorrectLevel(ref activeKid.sandLevel3, sandLevelC);
 
-                main.UpdateBlocked();*/
-            }  
+            }
+        }
+
+        downlodingData = false;
+        //    WWW hs_post = new WWW(post_url, form);
+        //yield return hs_post;
+
+        //if (hs_post.error == null)
+        //{
+        //    JSONObject response = JSONObject.Parse(hs_post.text);
+        //    if (response["code"].Str == "200")
+        //    {
+
+        //        activeKid.birdsDifficulty = (int)response["arbolMusicalLevel"].Number;
+        //        activeKid.birdsLevel = (int)response["arbolMusicalSublevel"].Number;
+        //        activeKid.riverDifficulty = (int)response["rioLevel"].Number;
+        //        activeKid.riverLevel = (int)response["rioSublevel"].Number;
+        //        activeKid.sandDifficulty = (int)response["arenaMagicaLevel"].Number;
+        //        activeKid.sandLevel = (int)response["arenaMagicaSublevel"].Number;
+        //        activeKid.sandLevel2 = (int)response["arenaMagicaSublevel2"].Number;
+        //        activeKid.sandLevel3 = (int)response["arenaMagicaSublevel3"].Number;
+        //        activeKid.monkeyDifficulty = (int)response["monkeyLevel"].Number;
+        //        activeKid.monkeyLevel = (int)response["monkeySublevel"].Number;
+        //        activeKid.lavaDifficulty = (int)response["sombrasLevel"].Number;
+        //        activeKid.laveLevel = (int)response["sombrasSublevel"].Number;
+        //        activeKid.treasureDifficulty = (int)response["tesoroLevel"].Number;
+        //        activeKid.treasureLevel = (int)response["tesoroSublevel"].Number;
+        //    }  
+        //}
+        //else
+        //{
+        //    Debug.Log(hs_post.error);
+        //    Debug.Log(hs_post.text);
+        //}
+        SaveSession();
+    }
+
+    void SetTheCorrectLevel(ref int difficulty, ref int level, int difficltyFromWeb, int levelFromWeb)
+    {
+        if (difficulty < difficltyFromWeb)
+        {
+            difficulty = difficltyFromWeb;
+            level = levelFromWeb;
+            Debug.Log("We set a web data");
+        }
+        else if (difficulty == difficltyFromWeb)
+        {
+            if (level < levelFromWeb)
+            {
+                level = levelFromWeb;
+            }
+            Debug.Log("We set a web data");
         }
         else
         {
-            Debug.Log(hs_post.error);
-            Debug.Log(hs_post.text);
+            Debug.Log("We stick to the local data");
         }
-        SaveSession();
     }
+
+    void SetTheCorrectLevel(ref int level, int levelFromWeb)
+    {
+        if (levelFromWeb > level)
+        {
+            level = levelFromWeb;
+        }
+    }
+
     //
     [System.Serializable]
     public class User
@@ -1065,8 +1015,6 @@ public class SessionManager : MonoBehaviour
         public int extraField1;
         public int extraField2;
 
-        public int dataToSave;
-
         public bool syncProfile = true;
 
         public bool birdsFirst;
@@ -1159,8 +1107,6 @@ public class SessionManager : MonoBehaviour
             xmlTesoro = "";
 
             syncProfile = true;
-
-            dataToSave = 0;
 
             birdsFirst = true;
             lavaFirst = true;

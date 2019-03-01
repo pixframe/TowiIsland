@@ -73,7 +73,7 @@ public class MonkeyHidingManager : MonoBehaviour {
 
     List<MonkeyController> monkeys = new List<MonkeyController>();
     List<MonkeyController> monkeysHolders = new List<MonkeyController>();
-    List<GameObject> stimulus = new List<GameObject>();
+    List<GameObject> totalStimulus = new List<GameObject>();
     List<GameObject> tempMonkeys = new List<GameObject>();
     List<GameObject> tempStimulus = new List<GameObject>();
     List<GameObject> finalMonkeys = new List<GameObject>();
@@ -137,6 +137,10 @@ public class MonkeyHidingManager : MonoBehaviour {
         }
 	}
 
+
+    #region SetUps
+
+    #endregion
     void GetLevel()
     {
         totalNumberOfAssays = numberOfAssays;
@@ -339,7 +343,7 @@ public class MonkeyHidingManager : MonoBehaviour {
 
         for (int i = 0; i < stimulusManager.transform.childCount; i++)
         {
-            stimulus.Add(stimulusManager.transform.GetChild(i).gameObject);
+            totalStimulus.Add(stimulusManager.transform.GetChild(i).gameObject);
         }
 
         if (numberOfMonekys == 4)
@@ -366,16 +370,31 @@ public class MonkeyHidingManager : MonoBehaviour {
             tempMonkeys[i].GetComponent<MonkeyController>().SetPosition(positions[i].transform.position);
             finalMonkeys.Add(tempMonkeys[i]);
         }
-        for (int i = 0; i < stimulus.Count; i++) {
-            tempStimulus.Add(stimulus[i]);
-            tempStimulusNums.Add(i);
+
+        for (int i = 0; i < totalStimulus.Count; i++)
+        {
+            tempStimulus.Add(totalStimulus[i]);
+            int x = i;
+            tempStimulusNums.Add(x);
         }
-        for (int i = 0; i < numberOfObjects; i++) {
+
+        for (int i = 0; i < numberOfObjects; i++)
+        {
             int randomize = UnityEngine.Random.Range(0, tempStimulus.Count);
             finalStimulus.Add(tempStimulus[randomize]);
             stimulusNumbers.Add(tempStimulusNums[randomize]);
             tempStimulus.Remove(tempStimulus[randomize]);
             tempStimulusNums.Remove(tempStimulusNums[randomize]);
+        }
+
+        foreach (GameObject o in finalStimulus)
+        {
+            Debug.Log($"we have to look for {o.name}");
+        }
+
+        foreach (int i in stimulusNumbers)
+        {
+            Debug.Log($"we have in {numberOfAssays} this stimulus {i}");
         }
     }
 
@@ -496,6 +515,7 @@ public class MonkeyHidingManager : MonoBehaviour {
 
     public void CorrectAnswer(string name)
     {
+
         latencyTime = false;
         if (objectToFind == null)
         {
@@ -507,6 +527,7 @@ public class MonkeyHidingManager : MonoBehaviour {
         }
         else
         {
+            Debug.Log($"object to find is {objectToFind} object grabbed is {name}");
             if (objectToFind == name)
             {
                 numberOfObjectsToFind--;
@@ -679,11 +700,17 @@ public class MonkeyHidingManager : MonoBehaviour {
         }
         monkeys.RemoveRange(0, monkeys.Count);
         monkeysHolders.RemoveRange(0, monkeysHolders.Count);
-        stimulus.RemoveRange(0, stimulus.Count);
+
+        //Clear Area
+
+
+        totalStimulus.RemoveRange(0, totalStimulus.Count);
         tempMonkeys.RemoveRange(0, tempMonkeys.Count);
         tempStimulus.RemoveRange(0, tempStimulus.Count);
         finalMonkeys.RemoveRange(0, finalMonkeys.Count);
         finalStimulus.RemoveRange(0, finalStimulus.Count);
+        stimulusNumbers.Clear();
+        tempStimulusNums.Clear();
         positions.RemoveRange(0, positions.Count);
         latency = 0;
         readyButton.onClick.RemoveAllListeners();
@@ -712,7 +739,8 @@ public class MonkeyHidingManager : MonoBehaviour {
             if (numberOfObjectsToFind == 1)
             {
                 int randomito = Random.Range(0, numberOfObjects);
-                instructionText.text = stringsToShow[8] + " " + stringOfObjects[stimulusNumbers[randomito]];
+                instructionText.text = $"{stringsToShow[8]} {stringOfObjects[stimulusNumbers[randomito]]}";
+                Debug.Log($"you have to find {finalStimulus[randomito].name}");
                 audioManager.PlayClip(instructionsClips[8], stimulusAudioClip[stimulusNumbers[randomito]]);
                 objectToFind = finalStimulus[randomito].name;
                 numberOfObjectToFind = stimulusNumbers[randomito];

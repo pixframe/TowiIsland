@@ -148,71 +148,70 @@ public class MenuManager : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-
         ShowLoading();
-
-        //if (key == null)
-        //{
-        //    StartCoroutine(CheckInternetConnection(Keys.Api_Web_Key + Keys.Try_Connection_Key));
-        //}
-        //else
-        //{
-        //    ShowGameMenu();
-        //}
 
         if (key == null)
         {
-            if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
-            {
-
-                string user = PlayerPrefs.GetString(Keys.Active_User_Key);
-                if (user != "_local")
-                {
-                    if (user != "")
-                    {
-                        ShowLoading();
-                        logInScript.IsActive(user);
-                    }
-                    else
-                    {
-                        ShowLogIn();
-                    }
-                }
-                else
-                {
-                    if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
-                    {
-                        ShowGameMenu();
-                    }
-                    else
-                    {
-                        ShowLogIn();
-                    }
-                }
-            }
-            else
-            {
-                if (alreadyLogged)
-                {
-                    ShowGameMenu();
-                }
-                else
-                {
-                    ShowLogIn();
-                }
-            }
-
-            if (FindObjectOfType<EvaluationController>())
-            {
-                Destroy(FindObjectOfType<EvaluationController>().gameObject);
-                //Destroy(FindObjectOfType<AudioManager>().gameObject);
-            }
-            key = FindObjectOfType<DemoKey>();
+            StartCoroutine(CheckInternetConnection(Keys.Api_Web_Key + Keys.Try_Connection_Key));
         }
         else
         {
             ShowGameMenu();
         }
+
+        //if (key == null)
+        //{
+        //    if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
+        //    {
+
+        //        string user = PlayerPrefs.GetString(Keys.Active_User_Key);
+        //        if (user != "_local")
+        //        {
+        //            if (user != "")
+        //            {
+        //                ShowLoading();
+        //                logInScript.IsActive(user);
+        //            }
+        //            else
+        //            {
+        //                ShowLogIn();
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
+        //            {
+        //                ShowGameMenu();
+        //            }
+        //            else
+        //            {
+        //                ShowLogIn();
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (alreadyLogged)
+        //        {
+        //            ShowGameMenu();
+        //        }
+        //        else
+        //        {
+        //            ShowLogIn();
+        //        }
+        //    }
+
+        //    if (FindObjectOfType<EvaluationController>())
+        //    {
+        //        Destroy(FindObjectOfType<EvaluationController>().gameObject);
+        //        //Destroy(FindObjectOfType<AudioManager>().gameObject);
+        //    }
+        //    key = FindObjectOfType<DemoKey>();
+        //}
+        //else
+        //{
+        //    ShowGameMenu();
+        //}
     }
 
     IEnumerator CheckInternetConnection(string resource)
@@ -299,6 +298,7 @@ public class MenuManager : MonoBehaviour {
                             {
                                 //TODO Create new levels for children if they are offline
                                 Debug.Log("Here we create a new activities");
+                                sessionManager.activeKid.activeMissions = OfflineManager.Create_Levels();
                             }
                         }
                         Debug.Log("Suscription is still available");
@@ -437,7 +437,6 @@ public class MenuManager : MonoBehaviour {
         newKidButton.onClick.AddListener(CreateAKid);
         escapeButton.onClick.AddListener(ShowTheEscapeApp);
         configMenu.languageButton.onClick.AddListener(ShowLenguages);
-        subscribeBackButton.onClick.AddListener(ShowGameMenu);
         configMenu.englishLanguageButton.onClick.AddListener(() => SetLanguageOfGame(configMenu.englishLanguageButton.transform.GetSiblingIndex()));
         configMenu.spanishLanguageButton.onClick.AddListener(() => SetLanguageOfGame(configMenu.spanishLanguageButton.transform.GetSiblingIndex()));
         configMenu.automaticButton.onClick.AddListener(SetDeviceLanguage);
@@ -585,15 +584,25 @@ public class MenuManager : MonoBehaviour {
     //we show the game menu if the player has acces to it
     public void ShowGameMenu()
     {
+        StartCoroutine(ShowMenuInCorrectTime());
+    }
+
+    IEnumerator ShowMenuInCorrectTime()
+    {
+        while (sessionManager.IsDownlodingData())
+        {
+            yield return null;
+        }
+
         PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString());
         HideAllCanvas();
         if (key)
         {
-            gameMenuObject.ShowThisMenu(true, false, IsEvaluationAvilable(), true);
+            gameMenuObject.ShowThisMenu(true, false, IsEvaluationAvilable(), true, true);
         }
         else
         {
-            gameMenuObject.ShowThisMenu(sessionManager.activeKid.isActive, sessionManager.activeKid.isInTrial, IsEvaluationAvilable(), sessionManager.activeKid.anyFirstTime);
+            gameMenuObject.ShowThisMenu(sessionManager.activeKid.isActive, sessionManager.activeKid.isInTrial, IsEvaluationAvilable(), sessionManager.activeKid.anyFirstTime, false);
         }
 
         UpdateKidInMenu();
@@ -661,6 +670,8 @@ public class MenuManager : MonoBehaviour {
         WriteTheText(continueEvaluationButton, 42);
         escapeEvaluationButton.onClick.RemoveAllListeners();
         escapeEvaluationButton.onClick.AddListener(ShowGameMenu);
+        subscribeBackButton.onClick.RemoveAllListeners();
+        subscribeBackButton.onClick.AddListener(ShowGameMenu);
     }
 
     public void ShowYouHaveASuscription()
@@ -679,6 +690,8 @@ public class MenuManager : MonoBehaviour {
         WriteTheText(continueEvaluationButton, 42);
         escapeEvaluationButton.onClick.RemoveAllListeners();
         escapeEvaluationButton.onClick.AddListener(ShowGameMenu);
+        subscribeBackButton.onClick.RemoveAllListeners();
+        subscribeBackButton.onClick.AddListener(ShowGameMenu);
     }
 
     void ShowTheDisclaimer()
@@ -699,6 +712,27 @@ public class MenuManager : MonoBehaviour {
         escapeEvaluationButton.onClick.RemoveAllListeners();
         continueEvaluationButton.onClick.AddListener(LoadEvaluation);
         escapeEvaluationButton.onClick.AddListener(ShowGameMenu);
+        subscribeBackButton.onClick.RemoveAllListeners();
+        subscribeBackButton.onClick.AddListener(ShowGameMenu);
+    }
+
+    public void ShowTheEvaluationNeeds()
+    {
+        HideAllCanvas();
+        subscribeCanvas.SetActive(true);
+        subscribeAnotherCountButton.gameObject.SetActive(false);
+        changeProfileButton.gameObject.SetActive(false);
+        subscribeButton.gameObject.SetActive(false);
+        continueEvaluationButton.gameObject.SetActive(false);
+        escapeEvaluationButton.gameObject.SetActive(true);
+        WriteTheText(subscribeText, 63);
+        warningLogo.gameObject.SetActive(true);
+        suscripctionLogo.gameObject.SetActive(false);
+        WriteTheText(escapeEvaluationButton, 41);
+        escapeEvaluationButton.onClick.RemoveAllListeners();
+        escapeEvaluationButton.onClick.AddListener(ShowGameMenu);
+        subscribeBackButton.onClick.RemoveAllListeners();
+        subscribeBackButton.onClick.AddListener(ShowGameMenu);
     }
 
     public void ShowSingOutWarning()
@@ -719,6 +753,8 @@ public class MenuManager : MonoBehaviour {
         escapeEvaluationButton.onClick.RemoveAllListeners();
         continueEvaluationButton.onClick.AddListener(ShowGameMenu);
         escapeEvaluationButton.onClick.AddListener(CloseSession);
+        subscribeBackButton.onClick.RemoveAllListeners();
+        subscribeBackButton.onClick.AddListener(ShowGameMenu);
     }
 
     void ShowTheEscapeApp()
@@ -737,8 +773,18 @@ public class MenuManager : MonoBehaviour {
         WriteTheText(continueEvaluationButton, 55);
         continueEvaluationButton.onClick.RemoveAllListeners();
         escapeEvaluationButton.onClick.RemoveAllListeners();
-        continueEvaluationButton.onClick.AddListener(ShowGameMenu);
-        escapeEvaluationButton.onClick.AddListener(ShowTheEscapeApp);
+        subscribeBackButton.onClick.RemoveAllListeners();
+        if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
+        {
+            continueEvaluationButton.onClick.AddListener(ShowGameMenu);
+            subscribeBackButton.onClick.AddListener(ShowGameMenu);
+        }
+        else
+        {
+            continueEvaluationButton.onClick.AddListener(ShowLogIn);
+            subscribeBackButton.onClick.AddListener(ShowLogIn);
+        }
+        escapeEvaluationButton.onClick.AddListener(EscapeApplication);
     }
 
     //We show the player that his accoount has not that privelage
@@ -754,6 +800,7 @@ public class MenuManager : MonoBehaviour {
         escapeEvaluationButton.gameObject.SetActive(false);
         warningLogo.gameObject.SetActive(false);
         suscripctionLogo.gameObject.SetActive(true);
+        subscribeBackButton.onClick.RemoveAllListeners();
         subscribeBackButton.onClick.AddListener(ShowGameMenu);
         WriteTheText(subscribeButton, 29);
         if (sessionManager.activeUser.suscriptionsLeft < 1)
@@ -874,10 +921,17 @@ public class MenuManager : MonoBehaviour {
     public void ShowTextRoute()
     {
         logoPushes++;
-        if (logoPushes > 11)
+        if (logoPushes > 11 && logoPushes < 13)
         {
             configMenu.textRoute.gameObject.SetActive(true);
             configMenu.textRoute.text = $"{Application.persistentDataPath}/{sessionManager.activeKid.id}_evaluation_local_save.json";
+            TextEditor textEditor = new TextEditor
+            {
+                text = Application.persistentDataPath
+            };
+            textEditor.SelectAll();
+            textEditor.Copy();
+            Application.OpenURL(Application.persistentDataPath);
         }
     }
 
@@ -1406,6 +1460,11 @@ public class MenuManager : MonoBehaviour {
         }
     }
 
+    public bool IsDemoKeyAvailable()
+    {
+        return key != null;
+    }
+
     public void UpdateIAPSubscription(string kidsIDs, int kids)
     {
         if (myIAPManager.IsStillSuscribed())
@@ -1618,10 +1677,10 @@ class GameMenu
         SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
     }
 
-    public void ShowThisMenu(bool isActiveTheCurrentKid, bool isInTrial, bool isEvaluationAvailable, bool isLeftTrial)
+    public void ShowThisMenu(bool isActiveTheCurrentKid, bool isInTrial, bool isEvaluationAvailable, bool isLeftTrial, bool isDemo)
     {
         mainCanvas.SetActive(true);
-        SetDynamicButtonFunctions(isActiveTheCurrentKid, isInTrial, isEvaluationAvailable, isLeftTrial);
+        SetDynamicButtonFunctions(isActiveTheCurrentKid, isInTrial, isEvaluationAvailable, isLeftTrial, isDemo);
     }
 
     public void HideThisMenu()
@@ -1637,7 +1696,7 @@ class GameMenu
         singOutButton.onClick.AddListener(manager.ShowSingOutWarning);
     }
 
-    public void SetDynamicButtonFunctions(bool isActiveTheCurrentKid, bool isInTrail, bool evaluationAvailable, bool isLeftTrial)
+    public void SetDynamicButtonFunctions(bool isActiveTheCurrentKid, bool isInTrail, bool evaluationAvailable, bool isLeftTrial, bool isDemo)
     {
         gamesButton.onClick.RemoveAllListeners();
         evaluationButton.onClick.RemoveAllListeners();
@@ -1675,6 +1734,7 @@ class GameMenu
                 gamesButton.onClick.AddListener(manager.LoadGameMenus);
                 SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
                 buyButton.onClick.AddListener(() => manager.ShowShop(1));
+                evaluationButton.onClick.AddListener(manager.ShowTheEvaluationNeeds);
             }
             else
             {
@@ -1696,6 +1756,13 @@ class GameMenu
             SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
             SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
             SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
+        }
+
+        if (isDemo)
+        {
+            evaluationButton.gameObject.SetActive(true);
+            evaluationButton.onClick.RemoveAllListeners();
+            evaluationButton.onClick.AddListener(manager.ShowDisclaimer);
         }
     }
 

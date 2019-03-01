@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,10 +25,10 @@ public class GameConfigurator
         switch (levelAcomodation)
         {
             case 0:
-                birds = Random.Range(1, 3);
+                birds = UnityEngine.Random.Range(1, 3);
                 break;
             case 1:
-                birds = Random.Range(3, 5);
+                birds = UnityEngine.Random.Range(3, 5);
                 break;
             case 2:
                 birds = 5;
@@ -609,4 +610,28 @@ public class GameConfigurator
         return new int[] { 0, 0, 0, 3, 3 };
     }
 
+    public static IcecreamConfig GetIcecreamConfiguration(int level)
+    {
+        var asset = Resources.Load("IcecreamMadness/Levels/IcecreamLevels") as TextAsset;
+        Debug.Log(asset.text);
+        string jsonToParse = asset.text;
+        var levels = JsonUtility.FromJson<IcecreamsLevels>(jsonToParse);
+        return levels.icecreamConfigs[level];
+    }
+
+    [Serializable]
+    class IcecreamsLevels
+    {
+        public List<IcecreamConfig> icecreamConfigs = new List<IcecreamConfig>();
+    }
+
+    [Serializable]
+    public class IcecreamConfig
+    {
+        public List<int> kindOfMeals = new List<int>();
+        public int maxNumberOfOrders = 0;
+        public int amoutOfToppings = 0;
+        public int amoutOfChoppers = 0;
+        public float newOrderTiming = 20f;
+    }
 }

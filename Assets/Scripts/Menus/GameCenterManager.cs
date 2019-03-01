@@ -68,6 +68,7 @@ public class GameCenterManager : MonoBehaviour {
     {
         StartCoroutine(LoadLoader());
         sessionManager = FindObjectOfType<SessionManager>();
+        sessionManager = FindObjectOfType<SessionManager>();
         audioPlayer = FindObjectOfType<AudioPlayerForMenus>();
         textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Menus/GameSelectionIsland");
         stringsToShow = TextReader.TextsToShow(textAsset);
@@ -143,6 +144,8 @@ public class GameCenterManager : MonoBehaviour {
             {
                 InternetAvailableUpdate();
             }
+
+            ChangeMenus();
         }
     }
 

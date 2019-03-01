@@ -538,14 +538,15 @@ public class MagicRiverManager : MonoBehaviour {
                     direction = direction1;
                     DropTheObject(specialStimulus[0]);
 
-                    DropATarget(specialStimulus[0], specialType[0], 0);
+                    //DropATarget(specialStimulus[0], specialType[0], 0);
                     isTheObjectDrop = true;
                 }
                 else if (whenToDrop1 + 1 == dropperTime)
                 {
                     int categorie = Random.Range(0, 2);
                     direction = categorie;
-                    SelectATargetToDrop(categorie);
+                    SelectATargetToDrop(categorie, 0);
+                    isTheObjectDrop = true;
                 }
             }
             else
@@ -566,14 +567,15 @@ public class MagicRiverManager : MonoBehaviour {
                         direction = direction2;
                         DropTheObject(specialStimulus[1]);
 
-                        DropATarget(specialStimulus[1], specialType[1], 1);
+                        //DropATarget(specialStimulus[1], specialType[1], 1);
                         isTheObjectDrop = true;
                     }
                     else if (whenToDrop2 + 1 == dropperTime)
                     {
                         int categorie = Random.Range(0, 2);
                         direction = categorie;
-                        SelectATargetToDrop(categorie);
+                        SelectATargetToDrop(categorie, 1);
+                        isTheObjectDrop = true;
                     }
                 }
                 else
@@ -629,18 +631,18 @@ public class MagicRiverManager : MonoBehaviour {
         }
     }
 
-    void SelectATargetToDrop(int category)
+    void SelectATargetToDrop(int category, int stimulNumber)
     {
         int randomObject;
         switch (category)
         {
             case 0:
                 randomObject = Random.Range(0, finalForestStimulus.Count);
-                DropTheObject(finalForestStimulus[randomObject]);
+                DropATarget(finalForestStimulus[randomObject], TypeOfSpecial.AfterObject, stimulNumber);
                 break;
             case 1:
                 randomObject = Random.Range(0, finalBeachStimulus.Count);
-                DropTheObject(finalBeachStimulus[randomObject]);
+                DropATarget(finalBeachStimulus[randomObject], TypeOfSpecial.AfterObject, stimulNumber);
                 break;
         }
     }
@@ -741,10 +743,13 @@ public class MagicRiverManager : MonoBehaviour {
             {
                 if (floatingObject.IsThisATarget())
                 {
+                    Debug.Log($"this is the target and have direction {numToCompare}");
                     if (specialAction[floatingObject.SpecialNumber()] == Actions.Reverse)
                     {
+                        Debug.Log("this is handle the other side");
                         if (reverseMode)
                         {
+                            Debug.Log("This should be call");
                             if (numToCompare == hit.transform.GetSiblingIndex())
                             {
                                 specificGoodAnswer++;
@@ -760,6 +765,7 @@ public class MagicRiverManager : MonoBehaviour {
                         }
                         else
                         {
+                            Debug.Log("This should be call if its not in reverse");
                             if (numToCompare != hit.transform.GetSiblingIndex())
                             {
                                 correctAnswer++;
@@ -1031,6 +1037,8 @@ public class MagicRiverManager : MonoBehaviour {
         specialObjects = (data.Length / 2) - 1;
         totalTargets += specialObjects;
 
+        Debug.Log($"Total targtes are {totalTargets}");
+
         for (int i = 0; i < data.Length - 2; i += 2)
         {
             switch (data[i + 2])
@@ -1065,6 +1073,8 @@ public class MagicRiverManager : MonoBehaviour {
             List<int> whenIDrop = new List<int>();
             numbersForest.Clear();
             numbersBeach.Clear();
+            forestFinalStrings.Clear();
+            beachFinalStrings.Clear();  
             for (int i = 0; i < numberOfObjectToDrop - 1; i++)
             {
                 int z = i;

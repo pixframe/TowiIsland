@@ -327,7 +327,7 @@ public class CoinGameManager : MonoBehaviour {
     {
         int score = CalculateAScore(coins);
         evaluationController.SaveCoinsProgress(coinsInTime, coinsInTimeBad, coinsExtra, coinsExtraBad,
-            score, coinsSelected, timeToGrabCoin, goodGrabbingLatencie, badGrabbingLatencie, difficulty, pausedTimes);
+            score, coinsSelected, timeToGrabCoin, goodGrabbingLatencie, badGrabbingLatencie, goodCoins, pausedTimes);
     }
 
     //Thiw will activate the sound when its needed

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.IO;
+using System.Collections;
 using UnityEngine;
 using Boomlagoon.JSON;
 using UnityEngine.Analytics;
@@ -11,6 +12,7 @@ public class LogInScript : MonoBehaviour {
     string activeUserUrl = Keys.Api_Web_Key + "api/profile/active/";
     string registerUrl = Keys.Api_Web_Key + "api/register/user/";
     string newKidURL = Keys.Api_Web_Key + "api/register/children/";
+    string levelUpdateURL = Keys.Api_Web_Key + "api/v2/levels/create/";
 
     string username;
     string password;
@@ -67,8 +69,10 @@ public class LogInScript : MonoBehaviour {
         //Post the URL to the site and download a result
         using (UnityWebRequest request = UnityWebRequest.Post(post_url, form))
         {
+            Debug.Log("here we send a request");
             yield return request.SendWebRequest();
-
+            Debug.Log("we got a responce");
+            Debug.Log(request.downloadHandler.text);
             if (request.isNetworkError)
             {
                 menuController.LogInMenuActive();
@@ -76,9 +80,10 @@ public class LogInScript : MonoBehaviour {
             }
             else if (request.isHttpError)
             {
+                Debug.Log("this is a error");
                 menuController.LogInMenuActive();
                 JSONObject jsonObj = JSONObject.Parse(request.downloadHandler.text);
-                Debug.Log(jsonObj.ToString());
+                Debug.Log(request.error);
                 string error = jsonObj.GetString("status");
                 if (error == "USER_NOT_FOUND")
                 {
@@ -160,9 +165,20 @@ public class LogInScript : MonoBehaviour {
     public void IsActive(string user)
     {
         SessionManager.User tempUser = sessionManager.GetUser(user);
+
         if (tempUser != null)
         {
-            StartCoroutine(PostIsActive(tempUser));
+            Debug.Log("we are in the discord");
+            if (PlayerPrefs.GetInt(Keys.Games_Saved) > 0 || PlayerPrefs.GetInt(Keys.Evaluations_Saved) > 0)
+            {
+                Debug.Log("We try to update the data");
+                StartCoroutine(UpdateDataToSend(tempUser));
+            }
+            else
+            {
+                Debug.Log("nothing to updtae here");
+                StartCoroutine(PostIsActive(tempUser));
+            }
         }
         else
         {
@@ -172,6 +188,7 @@ public class LogInScript : MonoBehaviour {
 
     IEnumerator PostIsActive(SessionManager.User user)
     {
+        Debug.Log("Now we start to chechk if the player its active");
         string post_url = activeUserUrl;
 
         // Build form to post in server
@@ -215,35 +232,97 @@ public class LogInScript : MonoBehaviour {
         {
             menuController.HideAllCanvas();
             menuController.ShowWarning(8);
-            /*int resultS = sessionManager.TryLogin(user.username, user.psswdHash);
-            if (resultS == 1)
-            {
-                sessionManager.LoadActiveUser(user.userkey);
-                menuController.ShowLogIn();
-                /*if ()
-                {
-                    /*menu.gameObject.SetActive(true);
-                    lang = sessionMng.activeUser.language;
-                    ChangeLanguage();
-                    CreateProfiles();
-                }
-                else
-                {
-                    /*menu.gameObject.SetActive(false);
-                    currentState = Phase.TrialOptions;
-                    DisplayLogin();
-
-                }*/
-            /*}
-            else
-            {
-                /*menu.gameObject.SetActive(false);
-                currentState = Phase.TrialOptions;
-                DisplayLogin();
-                menuController.ShowLogIn();
-            }*/
         }
     }
+
+    IEnumerator UpdateDataToSend(SessionManager.User user)
+    {
+        Debug.Log("We are updating data");
+
+        int gamesSaved = PlayerPrefs.GetInt(Keys.Games_Saved);
+        if (gamesSaved > 0)
+        {
+            int dataNotSavedByProblems = 0;
+            for (int i = 0; i < gamesSaved; i++)
+            {
+                string pathOfFile = $"{Application.persistentDataPath}/{gamesSaved}_{Keys.Game_To_Save}";
+                string jsonString = File.ReadAllText(pathOfFile);
+
+                var jsonObj = JSONObject.Parse(jsonString);
+
+                var form = new WWWForm();
+                form.AddField("jsonToDb", jsonObj.ToString());
+
+                using (UnityWebRequest request = UnityWebRequest.Post(levelUpdateURL, form))
+                {
+                    int dataRemaining = i;
+                    yield return request.SendWebRequest();
+                    if (request.isNetworkError || request.isHttpError)
+                    {
+                        PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
+                        Debug.Log($"We have trouble uploading the data this is the error :\n{request.downloadHandler.text}");
+                        string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}_{Keys.Game_To_Save}";
+                        dataNotSavedByProblems++;
+                    }
+                    else
+                    {
+                        JSONObject response = JSONObject.Parse(request.downloadHandler.text);
+                        Debug.Log(response["code"].Str);
+                        if (response["code"].Str != "200" && response["code"].Str != "201")
+                        {
+                            Debug.Log("The game data has been upload");
+                            File.Delete(pathOfFile);
+                        }
+                    }
+                }
+            }
+            PlayerPrefs.SetInt(Keys.Games_Saved, dataNotSavedByProblems);
+        }
+
+        int evaluationSaved = PlayerPrefs.GetInt(Keys.Evaluations_Saved);
+        if (evaluationSaved > 0)
+        {
+            int dataNotSavedByProblems = 0;
+            for (int i = 0; i < evaluationSaved; i++)
+            {
+                string pathOfFile = $"{Application.persistentDataPath}/{evaluationSaved}_{Keys.Evaluation_To_Save}";
+
+                string jsonString = File.ReadAllText(pathOfFile);
+
+                var jsonObj = JSONObject.Parse(jsonString);
+
+                var form = new WWWForm();
+                form.AddField("jsonToDb", jsonObj.ToString());
+
+                using (UnityWebRequest request = UnityWebRequest.Post(levelUpdateURL, form))
+                {
+                    int dataRemaining = i;
+                    yield return request.SendWebRequest();
+                    if (request.isNetworkError || request.isHttpError)
+                    {
+                        PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
+                        Debug.Log($"We have trouble uploading the data this is the error :\n{request.downloadHandler.text}");
+                        string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}_{Keys.Evaluation_To_Save}";
+                        dataNotSavedByProblems++;
+                    }
+                    else
+                    {
+                        JSONObject response = JSONObject.Parse(request.downloadHandler.text);
+                        Debug.Log(response["code"].Str);
+                        if (response["code"].Str != "200" && response["code"].Str != "201")
+                        {
+                            Debug.Log("The game data has been upload");
+                            File.Delete(pathOfFile);
+                        }
+                    }
+                }
+            }
+            PlayerPrefs.SetInt(Keys.Games_Saved, dataNotSavedByProblems);
+        }
+
+        StartCoroutine(PostIsActive(user));
+    }
+
 
     public void RegisterParentAndKid(string email, string password, string kidName, string dateOfBirth)
     {
