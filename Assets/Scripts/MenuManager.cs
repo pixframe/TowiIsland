@@ -290,11 +290,13 @@ public class MenuManager : MonoBehaviour {
                 }
                 else
                 {
-                    if (DateTime.Compare(DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Play_Time)), DateTime.Today) >= 0)
+                    DateTime lastFetchTime = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Play_Time));
+                    Debug.Log(lastFetchTime);
+                    if (DateTime.Compare(lastFetchTime, DateTime.Today) >= 0)
                     {
                         if (sessionManager.activeKid.activeMissions.Count <= 0)
                         {
-                            if (DateTime.Compare(DateTime.Today, DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Fetch_Time))) > 0)
+                            if (DateTime.Compare(DateTime.Today, lastFetchTime) > 0)
                             {
                                 //TODO Create new levels for children if they are offline
                                 Debug.Log("Here we create a new activities");

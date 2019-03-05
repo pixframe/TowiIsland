@@ -318,7 +318,6 @@ public class SessionManager : MonoBehaviour
     public void AddKids(JSONArray kids)
     {
         temporalKids.Clear();
-        Debug.Log(kids.Length);
         for (int i = 0; i < kids.Length; i++)
         {
             JSONObject kidObj = kids[i].Obj;
@@ -486,7 +485,6 @@ public class SessionManager : MonoBehaviour
     {
         //Get the data
         string data = PlayerPrefs.GetString("sessions");
-        Debug.Log(data);
         //If not blank then load it
         if (!string.IsNullOrEmpty(data))
         {
@@ -520,8 +518,6 @@ public class SessionManager : MonoBehaviour
         WWWForm form = new WWWForm();
         form.AddField("userKey", key);
 
-        Debug.Log("We are syncing the game");
-
         using (UnityWebRequest request = UnityWebRequest.Post(syncProfileURL, form))
         {
             yield return request.SendWebRequest();
@@ -532,8 +528,10 @@ public class SessionManager : MonoBehaviour
             }
             else
             {
-                Debug.Log($"this is the sync response: \n{request.downloadHandler.text}");
+                PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Now.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
+
                 JSONArray kids = JSONArray.Parse(request.downloadHandler.text);
+
                 bool setType = false;
                 bool needStoreSync = false;
 
@@ -661,8 +659,6 @@ public class SessionManager : MonoBehaviour
 
         JSONObject data = UpdateJsaonData(array);
 
-        Debug.Log(data.ToString());
-
         WWWForm form = new WWWForm();
         form.AddField("jsonToDb", data.ToString());
 
@@ -676,7 +672,6 @@ public class SessionManager : MonoBehaviour
                     FindObjectOfType<GameCenterManager>().ChangeMenus();
                 }
                 activeKid.syncProfile = false;
-                Debug.Log(request.downloadHandler.text);
             }
             else
             {
@@ -693,7 +688,6 @@ public class SessionManager : MonoBehaviour
     IEnumerator PostUpdateProfile()
     {
         JSONArray array = new JSONArray();
-        Debug.Log("Updating profile");
 
         for (int i = 0; i < activeKid.activeMissions.Count; i++)
         {
@@ -701,8 +695,6 @@ public class SessionManager : MonoBehaviour
         }
 
         JSONObject data = UpdateJsaonData(array);
-
-        Debug.Log(data.ToString());
 
         WWWForm form = new WWWForm();
         form.AddField("jsonToDb", data.ToString());
@@ -717,7 +709,6 @@ public class SessionManager : MonoBehaviour
                     FindObjectOfType<GameCenterManager>().ChangeMenus();
                 }
                 activeKid.syncProfile = false;
-                Debug.Log(request.downloadHandler.text);
             }
             else
             {

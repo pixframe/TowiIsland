@@ -195,43 +195,39 @@ public class LogInScript : MonoBehaviour {
         WWWForm form = new WWWForm();
         form.AddField("parent_email", user.username);
 
-        // Post the URL to the site and create a download object to get the result.
-        WWW hs_post = new WWW(post_url, form);
-        yield return hs_post; // Wait until the download is done
-
-        if (hs_post.error == null)
+        using (UnityWebRequest request = UnityWebRequest.Post(activeUserUrl, form))
         {
-            PlayerPrefs.SetInt(Keys.Logged_Session, 1);
-
-            JSONObject jsonObject = JSONObject.Parse(hs_post.text);
-            //menuController.ShowGameMenu();
-
-            //Debug.Log(jsonObject.GetValue("access"));
-
-            sessionManager.LoadActiveUser(user.userkey);
-            sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
-            sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
-
-            if (jsonObject.GetValue("active").Boolean)
+            yield return request.SendWebRequest();
+            if (request.isNetworkError || request.isHttpError)
             {
-                if (sessionManager.activeKid != null)
-                {
-                    menuController.ShowGameMenu();
-                }
-                else
-                {
-                    menuController.SetKidsProfiles();
-                }
+                menuController.HideAllCanvas();
+                menuController.ShowWarning(8);
             }
             else
             {
-                menuController.ShowAccountWarning(0);
+                PlayerPrefs.SetInt(Keys.Logged_Session, 1);
+                JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
+
+                sessionManager.LoadActiveUser(user.userkey);
+                sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
+
+                if (jsonObject.GetValue("active").Boolean)
+                {
+                    if (sessionManager.activeKid != null)
+                    {
+                        menuController.ShowGameMenu();
+                    }
+                    else
+                    {
+                        menuController.SetKidsProfiles();
+                    }
+                }
+                else
+                {
+                    menuController.ShowAccountWarning(0);
+                }
             }
-        }
-        else
-        {
-            menuController.HideAllCanvas();
-            menuController.ShowWarning(8);
         }
     }
 
