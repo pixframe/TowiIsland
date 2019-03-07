@@ -87,6 +87,7 @@ public class SessionManager : MonoBehaviour
         users = new List<User>();
         temporalKids = new List<Kid>();
         LoadSession();
+
         if (users.Count == 0)
         {
             AddUser("_local", "", "_local", null, 0);
@@ -472,13 +473,16 @@ public class SessionManager : MonoBehaviour
         serializer.Serialize(stream, users);
         PlayerPrefs.SetString("sessions", Convert.ToBase64String(stream.GetBuffer()));
         */
-        BinaryFormatter b = new BinaryFormatter();
+        BinaryFormatter binaryFormater = new BinaryFormatter();
+
         //Create an in memory stream
-        MemoryStream m = new MemoryStream();
-        //Save the scores
-        b.Serialize(m, users);
-        //Add it to player prefs
-        PlayerPrefs.SetString("sessions", Convert.ToBase64String(m.GetBuffer()));
+        using(MemoryStream memoryStream = new MemoryStream())
+        {
+            binaryFormater.Serialize(memoryStream, users);
+            //Add it to player prefs
+            PlayerPrefs.SetString("sessions", Convert.ToBase64String(memoryStream.GetBuffer()));
+        }
+
     }
 
     void LoadSession()
@@ -495,13 +499,13 @@ public class SessionManager : MonoBehaviour
             users = (List<User>)serializer.Deserialize(stream);
             */
 
-
             //Binary formatter for loading back
-            BinaryFormatter b = new BinaryFormatter();
-            //Create a memory stream with the data
-            MemoryStream m = new MemoryStream(Convert.FromBase64String(data));
-            //Load back the scoress
-            users = (List<User>)b.Deserialize(m);
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+
+            using (MemoryStream memoryStream = new MemoryStream(Convert.FromBase64String(data)))
+            {
+                users = (List<User>)binaryFormatter.Deserialize(memoryStream);
+            }
         }
     }
 
@@ -531,6 +535,8 @@ public class SessionManager : MonoBehaviour
                 PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Now.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
 
                 JSONArray kids = JSONArray.Parse(request.downloadHandler.text);
+
+                Debug.Log($"the reaponse is {request.downloadHandler.text}");
 
                 bool setType = false;
                 bool needStoreSync = false;

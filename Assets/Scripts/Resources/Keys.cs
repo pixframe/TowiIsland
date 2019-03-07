@@ -19,8 +19,10 @@ public class Keys : MonoBehaviour {
     public static string Version_Last_Season = "VeSe";
     public static string Logged_In = "Logeds";
     public static string Logged_Session = "logedses";
+
     public static string Last_Play_Time = "ltTime";
     public static string Last_Fetch_Time = "lsFtT";
+    public static string Last_Time_Were = "lsWere";
 
     //Games Strings
     //Lava Game

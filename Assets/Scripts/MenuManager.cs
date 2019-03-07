@@ -138,6 +138,8 @@ public class MenuManager : MonoBehaviour {
     List<int> ids = new List<int>();
     List<Button> miniCanvitas = new List<Button>();
 
+    bool needInternetConectionNow = false;
+
     void Awake()
     {
         //here we start the process of initrilization
@@ -234,6 +236,7 @@ public class MenuManager : MonoBehaviour {
 
     void InternetAvailableLogin()
     {
+        PlayerPrefs.SetString(Keys.Last_Time_Were, DateTime.Today.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
         if (PlayerPrefs.GetInt(Keys.Logged_Session) == 0)
         {
 
@@ -280,71 +283,77 @@ public class MenuManager : MonoBehaviour {
 
     void NoInternetAvailableLogin()
     {
-        if (PlayerPrefs.GetInt(Keys.Logged_Session) == 0)
+        DateTime lastSession = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Time_Were));
+        if(DateTime.Compare(DateTime.Today, lastSession)>= 0) 
         {
-            if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
+            PlayerPrefs.SetString(Keys.Last_Time_Were, DateTime.Today.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
+            if (PlayerPrefs.GetInt(Keys.Logged_Session) == 0)
             {
-                if (DateTime.Compare(sessionManager.activeKid.offlineSubscription, DateTime.Today) < 0)
+                if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
                 {
-                    ShowNeedConectionToPlay();
-                }
-                else
-                {
-                    DateTime lastFetchTime = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Play_Time));
-                    Debug.Log(lastFetchTime);
-                    if (DateTime.Compare(lastFetchTime, DateTime.Today) >= 0)
+                    if (DateTime.Compare(sessionManager.activeKid.offlineSubscription, DateTime.Today) < 0)
                     {
-                        if (sessionManager.activeKid.activeMissions.Count <= 0)
+                        ShowNeedConectionToPlay();
+                    }
+                    else
+                    {
+                        DateTime lastFetchTime = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Play_Time));
+                        Debug.Log(lastFetchTime);
+                        Debug.Log($"this is the time where the kid stop being active {sessionManager.activeKid.offlineSubscription}");
+                        Debug.Log($"this is the last fecth time {DateTime.Compare(lastFetchTime, DateTime.Today)}");
+
+
+                        if (DateTime.Compare(DateTime.Today, lastFetchTime) >= 0 && sessionManager.activeKid.activeMissions.Count <= 0)
                         {
                             if (DateTime.Compare(DateTime.Today, lastFetchTime) > 0)
                             {
-                                //TODO Create new levels for children if they are offline
                                 Debug.Log("Here we create a new activities");
                                 sessionManager.activeKid.activeMissions = OfflineManager.Create_Levels();
                             }
                         }
-                        Debug.Log("Suscription is still available");
-                        sessionManager.LoadActiveUser(Keys.Active_User_Key);
                         ShowGameMenu();
                     }
-                    else
-                    {
-                        ShowNeedConectionToPlay();
-                    }
+                }
+                else
+                {
+                    ShowLogIn();
                 }
             }
             else
             {
-                ShowLogIn();
+                if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
+                {
+                    if (DateTime.Compare(sessionManager.activeKid.offlineSubscription, DateTime.Today) < 0)
+                    {
+                        ShowNeedConectionToPlay();
+                    }
+                    else
+                    {
+
+                        DateTime lastFetchTime = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Play_Time));
+
+
+                        if (DateTime.Compare(DateTime.Today, lastFetchTime) > 0 && sessionManager.activeKid.activeMissions.Count <= 0)
+                        {
+                            if (DateTime.Compare(DateTime.Today, lastFetchTime) > 0)
+                            {
+                                sessionManager.activeKid.activeMissions = OfflineManager.Create_Levels();
+                            }
+                        }
+                        ShowGameMenu();
+                    }
+                }
+                else
+                {
+                    ShowLogIn();
+                }
             }
         }
         else
         {
-            if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
-            {
-                if (DateTime.Compare(sessionManager.activeKid.offlineSubscription, DateTime.Today) < 0)
-                {
-                    ShowNeedConectionToPlay();
-                }
-                else
-                {
-                    if (DateTime.Compare(DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Play_Time)), DateTime.Today) >= 0)
-                    {
-                        Debug.Log("Suscription is still available");
-                        sessionManager.LoadActiveUser(Keys.Active_User_Key);
-                        ShowGameMenu();
-                    }
-                    else
-                    {
-                        ShowNeedConectionToPlay();
-                    }
-                }
-            }
-            else
-            {
-                ShowLogIn();
-            }
+            ShowNeedConectionToPlay();
         }
+
     }
 
     #region Functions
@@ -586,7 +595,14 @@ public class MenuManager : MonoBehaviour {
     //we show the game menu if the player has acces to it
     public void ShowGameMenu()
     {
-        StartCoroutine(ShowMenuInCorrectTime());
+        if (!needInternetConectionNow) 
+        {
+            StartCoroutine(ShowMenuInCorrectTime());
+        }
+        else
+        {
+            ShowNeedConectionToPlay();
+        }
     }
 
     IEnumerator ShowMenuInCorrectTime()
@@ -595,6 +611,8 @@ public class MenuManager : MonoBehaviour {
         {
             yield return null;
         }
+
+        Debug.Log($"this is the level in the lava game {sessionManager.activeKid.laveLevel} and the current user is {sessionManager.activeUser.username}");
 
         PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString());
         HideAllCanvas();
@@ -617,6 +635,7 @@ public class MenuManager : MonoBehaviour {
         gameMenuObject.ShowThisMenu();
         UpdateKidInMenu();
         ShowEscapeButton();
+        needInternetConectionNow = true;
     }
 
     //we show the log in menu for if the player has not sing in on log in
@@ -1339,10 +1358,6 @@ public class MenuManager : MonoBehaviour {
         {
             ShowGameMenu();
         }*/
-        if(numberOfWarning == 11)
-        {
-            ShowWarning(11);
-        }
     }
 
     public void GoToWebSubscriptions()
@@ -1670,9 +1685,9 @@ class GameMenu
         evaluationButton.onClick.RemoveAllListeners();
         buyButton.onClick.RemoveAllListeners();
 
-        gamesButton.onClick.AddListener(() => manager.ShowWarning(0));
-        evaluationButton.onClick.AddListener(() => manager.ShowWarning(0));
-        buyButton.onClick.AddListener(() => manager.ShowWarning(0));
+        gamesButton.onClick.AddListener(() => manager.ShowWarning(11));
+        evaluationButton.onClick.AddListener(() => manager.ShowWarning(11));
+        buyButton.onClick.AddListener(() => manager.ShowWarning(11));
 
         SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
         SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
