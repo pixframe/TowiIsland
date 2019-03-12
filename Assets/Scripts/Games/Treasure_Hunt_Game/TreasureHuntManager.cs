@@ -750,7 +750,7 @@ public class TreasureHuntManager : MonoBehaviour {
     //This one is the script used to storage the object in the backpack
     public void PutObjectInBackpack(GameObject packable)
     {
-        Destroy(packable);
+
         int[] arr = packable.GetComponent<TreasureManager>().GetTheInfo();
         if (packedArrays.Count < 1)
         {
@@ -778,7 +778,7 @@ public class TreasureHuntManager : MonoBehaviour {
         InventoryUpdate();
         packable.SetActive(false);
         glow.transform.position = new Vector3(50f, 50f, 50f);
-        
+        Destroy(packable);
     }
 
     //This will update the inventory of the player that is showed in the up part of the screen
@@ -789,6 +789,11 @@ public class TreasureHuntManager : MonoBehaviour {
             inventoryShower[i].image.sprite = stimuluisIcons[(packedArrays[i][0] * 3) + packedArrays[i][1]];
             inventoryShower[i].numberText.text = "x " + countsOfArrays[i].ToString();
             inventoryShower[i].theObject.SetActive(true);
+        }
+
+        for (int i = packedArrays.Count; i < inventoryShower.Length; i++)
+        {
+            inventoryShower[i].theObject.SetActive(false);
         }
     }
 
@@ -1199,7 +1204,7 @@ public class TreasureHuntManager : MonoBehaviour {
     void RemoveBackpackObjects(int indi)
     {
         countsOfArrays[indi]--;
-        if (countsOfArrays[indi] <= 0)
+        if (countsOfArrays[indi] < 1)
         {
             packedArrays.Remove(packedArrays[indi]);
             countsOfArrays.Remove(countsOfArrays[indi]);

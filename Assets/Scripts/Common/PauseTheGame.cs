@@ -112,7 +112,7 @@ public class PauseTheGame : MonoBehaviour {
     public void WantTutorial()
     {
         HideAllPanels();
-        pauseButton.gameObject.SetActive(true);
+        pauseButton.gameObject.SetActive(false);
         howToPlayButton.gameObject.SetActive(true);
         playButton.gameObject.SetActive(true);
     }

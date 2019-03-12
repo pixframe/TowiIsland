@@ -236,7 +236,7 @@ public class MenuManager : MonoBehaviour {
 
     void InternetAvailableLogin()
     {
-        PlayerPrefs.SetString(Keys.Last_Time_Were, DateTime.Today.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
+        PlayerPrefs.SetString(Keys.Last_Time_Were, DateTime.Today.ToString(DateTimeFormatInfo.InvariantInfo));
         if (PlayerPrefs.GetInt(Keys.Logged_Session) == 0)
         {
 
@@ -283,33 +283,34 @@ public class MenuManager : MonoBehaviour {
 
     void NoInternetAvailableLogin()
     {
-        DateTime lastSession = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Time_Were));
-        if(DateTime.Compare(DateTime.Today, lastSession)>= 0) 
+        DateTime lastSession = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Time_Were), DateTimeFormatInfo.InvariantInfo);
+        Debug.Log($"Last time in internte was {lastSession.ToUniversalTime()} and today is { DateTime.Today.ToUniversalTime()} compare to today is {DateTime.Compare(DateTime.Today, lastSession)}");
+        if(DateTime.Compare(DateTime.Today, lastSession) >= 0) 
         {
-            PlayerPrefs.SetString(Keys.Last_Time_Were, DateTime.Today.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
+            PlayerPrefs.SetString(Keys.Last_Time_Were, DateTime.Today.ToString(DateTimeFormatInfo.InvariantInfo));
             if (PlayerPrefs.GetInt(Keys.Logged_Session) == 0)
             {
                 if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
                 {
                     if (DateTime.Compare(sessionManager.activeKid.offlineSubscription, DateTime.Today) < 0)
                     {
+                        Debug.Log("here are less");
                         ShowNeedConectionToPlay();
                     }
                     else
                     {
-                        DateTime lastFetchTime = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Play_Time));
-                        Debug.Log(lastFetchTime);
-                        Debug.Log($"this is the time where the kid stop being active {sessionManager.activeKid.offlineSubscription}");
-                        Debug.Log($"this is the last fecth time {DateTime.Compare(lastFetchTime, DateTime.Today)}");
-
-
-                        if (DateTime.Compare(DateTime.Today, lastFetchTime) >= 0 && sessionManager.activeKid.activeMissions.Count <= 0)
+                        DateTime lastFetchTime = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Play_Time), DateTimeFormatInfo.InvariantInfo);
+                        string s = "";
+                        foreach (string se in sessionManager.activeKid.activeMissions)
                         {
-                            if (DateTime.Compare(DateTime.Today, lastFetchTime) > 0)
-                            {
-                                Debug.Log("Here we create a new activities");
-                                sessionManager.activeKid.activeMissions = OfflineManager.Create_Levels();
-                            }
+                            s += $"{se} ";
+                        }
+                        Debug.Log($"Active missions are {s}");
+
+                        if (DateTime.Compare(DateTime.Today, lastFetchTime) > 0 && sessionManager.activeKid.activeMissions.Count <= 0)
+                        {
+                            Debug.Log("Here we create a new activities");
+                            sessionManager.activeKid.activeMissions = OfflineManager.Create_Levels();
                         }
                         ShowGameMenu();
                     }
@@ -330,7 +331,7 @@ public class MenuManager : MonoBehaviour {
                     else
                     {
 
-                        DateTime lastFetchTime = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Play_Time));
+                        DateTime lastFetchTime = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Play_Time), DateTimeFormatInfo.InvariantInfo);
 
 
                         if (DateTime.Compare(DateTime.Today, lastFetchTime) > 0 && sessionManager.activeKid.activeMissions.Count <= 0)
@@ -351,6 +352,7 @@ public class MenuManager : MonoBehaviour {
         }
         else
         {
+            Debug.Log("theres no today");
             ShowNeedConectionToPlay();
         }
 
@@ -614,7 +616,7 @@ public class MenuManager : MonoBehaviour {
 
         Debug.Log($"this is the level in the lava game {sessionManager.activeKid.laveLevel} and the current user is {sessionManager.activeUser.username}");
 
-        PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString());
+        PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString(DateTimeFormatInfo.InvariantInfo));
         HideAllCanvas();
         if (key)
         {

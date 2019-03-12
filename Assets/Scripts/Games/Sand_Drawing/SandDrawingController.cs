@@ -178,7 +178,6 @@ public class SandDrawingController : MonoBehaviour {
                 {
                     if (!sessionManager.activeKid.sandLevelSet)
                     {
-                        Debug.Log("Set second stuff");
                         if (sessionManager.activeKid.age < 7)
                         {
                             levelIdentyfy = miniKidLevelSpecials;
@@ -198,7 +197,6 @@ public class SandDrawingController : MonoBehaviour {
                     }
                     else
                     {
-                        Debug.Log("Set no stuff");
                         levelGame = sessionManager.activeKid.sandDifficulty;
                         levelFill = sessionManager.activeKid.sandLevel;
                         levelIdentyfy = sessionManager.activeKid.sandLevel2;
@@ -1064,7 +1062,6 @@ public class SandDrawingController : MonoBehaviour {
         float percentageOff = (blackOverFilled * 100) / drawFull;
         float fillPercentage = (blackFilled * 100) / blackToFill;
         accuracyPercentage += fillPercentage;
-        Debug.Log("percentage off equals " + percentageOff + " fill percentage " + fillPercentage);
         bool tooMuchOut = false;
         bool passable = false;
         accuracies.Add(fillPercentage);
@@ -1291,7 +1288,6 @@ public class SandDrawingController : MonoBehaviour {
             }
         }
 
-        Debug.Log("determinatios is " + determination);
         return determination;
     }
 

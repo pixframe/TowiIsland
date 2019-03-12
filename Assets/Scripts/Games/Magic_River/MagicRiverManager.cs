@@ -937,6 +937,18 @@ public class MagicRiverManager : MonoBehaviour {
             {
                 repeatedLevels++;
                 level--;
+                if (level < 0)
+                {
+                    if (difficulty > 0)
+                    {
+                        difficulty--;
+                        level = 17;
+                    }
+                    else
+                    {
+                        level = 0;
+                    }
+                }
             }
         }
         else

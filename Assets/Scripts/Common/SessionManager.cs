@@ -532,7 +532,7 @@ public class SessionManager : MonoBehaviour
             }
             else
             {
-                PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Now.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
+                PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
 
                 JSONArray kids = JSONArray.Parse(request.downloadHandler.text);
 
