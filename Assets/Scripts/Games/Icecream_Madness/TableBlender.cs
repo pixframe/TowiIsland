@@ -8,7 +8,7 @@ public class TableBlender : TableInstrument
     int iceId = 0;
     int smoothieNumber = 1;
     string idleAnim = "Idle";
-    string blendAnimation = "Licuar";
+    string blendAnimation = "Licuar_";
 
     // Use this for initialization
     void Start()
@@ -41,8 +41,9 @@ public class TableBlender : TableInstrument
 
                         if (ingredientsSet[1] != null)
                         {
-                            armature.animation.Play(blendAnimation, 1);
+                            armature.animation.Play(blendAnimation + FoodDicctionary.Toppings.AnimationOfChopper((int)ingredientsSet[1]), 1);
                             trayToReturn.HideAllImages();
+                            trayToReturn.ChangeRawIngridientToTopping((int)ingredientsSet[1]);
                             StartCoroutine(BlendRoutine());
                         }
                         else
@@ -64,7 +65,7 @@ public class TableBlender : TableInstrument
 
                         if (ingredientsSet[0] != null)
                         {
-                            armature.animation.Play(blendAnimation, 1);
+                            armature.animation.Play(blendAnimation + FoodDicctionary.Toppings.AnimationOfChopper((int)ingredientsSet[1]), 1);
                             trayToReturn.HideAllImages();
                             StartCoroutine(BlendRoutine());
                         }
@@ -95,6 +96,7 @@ public class TableBlender : TableInstrument
                                 chef.GrabATray(trayToReturn.gameObject);
                                 hasSomethingOn = false;
                                 armature.animation.Play(idleAnim, 1);
+                                ingredientsSet = new int?[2];
                             }
                             else
                             {
@@ -108,18 +110,6 @@ public class TableBlender : TableInstrument
 
 
         }
-        else
-        {
-            if (!workingMachine)
-            {
-                if (hasSomethingOn)
-                {
-                    chef.GrabATray(trayToReturn.gameObject);
-                    hasSomethingOn = false;
-                    armature.animation.Play(idleAnim , 1);
-                }
-            }
-        }
     }
 
     IEnumerator BlendRoutine()
@@ -130,15 +120,10 @@ public class TableBlender : TableInstrument
         {
             yield return null;
         }
+
         workingMachine = false;
         Debug.Log("smoothie is blend");
         trayToReturn.SetACookedMeal(smoothieNumber, FoodDicctionary.CookedMeal.ShapeOfCookedMeal(smoothieNumber));
-    }
-
-    public override void DoTheActionIfTheresSomethingOn()
-    {
-        base.DoTheActionIfTheresSomethingOn();
-        armature.animation.Play(idleAnim, 1);
     }
 
     public string PlayCorrectAnimation()
@@ -152,6 +137,7 @@ public class TableBlender : TableInstrument
         {
             animName += FoodDicctionary.Toppings.AnimationOfChopper((int)ingredientsSet[1]);
         }
+        Debug.Log($"the animation we play is {animName}");
         return animName;
     }
 }

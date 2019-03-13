@@ -67,6 +67,13 @@ public class Tray : MonoBehaviour {
         }
     }
 
+    public void ChangeRawIngridientToTopping (int newIngridient)
+    {
+        typeOfObjects[2] = newIngridient;
+        typeOfObjects[1] = null;
+        hasARawIngridient = false;
+    }
+
     public bool SetARawIngridient(int ingredientNumber, string spriteName)
     {
         Initialization();
