@@ -568,6 +568,7 @@ public class SessionManager : MonoBehaviour
                         index = cidsOfActiveKids.IndexOf(cid);
                     }
 
+                    activeUser.kids[index].isActive = kidObj.GetBoolean("active");
                     activeUser.kids[index].kiwis = (int)kidObj.GetNumber("kiwis");
                     if (kidObj.GetString("avatar") != null)
                     {

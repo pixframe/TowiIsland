@@ -432,7 +432,7 @@ public class LevelSaver : MonoBehaviour {
         string dataToSave = data.ToString();
         int gameSavedOffline = PlayerPrefs.GetInt(Keys.Games_Saved);
 
-        string path = $"{Application.persistentDataPath}/{gameSavedOffline}_{Keys.Game_To_Save}";
+        string path = $"{Application.persistentDataPath}/{gameSavedOffline}{Keys.Game_To_Save}";
         gameSavedOffline++;
 
         Debug.Log($"We have {gameSavedOffline} jsons to save");

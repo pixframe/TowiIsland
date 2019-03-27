@@ -45,11 +45,9 @@ public class TableIngredients : Table
         }
         else
         {
-            Debug.Log("Grab The Ingrdient");
             Tray newTray = Instantiate(Resources.Load<GameObject>("IcecreamMadness/Prefabs/Tray"), chef.trayPositioner.transform).GetComponent<Tray>();
             newTray.SetARawIngridient(ingridientNumber, ingridientShape);
             chef.GrabATray(newTray.gameObject);
-            Debug.Log("Grab The Ingrdient 2");
         }
     }
 

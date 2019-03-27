@@ -15,8 +15,11 @@ public class FoodDicctionary
     public static string containersDirection = "Containers/Containers";
     public static string cookedMealDirection = "Cooked/Cooked";
     public static string toppingDirection = "Toppings/Toppings";
+    public const string doughDirection = "Dough/Dough";
+    public const string waffleDirection = "Waffle/Waffle";
     public const string toppingServedDirection = "ToppingsServed/";
     public const string helperToppingDirection = "Helpers/Toppings";
+    public const string chefDirection = "Chefs/";
 
     public const string normalTable = "Normal";
     public const string finishTable = "Talavera";
@@ -27,6 +30,10 @@ public class FoodDicctionary
     public const string blenderMachine = "Blender";
     public const string trashMachine = "Cocodrile";
     public const string chopperMachine = "Chopper";
+    public const string mixerMachine = "Mixer";
+    public const string waffleMachine = "Wafflera";
+
+    public const string trayPrefab = "IcecreamMadness/Prefabs/Tray";
 
     public class Containers
     {
@@ -75,7 +82,7 @@ public class FoodDicctionary
 
     public class RawIngridients
     {
-        public enum KindOfRawIngridient { Ice, Eggs, Milk, Flour, Pineapple, Kiwi, Orange, Fig, Strawberry }
+        public enum KindOfRawIngridient { Ice, Flour, Eggs, Milk, Pineapple, Kiwi, Orange, Fig, Strawberry }
 
         public static string ShapeOfRawIngridient(int kindOfRawIngridient)
         {
@@ -83,12 +90,12 @@ public class FoodDicctionary
             {
                 case KindOfRawIngridient.Ice:
                     return "Ice";
-                case KindOfRawIngridient.Eggs:
-                    return "Eggs";
-                case KindOfRawIngridient.Milk:
-                    return "Milk";
                 case KindOfRawIngridient.Flour:
                     return "Flour";
+                case KindOfRawIngridient.Eggs:
+                    return "Egg";
+                case KindOfRawIngridient.Milk:
+                    return "Milk";
                 case KindOfRawIngridient.Pineapple:
                     return "Pineapple";
                 case KindOfRawIngridient.Kiwi:
@@ -99,6 +106,21 @@ public class FoodDicctionary
                     return "Fig";
                 case KindOfRawIngridient.Strawberry:
                     return "Strawberry";
+                default:
+                    return "Hexa";
+            }
+        }
+
+        public static string AnimNames(int kindOfRawIngridient)
+        {
+            switch ((KindOfRawIngridient)kindOfRawIngridient)
+            {
+                case KindOfRawIngridient.Flour:
+                    return "Harina";
+                case KindOfRawIngridient.Eggs:
+                    return "Huevo";
+                case KindOfRawIngridient.Milk:
+                    return "Leche";
                 default:
                     return "Hexa";
             }
@@ -160,7 +182,41 @@ public class FoodDicctionary
 
     public class MadeIngridients
     {
-        public enum KindOfMadeIngridients { Dough, FixableDough, Trashable};
+        public enum KindOfMadeIngridients { Good, Fixable, Bad, Burn};
+
+        static public string ShapeOfCookedIngredient(int kindOfCookedMeal)
+        {
+            switch ((KindOfMadeIngridients)kindOfCookedMeal)
+            {
+                case KindOfMadeIngridients.Good:
+                    return "Waffle";
+                case KindOfMadeIngridients.Fixable:
+                    return "Incomplete";
+                case KindOfMadeIngridients.Bad:
+                    return "Bad";
+                case KindOfMadeIngridients.Burn:
+                    return "Burn";
+                default:
+                    return "Circle";
+            }
+        }
+
+        static public string NameOfAnim(int kindOfCookedMeal)
+        {
+            switch ((KindOfMadeIngridients)kindOfCookedMeal)
+            {
+                case KindOfMadeIngridients.Good:
+                    return "Bueno";
+                case KindOfMadeIngridients.Fixable:
+                    return "Incompleto";
+                case KindOfMadeIngridients.Bad:
+                    return "Malo";
+                case KindOfMadeIngridients.Burn:
+                    return "Quemado";
+                default:
+                    return "Circle";
+            }
+        }
     }
 
     public class CookedMeal

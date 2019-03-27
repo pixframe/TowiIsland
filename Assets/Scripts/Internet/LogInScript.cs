@@ -241,7 +241,7 @@ public class LogInScript : MonoBehaviour {
             int dataNotSavedByProblems = 0;
             for (int i = 0; i < gamesSaved; i++)
             {
-                string pathOfFile = $"{Application.persistentDataPath}/{gamesSaved}_{Keys.Game_To_Save}";
+                string pathOfFile = $"{Application.persistentDataPath}/{gamesSaved}{Keys.Game_To_Save}";
                 string jsonString = File.ReadAllText(pathOfFile);
 
                 var jsonObj = JSONObject.Parse(jsonString);
@@ -257,7 +257,7 @@ public class LogInScript : MonoBehaviour {
                     {
                         PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
                         Debug.Log($"We have trouble uploading the data this is the error :\n{request.downloadHandler.text}");
-                        string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}_{Keys.Game_To_Save}";
+                        string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}{Keys.Game_To_Save}";
                         dataNotSavedByProblems++;
                     }
                     else
@@ -281,7 +281,7 @@ public class LogInScript : MonoBehaviour {
             int dataNotSavedByProblems = 0;
             for (int i = 0; i < evaluationSaved; i++)
             {
-                string pathOfFile = $"{Application.persistentDataPath}/{evaluationSaved}_{Keys.Evaluation_To_Save}";
+                string pathOfFile = $"{Application.persistentDataPath}/{evaluationSaved}{Keys.Evaluation_To_Save}";
 
                 string jsonString = File.ReadAllText(pathOfFile);
 
@@ -298,7 +298,7 @@ public class LogInScript : MonoBehaviour {
                     {
                         PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
                         Debug.Log($"We have trouble uploading the data this is the error :\n{request.downloadHandler.text}");
-                        string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}_{Keys.Evaluation_To_Save}";
+                        string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}{Keys.Evaluation_To_Save}";
                         dataNotSavedByProblems++;
                     }
                     else
@@ -313,7 +313,7 @@ public class LogInScript : MonoBehaviour {
                     }
                 }
             }
-            PlayerPrefs.SetInt(Keys.Games_Saved, dataNotSavedByProblems);
+            PlayerPrefs.SetInt(Keys.Evaluations_Saved, dataNotSavedByProblems);
         }
 
         StartCoroutine(PostIsActive(user));

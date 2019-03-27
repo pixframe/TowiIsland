@@ -735,14 +735,14 @@ public class ProgressHandler : MonoBehaviour {
         string dataToSave = data.ToString();
         int evaluationSavedOffline = PlayerPrefs.GetInt(Keys.Evaluations_Saved);
 
-        string path = $"{Application.persistentDataPath}/{evaluationSavedOffline}_{Keys.Evaluation_To_Save}";
+        string path = $"{Application.persistentDataPath}/{evaluationSavedOffline}{Keys.Evaluation_To_Save}";
         evaluationSavedOffline++;
 
         Debug.Log($"We have {evaluationSavedOffline} jsons to save");
 
         File.WriteAllText(path, dataToSave);
 
-        PlayerPrefs.SetInt(Keys.Games_Saved, evaluationSavedOffline);
+        PlayerPrefs.SetInt(Keys.Evaluations_Saved, evaluationSavedOffline);
 
         sessionManager.SaveSession();
 

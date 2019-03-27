@@ -28,7 +28,7 @@ public class TableIcreamMachine : TableInstrument
             {
                 Debug.Log("We enter here");
                 trayToReturn = chef.GetHoldingTray();
-                if (trayToReturn.HasAContainer())
+                if (trayToReturn.HasAContainer() && !trayToReturn.HasABaseFood())
                 {
                     if (trayToReturn.KindOfConatiner() == numberOfIceCream)
                     {

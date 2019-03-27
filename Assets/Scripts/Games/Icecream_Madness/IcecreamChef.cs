@@ -25,8 +25,9 @@ public class IcecreamChef : MonoBehaviour {
     UnityArmatureComponent armature;
 
     Vector3 positionToGo;
+    Vector3 initPos;
 
-    float speed = 5f;
+    float speed = 7f;
 
     IcecreamMadnessManager manager;
 
@@ -39,6 +40,7 @@ public class IcecreamChef : MonoBehaviour {
         armature = GetComponent<UnityArmatureComponent>();
         armature.animation.Play(idleAnim);
         manager = FindObjectOfType<IcecreamMadnessManager>();
+        initPos = transform.position;
 	}
 	
 	// Update is called once per frame
@@ -98,14 +100,67 @@ public class IcecreamChef : MonoBehaviour {
 
             tableToGo = table;
             var posToGo = table.transform.position;
-            if (posToGo.x < transform.position.x)
+            bool fixedScaled = false;
+            if (table.gameObject.name.Contains("U"))
             {
-                transform.localScale = new Vector3(-0.8f, 0.8f, 0.8f);
+                int tableNum = int.Parse(table.gameObject.name[1].ToString());
+
+                fixedScaled = true;
+                GameObject tableToCenter;
+                if (tableNum == 1)
+                {
+                    tableToCenter = GameObject.Find($"U{tableNum + 1}");
+                    transform.localScale = new Vector3(-0.8f, 0.8f, 0.8f);
+                }
+                else if (tableNum == 7)
+                {
+                    tableToCenter = GameObject.Find($"U{tableNum - 1}");
+                    transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+                }
+                else
+                {
+                    if (posToGo.x < transform.position.x)
+                    {
+                        tableToCenter = GameObject.Find($"U{tableNum + 1}");
+                        transform.localScale = new Vector3(-0.8f, 0.8f, 0.8f);
+                    }
+                    else if (posToGo.x == transform.position.x)
+                    {
+                        if (transform.localScale.x < 0)
+                        {
+                            tableToCenter = GameObject.Find($"U{tableNum - 1}");
+                            transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+                        }
+                        else
+                        {
+                            tableToCenter = GameObject.Find($"U{tableNum + 1}");
+                            transform.localScale = new Vector3(-0.8f, 0.8f, 0.8f);
+                        }
+                    }
+                    else
+                    {
+                        tableToCenter = GameObject.Find($"U{tableNum - 1}");
+                        transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+                    }
+                }
+                posToGo = tableToCenter.transform.position;
             }
-            else
+
+            if (!fixedScaled)
             {
-                transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+                if (posToGo.x < transform.position.x)
+                {
+                    transform.localScale = new Vector3(-0.8f, 0.8f, 0.8f);
+                }
+                else
+                {
+                    transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+                }
             }
+
+
+
+
             positionToGo = posToGo;
             positionToGo = new Vector3(Mathf.Clamp(positionToGo.x, minx, maxx), Mathf.Clamp(positionToGo.y, miny, maxx), transform.position.z);
             move = true;
@@ -145,6 +200,25 @@ public class IcecreamChef : MonoBehaviour {
     public Tray GetHoldingTray()
     {
         return tray.GetComponent<Tray>();
+    }
+
+    public void PrepareTheChef()
+    {
+        Debug.Log($"We prepatre the chef");
+
+        hasSomething = false;
+        move = false;
+
+        transform.position = initPos;
+
+        if (tray != null)
+        {
+            Destroy(tray.gameObject);
+            tray = null;
+        }
+
+        armature.animation.Play(idleAnim);
+
     }
 
     void UpdateTrayTransformPosition()

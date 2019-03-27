@@ -36,13 +36,22 @@ public class TableFinish : Table
             if (tempTray.HasAContainer())
             {
                 chef.PutATray(trayPositioner);
-                if (manager.CompareTrays(tempTray.GetMadeComposition()))
+                if (tempTray.IsWellMade())
                 {
-                    confettiSystem.transform.position = transform.position;
-                    confettiSystem.Play();
+                    if (manager.CompareTrays(tempTray.GetMadeComposition()))
+                    {
+                        confettiSystem.transform.position = transform.position;
+                        confettiSystem.Play();
+                    }
+                    else
+                    {
+                        crossesSystem.transform.position = transform.position;
+                        crossesSystem.Play();
+                    }
                 }
                 else
                 {
+                    manager.BadAnswer();
                     crossesSystem.transform.position = transform.position;
                     crossesSystem.Play();
                 }

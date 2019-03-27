@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using DragonBones;
 
 public class TableTrash : Table
 {
     string idleAnim = "Idle";
     string trowAnim = "Chop";
 
+    public UnityArmatureComponent armature;
 
     // Use this for initialization
     void Start()
@@ -24,6 +26,7 @@ public class TableTrash : Table
         base.Initializing();
         ChangeTableSprite(FoodDicctionary.trashTable);
         CreateAMachine(FoodDicctionary.trashMachine);
+        armature = machine.transform.GetChild(0).GetComponent<UnityArmatureComponent>();
     }
 
     public override void DoTheAction()
@@ -31,6 +34,8 @@ public class TableTrash : Table
         if (chef.IsHoldingSomething())
         {
             chef.PutATray(trayPositioner);
+            armature.animation.Play(trowAnim, 1);
+            Destroy(trayOn);
         }
     }
 }

@@ -613,7 +613,6 @@ public class GameConfigurator
     public static IcecreamConfig GetIcecreamConfiguration(int level)
     {
         var asset = Resources.Load("IcecreamMadness/Levels/IcecreamLevels") as TextAsset;
-        Debug.Log(asset.text);
         string jsonToParse = asset.text;
         var levels = JsonUtility.FromJson<IcecreamsLevels>(jsonToParse);
         return levels.icecreamConfigs[level];
@@ -630,8 +629,9 @@ public class GameConfigurator
     {
         public List<int> kindOfMeals = new List<int>();
         public int maxNumberOfOrders = 0;
-        public int amoutOfToppings = 0;
-        public int amoutOfChoppers = 0;
+        public int amountOfToppings = 0;
+        public int amountOfChoppers = 0;
+        public int amountOfCoinsToPassLevel = 0;
         public float newOrderTiming = 20f;
     }
 }

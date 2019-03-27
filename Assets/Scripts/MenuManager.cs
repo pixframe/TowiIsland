@@ -1752,7 +1752,7 @@ class GameMenu
                 manager.WriteTheText(gamesButton, 59);
                 gamesButton.onClick.AddListener(manager.LoadGameMenus);
                 SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
-                buyButton.onClick.AddListener(() => manager.ShowShop(1));
+                buyButton.onClick.AddListener(() => manager.ShowShop(0));
                 evaluationButton.onClick.AddListener(manager.ShowTheEvaluationNeeds);
             }
             else
@@ -1760,7 +1760,7 @@ class GameMenu
                 manager.WriteTheText(gamesButton, 1);
                 gamesButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
                 evaluationButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
-                buyButton.onClick.AddListener(() => manager.ShowShop(1));
+                buyButton.onClick.AddListener(() => manager.ShowShop(0));
                 SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
                 SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
             }
@@ -1771,7 +1771,7 @@ class GameMenu
             manager.WriteTheText(buyButton, 62);
             gamesButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
             evaluationButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
-            buyButton.onClick.AddListener(() => manager.ShowShop(1));
+            buyButton.onClick.AddListener(() => manager.ShowShop(0));
             SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
             SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
             SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);

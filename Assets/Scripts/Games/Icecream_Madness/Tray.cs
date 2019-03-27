@@ -6,11 +6,14 @@ public class Tray : MonoBehaviour {
 
     int?[] typeOfObjects = new int?[3];
 
+    string waffleName = "Waffle";
+
     bool hasAContainer;
     bool hasARawIngridient;
     bool hasACookIngridient;
     bool hasABaseFood;
     bool hasATopping;
+    bool isWellMade = true;
 
     SpriteRenderer containerSpriteRenderer;
     SpriteRenderer foodSpriteRender;
@@ -56,15 +59,46 @@ public class Tray : MonoBehaviour {
         if (!hasARawIngridient && !hasACookIngridient)
         {
             typeOfObjects[1] = cookIngridients;
-            foodSpriteRender.sprite = LoadSprite.GetSpriteFromSpriteSheet($"{FoodDicctionary.prefabSpriteDirection}{FoodDicctionary.cookedMealDirection}", spriteName);
-            hasACookIngridient = true;
+            string pathOfSprite = FoodDicctionary.prefabSpriteDirection + FoodDicctionary.cookedMealDirection;
+            if (cookIngridients == 2 && spriteName != FoodDicctionary.CookedMeal.ShapeOfCookedMeal((int)typeOfObjects[1]))
+            {
+                pathOfSprite = FoodDicctionary.prefabSpriteDirection + FoodDicctionary.waffleDirection;
+                waffleName = spriteName;
+            }
+            foodSpriteRender.sprite = LoadSprite.GetSpriteFromSpriteSheet(pathOfSprite, spriteName);
+            hasABaseFood = true;
             //SetImage();
+            if (cookIngridients == 2)
+            {
+                SetImage();
+            }
             return true;
         }
         else
         {
             return false;
         }
+    }
+
+    public bool SetACookedMeal(int cookIngridients, string spriteName, int kindOfPreparation)
+    {
+        isWellMade = kindOfPreparation == 0;
+        return SetACookedMeal(cookIngridients, spriteName);
+    }
+
+    public string WhatIsWaffleName()
+    {
+        return waffleName;
+    }
+
+    public bool HasABaseFood()
+    {
+        return hasABaseFood;
+    }
+
+    public bool IsWellMade()
+    {
+        return isWellMade;
     }
 
     public void ChangeRawIngridientToTopping (int newIngridient)
@@ -101,7 +135,33 @@ public class Tray : MonoBehaviour {
 
     public int? WhatKindOfIngridientsIs()
     {
-        Debug.Log($"the ingredient we have is {typeOfObjects[1]}");
+        return typeOfObjects[1];
+    }
+
+    public void SetACookedIngredient(int kindOfIngredient)
+    {
+        Initialization();
+        if (!hasARawIngridient && !hasACookIngridient && !hasABaseFood && !hasATopping && !hasAContainer)
+        {
+            typeOfObjects[1] = kindOfIngredient;
+            foodSpriteRender.sprite = LoadSprite.GetSpriteFromSpriteSheet($"{FoodDicctionary.prefabSpriteDirection}{FoodDicctionary.doughDirection}", FoodDicctionary.MadeIngridients.ShapeOfCookedIngredient(kindOfIngredient));
+            hasACookIngridient = true;
+            SetImage();
+        }
+    }
+
+    public bool HasCookedIngredient()
+    {
+        return hasACookIngridient;
+    }
+
+    public bool CanSetACookMeal()
+    {
+        return typeOfObjects[1] == null;
+    }
+
+    public int? WhatKindOfCookedIngredientIs()
+    {
         return typeOfObjects[1];
     }
 
@@ -111,16 +171,11 @@ public class Tray : MonoBehaviour {
         if (!hasARawIngridient || !hasATopping)
         {
             typeOfObjects[2] = toppingNumber;
-            string directionOfSprite = "";
+            string directionOfSprite = FoodDicctionary.prefabSpriteDirection + FoodDicctionary.toppingDirection;
             if (typeOfObjects[0] != null && typeOfObjects[1] != null)
             {
                 directionOfSprite = $"{FoodDicctionary.prefabSpriteDirection}{FoodDicctionary.toppingServedDirection}{FoodDicctionary.CookedMeal.ShapeOfCookedMeal((int)typeOfObjects[1])}";
             }
-            else
-            {
-                directionOfSprite = $"{FoodDicctionary.prefabSpriteDirection}{FoodDicctionary.toppingDirection}";
-            }
-            Debug.Log($"direction of topping is {directionOfSprite}");
             toppingSpriteRenderer.sprite = LoadSprite.GetSpriteFromSpriteSheet(directionOfSprite, spriteName);
             hasATopping = true;
             SetImage();
@@ -149,7 +204,6 @@ public class Tray : MonoBehaviour {
 
     public int GetIngridient()
     {
-        Debug.Log("The ingridients is " + typeOfObjects[1]);
         return (int)typeOfObjects[1];
     }
 
@@ -184,7 +238,7 @@ public class Tray : MonoBehaviour {
 
     public bool CanMergeTrays(Tray trayToMerge)
     {
-        if (hasARawIngridient || trayToMerge.HasRawIngridient())
+        if (hasARawIngridient || trayToMerge.HasRawIngridient() || hasACookIngridient || trayToMerge.HasCookedIngredient())
         {
             return false;
         }
@@ -224,8 +278,6 @@ public class Tray : MonoBehaviour {
                     return false;
                 }
             }
-
-            Debug.Log($"this is final merge data 0:{finalMergeData[0]} 1:{finalMergeData[1]} 2:{finalMergeData[2]}");
             return true;
         }
     }
@@ -233,7 +285,6 @@ public class Tray : MonoBehaviour {
     public void MergeTrays(Tray trayToMerge)
     {
         var typesOfTheOtherTray = trayToMerge.GetIdentifiers();
-        Debug.Log($"types of this is final merge data 0:{typesOfTheOtherTray[0]} 1:{typesOfTheOtherTray[1]} 2:{typesOfTheOtherTray[2]}");
         var finalMergeData = new int?[typeOfObjects.Length];
         for (int i = 0; i < typeOfObjects.Length; i++)
         {
@@ -243,22 +294,35 @@ public class Tray : MonoBehaviour {
             }
             else
             {
-                Debug.Log("in the debug we do now should only be call once");
-                Debug.Log($"{i} in the debug we do now should call once minumun with value {typesOfTheOtherTray[i]}");
                 finalMergeData[i] = typesOfTheOtherTray[i];
                 if (typesOfTheOtherTray[i] != null)
                 {
-                    Debug.Log($"in the debug we do now should call once minumun with value {typesOfTheOtherTray[i]}");
                     finalMergeData[i] = typesOfTheOtherTray[i];
                 }
             }
         }
-        for (int i = 0; i < finalMergeData.Length;i++)
+        for (int i = 0; i < finalMergeData.Length; i++)
         {
             typeOfObjects[i] = finalMergeData[i];
-            Debug.Log($"finalmergedate[{i}] is {finalMergeData[i]}");
         }
-        Debug.Log($"merge data is 0: {typeOfObjects[0]} 1: {typeOfObjects[1]} 2: {typeOfObjects[2]}");
+
+        if (typeOfObjects[1] == (int)FoodDicctionary.CookedMeal.KindOfCookedMeal.Waffle)
+        {
+            if (trayToMerge.WhatIsWaffleName() != FoodDicctionary.CookedMeal.ShapeOfCookedMeal((int)typeOfObjects[1]))
+            {
+                waffleName = trayToMerge.WhatIsWaffleName();
+            }
+            
+        }
+
+        if (isWellMade)
+        {
+            if (!trayToMerge.IsWellMade())
+            {
+                isWellMade = false;
+            }
+        }
+
         Destroy(trayToMerge.gameObject);
         if (typeOfObjects[0] != null)
         {
@@ -266,7 +330,12 @@ public class Tray : MonoBehaviour {
         }
         if (typeOfObjects[1] != null)
         {
-            SetACookedMeal((int)typeOfObjects[1], FoodDicctionary.CookedMeal.ShapeOfCookedMeal((int)typeOfObjects[1]));
+            string cookedMealName = FoodDicctionary.CookedMeal.ShapeOfCookedMeal((int)typeOfObjects[1]);
+            if (typeOfObjects[1] == (int)FoodDicctionary.CookedMeal.KindOfCookedMeal.Waffle)
+            {
+                cookedMealName = waffleName;
+            }
+            SetACookedMeal((int)typeOfObjects[1], cookedMealName);
         }
         if (typeOfObjects[2] != null)
         {

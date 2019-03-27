@@ -31,6 +31,7 @@ public class Table : MonoBehaviour {
         chef = FindObjectOfType<IcecreamChef>();
         trayPositioner = transform.GetChild(0);
         machinePositioner = transform.GetChild(1);
+        ChangeTheColor();
     }
 
 	// Update is called once per frame
@@ -82,7 +83,9 @@ public class Table : MonoBehaviour {
             tableShape = "Lateral/";
         }
 
-        spriteRenderer.sprite = Resources.Load<Sprite>($"{FoodDicctionary.prefabSpriteDirection}Table/{tableShape}{direction}");
+
+        string pathOfSprite = $"{FoodDicctionary.prefabSpriteDirection}Table/{tableShape}{direction}";
+        spriteRenderer.sprite = Resources.Load<Sprite>(pathOfSprite);
     }
 
     public void CreateALogo(string spriteName)
@@ -114,6 +117,7 @@ public class Table : MonoBehaviour {
         machine = Instantiate(Resources.Load<GameObject>($"{FoodDicctionary.prefabGameObjectDirection}{FoodDicctionary.machinesDirection}{typeOfMachine}"));
         machine.transform.parent = trayPositioner;
         machine.transform.position = trayPositioner.transform.position;
+        machine.transform.localScale = new Vector3(machine.transform.localScale.x * trayPositioner.transform.localScale.x, machine.transform.localScale.y, machine.transform.localScale.z);
 
         UnityArmatureComponent armature = machine.GetComponentInChildren<UnityArmatureComponent>();
         armature.sortingOrder = spriteRenderer.sortingOrder + 1;
@@ -158,6 +162,11 @@ public class Table : MonoBehaviour {
     public void OnMouseDown()
     {
         MoveToTheTable();
+    }
+
+    protected void ChangeTheColor()
+    {
+        spriteRenderer.color = Color.white;
     }
 
     protected void ChangeTheColor(string colorHtml)

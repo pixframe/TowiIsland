@@ -32,7 +32,7 @@ public class TableBlender : TableInstrument
             {
                 Debug.Log("We enter here");
                 trayToReturn = chef.GetHoldingTray();
-                if (ingredientsSet[0] == null && trayToReturn.HasRawIngridient())
+                if (ingredientsSet[0] == null && trayToReturn.HasRawIngridient() && !trayToReturn.HasCookedIngredient())
                 {
                     if (trayToReturn.WhatKindOfIngridientsIs() == iceId)
                     {

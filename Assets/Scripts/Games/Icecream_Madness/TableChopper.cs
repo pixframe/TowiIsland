@@ -20,7 +20,6 @@ public class TableChopper : TableInstrument
     public override void Initializing()
     {
         base.Initializing();
-        Debug.Log($"{name} this is a icecream machine table");
 
         CreateAMachine(FoodDicctionary.chopperMachine);
         armature = machine.transform.GetChild(0).GetComponent<UnityArmatureComponent>();

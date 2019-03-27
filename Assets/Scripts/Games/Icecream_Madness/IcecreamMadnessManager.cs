@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class IcecreamMadnessManager : MonoBehaviour {
+
     public GameObject TableCenterManager;
     public GameObject Canvas;
     public GameObject uiCanvas;
+
+    IcecreamChef chef;
 
     readonly List<int> possibleToppings = new List<int> { 4, 5, 6, 7, 8 };
     List<int> kindOfMachines = new List<int>();
@@ -15,6 +19,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
     List<int> kindOfIngredients = new List<int>();
 
     List<int> availableToppings = new List<int>();
+    List<int> recepiesToShow = new List<int>();
     List<IceCreamOrders> ordersList = new List<IceCreamOrders>();
     List<float> timesOfOrder = new List<float>();
 
@@ -26,6 +31,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
 
     readonly Dictionary<string, string> plusCornerPositions = new Dictionary<string, string> { { "C1", "U1" }, { "C2", "R1" }, { "C3", "D1" }, { "C4", "L1" } };
     readonly Dictionary<string, string> lessCornerPositions = new Dictionary<string, string> { { "C1", "L5" }, { "C2", "U7" }, { "C3", "R5" }, { "C4", "D7" } };
+    readonly List<int> levelsTutorials = new List<int> { 0, 1, 2 };
 
     IcecreamUI icecreamUI;
 
@@ -40,6 +46,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
     int currentOrders;
 
     int currentEssay = 0;
+    const int maxNumberOfEssay = 4;
 
     int[] wellMade;
     int[] badMade;
@@ -50,11 +57,12 @@ public class IcecreamMadnessManager : MonoBehaviour {
     int[] ordersWithTips;
     int[] totalScores;
 
-    int numberOfEssays = 3;
+    int level = 0;
+    int maxLevelNumber = 4;
 
-    int level = 1;
+    int targetCoins;
 
-    const float essayTime = 30f;
+    const float essayTime = 180f;
     float currentEssayTime;
 
     float newOrderTiming = 20f;
@@ -67,8 +75,6 @@ public class IcecreamMadnessManager : MonoBehaviour {
     void Awake()
     {
         GameParametersInitialization();
-
-        EssayParameterInitilization();
     }
 
     // Update is called once per frame
@@ -76,9 +82,9 @@ public class IcecreamMadnessManager : MonoBehaviour {
     {
         if (isGameTime)
         {
-            SetTimersOnTime();
-
             NewOrderForTime();
+
+            SetTimersOnTime();
         }
     }
 
@@ -93,23 +99,25 @@ public class IcecreamMadnessManager : MonoBehaviour {
         TableInitilization();
 
         //Counters are initilized
-        wellMade = new int[numberOfEssays];
-        badMade = new int[numberOfEssays];
-        ordersAsked = new int[numberOfEssays];
-        ordersDelivered = new int[numberOfEssays];
-        ordersMissed = new int[numberOfEssays];
-        tipsEarned = new int[numberOfEssays];
-        ordersWithTips = new int[numberOfEssays];
-        totalScores = new int[numberOfEssays];
+        wellMade = new int[maxNumberOfEssay];
+        badMade = new int[maxNumberOfEssay];
+        ordersAsked = new int[maxNumberOfEssay];
+        ordersDelivered = new int[maxNumberOfEssay];
+        ordersMissed = new int[maxNumberOfEssay];
+        tipsEarned = new int[maxNumberOfEssay];
+        ordersWithTips = new int[maxNumberOfEssay];
+        totalScores = new int[maxNumberOfEssay];
 
         //Especilieced Objects are initialized
         icecreamUI = new IcecreamUI(uiCanvas, this);
+
+        
     }
 
     /// <summary>
     /// This parameters has to be set in every essay of the game session
     /// </summary>
-    void EssayParameterInitilization()
+    public void EssayParameterInitilization()
     {
         currentEssayTime = essayTime;
 
@@ -118,8 +126,12 @@ public class IcecreamMadnessManager : MonoBehaviour {
         SetLevelData();
 
         ClearTables();
+    }
 
-        FillRandomTables();
+    public void SetChef(string chefName)
+    {
+        string pathOfChef = $"{FoodDicctionary.prefabGameObjectDirection}{FoodDicctionary.chefDirection}{chefName}";
+        chef = Instantiate(Resources.Load<GameObject>(pathOfChef)).GetComponent<IcecreamChef>();
     }
 
     /// <summary>
@@ -164,9 +176,19 @@ public class IcecreamMadnessManager : MonoBehaviour {
         var levelConfigurator = GameConfigurator.GetIcecreamConfiguration(level);
 
         kindOfMachines.Clear();
+        kindOfContainer.Clear();
+        kindOfCookedMeals.Clear();
+        kindOfMachines.Clear();
+        kindOfIngredients.Clear();
+        availableToppings.Clear();
+        recepiesToShow.Clear();
 
-        amoutOfChoppers = levelConfigurator.amoutOfChoppers;
-        amountOfTopings = levelConfigurator.amoutOfToppings;
+        NeedsTutorial();
+
+        amoutOfChoppers = levelConfigurator.amountOfChoppers;
+        amountOfTopings = levelConfigurator.amountOfToppings;
+
+        targetCoins = levelConfigurator.amountOfCoinsToPassLevel;
 
         maxAmountOfOrdersAtTheSameTime = levelConfigurator.maxNumberOfOrders;
 
@@ -189,6 +211,9 @@ public class IcecreamMadnessManager : MonoBehaviour {
                 case 2:
                     kindOfMachines.Add(2);
                     kindOfMachines.Add(3);
+                    kindOfIngredients.Add(1);
+                    kindOfIngredients.Add(2);
+                    kindOfIngredients.Add(3);
                     break;
                 default:
                     Debug.LogError("its an exception");
@@ -198,6 +223,34 @@ public class IcecreamMadnessManager : MonoBehaviour {
 
     }
     #endregion
+
+    void NeedsTutorial()
+    {
+        if (levelsTutorials.Contains(level))
+        {
+            switch (level)
+            {
+                case 0:
+                    recepiesToShow.Add(0);
+                    recepiesToShow.Add(1);
+                    recepiesToShow.Add(2);
+                    break;
+                case 1:
+                    recepiesToShow.Add(3);
+                    recepiesToShow.Add(4);
+                    break;
+                case 2:
+                    recepiesToShow.Add(5);
+                    recepiesToShow.Add(6);
+                    recepiesToShow.Add(7);
+                    recepiesToShow.Add(8);
+                    recepiesToShow.Add(9);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 
     void SetTimersOnTime()
     {
@@ -217,8 +270,33 @@ public class IcecreamMadnessManager : MonoBehaviour {
     void CloseRestaurant()
     {
         isGameTime = false;
-        totalScores[currentEssay] = icecreamUI.PrintTheEarnings(wellMade[currentEssay], tipsEarned[currentEssay], badMade[currentEssay], ordersMissed[currentEssay]);
-        EssayParameterInitilization();
+        chef.PrepareTheChef();
+        foreach (IceCreamOrders order in ordersList)
+        {
+            Destroy(order.order);
+        }
+        ordersList.Clear();
+        ClearTables();
+        int totalScore = icecreamUI.PrintTheEarnings(wellMade[currentEssay], tipsEarned[currentEssay], badMade[currentEssay], ordersMissed[currentEssay]);
+        totalScores[currentEssay] = totalScore;
+        icecreamUI.SetButtonToPrintResults(totalScore, targetCoins);
+    }
+
+    public void HandleResult(bool passTheLevel)
+    {
+        currentEssay++;
+        if (passTheLevel)
+        {
+            level++;
+        }
+        if (currentEssay < maxNumberOfEssay)
+        {
+            icecreamUI.SetButtonToPlayAgain();
+        }
+        else
+        {
+            icecreamUI.SetButtonToFinish();
+        }
     }
 
     void NewOrderForTime()
@@ -231,7 +309,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
         }
     }
 
-    void FillRandomTables()
+    public void FillRandomTables()
     {
         var tempTablenames = new List<string>();
         var tempMachineTableNames = new List<string>();
@@ -279,7 +357,6 @@ public class IcecreamMadnessManager : MonoBehaviour {
         fullTables[tableMapPositions[tempTablenames[0]]].AddComponent<TableSimple>();
         tempTablenames.RemoveAt(0);
 
-        Debug.Log($"number of machines to set {kindOfMachines.Count}");
         for (int i = 0; i < kindOfMachines.Count; i++)
         {
             int numToInput = Random.Range(0, tempMachineTableNames.Count);
@@ -293,6 +370,9 @@ public class IcecreamMadnessManager : MonoBehaviour {
                     break;
                 case 2:
                     fullTables[tableMapPositions[tempMachineTableNames[numToInput]]].AddComponent<TableMixer>();
+                    break;
+                case 3:
+                    fullTables[tableMapPositions[tempMachineTableNames[numToInput]]].AddComponent<TableWaffleMaker>();
                     break;
             }
             tempTablenames.Remove(tempMachineTableNames[numToInput]);
@@ -350,10 +430,9 @@ public class IcecreamMadnessManager : MonoBehaviour {
         {
             ordersAsked[currentEssay]++;
             IceCreamOrders tempOrder = new IceCreamOrders(Instantiate(Resources.Load<GameObject>("IcecreamMadness/Prefabs/Order"), Canvas.transform.GetChild(0)), this);
-            int randomConatainer = Random.Range(0, kindOfContainer.Count);
-            int randomCookedMeal = Random.Range(0, kindOfCookedMeals.Count);
+            int randomFood = Random.Range(0, kindOfContainer.Count);
             int randomTooping = Random.Range(0, availableToppings.Count);
-            tempOrder.SetAnOrder(kindOfContainer[randomConatainer], kindOfCookedMeals[randomCookedMeal], availableToppings[randomTooping]);
+            tempOrder.SetAnOrder(kindOfContainer[randomFood], kindOfCookedMeals[randomFood], availableToppings[randomTooping]);
             tempOrder.SetOrderPosistion(ordersList.Count);
             ordersList.Add(tempOrder);
             tempOrder.order.name = ("Order_" + ordersList.Count);
@@ -396,11 +475,16 @@ public class IcecreamMadnessManager : MonoBehaviour {
         }
         else
         {
-            badMade[currentEssay]++;
-            Debug.Log("You deliver otmar");
+            BadAnswer();
         }
 
         return hasAMatch;
+    }
+
+    public void BadAnswer()
+    {
+        badMade[currentEssay]++;
+        Debug.Log("You delivered a classic otmy");
     }
 
     public bool IsGameOnAction()
@@ -416,13 +500,18 @@ public class IcecreamMadnessManager : MonoBehaviour {
 
     public void MissOrder(IceCreamOrders orderToDelete)
     {
-        ordersMissed[currentEssay]--;
+        ordersMissed[currentEssay]++;
         ordersList.Remove(orderToDelete);
         Destroy(orderToDelete.order);
         for (int i = 0; i < ordersList.Count; i++)
         {
             ordersList[i].SetOrderPosistion(i);
         }
+    }
+
+    public List<int> GetRecipes()
+    {
+        return recepiesToShow;
     }
 }
 
@@ -454,7 +543,6 @@ public class IceCreamOrders
         baseBar = prefabOrder.transform.GetChild(1).GetComponent<Image>();
         dynamicBar = baseBar.transform.GetChild(0).GetComponent<Image>();
         helperImage = order.transform.GetChild(2).GetComponent<Image>();
-        Debug.Log("All allright");
     }
 
     public void SetAnOrder(int? container, int? cookedMeal, int? topping)
@@ -582,6 +670,29 @@ class IcecreamUI
     Image timerPanel;
     Text timerText;
 
+    GameObject storyManager;
+    List<GameObject> storyImages = new List<GameObject>();
+
+    Image storyPanel;
+    Text storyText;
+    Button nextButton;
+    string[] storyStrings = new string[]{
+        "Los animales de la isla necesitan de nutrientes para seguir jugando",
+        "Las frutas que tenemos en la isla son una gran fuente de vitaminas",
+        "Ayudanos a preparar deliciosos platillos frutales para todos"
+    };
+
+    int storyIndex = 0;
+    int recipesIndex = 0;
+
+    GameObject recipesPanel;
+    List<GameObject> recipesObjects = new List<GameObject>();
+    Button recipesButton;
+
+    GameObject characterSelectionPanel;
+    GameObject selectCharacterPanel;
+    Text selectCharacterText;
+
     IcecreamMadnessManager manager;
 
     public IcecreamUI(GameObject canvas, IcecreamMadnessManager managerToRefer)
@@ -596,20 +707,131 @@ class IcecreamUI
         timerPanel = mainCanvas.transform.GetChild(1).GetComponent<Image>();
         timerText = timerPanel.GetComponentInChildren<Text>();
 
-        PrintAreYouReady();
+        storyManager = mainCanvas.transform.GetChild(2).gameObject;
+        for (int i = 0; i < storyManager.transform.childCount; i++)
+        {
+            storyImages.Add(storyManager.transform.GetChild(i).gameObject);
+        }
+
+        storyPanel = mainCanvas.transform.GetChild(3).GetComponent<Image>();
+        storyText = storyPanel.GetComponentInChildren<Text>();
+        nextButton = storyPanel.GetComponentInChildren<Button>();
+        nextButton.onClick.AddListener(PrintTheStory);
+
+        recipesPanel = mainCanvas.transform.GetChild(4).gameObject;
+        for (int i = 0; i < recipesPanel.transform.childCount - 1; i++)
+        {
+            recipesObjects.Add(recipesPanel.transform.GetChild(i).gameObject);
+            recipesObjects[i].SetActive(false);
+        }
+        recipesButton = recipesPanel.transform.GetChild(recipesPanel.transform.childCount - 1).GetComponent<Button>();
+
+        characterSelectionPanel = mainCanvas.transform.GetChild(5).gameObject;
+        selectCharacterPanel = characterSelectionPanel.transform.GetChild(0).gameObject;
+        selectCharacterText = selectCharacterPanel.transform.GetComponentInChildren<Text>();
+        var characterSelectionManager = characterSelectionPanel.transform.GetChild(1);
+        for (int i = 0; i < characterSelectionManager.childCount; i++)
+        {
+            var buttonToSet = characterSelectionManager.GetChild(i).GetComponent<Button>();
+            buttonToSet.onClick.AddListener(() => SelectCharacter(buttonToSet.transform.GetChild(0).name));
+        }
+
+        HideAllManagers();
+        characterSelectionPanel.SetActive(true);
+    }
+
+    void SelectCharacter(string nameOfCharacter)
+    {
+        manager.SetChef(nameOfCharacter);
+        PrintTheStory();
+    }
+
+    void HideAllManagers()
+    {
+        timerReadyPanel.gameObject.SetActive(false);
+        timerPanel.gameObject.SetActive(false);
+        storyManager.SetActive(false);
+        storyPanel.gameObject.SetActive(false);
+        recipesPanel.SetActive(false);
+        characterSelectionPanel.SetActive(false);
+    }
+
+    public void PrintTheStory()
+    {
+        HideAllManagers();
+        storyManager.SetActive(true);
+        storyPanel.gameObject.SetActive(true);
+
+        foreach (GameObject o in storyImages)
+        {
+            o.SetActive(false);
+        }
+
+        storyImages[storyIndex].SetActive(true);
+        storyText.text = storyStrings[storyIndex];
+
+        storyIndex++;
+        if (storyIndex >= storyImages.Count)
+        {
+            nextButton.onClick.RemoveAllListeners();
+            nextButton.onClick.AddListener(PrintAreYouReady);
+        }
+    }
+
+    public void PrintRecipes()
+    {
+        HideAllManagers();
+
+        recipesPanel.SetActive(true);
+        var recipes = manager.GetRecipes();
+
+        foreach (GameObject o in recipesObjects)
+        {
+            o.SetActive(false);
+        }
+
+        recipesObjects[recipes[recipesIndex]].SetActive(true);
+
+        recipesIndex++;
+
+        recipesButton.onClick.RemoveAllListeners();
+        if (recipesIndex < recipes.Count)
+        {
+            recipesButton.onClick.AddListener(PrintRecipes);
+        }
+        else
+        {
+            recipesIndex = 0;
+            recipesButton.onClick.AddListener(() => { manager.StartCoroutine(StartCountDown()); });
+        }
+
     }
 
     public void PrintAreYouReady()
     {
+        HideAllManagers();
+        timerReadyPanel.gameObject.SetActive(true);
         timerReadyText.text = "¿Estas listo?";
-        timerPanel.gameObject.SetActive(false);
 
-        OkButton.onClick.AddListener(() => { manager.StartCoroutine(StartCountDown()); });
+        manager.EssayParameterInitilization();
+
+        OkButton.onClick.RemoveAllListeners();
+        if (manager.GetRecipes().Count > 0)
+        {
+            OkButton.onClick.AddListener(PrintRecipes);
+        }
+        else
+        {
+            OkButton.onClick.AddListener(() => { manager.StartCoroutine(StartCountDown()); });
+        }
     }
 
     public IEnumerator StartCountDown()
     {
+        HideAllManagers();
+        timerReadyPanel.gameObject.SetActive(true);
         OkButton.gameObject.SetActive(false);
+        manager.FillRandomTables();
         timerReadyText.text = "Abrimos en:\n 3";
         yield return new WaitForSeconds(1f);
         timerReadyText.text = "Abrimos en:\n 2";
@@ -653,19 +875,61 @@ class IcecreamUI
     {
         timerReadyPanel.gameObject.SetActive(true);
         timerPanel.gameObject.SetActive(false);
+        OkButton.gameObject.SetActive(true);
 
         int salesTotal = objectsWellMade * 20;
         int lossesTotal = objectsBadMade * 5;
         int penalizationTotal = objectsMissed * 10;
         int totals = salesTotal + tipScore - lossesTotal - penalizationTotal;
+
         string sales = $"<color=#42210B>Ventas     :   ${salesTotal.ToString("000")}</color>";
         string tips = $"<color=#42210B>Propinas  :   ${tipScore.ToString("000")}</color>";
         string looses = $"<color=#B32006>Perdidas  : - ${lossesTotal.ToString("000")}</color>";
         string penalization = $"<color=#B32006>Reclamos : - ${penalizationTotal.ToString("000")}</color>";
         string total = $"<color=#{ColorToPrintTotal(totals)}>Total         :{SimbolToPrint(totals)}${Mathf.Abs(totals).ToString("000")}</color>";
 
+
+
         timerReadyText.text = $"{sales}\n{tips}\n{looses}\n{penalization}\n{total}";
 
         return totals;
     }
+
+    public void PrintTheResults(int totalCoins, int needCoins)
+    {
+        string total = $"<color=#42210B>Ganaste        :   ${totalCoins.ToString("000")}</color>";
+        string needs = $"<color=#42210B>Necesitabas :   ${needCoins.ToString("000")}</color>";
+        timerReadyText.text = $"{total}\n{needs}";
+
+        bool isCorrect = totalCoins >= needCoins;
+
+        if (isCorrect)
+        {
+            timerReadyText.text += "\n¡Muy Bien! Lo conseguiste avanza al siguiente nivel";
+        }
+        else
+        {
+            timerReadyText.text += "\nOh no! vuelve a intentarlo";
+        }
+
+        manager.HandleResult(isCorrect);
+    }
+
+    public void SetButtonToPrintResults(int totals, int needCoins)
+    {
+        OkButton.onClick.RemoveAllListeners();
+        OkButton.onClick.AddListener(() => PrintTheResults(totals, needCoins));
+    }
+
+    public void SetButtonToPlayAgain()
+    {
+        OkButton.onClick.RemoveAllListeners();
+        OkButton.onClick.AddListener(PrintAreYouReady);
+    }
+
+    public void SetButtonToFinish()
+    {
+        OkButton.onClick.RemoveAllListeners();
+        OkButton.onClick.AddListener(() => SceneManager.LoadScene(SceneManager.GetActiveScene().name));
+    } 
 }
