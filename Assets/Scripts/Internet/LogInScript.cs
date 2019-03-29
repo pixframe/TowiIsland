@@ -241,33 +241,43 @@ public class LogInScript : MonoBehaviour {
             int dataNotSavedByProblems = 0;
             for (int i = 0; i < gamesSaved; i++)
             {
-                string pathOfFile = $"{Application.persistentDataPath}/{gamesSaved}{Keys.Game_To_Save}";
-                string jsonString = File.ReadAllText(pathOfFile);
+                int x = i;
+                string pathOfFile = $"{Application.persistentDataPath}/{x}{Keys.Game_To_Save}";
 
-                var jsonObj = JSONObject.Parse(jsonString);
-
-                var form = new WWWForm();
-                form.AddField("jsonToDb", jsonObj.ToString());
-
-                using (UnityWebRequest request = UnityWebRequest.Post(levelUpdateURL, form))
+                if (File.Exists(pathOfFile))
                 {
-                    int dataRemaining = i;
-                    yield return request.SendWebRequest();
-                    if (request.isNetworkError || request.isHttpError)
+                    string jsonString = File.ReadAllText(pathOfFile);
+
+                    var jsonObj = JSONObject.Parse(jsonString);
+
+                    var form = new WWWForm();
+                    form.AddField("jsonToDb", jsonObj.ToString());
+
+                    using (UnityWebRequest request = UnityWebRequest.Post(levelUpdateURL, form))
                     {
-                        PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
-                        Debug.Log($"We have trouble uploading the data this is the error :\n{request.downloadHandler.text}");
-                        string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}{Keys.Game_To_Save}";
-                        dataNotSavedByProblems++;
-                    }
-                    else
-                    {
-                        JSONObject response = JSONObject.Parse(request.downloadHandler.text);
-                        Debug.Log(response["code"].Str);
-                        if (response["code"].Str != "200" && response["code"].Str != "201")
+                        int dataRemaining = i;
+                        yield return request.SendWebRequest();
+                        if (request.isNetworkError || request.isHttpError)
                         {
-                            Debug.Log("The game data has been upload");
-                            File.Delete(pathOfFile);
+                            PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
+                            Debug.Log($"We have trouble uploading the data this is the error :\n{request.downloadHandler.text}");
+                            string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}{Keys.Game_To_Save}";
+                            dataNotSavedByProblems++;
+                            if (pathOfFile != newPathOfFile)
+                            {
+                                File.Delete(newPathOfFile);
+                                File.Move(pathOfFile, newPathOfFile);
+                            }
+                        }
+                        else
+                        {
+                            JSONObject response = JSONObject.Parse(request.downloadHandler.text);
+                            Debug.Log(response["code"].Str);
+                            if (response["code"].Str != "200" && response["code"].Str != "201")
+                            {
+                                Debug.Log("The game data has been upload");
+                                File.Delete(pathOfFile);
+                            }
                         }
                     }
                 }
@@ -281,37 +291,47 @@ public class LogInScript : MonoBehaviour {
             int dataNotSavedByProblems = 0;
             for (int i = 0; i < evaluationSaved; i++)
             {
-                string pathOfFile = $"{Application.persistentDataPath}/{evaluationSaved}{Keys.Evaluation_To_Save}";
+                int x = i;
+                string pathOfFile = $"{Application.persistentDataPath}/{x}{Keys.Evaluation_To_Save}";
 
-                string jsonString = File.ReadAllText(pathOfFile);
-
-                var jsonObj = JSONObject.Parse(jsonString);
-
-                var form = new WWWForm();
-                form.AddField("jsonToDb", jsonObj.ToString());
-
-                using (UnityWebRequest request = UnityWebRequest.Post(levelUpdateURL, form))
+                if (File.Exists(pathOfFile))
                 {
-                    int dataRemaining = i;
-                    yield return request.SendWebRequest();
-                    if (request.isNetworkError || request.isHttpError)
+                    string jsonString = File.ReadAllText(pathOfFile);
+
+                    var jsonObj = JSONObject.Parse(jsonString);
+
+                    var form = new WWWForm();
+                    form.AddField("jsonToDb", jsonObj.ToString());
+
+                    using (UnityWebRequest request = UnityWebRequest.Post(levelUpdateURL, form))
                     {
-                        PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
-                        Debug.Log($"We have trouble uploading the data this is the error :\n{request.downloadHandler.text}");
-                        string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}{Keys.Evaluation_To_Save}";
-                        dataNotSavedByProblems++;
-                    }
-                    else
-                    {
-                        JSONObject response = JSONObject.Parse(request.downloadHandler.text);
-                        Debug.Log(response["code"].Str);
-                        if (response["code"].Str != "200" && response["code"].Str != "201")
+                        int dataRemaining = i;
+                        yield return request.SendWebRequest();
+                        if (request.isNetworkError || request.isHttpError)
                         {
-                            Debug.Log("The game data has been upload");
-                            File.Delete(pathOfFile);
+                            PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
+                            Debug.Log($"We have trouble uploading the data this is the error :\n{request.downloadHandler.text}");
+                            string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}{Keys.Evaluation_To_Save}";
+                            dataNotSavedByProblems++;
+                            if (pathOfFile != newPathOfFile)
+                            {
+                                File.Delete(newPathOfFile);
+                                File.Move(pathOfFile, newPathOfFile);
+                            }
+                        }
+                        else
+                        {
+                            JSONObject response = JSONObject.Parse(request.downloadHandler.text);
+                            Debug.Log(response["code"].Str);
+                            if (response["code"].Str != "200" && response["code"].Str != "201")
+                            {
+                                Debug.Log("The game data has been upload");
+                                File.Delete(pathOfFile);
+                            }
                         }
                     }
                 }
+                
             }
             PlayerPrefs.SetInt(Keys.Evaluations_Saved, dataNotSavedByProblems);
         }

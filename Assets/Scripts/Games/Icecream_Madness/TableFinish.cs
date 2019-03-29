@@ -4,16 +4,12 @@ using UnityEngine;
 
 public class TableFinish : Table
 {
-    ParticleSystem confettiSystem;
-    ParticleSystem crossesSystem;
 
 	// Use this for initialization
 	void Start ()
     {
         Initializing();
         ChangeTableSprite(FoodDicctionary.finishTable);
-        confettiSystem = GameObject.FindGameObjectWithTag("Arrow").GetComponent<ParticleSystem>();
-        crossesSystem = GameObject.FindGameObjectWithTag("Ground").GetComponent<ParticleSystem>();
     }
 
     // Update is called once per frame
@@ -40,28 +36,25 @@ public class TableFinish : Table
                 {
                     if (manager.CompareTrays(tempTray.GetMadeComposition()))
                     {
-                        confettiSystem.transform.position = transform.position;
-                        confettiSystem.Play();
+                        manager.GoodAnswer(transform.position);
                     }
                     else
                     {
-                        crossesSystem.transform.position = transform.position;
-                        crossesSystem.Play();
+                        manager.BadAnswer(transform.position);
                     }
                 }
                 else
                 {
-                    manager.BadAnswer();
-                    crossesSystem.transform.position = transform.position;
-                    crossesSystem.Play();
+                    manager.BadAnswer(transform.position);
                 }
+
+                Destroy(tempTray.gameObject);
+                hasSomethingOn = false;
             }
             else
             {
                 Debug.Log("You shuold put a container");
             }
-            Destroy(tempTray.gameObject);
-            hasSomethingOn = false;
         }
     }
 }

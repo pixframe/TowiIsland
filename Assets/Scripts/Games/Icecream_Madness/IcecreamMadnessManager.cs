@@ -35,6 +35,9 @@ public class IcecreamMadnessManager : MonoBehaviour {
 
     IcecreamUI icecreamUI;
 
+    ParticleSystem confettiSystem;
+    ParticleSystem crossesSystem;
+
     int maxAmountOfOrdersAtTheSameTime = 5;
     int minAmountOforders = 1;
 
@@ -50,6 +53,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
 
     int[] wellMade;
     int[] badMade;
+    int[] trashOrders;
     int[] ordersAsked;
     int[] ordersDelivered;
     int[] ordersMissed;
@@ -69,6 +73,9 @@ public class IcecreamMadnessManager : MonoBehaviour {
     float currentNewOrderTiming;
 
     bool isGameTime = false;
+    bool needsTutorialIcecream;
+    bool needsTutorialBlender;
+    bool needsTutorialWaffle;
     #region Standart Region
 
     // Use this for initialization
@@ -101,6 +108,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
         //Counters are initilized
         wellMade = new int[maxNumberOfEssay];
         badMade = new int[maxNumberOfEssay];
+        trashOrders = new int[maxNumberOfEssay];
         ordersAsked = new int[maxNumberOfEssay];
         ordersDelivered = new int[maxNumberOfEssay];
         ordersMissed = new int[maxNumberOfEssay];
@@ -111,7 +119,9 @@ public class IcecreamMadnessManager : MonoBehaviour {
         //Especilieced Objects are initialized
         icecreamUI = new IcecreamUI(uiCanvas, this);
 
-        
+        confettiSystem = GameObject.FindGameObjectWithTag("Arrow").GetComponent<ParticleSystem>();
+        crossesSystem = GameObject.FindGameObjectWithTag("Ground").GetComponent<ParticleSystem>();
+
     }
 
     /// <summary>
@@ -221,8 +231,14 @@ public class IcecreamMadnessManager : MonoBehaviour {
             }
         }
 
+        icecreamUI.SetNeedCoins(targetCoins);
     }
     #endregion
+
+    public int GetNeededCoins()
+    {
+        return targetCoins;
+    }
 
     void NeedsTutorial()
     {
@@ -277,7 +293,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
         }
         ordersList.Clear();
         ClearTables();
-        int totalScore = icecreamUI.PrintTheEarnings(wellMade[currentEssay], tipsEarned[currentEssay], badMade[currentEssay], ordersMissed[currentEssay]);
+        int totalScore = icecreamUI.PrintTheEarnings(wellMade[currentEssay], tipsEarned[currentEssay], (badMade[currentEssay] + trashOrders[currentEssay]), ordersMissed[currentEssay]);
         totalScores[currentEssay] = totalScore;
         icecreamUI.SetButtonToPrintResults(totalScore, targetCoins);
     }
@@ -447,22 +463,20 @@ public class IcecreamMadnessManager : MonoBehaviour {
         {
             if (ordersList[i].IsTheOrderWellMade(trayDelivered))
             {
-                hasAMatch = true;
-                wellMade[currentEssay]++;
                 int tip = ordersList[i].TipsForThisOrder();
                 if (tip > 0)
                 {
                     ordersWithTips[currentEssay]++;
                 }
-                tipsEarned[currentEssay] += tip;    
+                tipsEarned[currentEssay] += tip;
                 Destroy(ordersList[i].order);
                 ordersList.Remove(ordersList[i]);
+                hasAMatch = true;
                 break;
             }
         }
         if (hasAMatch)
         {
-
             for (int i = 0; i < ordersList.Count; i++)
             {
                 ordersList[i].SetOrderPosistion(i);
@@ -473,18 +487,80 @@ public class IcecreamMadnessManager : MonoBehaviour {
                 AskForAnOrder();
             }
         }
-        else
-        {
-            BadAnswer();
-        }
 
         return hasAMatch;
     }
 
-    public void BadAnswer()
+    public void GoodAnswer(Vector3 positionOfTable)
+    {
+        wellMade[currentEssay]++;
+        StartCoroutine(AnswerRoutine(confettiSystem, positionOfTable));
+    }
+
+    public void BadAnswer(Vector3 positionOfTable)
     {
         badMade[currentEssay]++;
-        Debug.Log("You delivered a classic otmy");
+        crossesSystem.transform.GetChild(0).gameObject.SetActive(false);
+        crossesSystem.transform.GetChild(1).gameObject.SetActive(true);
+        StartCoroutine(AnswerRoutine(crossesSystem, positionOfTable));
+
+    }
+
+    public void TrashAnswer(Vector3 positionOfTable)
+    {
+        trashOrders[currentEssay]++;
+        crossesSystem.transform.GetChild(0).gameObject.SetActive(false);
+        crossesSystem.transform.GetChild(1).gameObject.SetActive(true);
+        StartCoroutine(AnswerRoutine(crossesSystem, positionOfTable));
+
+    }
+
+    IEnumerator AnswerRoutine(ParticleSystem particleSystem, Vector3 positionOfTable)
+    {
+        var initialPos = particleSystem.transform.position;
+        particleSystem.transform.position = positionOfTable;
+        particleSystem.Play();
+
+        while (particleSystem.isPlaying)
+        {
+            yield return null;
+        }
+
+        particleSystem.transform.position = initialPos;
+
+    }
+
+    public void MissOrder(IceCreamOrders orderToDelete)
+    {
+
+        ordersMissed[currentEssay]++;
+        crossesSystem.transform.GetChild(0).gameObject.SetActive(true);
+        crossesSystem.transform.GetChild(1).gameObject.SetActive(false);
+        StartCoroutine(MissRoutine(crossesSystem, orderToDelete));
+    }
+
+    IEnumerator MissRoutine(ParticleSystem particleSystem, IceCreamOrders orderToDelete)
+    {
+
+        var initialPos = particleSystem.transform.position;
+
+        particleSystem.transform.position = orderToDelete.order.transform.position;
+
+        ordersList.Remove(orderToDelete);
+        Destroy(orderToDelete.order);
+
+        particleSystem.Play();
+
+        while (particleSystem.isPlaying)
+        {
+            yield return null;
+        }
+
+        particleSystem.transform.position = initialPos;
+        for (int i = 0; i < ordersList.Count; i++)
+        {
+            ordersList[i].SetOrderPosistion(i);
+        }
     }
 
     public bool IsGameOnAction()
@@ -496,17 +572,6 @@ public class IcecreamMadnessManager : MonoBehaviour {
     {
         isGameTime = true;
         AskForAnOrder();
-    }
-
-    public void MissOrder(IceCreamOrders orderToDelete)
-    {
-        ordersMissed[currentEssay]++;
-        ordersList.Remove(orderToDelete);
-        Destroy(orderToDelete.order);
-        for (int i = 0; i < ordersList.Count; i++)
-        {
-            ordersList[i].SetOrderPosistion(i);
-        }
     }
 
     public List<int> GetRecipes()
@@ -802,9 +867,8 @@ class IcecreamUI
         else
         {
             recipesIndex = 0;
-            recipesButton.onClick.AddListener(() => { manager.StartCoroutine(StartCountDown()); });
+            recipesButton.onClick.AddListener(() => PrintYouNeed(manager.GetNeededCoins()));
         }
-
     }
 
     public void PrintAreYouReady()
@@ -814,7 +878,10 @@ class IcecreamUI
         timerReadyText.text = "¿Estas listo?";
 
         manager.EssayParameterInitilization();
+    }
 
+    public void SetNeedCoins(int needs)
+    {
         OkButton.onClick.RemoveAllListeners();
         if (manager.GetRecipes().Count > 0)
         {
@@ -822,8 +889,20 @@ class IcecreamUI
         }
         else
         {
-            OkButton.onClick.AddListener(() => { manager.StartCoroutine(StartCountDown()); });
+            OkButton.onClick.AddListener(() => PrintYouNeed(needs));
         }
+    }
+
+    public void PrintYouNeed(int neededCoins)
+    {
+        HideAllManagers();
+        timerReadyPanel.gameObject.SetActive(true);
+        timerReadyText.text = $"Necesitas ${neededCoins} para pasar de nivel";
+
+        manager.EssayParameterInitilization();
+
+        OkButton.onClick.RemoveAllListeners();
+        OkButton.onClick.AddListener(() => { manager.StartCoroutine(StartCountDown()); });
     }
 
     public IEnumerator StartCountDown()

@@ -35,6 +35,7 @@ public class TableTrash : Table
         {
             chef.PutATray(trayPositioner);
             armature.animation.Play(trowAnim, 1);
+            manager.TrashAnswer(transform.position);
             Destroy(trayOn);
         }
     }

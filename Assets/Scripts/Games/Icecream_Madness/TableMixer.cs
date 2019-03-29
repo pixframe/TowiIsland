@@ -40,7 +40,7 @@ public class TableMixer : TableInstrument
             trayToReturn = chef.GetHoldingTray();
             if (!hasSomethingOn)
             { 
-                if (trayToReturn.HasRawIngridient() && trayToReturn.GetIngridient() < 4)
+                if (trayToReturn.HasRawIngridient() && trayToReturn.GetIngridient() < 4 && trayToReturn.GetIngridient() > 0)
                 {
                     if (ingredientsSaved.Count < 3)
                     {
@@ -111,16 +111,15 @@ public class TableMixer : TableInstrument
     {
         for (int i = 0; i < ingredientsSaved.Count; i++)
         {
-            for (int j = i + 1; j < ingredientsSaved.Count; i++)
+            for (int j = i + 1; j < ingredientsSaved.Count; j++)
             {
                 if (ingredientsSaved[i] == ingredientsSaved[j])
                 {
-                    return false;
+                    return true;
                 }
             }
         }
-
-        return true;
+        return false;
     }
 
     string PrintTheAnim()
