@@ -2,7 +2,7 @@
   "icecreamConfigs": [
     {
       "kindOfMeals": [ 0 ],
-      "maxNumberOfOrders": 3,
+      "maxNumberOfOrders": 1,
       "amountOfToppings": 1,
       "amountOfChoppers": 1,
       "amountOfCoinsToPassLevel": 80,
@@ -30,22 +30,38 @@
       "amountOfToppings": 1,
       "amountOfChoppers": 2,
       "amountOfCoinsToPassLevel": 80,
-      "newOrderTiming": 20.0
+      "newOrderTiming": 25.0
     },
     {
       "kindOfMeals": [ 0 ],
       "maxNumberOfOrders": 3,
-      "amountOfToppings": 2,
+      "amountOfToppings": 3,
       "amountOfChoppers": 1,
-      "amountOfCoinsToPassLevel": 10,
-      "newOrderTiming": 20.0
+      "amountOfCoinsToPassLevel": 100,
+      "newOrderTiming": 25.0
     },
     {
       "kindOfMeals": [ 0 ],
       "maxNumberOfOrders": 4,
       "amountOfToppings": 3,
       "amountOfChoppers": 1,
-      "amountOfCoinsToPassLevel": 10,
+      "amountOfCoinsToPassLevel": 100,
+      "newOrderTiming": 20.0
+    },
+    {
+      "kindOfMeals": [ 0, 0 ],
+      "maxNumberOfOrders": 5,
+      "amountOfToppings": 3,
+      "amountOfChoppers": 2,
+      "amountOfCoinsToPassLevel": 100,
+      "newOrderTiming": 20.0
+    },
+    {
+      "kindOfMeals": [ 0, 0 ],
+      "maxNumberOfOrders": 5,
+      "amountOfToppings": 4,
+      "amountOfChoppers": 2,
+      "amountOfCoinsToPassLevel": 100,
       "newOrderTiming": 15.0
     },
     {
@@ -53,31 +69,183 @@
       "maxNumberOfOrders": 5,
       "amountOfToppings": 5,
       "amountOfChoppers": 2,
-      "amountOfCoinsToPassLevel": 10,
-      "newOrderTiming": 10.0
+      "amountOfCoinsToPassLevel": 120,
+      "newOrderTiming": 15.0
+    },
+    {
+      "kindOfMeals": [ 0, 0 ],
+      "maxNumberOfOrders": 5,
+      "amountOfToppings": 5,
+      "amountOfChoppers": 1,
+      "amountOfCoinsToPassLevel": 120,
+      "newOrderTiming": 15.0
+    },
+    {
+      "kindOfMeals": [ 1 ],
+      "maxNumberOfOrders": 1,
+      "amountOfToppings": 1,
+      "amountOfChoppers": 1,
+      "amountOfCoinsToPassLevel": 120,
+      "newOrderTiming": 25.0
+    },
+    {
+      "kindOfMeals": [ 1, 1 ],
+      "maxNumberOfOrders": 3,
+      "amountOfToppings": 3,
+      "amountOfChoppers": 2,
+      "amountOfCoinsToPassLevel": 120,
+      "newOrderTiming": 25.0
+    },
+    {
+      "kindOfMeals": [ 1 ],
+      "maxNumberOfOrders": 4,
+      "amountOfToppings": 3,
+      "amountOfChoppers": 2,
+      "amountOfCoinsToPassLevel": 120,
+      "newOrderTiming": 25.0
     },
     {
       "kindOfMeals": [ 1 ],
       "maxNumberOfOrders": 4,
       "amountOfToppings": 3,
       "amountOfChoppers": 1,
-      "amountOfCoinsToPassLevel": 10,
+      "amountOfCoinsToPassLevel": 140,
+      "newOrderTiming": 20.0
+    },
+    {
+      "kindOfMeals": [ 1, 1 ],
+      "maxNumberOfOrders": 4,
+      "amountOfToppings": 4,
+      "amountOfChoppers": 2,
+      "amountOfCoinsToPassLevel": 140,
+      "newOrderTiming": 20.0
+    },
+    {
+      "kindOfMeals": [ 1 ],
+      "maxNumberOfOrders": 4,
+      "amountOfToppings": 4,
+      "amountOfChoppers": 2,
+      "amountOfCoinsToPassLevel": 140,
+      "newOrderTiming": 20.0
+    },
+    {
+      "kindOfMeals": [ 0, 1 ],
+      "maxNumberOfOrders": 3,
+      "amountOfToppings": 2,
+      "amountOfChoppers": 1,
+      "amountOfCoinsToPassLevel": 140,
+      "newOrderTiming": 20.0
+    },
+    {
+      "kindOfMeals": [ 0, 1 ],
+      "maxNumberOfOrders": 4,
+      "amountOfToppings": 3,
+      "amountOfChoppers": 2,
+      "amountOfCoinsToPassLevel": 140,
       "newOrderTiming": 15.0
+    },
+    {
+      "kindOfMeals": [ 0, 1 ],
+      "maxNumberOfOrders": 4,
+      "amountOfToppings": 4,
+      "amountOfChoppers": 1,
+      "amountOfCoinsToPassLevel": 160,
+      "newOrderTiming": 15.0
+    },
+    {
+      "kindOfMeals": [ 0, 1 ],
+      "maxNumberOfOrders": 5,
+      "amountOfToppings": 5,
+      "amountOfChoppers": 2,
+      "amountOfCoinsToPassLevel": 160,
+      "newOrderTiming": 15.0
+    },
+    {
+      "kindOfMeals": [ 2 ],
+      "maxNumberOfOrders": 1,
+      "amountOfToppings": 1,
+      "amountOfChoppers": 1,
+      "amountOfCoinsToPassLevel": 140,
+      "newOrderTiming": 25.0
+    },
+    {
+      "kindOfMeals": [ 2 ],
+      "maxNumberOfOrders": 3,
+      "amountOfToppings": 2,
+      "amountOfChoppers": 1,
+      "amountOfCoinsToPassLevel": 140,
+      "newOrderTiming": 25.0
+    },
+    {
+      "kindOfMeals": [ 2, 2 ],
+      "maxNumberOfOrders": 4,
+      "amountOfToppings": 3,
+      "amountOfChoppers": 2,
+      "amountOfCoinsToPassLevel": 140,
+      "newOrderTiming": 25.0
     },
     {
       "kindOfMeals": [ 2 ],
       "maxNumberOfOrders": 4,
       "amountOfToppings": 3,
+      "amountOfChoppers": 2,
+      "amountOfCoinsToPassLevel": 160,
+      "newOrderTiming": 25.0
+    },
+    {
+      "kindOfMeals": [ 2 ],
+      "maxNumberOfOrders": 4,
+      "amountOfToppings": 4,
+      "amountOfChoppers": 2,
+      "amountOfCoinsToPassLevel": 160,
+      "newOrderTiming": 20.0
+    },
+    {
+      "kindOfMeals": [ 0, 2 ],
+      "maxNumberOfOrders": 4,
+      "amountOfToppings": 1,
+      "amountOfChoppers": 2,
+      "amountOfCoinsToPassLevel": 160,
+      "newOrderTiming": 20.0
+    },
+    {
+      "kindOfMeals": [ 1, 2 ],
+      "maxNumberOfOrders": 4,
+      "amountOfToppings": 1,
+      "amountOfChoppers": 2,
+      "amountOfCoinsToPassLevel": 160,
+      "newOrderTiming": 20.0
+    },
+    {
+      "kindOfMeals": [ 0, 1, 2 ],
+      "maxNumberOfOrders": 4,
+      "amountOfToppings": 2,
+      "amountOfChoppers": 2,
+      "amountOfCoinsToPassLevel": 160,
+      "newOrderTiming": 20.0
+    },
+    {
+      "kindOfMeals": [ 0, 1, 2 ],
+      "maxNumberOfOrders": 4,
+      "amountOfToppings": 3,
+      "amountOfChoppers": 2,
+      "amountOfCoinsToPassLevel": 160,
+      "newOrderTiming": 20.0
+    },
+    {
+      "kindOfMeals": [ 0, 1, 2 ],
+      "maxNumberOfOrders": 5,
+      "amountOfToppings": 4,
       "amountOfChoppers": 1,
-      "amountOfCoinsToPassLevel": 10,
-      "newOrderTiming": 15.0
+      "amountOfCoinsToPassLevel": 160,
+      "newOrderTiming": 20.0
     },
     {
       "kindOfMeals": [ 0,1,2 ],
-      "maxNumberOfOrders": 4,
+      "maxNumberOfOrders": 5,
       "amountOfToppings": 5,
       "amountOfChoppers": 1,
-      "amountOfCoinsToPassLevel": 10,
+      "amountOfCoinsToPassLevel": 180,
       "newOrderTiming": 15.0
     },
     {
@@ -85,6 +253,22 @@
       "maxNumberOfOrders": 5,
       "amountOfToppings": 5,
       "amountOfChoppers": 3,
+      "amountOfCoinsToPassLevel": 200,
+      "newOrderTiming": 5.0
+    },
+    {
+      "kindOfMeals": [ 1,1,1 ],
+      "maxNumberOfOrders": 5,
+      "amountOfToppings": 5,
+      "amountOfChoppers": 3,
+      "amountOfCoinsToPassLevel": 200,
+      "newOrderTiming": 5.0
+    },
+    {
+      "kindOfMeals": [ 2,2,2 ],
+      "maxNumberOfOrders": 5,
+      "amountOfToppings": 5,
+      "amountOfChoppers": 2,
       "amountOfCoinsToPassLevel": 200,
       "newOrderTiming": 5.0
     }

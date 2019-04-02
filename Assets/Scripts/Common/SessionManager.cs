@@ -800,6 +800,8 @@ public class SessionManager : MonoBehaviour
             }
             else
             {
+
+                Debug.Log(request.downloadHandler.text);
                 JSONObject response = JSONObject.Parse(request.downloadHandler.text);
 
                 //Birds Level Set

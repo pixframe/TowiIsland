@@ -10,6 +10,9 @@ public class IcecreamMadnessManager : MonoBehaviour {
     public GameObject Canvas;
     public GameObject uiCanvas;
 
+    GameObject ordersPanel;
+    GameObject instructionPanel;
+
     IcecreamChef chef;
 
     readonly List<int> possibleToppings = new List<int> { 4, 5, 6, 7, 8 };
@@ -31,24 +34,24 @@ public class IcecreamMadnessManager : MonoBehaviour {
 
     readonly Dictionary<string, string> plusCornerPositions = new Dictionary<string, string> { { "C1", "U1" }, { "C2", "R1" }, { "C3", "D1" }, { "C4", "L1" } };
     readonly Dictionary<string, string> lessCornerPositions = new Dictionary<string, string> { { "C1", "L5" }, { "C2", "U7" }, { "C3", "R5" }, { "C4", "D7" } };
-    readonly List<int> levelsTutorials = new List<int> { 0, 1, 2 };
+    readonly List<int> levelsTutorials = new List<int> { 0, 10, 20 };
 
     IcecreamUI icecreamUI;
+    TutorialUI tutorialUI;
 
     ParticleSystem confettiSystem;
     ParticleSystem crossesSystem;
 
     int maxAmountOfOrdersAtTheSameTime = 5;
-    int minAmountOforders = 1;
 
     int amountOfTopings = 5;
     int amoutOfChoppers = 1;
 
-    int amountOfTrashPlaces = 1;
+    const int amountOfTrashPlaces = 1;
 
     int currentOrders;
 
-    int currentEssay = 0;
+    int currentEssay;
     const int maxNumberOfEssay = 4;
 
     int[] wellMade;
@@ -62,7 +65,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
     int[] totalScores;
 
     int level = 0;
-    int maxLevelNumber = 4;
+    int maxLevelNumber = 33;
 
     int targetCoins;
 
@@ -73,9 +76,13 @@ public class IcecreamMadnessManager : MonoBehaviour {
     float currentNewOrderTiming;
 
     bool isGameTime = false;
-    bool needsTutorialIcecream;
-    bool needsTutorialBlender;
-    bool needsTutorialWaffle;
+
+    bool needTutorial;
+    int kindOfTutorial;
+
+    Slider levelSlider;
+    Text valueText;
+
     #region Standart Region
 
     // Use this for initialization
@@ -119,8 +126,14 @@ public class IcecreamMadnessManager : MonoBehaviour {
         //Especilieced Objects are initialized
         icecreamUI = new IcecreamUI(uiCanvas, this);
 
+        ordersPanel = Canvas.transform.GetChild(0).gameObject;
+        instructionPanel = Canvas.transform.GetChild(1).gameObject;
+
+        //level = PlayerPrefs.GetInt("levIce");
+
         confettiSystem = GameObject.FindGameObjectWithTag("Arrow").GetComponent<ParticleSystem>();
         crossesSystem = GameObject.FindGameObjectWithTag("Ground").GetComponent<ParticleSystem>();
+
 
     }
 
@@ -183,6 +196,8 @@ public class IcecreamMadnessManager : MonoBehaviour {
 
     void SetLevelData()
     {
+        level = icecreamUI.GetLevel();
+
         var levelConfigurator = GameConfigurator.GetIcecreamConfiguration(level);
 
         kindOfMachines.Clear();
@@ -242,6 +257,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
 
     void NeedsTutorial()
     {
+        needTutorial = false;
         if (levelsTutorials.Contains(level))
         {
             switch (level)
@@ -250,17 +266,24 @@ public class IcecreamMadnessManager : MonoBehaviour {
                     recepiesToShow.Add(0);
                     recepiesToShow.Add(1);
                     recepiesToShow.Add(2);
+                    needTutorial = true;
+                    kindOfTutorial = 0;
                     break;
-                case 1:
+                case 10:
                     recepiesToShow.Add(3);
                     recepiesToShow.Add(4);
+                    StopAllCoroutines();
+                    needTutorial = true;
+                    kindOfTutorial = 1;
                     break;
-                case 2:
+                case 21:
                     recepiesToShow.Add(5);
                     recepiesToShow.Add(6);
                     recepiesToShow.Add(7);
                     recepiesToShow.Add(8);
                     recepiesToShow.Add(9);
+                    needTutorial = true;
+                    kindOfTutorial = 2;
                     break;
                 default:
                     break;
@@ -296,6 +319,12 @@ public class IcecreamMadnessManager : MonoBehaviour {
         int totalScore = icecreamUI.PrintTheEarnings(wellMade[currentEssay], tipsEarned[currentEssay], (badMade[currentEssay] + trashOrders[currentEssay]), ordersMissed[currentEssay]);
         totalScores[currentEssay] = totalScore;
         icecreamUI.SetButtonToPrintResults(totalScore, targetCoins);
+
+        if (needTutorial)
+        {
+            Destroy(tutorialUI);
+            tutorialUI = null;
+        }
     }
 
     public void HandleResult(bool passTheLevel)
@@ -304,6 +333,15 @@ public class IcecreamMadnessManager : MonoBehaviour {
         if (passTheLevel)
         {
             level++;
+
+            if(level >= maxLevelNumber) 
+            {
+                level = maxLevelNumber;
+            }
+
+            icecreamUI.SetLevel(level);
+
+            PlayerPrefs.SetInt("levIce", level);
         }
         if (currentEssay < maxNumberOfEssay)
         {
@@ -572,6 +610,11 @@ public class IcecreamMadnessManager : MonoBehaviour {
     {
         isGameTime = true;
         AskForAnOrder();
+        if (needTutorial) 
+        {
+            tutorialUI = gameObject.AddComponent<TutorialUI>();
+            tutorialUI.SetTutorial(kindOfTutorial);
+        }
     }
 
     public List<int> GetRecipes()
@@ -741,11 +784,9 @@ class IcecreamUI
     Image storyPanel;
     Text storyText;
     Button nextButton;
-    string[] storyStrings = new string[]{
-        "Los animales de la isla necesitan de nutrientes para seguir jugando",
-        "Las frutas que tenemos en la isla son una gran fuente de vitaminas",
-        "Ayudanos a preparar deliciosos platillos frutales para todos"
-    };
+
+    string[] storyStrings;
+    string[] instructionsStrings;
 
     int storyIndex = 0;
     int recipesIndex = 0;
@@ -757,6 +798,9 @@ class IcecreamUI
     GameObject characterSelectionPanel;
     GameObject selectCharacterPanel;
     Text selectCharacterText;
+
+    Slider levelSlider;
+    Text levelText;
 
     IcecreamMadnessManager manager;
 
@@ -780,8 +824,15 @@ class IcecreamUI
 
         storyPanel = mainCanvas.transform.GetChild(3).GetComponent<Image>();
         storyText = storyPanel.GetComponentInChildren<Text>();
+
         nextButton = storyPanel.GetComponentInChildren<Button>();
         nextButton.onClick.AddListener(PrintTheStory);
+
+        var storyAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/Icecream/Story");
+        storyStrings = TextReader.TextsToShow(storyAsset);
+
+        var instructionAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/Icecream/Instructions");
+        instructionsStrings = TextReader.TextsToShow(instructionAsset);
 
         recipesPanel = mainCanvas.transform.GetChild(4).gameObject;
         for (int i = 0; i < recipesPanel.transform.childCount - 1; i++)
@@ -801,6 +852,14 @@ class IcecreamUI
             buttonToSet.onClick.AddListener(() => SelectCharacter(buttonToSet.transform.GetChild(0).name));
         }
 
+        levelSlider = mainCanvas.transform.GetChild(6).GetComponent<Slider>();
+        levelText = mainCanvas.transform.GetChild(7).GetComponent<Text>();
+        levelSlider.onValueChanged.AddListener(
+            delegate{
+                levelText.text = levelSlider.value.ToString();
+            }
+        );
+
         HideAllManagers();
         characterSelectionPanel.SetActive(true);
     }
@@ -819,6 +878,18 @@ class IcecreamUI
         storyPanel.gameObject.SetActive(false);
         recipesPanel.SetActive(false);
         characterSelectionPanel.SetActive(false);
+        levelSlider.gameObject.SetActive(false);
+        levelText.gameObject.SetActive(false);
+    }
+
+    public void SetLevel(int newLevel) 
+    {
+        levelSlider.value = newLevel;
+    }
+
+    public int GetLevel()
+    {
+        return (int)levelSlider.value;
     }
 
     public void PrintTheStory()
@@ -875,9 +946,12 @@ class IcecreamUI
     {
         HideAllManagers();
         timerReadyPanel.gameObject.SetActive(true);
-        timerReadyText.text = "¿Estas listo?";
+        timerReadyText.text = instructionsStrings[0];
 
-        manager.EssayParameterInitilization();
+        levelSlider.gameObject.SetActive(true);
+        levelText.gameObject.SetActive(true);
+
+        OkButton.onClick.AddListener(manager.EssayParameterInitilization);
     }
 
     public void SetNeedCoins(int needs)
@@ -885,11 +959,13 @@ class IcecreamUI
         OkButton.onClick.RemoveAllListeners();
         if (manager.GetRecipes().Count > 0)
         {
-            OkButton.onClick.AddListener(PrintRecipes);
+            //OkButton.onClick.AddListener(PrintRecipes);
+            PrintRecipes();
         }
         else
         {
-            OkButton.onClick.AddListener(() => PrintYouNeed(needs));
+            //OkButton.onClick.AddListener(() => PrintYouNeed(needs));
+            PrintYouNeed(needs);
         }
     }
 
@@ -897,9 +973,7 @@ class IcecreamUI
     {
         HideAllManagers();
         timerReadyPanel.gameObject.SetActive(true);
-        timerReadyText.text = $"Necesitas ${neededCoins} para pasar de nivel";
-
-        manager.EssayParameterInitilization();
+        timerReadyText.text = $"{instructionsStrings[1]} ${neededCoins} {instructionsStrings[2]}";
 
         OkButton.onClick.RemoveAllListeners();
         OkButton.onClick.AddListener(() => { manager.StartCoroutine(StartCountDown()); });
@@ -911,13 +985,13 @@ class IcecreamUI
         timerReadyPanel.gameObject.SetActive(true);
         OkButton.gameObject.SetActive(false);
         manager.FillRandomTables();
-        timerReadyText.text = "Abrimos en:\n 3";
+        timerReadyText.text = $"{instructionsStrings[3]}\n 3";
         yield return new WaitForSeconds(1f);
-        timerReadyText.text = "Abrimos en:\n 2";
+        timerReadyText.text = $"{instructionsStrings[3]}\n 2";
         yield return new WaitForSeconds(1f);
-        timerReadyText.text = "Abrimos en:\n 1";
+        timerReadyText.text = $"{instructionsStrings[3]}\n 1";
         yield return new WaitForSeconds(1f);
-        timerReadyText.text = "Comencemos";
+        timerReadyText.text = instructionsStrings[4];
         yield return new WaitForSeconds(1f);
         timerReadyPanel.gameObject.SetActive(false);
         timerPanel.gameObject.SetActive(true);
@@ -961,11 +1035,11 @@ class IcecreamUI
         int penalizationTotal = objectsMissed * 10;
         int totals = salesTotal + tipScore - lossesTotal - penalizationTotal;
 
-        string sales = $"<color=#42210B>Ventas     :   ${salesTotal.ToString("000")}</color>";
-        string tips = $"<color=#42210B>Propinas  :   ${tipScore.ToString("000")}</color>";
-        string looses = $"<color=#B32006>Perdidas  : - ${lossesTotal.ToString("000")}</color>";
-        string penalization = $"<color=#B32006>Reclamos : - ${penalizationTotal.ToString("000")}</color>";
-        string total = $"<color=#{ColorToPrintTotal(totals)}>Total         :{SimbolToPrint(totals)}${Mathf.Abs(totals).ToString("000")}</color>";
+        string sales = $"<color=#42210B>{instructionsStrings[5]}   ${salesTotal.ToString("000")}</color>";
+        string tips = $"<color=#42210B>{instructionsStrings[6]}   ${tipScore.ToString("000")}</color>";
+        string looses = $"<color=#B32006>{instructionsStrings[7]} - ${lossesTotal.ToString("000")}</color>";
+        string penalization = $"<color=#B32006>{instructionsStrings[8]} - ${penalizationTotal.ToString("000")}</color>";
+        string total = $"<color=#{ColorToPrintTotal(totals)}>{instructionsStrings[9]}{SimbolToPrint(totals)}${Mathf.Abs(totals).ToString("000")}</color>";
 
 
 
@@ -976,19 +1050,19 @@ class IcecreamUI
 
     public void PrintTheResults(int totalCoins, int needCoins)
     {
-        string total = $"<color=#42210B>Ganaste        :   ${totalCoins.ToString("000")}</color>";
-        string needs = $"<color=#42210B>Necesitabas :   ${needCoins.ToString("000")}</color>";
+        string total = $"<color=#42210B>{instructionsStrings[10]}   ${totalCoins.ToString("000")}</color>";
+        string needs = $"<color=#42210B>{instructionsStrings[11]}   ${needCoins.ToString("000")}</color>";
         timerReadyText.text = $"{total}\n{needs}";
 
         bool isCorrect = totalCoins >= needCoins;
 
         if (isCorrect)
         {
-            timerReadyText.text += "\n¡Muy Bien! Lo conseguiste avanza al siguiente nivel";
+            timerReadyText.text += $"\n{instructionsStrings[12]}";
         }
         else
         {
-            timerReadyText.text += "\nOh no! vuelve a intentarlo";
+            timerReadyText.text += $"\n{instructionsStrings[13]}";
         }
 
         manager.HandleResult(isCorrect);
@@ -1011,4 +1085,80 @@ class IcecreamUI
         OkButton.onClick.RemoveAllListeners();
         OkButton.onClick.AddListener(() => SceneManager.LoadScene(SceneManager.GetActiveScene().name));
     } 
+}
+
+public class TutorialUI : MonoBehaviour 
+{
+    string[] tutorialStrings;
+
+    int index;
+    int firstMessage;
+    int lastMessage;
+
+    const float timeBetweenInstructions = 4f;
+    float timePassLastInstruction;
+
+    GameObject tutorialPanel;
+    Text instructionsText;
+
+    private void Update()
+    {
+        timePassLastInstruction -= Time.deltaTime;
+        if (timePassLastInstruction <= 0)
+        {
+            if (index <= lastMessage)
+            {
+                instructionsText.text = tutorialStrings[index];
+                index += 1;
+            }
+            else
+            {
+                instructionsText.text = tutorialStrings[tutorialStrings.Length - 1];
+                index = firstMessage;
+            }
+            timePassLastInstruction = timeBetweenInstructions;
+        }
+    }
+
+    void Initialize() 
+    {
+        var tutorialAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/Icecream/Tutorial");
+        tutorialStrings = TextReader.TextsToShow(tutorialAsset);
+
+        timePassLastInstruction = timeBetweenInstructions;
+        tutorialPanel = GetComponent<IcecreamMadnessManager>().Canvas.transform.GetChild(1).gameObject;
+        instructionsText = tutorialPanel.GetComponentInChildren<Text>();
+
+        tutorialPanel.SetActive(true);
+    }
+
+    public void SetTutorial(int kindOfTutorial)
+    {
+        Initialize();
+
+        switch (kindOfTutorial) 
+        {
+            case 0:
+                firstMessage = 0;
+                lastMessage = 3;
+                break;
+            case 1:
+                firstMessage = 4;
+                lastMessage = 6;
+                break;
+            case 2:
+                firstMessage = 7;
+                lastMessage = 10;
+                break;
+        }
+
+        index = firstMessage;
+        instructionsText.text = tutorialStrings[index];
+        index += 1;
+    }
+
+    public void HideAll() 
+    {
+        tutorialPanel.gameObject.SetActive(false);
+    }
 }
