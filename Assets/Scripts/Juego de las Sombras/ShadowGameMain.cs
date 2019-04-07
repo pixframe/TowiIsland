@@ -182,9 +182,9 @@ public class ShadowGameMain : MonoBehaviour
 		resultPos = new Vector3[2];
 		resultPos[0] = new Vector3(-1.25f, shadowPos.y, -1f);
 		resultPos[1] = new Vector3(1.25f, shadowPos.y, -1f);
-		sessionMng.activeKid.laveLevel = 0;
+		sessionMng.activeKid.lavaLevel = 0;
 		level = sessionMng.activeKid.lavaDifficulty;
-		subLevel = sessionMng.activeKid.laveLevel;
+		subLevel = sessionMng.activeKid.lavaLevel;
 		
 		todayLevels=0;
 		todayOffset = sessionMng.activeKid.playedLava;
@@ -357,7 +357,7 @@ public class ShadowGameMain : MonoBehaviour
 				}
 				scoreScript.prevCorMult++;
 				sessionMng.activeKid.lavaDifficulty=level;
-				sessionMng.activeKid.laveLevel=subLevel;
+				sessionMng.activeKid.lavaLevel=subLevel;
 				sessionMng.SaveSession();
 			}
 			else 
@@ -385,7 +385,7 @@ public class ShadowGameMain : MonoBehaviour
 					}
 				}
 				sessionMng.activeKid.lavaDifficulty=level;
-				sessionMng.activeKid.laveLevel=subLevel;
+				sessionMng.activeKid.lavaLevel=subLevel;
 				sessionMng.SaveSession();
 			}
 			levelSet = false;

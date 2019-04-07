@@ -600,7 +600,7 @@ public class GameConfigurator
         }
         if (level < 12)
         {
-            return new int[] { 0, 0, 1, 2, 3, 3 };
+            return new int[] { 0, 0, 1, 2, 3 };
         }
         if (level < 16)
         {

@@ -526,9 +526,10 @@ public class SessionManager : MonoBehaviour
         {
             yield return request.SendWebRequest();
 
-            if (request.isNetworkError)
+            if (request.isNetworkError || request.isHttpError)
             {
                 Debug.Log(request.downloadHandler.text);
+                downlodingData = false;
             }
             else
             {
@@ -822,7 +823,7 @@ public class SessionManager : MonoBehaviour
                 //Lava Level Set
                 int lavaDifficulty = (int)response["sombrasLevel"].Number;
                 int lavaLevel = (int)response["sombrasSublevel"].Number;
-                SetTheCorrectLevel(ref activeKid.lavaDifficulty, ref activeKid.laveLevel, lavaDifficulty, lavaLevel);
+                SetTheCorrectLevel(ref activeKid.lavaDifficulty, ref activeKid.lavaLevel, lavaDifficulty, lavaLevel);
 
                 //Treasure Level Set
                 int treasureDifficulty = (int)response["tesoroLevel"].Number;
@@ -973,7 +974,7 @@ public class SessionManager : MonoBehaviour
         public int monkeyDifficulty;
         public int monkeyLevel;
         public int lavaDifficulty;
-        public int laveLevel;
+        public int lavaLevel;
         public int treasureDifficulty;
         public int treasureLevel;
         public int icecreamDifficulty;
@@ -1081,7 +1082,7 @@ public class SessionManager : MonoBehaviour
             monkeyDifficulty = 0;
             monkeyLevel = 0;
             lavaDifficulty = 0;
-            laveLevel = 0;
+            lavaLevel = 0;
             treasureDifficulty = 0;
             treasureLevel = 0;
             tesoroTutorial = 0;

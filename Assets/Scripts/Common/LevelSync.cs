@@ -66,7 +66,7 @@ public class LevelSync : MonoBehaviour {
 				if(sessionMng.activeKid.dontSyncSombras==0)
 				{
 					sessionMng.activeKid.lavaDifficulty=int.Parse(response["sombrasLevel"].Str);
-					sessionMng.activeKid.laveLevel=int.Parse(response["sombrasSublevel"].Str);
+					sessionMng.activeKid.lavaLevel=int.Parse(response["sombrasSublevel"].Str);
 				}
 				if(sessionMng.activeKid.dontSyncTesoro==0)
 				{

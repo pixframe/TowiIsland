@@ -41,7 +41,6 @@ public class SandDrawingController : MonoBehaviour {
     
     GameObject[] stories;
 
-	Sprite[] probableSprites;
 	Sprite[] keySprites;
 
     int insideDots;
@@ -222,26 +221,36 @@ public class SandDrawingController : MonoBehaviour {
                     sessionManager.activeKid.sandFirst = false;
                     sessionManager.activeKid.sandLevelSet = true;
                     firstTime = 1;
-                    switch (key.GetDifficulty())
+                    if (key.IsLevelSetSpecially())
                     {
-                        case 0:
-                            levelGame = 0;
-                            levelFill = 0;
-                            levelIdentyfy = 0;
-                            levelCompletion = 0;
-                            break;
-                        case 1:
-                            levelGame = 5;
-                            levelFill = totalLevelsNormal / 2;
-                            levelIdentyfy = totalSpecialLevels / 2;
-                            levelCompletion = totalSpecialLevels / 2;
-                            break;
-                        case 2:
-                            levelGame = 10;
-                            levelFill = totalLevelsNormal - 5;
-                            levelIdentyfy = totalSpecialLevels - 3;
-                            levelCompletion = totalSpecialLevels - 3;
-                            break;
+                        levelGame = 9;
+                        levelFill = key.GetLevelA();
+                        levelIdentyfy = key.GetLevelB();
+                        levelCompletion = key.GetLevelC();
+                    }
+                    else
+                    {
+                        switch (key.GetDifficulty())
+                        {
+                            case 0:
+                                levelGame = 9;
+                                levelFill = 0;
+                                levelIdentyfy = 0;
+                                levelCompletion = 0;
+                                break;
+                            case 1:
+                                levelGame = 9;
+                                levelFill = totalLevelsNormal / 2;
+                                levelIdentyfy = totalSpecialLevels / 2;
+                                levelCompletion = totalSpecialLevels / 2;
+                                break;
+                            case 2:
+                                levelGame = 10;
+                                levelFill = totalLevelsNormal - 5;
+                                levelIdentyfy = totalSpecialLevels - 3;
+                                levelCompletion = totalSpecialLevels - 3;
+                                break;
+                        }
                     }
                 }
             }
@@ -669,6 +678,7 @@ public class SandDrawingController : MonoBehaviour {
         }
         else
         {
+            Sprite[] probableSprites;
             Sprite shower;
             Sprite bases;
 			Object[] datas;
@@ -990,6 +1000,7 @@ public class SandDrawingController : MonoBehaviour {
             }
             centerCanvas.visibleRenderer.sprite = shower;
             centerCanvas.nonVisibleRenderer.sprite = bases;
+            probableSprites = null;
         }
         showStar = false;
     }
@@ -1067,7 +1078,7 @@ public class SandDrawingController : MonoBehaviour {
         accuracies.Add(fillPercentage);
         overdraws.Add(percentageOff);
 
-        if (fillPercentage > 64)
+        if (fillPercentage > 60)
         {
             passable = true;
             showStar = true;
@@ -1079,16 +1090,9 @@ public class SandDrawingController : MonoBehaviour {
             showStar = false;
         }
 
-        if (percentageOff <= 55)
+        if (percentageOff <= 70)
         {
             tooMuchOut = false;
-        }
-        else if (percentageOff <= 90 && percentageOff > 70)
-        {
-            tooMuchOut = true;
-            passable = false;
-            showStar = false;
-            reapeatExercise = true;
         }
         else
         {

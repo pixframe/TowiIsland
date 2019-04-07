@@ -212,6 +212,11 @@ public class LogInScript : MonoBehaviour {
                 sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
                 sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
 
+                while (sessionManager.IsDownlodingData())
+                {
+                    yield return null;
+                }
+
                 if (jsonObject.GetValue("active").Boolean)
                 {
                     if (sessionManager.activeKid != null)

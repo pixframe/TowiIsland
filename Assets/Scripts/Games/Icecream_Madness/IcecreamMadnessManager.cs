@@ -64,6 +64,8 @@ public class IcecreamMadnessManager : MonoBehaviour {
     int[] ordersWithTips;
     int[] totalScores;
 
+    float[] latencies;
+
     int level = 0;
     int maxLevelNumber = 33;
 
@@ -76,6 +78,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
     float currentNewOrderTiming;
 
     bool isGameTime = false;
+    bool isAlreadyMove = false;
 
     bool needTutorial;
     int kindOfTutorial;
@@ -122,6 +125,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
         tipsEarned = new int[maxNumberOfEssay];
         ordersWithTips = new int[maxNumberOfEssay];
         totalScores = new int[maxNumberOfEssay];
+        latencies = new float[maxNumberOfEssay];
 
         //Especilieced Objects are initialized
         icecreamUI = new IcecreamUI(uiCanvas, this);
@@ -255,6 +259,12 @@ public class IcecreamMadnessManager : MonoBehaviour {
         return targetCoins;
     }
 
+    public void SetLatencies()
+    {
+        var latencie = essayTime - currentEssayTime;
+        latencies[currentEssay] = latencie;
+    }
+
     void NeedsTutorial()
     {
         needTutorial = false;
@@ -322,6 +332,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
 
         if (needTutorial)
         {
+            tutorialUI.HideAll();
             Destroy(tutorialUI);
             tutorialUI = null;
         }
@@ -1040,8 +1051,6 @@ class IcecreamUI
         string looses = $"<color=#B32006>{instructionsStrings[7]} - ${lossesTotal.ToString("000")}</color>";
         string penalization = $"<color=#B32006>{instructionsStrings[8]} - ${penalizationTotal.ToString("000")}</color>";
         string total = $"<color=#{ColorToPrintTotal(totals)}>{instructionsStrings[9]}{SimbolToPrint(totals)}${Mathf.Abs(totals).ToString("000")}</color>";
-
-
 
         timerReadyText.text = $"{sales}\n{tips}\n{looses}\n{penalization}\n{total}";
 

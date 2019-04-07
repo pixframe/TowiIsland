@@ -65,7 +65,7 @@ public class AgeLevelSelection : MonoBehaviour {
 		sessionMng.activeKid.monkeyDifficulty = 0;
 		sessionMng.activeKid.monkeyLevel = 0;
 		sessionMng.activeKid.lavaDifficulty = 0;
-		sessionMng.activeKid.laveLevel = 0;
+		sessionMng.activeKid.lavaLevel = 0;
 		sessionMng.activeKid.treasureDifficulty = 0;
 		sessionMng.activeKid.treasureLevel = 0;
 		sessionMng.activeKid.ageSet = true;
@@ -96,7 +96,7 @@ public class AgeLevelSelection : MonoBehaviour {
 		sessionMng.activeKid.monkeyDifficulty = 0;
 		sessionMng.activeKid.monkeyLevel = 0;
 		sessionMng.activeKid.lavaDifficulty = 1;
-		sessionMng.activeKid.laveLevel = 0;
+		sessionMng.activeKid.lavaLevel = 0;
 		sessionMng.activeKid.treasureDifficulty = 1;
 		sessionMng.activeKid.treasureLevel = 0;
 		sessionMng.activeKid.ageSet = true;
@@ -127,7 +127,7 @@ public class AgeLevelSelection : MonoBehaviour {
 		sessionMng.activeKid.monkeyDifficulty = 2;
 		sessionMng.activeKid.monkeyLevel = 0;
 		sessionMng.activeKid.lavaDifficulty = 2;
-		sessionMng.activeKid.laveLevel = 0;
+		sessionMng.activeKid.lavaLevel = 0;
 		sessionMng.activeKid.treasureDifficulty = 2;
 		sessionMng.activeKid.treasureLevel = 0;
 		sessionMng.activeKid.ageSet = true;

@@ -40,6 +40,9 @@ public class GameCenterManager : MonoBehaviour {
     public Toggle flisActivation;
     public Button ageButton;
     public InputField ageValue;
+    public InputField levelInput;
+    public InputField difficultyInput;
+    public InputField sandOnly;
 
     int index;
     List<int> stations = new List<int> { 0, 1, 2, 3, 4, 5 };
@@ -103,6 +106,7 @@ public class GameCenterManager : MonoBehaviour {
         if (FindObjectOfType<DemoKey>())
         {
             key = FindObjectOfType<DemoKey>();
+            key.ResetSpecial();
             demoPanel.SetActive(true);
             difficultySlider.value = key.GetDifficulty();
             difficultySlider.onValueChanged.AddListener(delegate { key.SetDifficulty((int)difficultySlider.value); });
@@ -506,6 +510,42 @@ public class GameCenterManager : MonoBehaviour {
 
     void LoadNewScene()
     {
+        if (FindObjectOfType<DemoKey>())
+        {
+            int stationVar = stations[index];
+
+            int change = 0;
+
+            int level = 0;
+            int difficulty = 0;
+            int specialLevel = 0;
+
+            if (levelInput.text != "")
+            {
+                level = int.Parse(levelInput.text);
+                change++;
+            }
+
+            if (difficultyInput.text != "")
+            {
+                difficulty = int.Parse(difficultyInput.text);
+                change++;
+            }
+
+            if (stations[index] == 1)
+            {
+                if (sandOnly.text != "")
+                {
+                    specialLevel = int.Parse(sandOnly.text);
+                    change++;
+                }
+            }
+            if (change > 0)
+            {
+                FindObjectOfType<DemoKey>().SetSpecialLevels(level, difficulty, specialLevel);
+            }
+        }
+
         Destroy(audioPlayer.gameObject);
         PrefsKeys.SetNextScene(scenes[stations[index]]);
         asyncLoad.allowSceneActivation = true;

@@ -10,7 +10,13 @@ public class DemoKey : MonoBehaviour {
     public TextAsset beforeAssets;
 
     int difficulty;
+
+    int levelA;
+    int levelB;
+    int levelC;
+
     bool isFLISActive = true;
+    bool isLevelSet = false;
 	// Use this for initialization
 	void Start ()
     {
@@ -51,5 +57,38 @@ public class DemoKey : MonoBehaviour {
     public bool IsFLISOn()
     {
         return isFLISActive;
+    }
+
+    public bool IsLevelSetSpecially()
+    {
+        return isLevelSet;
+    }
+
+    public void ResetSpecial()
+    {
+        isLevelSet = false;
+    }
+
+    public void SetSpecialLevels(int A, int B, int C)
+    {
+        levelA = A;
+        levelB = B;
+        levelC = C;
+        isLevelSet = true;
+    }
+
+    public int GetLevelA()
+    {
+        return levelA;
+    }
+
+    public int GetLevelB()
+    {
+        return levelB;
+    }
+
+    public int GetLevelC()
+    {
+        return levelC;
     }
 }

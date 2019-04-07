@@ -264,7 +264,7 @@ public class LavaGameManager : MonoBehaviour {
                 else
                 {
                     difficulty = sessionManager.activeKid.lavaDifficulty;
-                    level = sessionManager.activeKid.laveLevel;
+                    level = sessionManager.activeKid.lavaLevel;
                     levelsPlayed.Add(level);
                     difficultiesPlayed.Add(difficulty);
                     firstTime = 1;
@@ -282,19 +282,27 @@ public class LavaGameManager : MonoBehaviour {
                 {
                     sessionManager.activeKid.lavaFirst = false;
                     firstTime = 1;
-                    switch (key.GetDifficulty())
+                    if (key.IsLevelSetSpecially())
                     {
-                        case 0:
-                            levelCategorizer = 0;
-                            break;
-                        case 1:
-                            levelCategorizer = totalLevels / 2;
-                            break;
-                        case 2:
-                            levelCategorizer = totalLevels - 5;
-                            break;
+                        level = key.GetLevelA();
+                        difficulty = key.GetLevelB();
                     }
-                    GetDataJustForLevel(levelCategorizer);
+                    else
+                    {
+                        switch (key.GetDifficulty())
+                        {
+                            case 0:
+                                levelCategorizer = 0;
+                                break;
+                            case 1:
+                                levelCategorizer = totalLevels / 2;
+                                break;
+                            case 2:
+                                levelCategorizer = totalLevels - 5;
+                                break;
+                        }
+                        GetDataJustForLevel(levelCategorizer);
+                    }
                 }
             }
 
@@ -333,7 +341,7 @@ public class LavaGameManager : MonoBehaviour {
         if (sessionManager != null)
         {
             sessionManager.activeKid.lavaDifficulty = difficulty;
-            sessionManager.activeKid.laveLevel = level;
+            sessionManager.activeKid.lavaLevel = level;
             sessionManager.activeKid.playedLava = 1;
             sessionManager.activeKid.needSync = true;
             sessionManager.activeKid.kiwis += passLevels;

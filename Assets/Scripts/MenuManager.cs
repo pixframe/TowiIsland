@@ -614,7 +614,7 @@ public class MenuManager : MonoBehaviour {
             yield return null;
         }
 
-        Debug.Log($"this is the level in the lava game {sessionManager.activeKid.laveLevel} and the current user is {sessionManager.activeUser.username}");
+        Debug.Log($"this is the level in the lava game {sessionManager.activeKid.lavaLevel} and the current user is {sessionManager.activeUser.username}");
 
         PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString(DateTimeFormatInfo.InvariantInfo));
         HideAllCanvas();

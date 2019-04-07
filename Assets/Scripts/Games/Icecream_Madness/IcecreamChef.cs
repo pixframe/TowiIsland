@@ -7,6 +7,7 @@ public class IcecreamChef : MonoBehaviour {
 
     bool hasSomething;
     bool move;
+    bool isFisrtMove = true;
 
     const string idleAnim = "Idle";
     const string idleHoldingAnim = "IdleConObjeto";
@@ -158,8 +159,11 @@ public class IcecreamChef : MonoBehaviour {
                 }
             }
 
-
-
+            if (isFisrtMove)
+            {
+                manager.SetLatencies();
+                isFisrtMove = false;
+            }
 
             positionToGo = posToGo;
             positionToGo = new Vector3(Mathf.Clamp(positionToGo.x, minx, maxx), Mathf.Clamp(positionToGo.y, miny, maxx), transform.position.z);
@@ -177,7 +181,7 @@ public class IcecreamChef : MonoBehaviour {
         GameObject trayToLeft = transform.GetChild(0).GetChild(0).gameObject;
         trayToLeft.transform.position = tablePosition.position;
         trayToLeft.transform.parent = tablePosition;
-        trayToLeft.GetComponent<Tray>().SetLayers(tablePosition.parent.GetComponent<SpriteRenderer>().sortingOrder);
+        trayToLeft.GetComponent<Tray>().SetLayers(tablePosition.parent.GetComponent<SpriteRenderer>().sortingOrder + 1);
         tablePosition.GetComponentInParent<Table>().SetTray(trayToLeft);
         hasSomething = false;
 
@@ -208,6 +212,7 @@ public class IcecreamChef : MonoBehaviour {
 
         hasSomething = false;
         move = false;
+        isFisrtMove = true;
 
         transform.position = initPos;
 

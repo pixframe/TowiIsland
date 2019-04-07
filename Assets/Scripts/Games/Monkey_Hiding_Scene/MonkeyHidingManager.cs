@@ -182,19 +182,27 @@ public class MonkeyHidingManager : MonoBehaviour {
             {
                 sessionManager.activeKid.monkeyFirst = false;
                 firstTime = 1;
-                switch (key.GetDifficulty())
+                if (key.IsLevelSetSpecially())
                 {
-                    case 0:
-                        levelCategorizer = 0;
-                        break;
-                    case 1:
-                        levelCategorizer = totalLevels / 2;
-                        break;
-                    case 2:
-                        levelCategorizer = totalLevels - 5;
-                        break;
+                    level = key.GetLevelA();
+                    difficulty = key.GetLevelB();
                 }
-                GetDataJustForLevel(levelCategorizer);
+                else
+                {
+                    switch (key.GetDifficulty())
+                    {
+                        case 0:
+                            levelCategorizer = 0;
+                            break;
+                        case 1:
+                            levelCategorizer = totalLevels / 2;
+                            break;
+                        case 2:
+                            levelCategorizer = totalLevels - 5;
+                            break;
+                    }
+                    GetDataJustForLevel(levelCategorizer);
+                }
             }
         }
     }

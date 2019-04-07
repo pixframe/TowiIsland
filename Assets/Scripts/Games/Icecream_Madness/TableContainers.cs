@@ -56,6 +56,8 @@ public class TableContainers : Table
             else
             {
                 Destroy(newTray.gameObject);
+                hasSomethingOn = true;
+                chef.PutATray(trayPositioner);
             }
         }
     }
