@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -669,6 +670,18 @@ public class SandDrawingController : MonoBehaviour {
         
     }
 
+    Sprite[] GetProbableSprite(string path) 
+    {
+        return Resources.LoadAll<Sprite>($"Sand/{path}");
+    }
+
+    List<int> ProbableIndex(int lenghtOfArray) 
+    {
+        var listToReturn = Enumerable.Range(0, lenghtOfArray).ToList();
+        listToReturn.RemoveAll(a => choosen.Contains(a));
+        return listToReturn;
+    }
+
     void SetGameStuff()
     {
         if (reapeatExercise && secondTry)
@@ -683,79 +696,28 @@ public class SandDrawingController : MonoBehaviour {
 
             Sprite[] probableSprites;
 
-            Object[] datas;
-			Object[] data2;
             int randy = 0;
             List<int> temporals = new List<int>();
+
             switch (typeOfGameToPlay)
             {
                 case TypeOfGame.Fill:
                     levelsPlayed.Add(levelFill);
                     if (levelFill < 10)
                     {
-						datas = Resources.LoadAll("Sand/EasyBank" , typeof(Sprite));
-						probableSprites = new Sprite[datas.Length];
-						for (int i = 0; i < datas.Length;i++)
-						{
-							probableSprites[i] = (Sprite)datas[i];
-                            bool hasBeenAdded = false;
-                            for (int j = 0; j < choosen.Count; j++)
-                            {
-                                if (choosen[j] == i)
-                                {
-                                    hasBeenAdded = true;
-                                }
-                            }
-                            if (!hasBeenAdded)
-                            {
-                                temporals.Add(i);
-                            }
-						}
+                        probableSprites = GetProbableSprite("EasyBank");
                     }
                     else if (levelFill >= 10 && levelFill < 20)
                     {
-						datas = Resources.LoadAll("Sand/MiddleBank", typeof(Sprite));
-                        probableSprites = new Sprite[datas.Length];
-                        for (int i = 0; i < datas.Length; i++)
-                        {
-                            probableSprites[i] = (Sprite)datas[i];
-                            bool hasBeenAdded = false;
-                            for (int j = 0; j < choosen.Count; j++)
-                            {
-                                if (choosen[j] == i)
-                                {
-                                    hasBeenAdded = true;
-                                }
-                            }
-                            if (!hasBeenAdded)
-                            {
-                                temporals.Add(i);
-                            }
-                        }
+                        probableSprites = GetProbableSprite("MiddleBank");
                     }
                     else
                     {
-						datas = Resources.LoadAll("Sand/HardBank", typeof(Sprite));
-                        probableSprites = new Sprite[datas.Length];
-                        for (int i = 0; i < datas.Length; i++)
-                        {
-                            probableSprites[i] = (Sprite)datas[i];
-                            bool hasBeenAdded = false;
-                            for (int j = 0; j < choosen.Count; j++)
-                            {
-                                if (choosen[j] == i)
-                                {
-                                    hasBeenAdded = true;
-                                }
-                            }
-                            if (!hasBeenAdded)
-                            {
-                                temporals.Add(i);
-                            }
-                        }
+                        probableSprites = GetProbableSprite("HardBank");
                     }
 
-					randy = Random.Range(0, temporals.Count);
+                    temporals = ProbableIndex(probableSprites.Length);
+                    randy = Random.Range(0, temporals.Count);
                     choosen.Add(temporals[randy]);
                     shower = probableSprites[temporals[randy]];
                     bases = probableSprites[temporals[randy]];
@@ -766,62 +728,20 @@ public class SandDrawingController : MonoBehaviour {
                     levelsPlayed.Add(levelCompletion);
                     if (levelCompletion < 3)
                     {
-						datas = Resources.LoadAll("Sand/EasyComplete", typeof(Sprite));
-                        probableSprites = new Sprite[datas.Length];
-                        for (int i = 0; i < datas.Length; i++)
-                        {
-                            probableSprites[i] = (Sprite)datas[i];
-                            bool hasBeenAdded = false;
-                            for (int j = 0; j < choosen.Count; j++)
-                            {
-                                if (choosen[j] == i)
-                                {
-                                    hasBeenAdded = true;
-                                }
-                            }
-                            if (!hasBeenAdded)
-                            {
-                                temporals.Add(i);
-                            }
-                        }
-						data2 = Resources.LoadAll("Sand/EasyBank", typeof(Sprite));
-						keySprites = new Sprite[data2.Length];
-                        for (int i = 0; i < data2.Length; i++)
-                        {
-							keySprites[i] = (Sprite)datas[i];
-                        }
+                        probableSprites = GetProbableSprite("EasyComplete");
+                        keySprites = GetProbableSprite("EasyBank");
+                        temporals = ProbableIndex(probableSprites.Length);
 
-						randy = Random.Range(0, temporals.Count);
+                        randy = Random.Range(0, temporals.Count);
                         choosen.Add(temporals[randy]);
                         shower = probableSprites[temporals[randy]];
-						bases = keySprites[temporals[randy]];
+                        bases = keySprites[temporals[randy]];
                     }
                     else if (levelCompletion >= 3 && levelCompletion < 5)
                     {
-						datas = Resources.LoadAll("Sand/MiddleComplete", typeof(Sprite));
-                        probableSprites = new Sprite[datas.Length];
-                        for (int i = 0; i < datas.Length; i++)
-                        {
-                            probableSprites[i] = (Sprite)datas[i];
-                            bool hasBeenAdded = false;
-                            for (int j = 0; j < choosen.Count; j++)
-                            {
-                                if (choosen[j] == i)
-                                {
-                                    hasBeenAdded = true;
-                                }
-                            }
-                            if (!hasBeenAdded)
-                            {
-                                temporals.Add(i);
-                            }
-                        }
-                        data2 = Resources.LoadAll("Sand/MiddleBank", typeof(Sprite));
-                        keySprites = new Sprite[data2.Length];
-                        for (int i = 0; i < data2.Length; i++)
-                        {
-                            keySprites[i] = (Sprite)datas[i];
-                        }
+                        probableSprites = GetProbableSprite("MiddleComplete");
+                        keySprites = GetProbableSprite("MiddleBank");
+                        temporals = ProbableIndex(probableSprites.Length);
 
                         randy = Random.Range(0, temporals.Count);
                         choosen.Add(temporals[randy]);
@@ -830,30 +750,9 @@ public class SandDrawingController : MonoBehaviour {
                     }
                     else if (levelCompletion >= 5 && levelCompletion < 8)
                     {
-						datas = Resources.LoadAll("Sand/HardComplete", typeof(Sprite));
-                        probableSprites = new Sprite[datas.Length];
-                        for (int i = 0; i < datas.Length; i++)
-                        {
-                            probableSprites[i] = (Sprite)datas[i];
-                            bool hasBeenAdded = false;
-                            for (int j = 0; j < choosen.Count; j++)
-                            {
-                                if (choosen[j] == i)
-                                {
-                                    hasBeenAdded = true;
-                                }
-                            }
-                            if (!hasBeenAdded)
-                            {
-                                temporals.Add(i);
-                            }
-                        }
-                        data2 = Resources.LoadAll("Sand/HardBank", typeof(Sprite));
-                        keySprites = new Sprite[data2.Length];
-                        for (int i = 0; i < data2.Length; i++)
-                        {
-                            keySprites[i] = (Sprite)datas[i];
-                        }
+                        probableSprites = GetProbableSprite("HardComplete");
+                        keySprites = GetProbableSprite("HardBank");
+                        temporals = ProbableIndex(probableSprites.Length);
 
                         randy = Random.Range(0, temporals.Count);
                         choosen.Add(temporals[randy]);
@@ -862,81 +761,33 @@ public class SandDrawingController : MonoBehaviour {
                     }
                     else if (levelCompletion >= 8 && levelCompletion < 10)
                     {
-						datas = Resources.LoadAll("Sand/EasyHalf", typeof(Sprite));
-                        probableSprites = new Sprite[datas.Length];
-                        for (int i = 0; i < datas.Length; i++)
-                        {
-                            probableSprites[i] = (Sprite)datas[i];
-                            bool hasBeenAdded = false;
-                            for (int j = 0; j < choosen.Count; j++)
-                            {
-                                if (choosen[j] == i)
-                                {
-                                    hasBeenAdded = true;
-                                }
-                            }
-                            if (!hasBeenAdded)
-                            {
-                                temporals.Add(i);
-                            }
-                        }
-						randy = Random.Range(0, temporals.Count);
+                        probableSprites = GetProbableSprite("EasyHalf");
+                        temporals = ProbableIndex(probableSprites.Length);
+                        randy = Random.Range(0, temporals.Count);
                         choosen.Add(temporals[randy]);
-						string path = datas[temporals[randy]].name.Substring(0, datas[temporals[randy]].name.Length - 3) + "_01";
-						Sprite spi = Resources.Load<Sprite>("Sand/EasyBank/" + path);
-						shower = probableSprites[temporals[randy]];
-						bases = spi;
+                        string path = probableSprites[temporals[randy]].name.Substring(0, probableSprites[temporals[randy]].name.Length - 3) + "_01";
+                        Sprite spi = Resources.Load<Sprite>("Sand/EasyBank/" + path);
+                        shower = probableSprites[temporals[randy]];
+                        bases = spi;
                     }
                     else if (levelCompletion >= 10 && levelCompletion < 12)
                     {
-						datas = Resources.LoadAll("Sand/MiddleHalf", typeof(Sprite));
-                        probableSprites = new Sprite[datas.Length];
-                        for (int i = 0; i < datas.Length; i++)
-                        {
-                            probableSprites[i] = (Sprite)datas[i];
-                            bool hasBeenAdded = false;
-                            for (int j = 0; j < choosen.Count; j++)
-                            {
-                                if (choosen[j] == i)
-                                {
-                                    hasBeenAdded = true;
-                                }
-                            }
-                            if (!hasBeenAdded)
-                            {
-                                temporals.Add(i);
-                            }
-                        }
+                        probableSprites = GetProbableSprite("MiddleHalf");
+                        temporals = ProbableIndex(probableSprites.Length);
                         randy = Random.Range(0, temporals.Count);
                         choosen.Add(temporals[randy]);
-                        string path = datas[temporals[randy]].name.Substring(0, datas[temporals[randy]].name.Length - 3) + "_01";
+                        string path = probableSprites[temporals[randy]].name.Substring(0, probableSprites[temporals[randy]].name.Length - 3) + "_01";
                         Sprite spi = Resources.Load<Sprite>("Sand/MiddleBank/" + path);
                         shower = probableSprites[temporals[randy]];
                         bases = spi;
                     }
                     else
                     {
-						datas = Resources.LoadAll("Sand/HardHalf", typeof(Sprite));
-                        probableSprites = new Sprite[datas.Length];
-                        for (int i = 0; i < datas.Length; i++)
-                        {
-                            probableSprites[i] = (Sprite)datas[i];
-                            bool hasBeenAdded = false;
-                            for (int j = 0; j < choosen.Count; j++)
-                            {
-                                if (choosen[j] == i)
-                                {
-                                    hasBeenAdded = true;
-                                }
-                            }
-                            if (!hasBeenAdded)
-                            {
-                                temporals.Add(i);
-                            }
-                        }
+                        probableSprites = GetProbableSprite("HardHalf");
+                        temporals = ProbableIndex(probableSprites.Length);
                         randy = Random.Range(0, temporals.Count);
                         choosen.Add(temporals[randy]);
-                        string path = datas[temporals[randy]].name.Substring(0, datas[temporals[randy]].name.Length - 3) + "_01";
+                        string path = probableSprites[temporals[randy]].name.Substring(0, probableSprites[temporals[randy]].name.Length - 3) + "_01";
                         Sprite spi = Resources.Load<Sprite>("Sand/HardBank/" + path);
                         shower = probableSprites[temporals[randy]];
                         bases = spi;
@@ -949,37 +800,19 @@ public class SandDrawingController : MonoBehaviour {
 
                     if (levelIdentyfy < 5)
                     {
-						datas = Resources.LoadAll("Sand/EasyBank", typeof(Sprite));
-                        probableSprites = new Sprite[datas.Length];
-                        for (int i = 0; i < datas.Length; i++)
-                        {
-                            probableSprites[i] = (Sprite)datas[i];
-                        }              
+                        probableSprites = GetProbableSprite("EasyBank");
                     }
                     else if (levelIdentyfy >= 5 && levelIdentyfy < 10)
                     {
-						datas = Resources.LoadAll("Sand/MiddleBank", typeof(Sprite));
-                        probableSprites = new Sprite[datas.Length];
-                        for (int i = 0; i < datas.Length; i++)
-                        {
-                            probableSprites[i] = (Sprite)datas[i];
-                        }       
+                        probableSprites = GetProbableSprite("MiddleBank");
                     }
                     else
                     {
-						datas = Resources.LoadAll("Sand/HardBank", typeof(Sprite));
-                        probableSprites = new Sprite[datas.Length];
-                        for (int i = 0; i < datas.Length; i++)
-                        {
-                            probableSprites[i] = (Sprite)datas[i];
-                        }    
+                        probableSprites = GetProbableSprite("HardBank");
                     }
-
-					for (int i = 0; i < probableSprites.Length; i++)
-                    {
-                            temp.Add(i);
-                    }    
-					for (int i = 0; i < spis.Length; i++)
+                    temporals = ProbableIndex(probableSprites.Length);
+                    temp.AddRange(Enumerable.Range(0, probableSprites.Length));
+                    for (int i = 0; i < spis.Length; i++)
                     {
                         int ran = Random.Range(0, temp.Count);
                         spis[i] = temp[ran];
