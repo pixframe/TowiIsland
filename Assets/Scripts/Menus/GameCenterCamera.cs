@@ -14,7 +14,7 @@ public class GameCenterCamera : MonoBehaviour {
         manager = FindObjectOfType<GameMenusManager>();
         anim = GetComponent<Animator>();
         sessionManager = FindObjectOfType<SessionManager>();
-        if (sessionManager.activeKid.anyFirstTime)
+        if (sessionManager.activeKid.anyFirstTime && !FindObjectOfType<DemoKey>())
         {
             anim.enabled = true;;
         }

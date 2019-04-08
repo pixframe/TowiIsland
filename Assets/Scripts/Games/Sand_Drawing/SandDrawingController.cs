@@ -10,10 +10,7 @@ public class SandDrawingController : MonoBehaviour {
     SandDrawer drawer;
     SwipeTrail trailer;
     SessionManager sessionManager;
-    LevelSaver levelSaver;
 
-    enum Answer { Good, Reapetable, Bad, NotFilledEnough };
-    Answer currentAnswer;
     enum TypeOfGame { Fill, Completion, Identify};
     TypeOfGame typeOfGameToPlay;
 
@@ -41,11 +38,6 @@ public class SandDrawingController : MonoBehaviour {
     
     GameObject[] stories;
 
-	Sprite[] keySprites;
-
-    int insideDots;
-    int outsideDots;
-    int totalOfPoints;
     int indexStory;
     int assayIndex;
     int levelGame = 14;
@@ -57,12 +49,6 @@ public class SandDrawingController : MonoBehaviour {
     int initialLevelIdentify;
     int maxNumberOfAssays = 5;
     int totalAssaysInTheGame;
-    int totalLevelsNormal = 30;
-    int totalSpecialLevels = 15;
-    int miniKidLevel = 10;
-    int maxiKidLevel = 20;
-    int miniKidLevelSpecials = 5;
-    int maxiKidLevelSpecials = 10;
     int blackToFill = 0;
     int drawFull = 0;
     int w = Screen.width;
@@ -70,6 +56,14 @@ public class SandDrawingController : MonoBehaviour {
     int firstTime;
     int passLevels;
     int repeatedLevels;
+
+    const int totalLevelsNormal = 30;
+    const int totalSpecialLevels = 15;
+    const int miniKidLevel = 10;
+    const int maxiKidLevel = 20;
+    const int miniKidLevelSpecials = 5;
+    const int maxiKidLevelSpecials = 10;
+
     List<int> choosen = new List<int>();
     List<int> levelsPlayed = new List<int>();
     List<float> accuracies = new List<float>();
@@ -93,9 +87,6 @@ public class SandDrawingController : MonoBehaviour {
     bool showTutorial;
     bool countTime = false;
 
-	RenderTexture tex;
-	RenderTexture tex2;
-
     Color[] aColors;
     Color[] bColors;
 
@@ -110,7 +101,6 @@ public class SandDrawingController : MonoBehaviour {
         if (FindObjectOfType<SessionManager>())
         {
             sessionManager = FindObjectOfType<SessionManager>();
-            levelSaver = GetComponent<LevelSaver>();
         }
         audioManager = FindObjectOfType<AudioManager>();
         textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/Sand/SandText");
@@ -150,6 +140,7 @@ public class SandDrawingController : MonoBehaviour {
             pauser.WantTutorial();
             pauser.howToPlayButton.onClick.AddListener(TellAStory);
             pauser.playButton.onClick.AddListener(TellInstruction);
+            pauser.playButton.onClick.AddListener(DestroyTheStory);
         }
         endButton.onClick.AddListener(CalificateTheDraw);
 
@@ -285,6 +276,7 @@ public class SandDrawingController : MonoBehaviour {
 
     void SaveLevels()
     {
+        var levelSaver = FindObjectOfType<LevelSaver>();
         countTime = true;
         if (sessionManager != null)
         {
@@ -389,12 +381,12 @@ public class SandDrawingController : MonoBehaviour {
         else
         {
             readyButton.onClick.AddListener(TellInstruction);
+            DestroyTheStory();
         }
     }
 
-    void TellInstruction()
+    void DestroyTheStory() 
     {
-        countTime = true;
         if (showTutorial)
         {
             stories[indexStory - 1].SetActive(false);
@@ -403,6 +395,14 @@ public class SandDrawingController : MonoBehaviour {
         {
             instructionPanel.transform.parent.gameObject.SetActive(true);
         }
+        Destroy(storyManager.gameObject);
+        stories = null;
+    }
+
+    void TellInstruction()
+    {
+        countTime = true;
+
         switch (typeOfGameToPlay)
         {
             case TypeOfGame.Fill:
@@ -507,7 +507,7 @@ public class SandDrawingController : MonoBehaviour {
 
     void ReadAPixels()
     {
-        tex = new RenderTexture(w, h, 24);
+        var tex = new RenderTexture(w, h, 24);
 
         answerCam.targetTexture = tex;
         answerCam.Render();
@@ -617,7 +617,7 @@ public class SandDrawingController : MonoBehaviour {
             if (fillLevelAdjusted == levelCompletion)
             {
                 int selectDeficitRandom = Random.Range(0, 2);
-                int[] deficit = new int[] { 0, 2 };
+                int[] deficit = { 0, 2 };
                 return deficit[selectDeficitRandom];
             }
             else if (levelCompletion > fillLevelAdjusted)
@@ -678,10 +678,12 @@ public class SandDrawingController : MonoBehaviour {
         }
         else
         {
-            Sprite[] probableSprites;
-            Sprite shower;
             Sprite bases;
-			Object[] datas;
+            Sprite shower;
+
+            Sprite[] probableSprites;
+
+            Object[] datas;
 			Object[] data2;
             int randy = 0;
             List<int> temporals = new List<int>();
@@ -760,6 +762,7 @@ public class SandDrawingController : MonoBehaviour {
 
                     break;
                 case TypeOfGame.Completion:
+                    Sprite[] keySprites;
                     levelsPlayed.Add(levelCompletion);
                     if (levelCompletion < 3)
                     {
@@ -1013,7 +1016,7 @@ public class SandDrawingController : MonoBehaviour {
 
     void ReadBPixels()
     {
-        tex2 = new RenderTexture(w, h, 24);
+        var tex2 = new RenderTexture(w, h, 24);
 
         drawCam.targetTexture = tex2;
         drawCam.Render();
@@ -1068,6 +1071,9 @@ public class SandDrawingController : MonoBehaviour {
                 blackFilled++;
             }
         }
+
+        aColors = null;
+        bColors = null;
 
         blackOverFilled = drawFull - blackFilled;
         float percentageOff = (blackOverFilled * 100) / drawFull;
@@ -1215,6 +1221,7 @@ public class SandDrawingController : MonoBehaviour {
         foreach (DrawCanvas c in multiples)
         {
             c.canvas.SetActive(false);
+            c.ClearData();
         }
 
         centerCanvas.visibleRenderer.gameObject.SetActive(false);
@@ -1320,6 +1327,12 @@ public struct DrawCanvas
         canvas = obj;
         visibleRenderer = obj.transform.GetChild(0).GetComponent<SpriteRenderer>();
         nonVisibleRenderer = obj.transform.GetChild(1).GetComponent<SpriteRenderer>();
+    }
+
+    public void ClearData() 
+    {
+        visibleRenderer.sprite = null;
+        nonVisibleRenderer.sprite = null;
     }
 
     public GameObject canvas;

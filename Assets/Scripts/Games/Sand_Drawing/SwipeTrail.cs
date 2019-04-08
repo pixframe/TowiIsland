@@ -24,20 +24,6 @@ public class SwipeTrail : MonoBehaviour {
         {
             if (((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved) || Input.GetMouseButton(0)))
             {
-                /*Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-                if (Physics.Raycast(mouseRay, out hit, Mathf.Infinity, maskForPainting))
-                {
-                    Plane objPlane = new Plane(Camera.main.transform.forward * -1, this.transform.position);
-
-                    Ray mRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-                    float rayDistance;
-                    if (objPlane.Raycast(mRay, out rayDistance))
-                    {
-                        this.transform.position = mRay.GetPoint(rayDistance);
-                    }
-                }*/
-
                 Plane objPlane = new Plane(Camera.main.transform.forward * -1, this.transform.position);
 
                 Ray mRay = Camera.main.ScreenPointToRay(Input.mousePosition);

@@ -286,7 +286,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
                     needTutorial = true;
                     kindOfTutorial = 1;
                     break;
-                case 21:
+                case 20:
                     recepiesToShow.Add(5);
                     recepiesToShow.Add(6);
                     recepiesToShow.Add(7);

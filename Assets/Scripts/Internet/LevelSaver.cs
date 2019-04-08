@@ -429,19 +429,22 @@ public class LevelSaver : MonoBehaviour {
 
     public void SaveDataOffline()
     {
-        string dataToSave = data.ToString();
-        int gameSavedOffline = PlayerPrefs.GetInt(Keys.Games_Saved);
+        if (!FindObjectOfType<DemoKey>()) 
+        {
+            string dataToSave = data.ToString();
+            int gameSavedOffline = PlayerPrefs.GetInt(Keys.Games_Saved);
 
-        string path = $"{Application.persistentDataPath}/{gameSavedOffline}{Keys.Game_To_Save}";
-        gameSavedOffline++;
+            string path = $"{Application.persistentDataPath}/{gameSavedOffline}{Keys.Game_To_Save}";
+            gameSavedOffline++;
 
-        Debug.Log($"We have {gameSavedOffline} jsons to save");
+            Debug.Log($"We have {gameSavedOffline} jsons to save");
 
-        File.WriteAllText(path, dataToSave);
+            File.WriteAllText(path, dataToSave);
 
-        PlayerPrefs.SetInt(Keys.Games_Saved, gameSavedOffline);
+            PlayerPrefs.SetInt(Keys.Games_Saved, gameSavedOffline);
 
-        sessionManager.SaveSession();
+            sessionManager.SaveSession();
+        }
     }
 
     IEnumerator CheckInternetConecction(string resource)
