@@ -270,7 +270,7 @@ public class LevelSaver : MonoBehaviour {
         {
             if (i > 0)
             {
-                stringToAdd += "";
+                stringToAdd += ",";
             }
             stringToAdd += listToConvert[i].ToString();
         }
@@ -288,7 +288,7 @@ public class LevelSaver : MonoBehaviour {
         {
             if (i > 0)
             {
-                stringToAdd += "";
+                stringToAdd += ",";
             }
             stringToAdd += listToConvert[i].ToString(invariantCulture);
         }
@@ -306,7 +306,7 @@ public class LevelSaver : MonoBehaviour {
         {
             if (i > 0)
             {
-                stringToAdd += "";
+                stringToAdd += ",";
             }
             stringToAdd += listToConvert[i].ToString();
         }
@@ -324,7 +324,7 @@ public class LevelSaver : MonoBehaviour {
         {
             if (i > 0)
             {
-                stringToAdd += "";
+                stringToAdd += ",";
             }
             stringToAdd += listToConvert[i].ToString();
         }
@@ -342,7 +342,7 @@ public class LevelSaver : MonoBehaviour {
         {
             if (i > 0)
             {
-                stringToAdd += "";
+                stringToAdd += ",";
             }
             stringToAdd += listToConvert[i].ToString(invariantCulture);
         }
