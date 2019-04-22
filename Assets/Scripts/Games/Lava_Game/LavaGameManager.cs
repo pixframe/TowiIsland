@@ -128,7 +128,7 @@ public class LavaGameManager : MonoBehaviour {
     //This is the time the object to identify is shown
     float timeToShow = 3.0f;
     //This is the time the objects to match are shown
-    float timeToFind = 3.0f;
+    float timeToFind = 5.0f;
     //This is the time of a vapor
     float vaporTime = 1.0f;
     //This is the time the 

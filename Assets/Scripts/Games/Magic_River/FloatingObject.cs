@@ -71,7 +71,7 @@ public class FloatingObject : MonoBehaviour {
     {
         Vector3 vectorDir = posCurrent - transform.position;
         transform.Translate(Vector3.Normalize(vectorDir) * movementSpeed * Time.deltaTime);
-        if (Vector3.Distance(transform.position, posCurrent) < 0.2f)
+        if (Vector3.Distance(transform.position, posCurrent) < 0.3f)
         {
             index++;
             posCurrent = posToGo[index];
