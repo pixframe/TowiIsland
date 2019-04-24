@@ -30,14 +30,6 @@ public class SessionManager : MonoBehaviour
 
     void Awake()
     {
-        /*Analytics.CustomEvent("register");
-        for (int i = 1; i < 7; i++)
-        {
-            Analytics.CustomEvent($"game{i}");
-            Debug.Log($"current game is game{i}");
-        }
-        Analytics.CustomEvent("subscribe");
-        Debug.Log("We run the funnel fast");*/
         if (FindObjectsOfType<SessionManager>().Length > 1)
         {
             Destroy(this.gameObject);
@@ -58,12 +50,10 @@ public class SessionManager : MonoBehaviour
                     firebaseApp = Firebase.FirebaseApp.DefaultInstance;
                     // Set a flag here indicating that Firebase is ready to use by your
                     // application.
-                    Debug.Log("This is ok");
                     //GameObject.FindGameObjectWithTag("Coin").GetComponent<UnityEngine.UI.Text>().text = "firebase is set All right";
                 }
                 else
                 {
-                    Debug.LogError($"Could not resolve all Firebase dependencies: {dependencyStatus}");
                     // Firebase Unity SDK is not safe to use here
                     //GameObject.FindGameObjectWithTag("Coin").GetComponent<UnityEngine.UI.Text>().text = $"firebase is not correctly set: {dependencyStatus}";
                 }
@@ -346,75 +336,10 @@ public class SessionManager : MonoBehaviour
                         users[u].kids.Add(new Kid(cid, name, key, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial")));
                         temporalKids.Add(users[u].kids[users[u].kids.Count - 1]);
                     }
-                    /*if (kidObj.GetValue("active").Boolean || kidObj.GetValue("trial").Boolean)
-                    {
 
-                    }
-                    /*for (int k = 0; k < users[u].kids.Count; k++)
-                    {
-                        if (users[u].kids[k].id == (int)kidObj.GetValue("cid").Number)
-                        {
-                            if (!kidObj.GetValue("active").Boolean && !kidObj.GetValue("trial").Boolean)
-                            {
-                                users[u].kids.RemoveAt(k);
-                            }
-                            else
-                            {
-                                Debug.Log("We are adding a kid");
-                                users[u].kids[k].name = kidObj.GetValue("name").Str + " " + kidObj.GetValue("lastname").Str;
-                                users[u].kids[k].userkey = kidObj.GetValue("key").Str;
-                                /*users[u].kids[k].dateLastEvaluation = DateTime.Parse(kidObj.GetValue("pruebaDate").Str);
-                                Debug.Log(users[u].kids[k].dateLastEvaluation);
-                                temporalKids.Add(users[u].kids[k]);
-                                Debug.Log("we add 1 kid");
-                            }
-                            /*users[u].kids[k].name = kidObj.GetValue("name").Str + " " + kidObj.GetValue("lastname").Str;
-                            users[u].kids[k].userkey = kidObj.GetValue("key").Str;
-                            temporalKids.Add(users[u].kids[k]);
-                            missing = false;
-                            break;
-                        }
-                    }
-                    if (missing)
-                    {
-                        //byte[] uni = Encoding.Unicode.GetBytes(kidObj.GetValue("name").Str+" "+kidObj.GetValue("lastname").Str);
-                        //string ascii = Encoding.ASCII.GetString(uni);
-
-                    }*/
                 }
             }
-            /*if (missingUser)
-            {
-                users.Add(new User(kidObj.GetValue("key").Str, "", "", 0));
-                if (bool.Parse(kidObj.GetValue("active").Str) || bool.Parse(kidObj.GetValue("trial").Str))
-                {
-                    int cid = (int)kidObj.GetValue("cid").Number;
-                    string name = kidObj.GetValue("name").Str + " " + kidObj.GetValue("lastname").Str;
-                    string key = kidObj.GetValue("key").Str;
-                    //DateTime date = DateTime.Parse(kidObj.GetValue("pruebaDate").Str);
-                    users[users.Count - 1].kids.Add(new Kid(cid, name, key));
-                    temporalKids.Add(users[users.Count - 1].kids[users[users.Count - 1].kids.Count - 1]);
-                }
-            }*/
         }
-        /*for (int k=0; k< activeUser.kids.Count; k++) {
-            bool exists=false;
-            for(int i=0;i<kids.Length;i++)
-            {
-                JSONObject kidObj=kids[i].Obj;
-                if(activeUser.kids[k].id==int.Parse(kidObj.GetValue("cid").Str))
-                {
-                    exists=true;
-                    break;
-                }
-            }
-            if(!exists)
-            {
-                activeUser.kids.RemoveAt(k--);
-            }
-        }*/
-        //activeKid = activeUser.kids [0];
-        //PlayerPrefs.SetInt("activeKid",activeKid.id);
         SaveSession();
     }
 
@@ -528,7 +453,6 @@ public class SessionManager : MonoBehaviour
 
             if (request.isNetworkError || request.isHttpError)
             {
-                Debug.Log(request.downloadHandler.text);
                 downlodingData = false;
             }
             else
@@ -536,8 +460,6 @@ public class SessionManager : MonoBehaviour
                 PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
 
                 JSONArray kids = JSONArray.Parse(request.downloadHandler.text);
-
-                Debug.Log($"the reaponse is {request.downloadHandler.text}");
 
                 bool setType = false;
                 bool needStoreSync = false;
@@ -584,6 +506,8 @@ public class SessionManager : MonoBehaviour
                     activeUser.kids[index].age = (int)kidObj.GetNumber("age");
                     activeUser.kids[index].activeMissions.Clear();
 
+                    activeUser.kids[index].ResetPlayedGames();
+
                     for (int o = 0; o < activeMissions.Length; o++)
                     {
                         activeUser.kids[index].activeMissions.Add(activeMissions[o].Str);
@@ -600,11 +524,12 @@ public class SessionManager : MonoBehaviour
                     activeUser.kids[index].testAvailable = kidObj.GetBoolean("testAvailable");
                     activeUser.kids[index].sandLevelSet = kidObj.GetBoolean("arenaLevelSet");
 
+                    activeUser.kids[index].buyedIslandObjects.Clear();
                     for (int o = 0; o < buyedItems.Length; o++)
                     {
                         activeUser.kids[index].buyedIslandObjects.Add((int)buyedItems[o].Number);
                     }
-
+                    
                     if (activeUser.kids[index].birdsFirst || activeUser.kids[index].lavaFirst || activeUser.kids[index].monkeyFirst || activeUser.kids[index].riverFirst || activeUser.kids[index].sandFirst || activeUser.kids[index].treasureFirst)
                     {
                         activeUser.kids[index].anyFirstTime = true;
@@ -622,10 +547,12 @@ public class SessionManager : MonoBehaviour
                     {
                         activeUser.kids[index].isIAPSubscribed = true;
                     }
+
                     if (activeKid != null)
                     {
                         if (activeKid.id == cid)
                         {
+                            activeKid = activeUser.kids[index];
                             SyncChildLevels();
                         }
                     }
@@ -673,7 +600,7 @@ public class SessionManager : MonoBehaviour
         using (UnityWebRequest request = UnityWebRequest.Post(updateProfileURL, form))
         {
             yield return request.SendWebRequest();
-            if (request.isNetworkError)
+            if (request.isNetworkError || request.isHttpError)
             {
                 if (FindObjectOfType<GameCenterManager>())
                 {
@@ -801,8 +728,6 @@ public class SessionManager : MonoBehaviour
             }
             else
             {
-
-                Debug.Log(request.downloadHandler.text);
                 JSONObject response = JSONObject.Parse(request.downloadHandler.text);
 
                 //Birds Level Set
@@ -844,36 +769,6 @@ public class SessionManager : MonoBehaviour
         }
 
         downlodingData = false;
-        //    WWW hs_post = new WWW(post_url, form);
-        //yield return hs_post;
-
-        //if (hs_post.error == null)
-        //{
-        //    JSONObject response = JSONObject.Parse(hs_post.text);
-        //    if (response["code"].Str == "200")
-        //    {
-
-        //        activeKid.birdsDifficulty = (int)response["arbolMusicalLevel"].Number;
-        //        activeKid.birdsLevel = (int)response["arbolMusicalSublevel"].Number;
-        //        activeKid.riverDifficulty = (int)response["rioLevel"].Number;
-        //        activeKid.riverLevel = (int)response["rioSublevel"].Number;
-        //        activeKid.sandDifficulty = (int)response["arenaMagicaLevel"].Number;
-        //        activeKid.sandLevel = (int)response["arenaMagicaSublevel"].Number;
-        //        activeKid.sandLevel2 = (int)response["arenaMagicaSublevel2"].Number;
-        //        activeKid.sandLevel3 = (int)response["arenaMagicaSublevel3"].Number;
-        //        activeKid.monkeyDifficulty = (int)response["monkeyLevel"].Number;
-        //        activeKid.monkeyLevel = (int)response["monkeySublevel"].Number;
-        //        activeKid.lavaDifficulty = (int)response["sombrasLevel"].Number;
-        //        activeKid.laveLevel = (int)response["sombrasSublevel"].Number;
-        //        activeKid.treasureDifficulty = (int)response["tesoroLevel"].Number;
-        //        activeKid.treasureLevel = (int)response["tesoroSublevel"].Number;
-        //    }  
-        //}
-        //else
-        //{
-        //    Debug.Log(hs_post.error);
-        //    Debug.Log(hs_post.text);
-        //}
         SaveSession();
     }
 
@@ -883,7 +778,6 @@ public class SessionManager : MonoBehaviour
         {
             difficulty = difficltyFromWeb;
             level = levelFromWeb;
-            Debug.Log("We set a web data");
         }
         else if (difficulty == difficltyFromWeb)
         {
@@ -891,7 +785,6 @@ public class SessionManager : MonoBehaviour
             {
                 level = levelFromWeb;
             }
-            Debug.Log("We set a web data");
         }
         else
         {
@@ -1123,6 +1016,16 @@ public class SessionManager : MonoBehaviour
             isIAPSubscribed = false;
             buyedIslandObjects = new List<int>();
 
+        }
+
+        public void ResetPlayedGames()
+        {
+            playedBird = 0;
+            playedRiver = 0;
+            playedSand = 0;
+            playedLava = 0;
+            playedMonkey = 0;
+            playedTreasure = 0;
         }
     }
 }

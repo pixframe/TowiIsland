@@ -160,60 +160,6 @@ public class MenuManager : MonoBehaviour {
         {
             ShowGameMenu();
         }
-
-        //if (key == null)
-        //{
-        //    if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
-        //    {
-
-        //        string user = PlayerPrefs.GetString(Keys.Active_User_Key);
-        //        if (user != "_local")
-        //        {
-        //            if (user != "")
-        //            {
-        //                ShowLoading();
-        //                logInScript.IsActive(user);
-        //            }
-        //            else
-        //            {
-        //                ShowLogIn();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
-        //            {
-        //                ShowGameMenu();
-        //            }
-        //            else
-        //            {
-        //                ShowLogIn();
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        if (alreadyLogged)
-        //        {
-        //            ShowGameMenu();
-        //        }
-        //        else
-        //        {
-        //            ShowLogIn();
-        //        }
-        //    }
-
-        //    if (FindObjectOfType<EvaluationController>())
-        //    {
-        //        Destroy(FindObjectOfType<EvaluationController>().gameObject);
-        //        //Destroy(FindObjectOfType<AudioManager>().gameObject);
-        //    }
-        //    key = FindObjectOfType<DemoKey>();
-        //}
-        //else
-        //{
-        //    ShowGameMenu();
-        //}
     }
 
     IEnumerator CheckInternetConnection(string resource)

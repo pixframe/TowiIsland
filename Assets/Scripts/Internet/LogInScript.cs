@@ -168,7 +168,6 @@ public class LogInScript : MonoBehaviour {
 
         if (tempUser != null)
         {
-            Debug.Log("we are in the discord");
             if (PlayerPrefs.GetInt(Keys.Games_Saved) > 0 || PlayerPrefs.GetInt(Keys.Evaluations_Saved) > 0)
             {
                 Debug.Log("We try to update the data");

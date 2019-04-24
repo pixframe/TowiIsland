@@ -48,7 +48,6 @@ public class IslandShoppingManager : MonoBehaviour {
         UpdateKiwiAmount();
 
         stringsToShow = TextReader.TextsToShow(Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}MiniGames/IslandShop"));
-        Debug.Log(stringsToShow[0]);
 
         for (int i = 0; i < container.transform.childCount; i++)
         {
@@ -104,8 +103,6 @@ public class IslandShoppingManager : MonoBehaviour {
                 buttons[i].mainButton.GetComponent<RectTransform>().localPosition = new Vector2(startPosition, buttons[i].mainButton.GetComponent<RectTransform>().localPosition.y);
             }
         }
-
-        Debug.Log(sizeOfContainer);
 
         container.GetComponent<RectTransform>().sizeDelta = new Vector2(sizeOfContainer, container.GetComponent<RectTransform>().sizeDelta.y);
     }

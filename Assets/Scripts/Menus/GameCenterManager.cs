@@ -121,7 +121,6 @@ public class GameCenterManager : MonoBehaviour {
             demoPanel.SetActive(false);
             if (sessionManager.activeKid.needSync)
             {
-                Debug.Log("This user need a sync ");
                 StartCoroutine(CheckInternetConnection(Keys.Api_Web_Key + Keys.Try_Connection_Key));
             }
             else
@@ -137,10 +136,9 @@ public class GameCenterManager : MonoBehaviour {
         WWWForm newForm = new WWWForm();
         using (UnityWebRequest newRequest = UnityWebRequest.Get(resource))
         {
-            Debug.Log("Checking internet connection");
             yield return newRequest.SendWebRequest();
 
-            if (newRequest.isNetworkError)
+            if (newRequest.isNetworkError || newRequest.isHttpError)
             {
                 NotAvailableUpdate();
             }
@@ -148,14 +146,11 @@ public class GameCenterManager : MonoBehaviour {
             {
                 InternetAvailableUpdate();
             }
-
-            ChangeMenus();
         }
     }
 
     void InternetAvailableUpdate()
     {
-        Debug.Log("Theres internet there");
         sessionManager.UpdateProfile(activeMissions);
         int funelGame = PlayerPrefs.GetInt(Keys.Funnel_Games, 1);
         if (funelGame < 7)
@@ -167,7 +162,7 @@ public class GameCenterManager : MonoBehaviour {
 
     void NotAvailableUpdate()
     {
-        Debug.Log("We have no internet now man");
+        ChangeMenus();
     }
 
     void ChangeAge()
@@ -264,7 +259,6 @@ public class GameCenterManager : MonoBehaviour {
                             {
                                 stations.Add(0);
                             }
-                            Debug.LogError("Theres no game in that format");
                             break;
                     }
                 }
@@ -274,7 +268,6 @@ public class GameCenterManager : MonoBehaviour {
                 {
                     activeMissionToDebug += $"{s}, ";
                 }
-                Debug.Log($"The active mission are {activeMissionToDebug}");
             }
         }
     }
