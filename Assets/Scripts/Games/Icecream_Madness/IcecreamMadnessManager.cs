@@ -60,6 +60,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
     int[] ordersAsked;
     int[] ordersDelivered;
     int[] ordersMissed;
+    int[] ordersMade;
     int[] tipsEarned;
     int[] ordersWithTips;
     int[] totalScores;
@@ -67,7 +68,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
     float[] latencies;
 
     int level = 0;
-    int maxLevelNumber = 33;
+    const int maxLevelNumber = 33;
 
     int targetCoins;
 
@@ -122,6 +123,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
         ordersAsked = new int[maxNumberOfEssay];
         ordersDelivered = new int[maxNumberOfEssay];
         ordersMissed = new int[maxNumberOfEssay];
+        ordersMade = new int[maxNumberOfEssay];
         tipsEarned = new int[maxNumberOfEssay];
         ordersWithTips = new int[maxNumberOfEssay];
         totalScores = new int[maxNumberOfEssay];
@@ -137,8 +139,6 @@ public class IcecreamMadnessManager : MonoBehaviour {
 
         confettiSystem = GameObject.FindGameObjectWithTag("Arrow").GetComponent<ParticleSystem>();
         crossesSystem = GameObject.FindGameObjectWithTag("Ground").GetComponent<ParticleSystem>();
-
-
     }
 
     /// <summary>
@@ -249,8 +249,51 @@ public class IcecreamMadnessManager : MonoBehaviour {
                     break;
             }
         }
-
         icecreamUI.SetNeedCoins(targetCoins);
+    }
+
+    void SaveLevel() 
+    {
+        var levelSaver = GetComponent<LevelSaver>();
+        //TODO session data change
+
+        //TODO first seesion manager
+
+        //levelSaver.AddLevelData("current_level", icecream level);
+        //levelSaver.AddLevelData("session_correct_percentage", (errors * 100) / interactions);
+        float correctPercentage = 0;
+        float errorsPercentage = 0;
+        float missPercentage = 0;
+
+        for (int i =0; i < maxNumberOfEssay; i++) 
+        {
+            correctPercentage += Mathf.CeilToInt((wellMade[i] * 100) / ordersDelivered[i]);
+            errorsPercentage += Mathf.FloorToInt((badMade[i] * 100) / ordersDelivered[i]);
+            missPercentage += (ordersMissed[i] * 100) / (ordersAsked[i] - wellMade[i]);
+        }
+
+        correctPercentage /= maxNumberOfEssay;
+        errorsPercentage /= maxNumberOfEssay;
+        missPercentage /= maxNumberOfEssay; 
+
+
+        levelSaver.AddLevelData("session_correct_percentage", correctPercentage);
+        levelSaver.AddLevelData("session_errors_percentage", errorsPercentage);
+        levelSaver.AddLevelData("session_expired_percentage", missPercentage);
+
+
+        levelSaver.AddLevelDataAsString("total_orders", ordersAsked);
+        levelSaver.AddLevelDataAsString("total_delivers", ordersDelivered);
+        levelSaver.AddLevelDataAsString("total_corrects", wellMade);
+        levelSaver.AddLevelDataAsString("total_errors", badMade);
+        levelSaver.AddLevelDataAsString("total_expired", ordersMissed);
+        levelSaver.AddLevelDataAsString("total_trash", trashOrders);
+        levelSaver.AddLevelDataAsString("total_done", ordersMade);
+
+
+        /*levelSaver.CreateSaveBlock("ArbolMusical", time, passLevels, repeatedLevels, 5, sessionManager.activeKid.birdsSessions);
+        levelSaver.AddLevelsToBlock();
+        levelSaver.PostProgress();*/
     }
     #endregion
 
@@ -344,7 +387,6 @@ public class IcecreamMadnessManager : MonoBehaviour {
         if (passTheLevel)
         {
             level++;
-
             if(level >= maxLevelNumber) 
             {
                 level = maxLevelNumber;
@@ -543,12 +585,14 @@ public class IcecreamMadnessManager : MonoBehaviour {
     public void GoodAnswer(Vector3 positionOfTable)
     {
         wellMade[currentEssay]++;
+        ordersDelivered[currentEssay]++;
         StartCoroutine(AnswerRoutine(confettiSystem, positionOfTable));
     }
 
     public void BadAnswer(Vector3 positionOfTable)
     {
         badMade[currentEssay]++;
+        ordersDelivered[currentEssay]++;
         crossesSystem.transform.GetChild(0).gameObject.SetActive(false);
         crossesSystem.transform.GetChild(1).gameObject.SetActive(true);
         StartCoroutine(AnswerRoutine(crossesSystem, positionOfTable));
@@ -586,6 +630,11 @@ public class IcecreamMadnessManager : MonoBehaviour {
         crossesSystem.transform.GetChild(0).gameObject.SetActive(true);
         crossesSystem.transform.GetChild(1).gameObject.SetActive(false);
         StartCoroutine(MissRoutine(crossesSystem, orderToDelete));
+    }
+
+    public void OrderIsFullMade() 
+    {
+        ordersMade[currentEssay]++;
     }
 
     IEnumerator MissRoutine(ParticleSystem particleSystem, IceCreamOrders orderToDelete)

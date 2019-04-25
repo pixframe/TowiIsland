@@ -222,6 +222,21 @@ public class Tray : MonoBehaviour {
         if (typeOfObjects[0] != null) containerSpriteRenderer.enabled = true; else containerSpriteRenderer.enabled = false;
         if (typeOfObjects[1] != null) foodSpriteRender.enabled = true; else foodSpriteRender.enabled = false;
         if (typeOfObjects[2] != null) toppingSpriteRenderer.enabled = true; else toppingSpriteRenderer.enabled = false;
+
+        bool isFinallyMade = true;
+        for (int i = 0; i < typeOfObjects.Length; i++)
+        {
+            if(typeOfObjects[i] == null) 
+            {
+                isFinallyMade = false;
+                break;
+            }
+        }
+
+        if (isFinallyMade) 
+        {
+            FindObjectOfType<IcecreamMadnessManager>().OrderIsFullMade();
+        }
     }
 
     public void SetSmoothieColor()
