@@ -144,6 +144,7 @@ public class OrderGame : MonoBehaviour {
     int[] scoreFirstObjects = new int[3];
     int[] scoreLastObjects = new int[3];
     int[] positionScores = new int[3];
+    int[] positionSamples = new int[3];
     int[] percentageFirstObjects = new int[3];
     int[] percentageLastObjects = new int[3];
 
@@ -485,7 +486,7 @@ public class OrderGame : MonoBehaviour {
     //Save the data of the game 
     void SaveTheData() {
         evaluationController.SaveOrderProgress(numberOfObjectsToShow, correct, incorrect, reapeted,
-            percentageFirstObjects, percentageLastObjects, positionScores, latenciesOfAssays,
+            percentageFirstObjects, percentageLastObjects, positionScores, positionSamples, latenciesOfAssays,
             orderObjectsList, goodCompareLists, badCompareLists);
     }
 
@@ -585,6 +586,7 @@ public class OrderGame : MonoBehaviour {
                                 smallContainer.transform.GetChild(positionIndexer).gameObject.SetActive(true);
                                 correct[numberOfTry]++;
                                 positionScores[numberOfTry] += 4;
+                                positionSamples[numberOfTry] += 1;
                                 selectedObjectsList.Add(selectedObject.name);
                                 selectedObject.GetComponent<ObjectToOrder>().SaveInPlace();
                                 dropedObjects.Add(selectedObject);

@@ -459,15 +459,11 @@ public class PackGame : MonoBehaviour
             backwardsLevelAchive = levelOfTest;
         }
 
-        levelOfTest = 0;
-        numberOfTry = 0;
-        numberIncorrectSequences = 0;
-        numberOfIntrucions = 0;
-
         if (direccionOfTheTest == 0)
         {
             AddNewData(0);
             evaluationController.SavePackProgress(normalLevelAchive, numberOfErrorsFoward, objectsGrabedInNormal, numberOfIntrucions, numberIncorrectSequences);
+            ClearCommonData();
             evaluationController.StarCounting();
             PlaySecondTutorial();
         }
@@ -475,9 +471,18 @@ public class PackGame : MonoBehaviour
         {
             AddNewData(1);
             evaluationController.SavePackBackProgress(backwardsLevelAchive, numberOfErrorBackwards, objectsGrabedInReverse, numberOfIntrucions, numberIncorrectSequences);
+            ClearCommonData();
             evaluationController.StarCounting();
             ChatAboutWeather();
         }
+    }
+
+    void ClearCommonData()
+    {
+        levelOfTest = 0;
+        numberOfTry = 0;
+        numberIncorrectSequences = 0;
+        numberOfIntrucions = 0;
     }
 
     //This will help to play the first tutorial

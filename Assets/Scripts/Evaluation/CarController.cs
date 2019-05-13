@@ -44,6 +44,8 @@ public class CarController : MonoBehaviour {
     Vector3 enterPosition;
     //this is the position of the car after finisihng the collision is used in determine more complex data than hits
     Vector3 exitPosition;
+    //This is the max position reach without leaving the wall
+    Vector3 maxPosition;
     #endregion
 
     #region LayerMask
@@ -60,6 +62,8 @@ public class CarController : MonoBehaviour {
     bool spriteTime;
     //this will see if the car is moving when using car arrows
     bool isMovingWithArrows;
+    //This is used when a car hits
+    bool inWall;
     #endregion
 
     #region Numbers
@@ -173,6 +177,14 @@ public class CarController : MonoBehaviour {
                 spriteTime = false;
             }
         }
+
+        if (inWall)
+        {
+            if (Vector3.Distance(enterPosition, transform.position) >= Vector3.Distance(maxPosition, transform.position))
+            {
+                maxPosition = transform.position;
+            }
+        }
     }
 
     //This will check the first interaction with the thngs
@@ -184,6 +196,8 @@ public class CarController : MonoBehaviour {
             hitSprite.SetActive(true);
             enterPosition = transform.position;
             spriteTime = true;
+            inWall = true;
+            maxPosition = transform.position;
         }
         //this one will check the arrive to the finish line
         else if (target.tag == "Finish")
@@ -201,6 +215,7 @@ public class CarController : MonoBehaviour {
             hits++;
             exitPosition = transform.position;
             wallHited = target;
+            inWall = false;
             DoesTheCarCross();
         }
         if (target.tag == "Deadends")
@@ -358,13 +373,27 @@ public class CarController : MonoBehaviour {
         {
             if (Vector3.Distance(new Vector3(enterPosition.x, 0, 0), new Vector3(exitPosition.x, 0, 0)) >= (wallHited.bounds.extents.x * 2))
             {
-                crosses++;
+                changesOfRoutes++;
+            }
+            else
+            {
+                if (Mathf.Abs(enterPosition.x - maxPosition.x) >= GetComponent<CapsuleCollider2D>().size.x)
+                {
+                    crosses++;
+                }
             }
         }
         else {
             if (Vector3.Distance(new Vector3(0, enterPosition.y, 0), new Vector3(0, exitPosition.y, 0)) >= (wallHited.bounds.extents.y * 2))
             {
-                crosses++;
+                changesOfRoutes++;
+            }
+            else
+            {
+                if (Mathf.Abs(enterPosition.y - maxPosition.y) >= GetComponent<CapsuleCollider2D>().size.x)
+                {
+                    crosses++;
+                }
             }
         }
     }

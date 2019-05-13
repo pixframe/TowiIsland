@@ -372,7 +372,7 @@ public class EvaluationController : MonoBehaviour
     }
 
     //this will save the progreess in the last part
-    public void SaveOrderProgress(int nOfStimulus, int[] corrects, int[] bads, int[] repeated, int[] firstObjects, int[] lastObjects, int[] positionScore, List<float> asseyLatencie, List<List<string>> listOfOrdnung, List<List<string>> goodReapeted, List<List<string>> badReapeted)
+    public void SaveOrderProgress(int nOfStimulus, int[] corrects, int[] bads, int[] repeated, int[] firstObjects, int[] lastObjects, int[] positionScore, int[] wellPositioned, List<float> asseyLatencie, List<List<string>> listOfOrdnung, List<List<string>> goodReapeted, List<List<string>> badReapeted)
     {
         int numberOfAssays = 3;
         int totalCorrects = 0;
@@ -392,7 +392,7 @@ public class EvaluationController : MonoBehaviour
         /*saveHandler.AddLevelData("arrange_primacy", firstObjects);
         saveHandler.AddLevelData("arrange_recence", lastObjects);*/
         saveHandler.AddLevelData("arrange_spacialprecision_score", positionScore);
-        saveHandler.AddLevelData("arrange_spacialprecision_sample", positionScore);
+        saveHandler.AddLevelData("arrange_spacialprecision_sample", wellPositioned);
         saveHandler.AddLevelData("arrange_time", Mathf.Round(secctionTime));
         saveHandler.AddLevelData("arrange_primacy", (firstPercentage / 3));
         saveHandler.AddLevelData("arrange_recence", (lastpercentage / 3));
