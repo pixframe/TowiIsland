@@ -30,7 +30,6 @@ public class AvatarSpawner : MonoBehaviour {
         switch (key)
         {
             case "Treasure":
-                avatarRef.AddComponent<PlayerInteraction>();
                 avatarRef.GetComponent<BotControlScript>().enabled = false;
                 break;
             case "Prueba":

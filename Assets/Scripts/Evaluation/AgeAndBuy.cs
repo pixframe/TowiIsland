@@ -222,6 +222,8 @@ public class AgeAndBuy : MonoBehaviour {
         evaluationController.SaveBuyTicketProgress(nameOfPlayer, placeOfPlayer, dateOfToday);
     }
 
+
+
     //In this function we call the level of dificulty to change the possible diffiicult of things
     void PrepareTheBuyPart(int difficult){
         switch (difficult)

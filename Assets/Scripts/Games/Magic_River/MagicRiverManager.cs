@@ -961,7 +961,7 @@ public class MagicRiverManager : MonoBehaviour {
         }
         else
         {
-            if (totalErrors < 2)
+            if (CanPass(totalErrors, specificBadAnswer))
             {
                 passLevels++;
                 levelCategorizer += LevelDifficultyChange(totalLevels);
@@ -970,10 +970,23 @@ public class MagicRiverManager : MonoBehaviour {
             {
                 levelCategorizer -= LevelDifficultyChange(totalLevels);
             }
+
             levelCategorizer = Mathf.Clamp(levelCategorizer, 0, totalLevels - 1);
             GetDataJustForLevel(levelCategorizer);
         }
         PrepareAnotherGame();
+    }
+
+    public bool CanPass(int numberOfErrors, int numberOfTargetErrors)
+    {
+        if (numberOfErrors < 2 && numberOfTargetErrors < 1)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     void PrepareAnotherGame()

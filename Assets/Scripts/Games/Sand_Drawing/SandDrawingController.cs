@@ -912,49 +912,41 @@ public class SandDrawingController : MonoBehaviour {
         float percentageOff = (blackOverFilled * 100) / drawFull;
         float fillPercentage = (blackFilled * 100) / blackToFill;
         accuracyPercentage += fillPercentage;
-        bool tooMuchOut = false;
-        bool passable = false;
         accuracies.Add(fillPercentage);
         overdraws.Add(percentageOff);
 
-        if (fillPercentage > 60)
-        {
-            passable = true;
-            showStar = true;
-            reapeatExercise = false;
-        }
-        else
-        {
-            reapeatExercise = true;
-            showStar = false;
-        }
-
-        if (percentageOff <= 70)
-        {
-            tooMuchOut = false;
-        }
-        else
-        {
-            tooMuchOut = true;
-            passable = false;
-            showStar = false;
-            reapeatExercise = true;
-        }
+        bool passable = IsWellMade(fillPercentage, percentageOff);
 
         ocean.GetComponent<Animator>().enabled = true;
-        LevelUp(passable, tooMuchOut);
+        LevelUp(passable);
         assayIndex++;
 
     }
 
-    void LevelUp(bool isPassable, bool isWellLimited)
+    public bool IsWellMade(float fillPercentage, float outPercentage)
+    {
+        if (fillPercentage >= 60)
+        {
+            if (outPercentage <= 70)
+            {
+                showStar = true;
+                reapeatExercise = false;
+                return true;
+            }
+        }
+        reapeatExercise = true;
+        showStar = false;
+        return false;
+    }
+
+    void LevelUp(bool isPassable)
     {
         switch (typeOfGameToPlay)
         {
             case TypeOfGame.Fill:
                 if (!sessionManager.activeKid.sandFirst && sessionManager.activeKid.sandLevelSet)
                 {
-                    if (isPassable && !isWellLimited)
+                    if (isPassable)
                     {
                         levelFill++;
                         passLevels++;
@@ -968,7 +960,7 @@ public class SandDrawingController : MonoBehaviour {
                 else
                 {
                     reapeatExercise = false;
-                    if (isPassable && !isWellLimited)
+                    if (isPassable)
                     {
                         passLevels++;
                         levelFill += LevelDifficultyChange(totalLevelsNormal, assayIndex + 1);
@@ -983,7 +975,7 @@ public class SandDrawingController : MonoBehaviour {
             case TypeOfGame.Completion:
                 if (!sessionManager.activeKid.sandFirst && sessionManager.activeKid.sandLevelSet)
                 {
-                    if (isPassable && !isWellLimited)
+                    if (isPassable)
                     {
                         levelCompletion++;
                         passLevels++;
@@ -996,7 +988,7 @@ public class SandDrawingController : MonoBehaviour {
                 else
                 {
                     reapeatExercise = false;
-                    if (isPassable && !isWellLimited)
+                    if (isPassable)
                     {
                         passLevels++;
                         levelCompletion += LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex + 2));
@@ -1011,7 +1003,7 @@ public class SandDrawingController : MonoBehaviour {
             case TypeOfGame.Identify:
                 if (!sessionManager.activeKid.sandFirst && sessionManager.activeKid.sandLevelSet)
                 {
-                    if (isPassable && !isWellLimited)
+                    if (isPassable)
                     {
                         levelIdentyfy++;
                         passLevels++;
@@ -1024,7 +1016,7 @@ public class SandDrawingController : MonoBehaviour {
                 else
                 {
                     reapeatExercise = false;
-                    if (isPassable && !isWellLimited)
+                    if (isPassable)
                     {
                         passLevels++;
                         levelIdentyfy += LevelDifficultyChange(totalSpecialLevels, AssaysOfHabilityToEvaluate(assayIndex + 2));

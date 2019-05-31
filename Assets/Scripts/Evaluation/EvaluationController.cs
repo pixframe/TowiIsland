@@ -28,7 +28,6 @@ public class EvaluationController : MonoBehaviour
     {
         sessionManager = FindObjectOfType<SessionManager>();
         ageOfTheCurrentPlayer = sessionManager.activeKid.age;
-        Debug.Log(ageOfTheCurrentPlayer);
         EvaluationController[] evas = FindObjectsOfType<EvaluationController>();
         if (evas.Length > 1)
         {
@@ -396,7 +395,7 @@ public class EvaluationController : MonoBehaviour
         saveHandler.AddLevelData("arrange_time", Mathf.Round(secctionTime));
         saveHandler.AddLevelData("arrange_primacy", (firstPercentage / 3));
         saveHandler.AddLevelData("arrange_recence", (lastpercentage / 3));
-        saveHandler.AddLevelData("arrange_perc_correct", ((totalCorrects / (numberOfAssays * nOfStimulus))*100f));
+        saveHandler.AddLevelData("arrange_perc_correct", GetPercentage(totalCorrects, (numberOfAssays * nOfStimulus)));
         for (int i = 0; i < 2; i++)
         {
             saveHandler.AddLevelData("arrange_storage_efficency" + (i+1).ToString(), goodReapeted[i].Count);
@@ -441,6 +440,12 @@ public class EvaluationController : MonoBehaviour
     {
         yield return new WaitUntil(() => isDataSend);
         GoToNextScene("NewLogin");
+    }
+
+    public float GetPercentage(int playerValue, int maxValue)
+    {
+        float division = (float)playerValue / (float)maxValue;
+        return division *= 100f;
     }
 
     public void DataIsSend()
@@ -506,7 +511,7 @@ public class EvaluationController : MonoBehaviour
     //This function check the level of dificulty of the test according to the input of the age
     public int DifficultyLevel()
     {    
-        if (ageOfTheCurrentPlayer < 6)
+        if (ageOfTheCurrentPlayer < 7)
         {
             return 0;
         }

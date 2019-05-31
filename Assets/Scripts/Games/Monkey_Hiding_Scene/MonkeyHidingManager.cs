@@ -535,7 +535,6 @@ public class MonkeyHidingManager : MonoBehaviour {
         }
         else
         {
-            Debug.Log($"object to find is {objectToFind} object grabbed is {name}");
             if (objectToFind == name)
             {
                 numberOfObjectsToFind--;
@@ -748,7 +747,6 @@ public class MonkeyHidingManager : MonoBehaviour {
             {
                 int randomito = Random.Range(0, numberOfObjects);
                 instructionText.text = $"{stringsToShow[8]} {stringOfObjects[stimulusNumbers[randomito]]}";
-                Debug.Log($"you have to find {finalStimulus[randomito].name}");
                 audioManager.PlayClip(instructionsClips[8], stimulusAudioClip[stimulusNumbers[randomito]]);
                 objectToFind = finalStimulus[randomito].name;
                 numberOfObjectToFind = stimulusNumbers[randomito];

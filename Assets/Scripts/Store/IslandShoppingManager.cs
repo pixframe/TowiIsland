@@ -124,7 +124,8 @@ public class IslandShoppingManager : MonoBehaviour {
 
     void CloseTheDeal(int objectToActivate)
     {
-        if (kiwiAmout >= IslandPrices[objectToActivate])
+
+        if (HasEnoughMoneyToBuy(IslandPrices[objectToActivate], kiwiAmout))
         {
             HidePanels();
             infoPanel.SetActive(true);
@@ -156,6 +157,11 @@ public class IslandShoppingManager : MonoBehaviour {
             yesButton.onClick.RemoveAllListeners();
             yesButton.onClick.AddListener(ViewPanels);
         }
+    }
+
+    public bool HasEnoughMoneyToBuy(int costOfObject, int kiwisOfPlayer)
+    {
+        return costOfObject <= kiwisOfPlayer;
     }
 
     void ViewPanels()
