@@ -229,7 +229,15 @@ public class MenuManager : MonoBehaviour {
 
     void NoInternetAvailableLogin()
     {
-        DateTime lastSession = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Time_Were), DateTimeFormatInfo.InvariantInfo);
+        DateTime lastSession;
+        if (PlayerPrefs.GetString(Keys.Last_Time_Were) == "")
+        {
+            lastSession = DateTime.Today.Subtract(TimeSpan.FromDays(1));
+        }
+        else
+        {
+            lastSession = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Time_Were), DateTimeFormatInfo.InvariantInfo);
+        }
         Debug.Log($"Last time in internte was {lastSession.ToUniversalTime()} and today is { DateTime.Today.ToUniversalTime()} compare to today is {DateTime.Compare(DateTime.Today, lastSession)}");
         if(DateTime.Compare(DateTime.Today, lastSession) >= 0) 
         {
@@ -877,6 +885,7 @@ public class MenuManager : MonoBehaviour {
         logoPushes = 0;
         configMenu.backButton.onClick.RemoveAllListeners();
         configMenu.backButton.onClick.AddListener(ShowGameMenu);
+        configMenu.versionText.text = $"V. {Application.version}";
     }
 
     void ShowLenguages()
@@ -1537,6 +1546,7 @@ struct ConfigMenu
     public Button backButton;
     public Button logoButton;
     public Text textRoute;
+    public Text versionText;
 
     public ConfigMenu(GameObject mainPanel)
     {
@@ -1549,6 +1559,7 @@ struct ConfigMenu
         backButton = panel.transform.GetChild(2).GetComponent<Button>();
         logoButton = panel.transform.GetChild(3).GetComponent<Button>();
         textRoute = panel.transform.GetChild(4).GetComponent<Text>();
+        versionText = panel.transform.Find("Version Number Text").GetComponent<Text>();
     }
 }
 
