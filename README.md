@@ -20,31 +20,27 @@ What things you need to install the software and how to install them
 
 Knowladge in C#/Unity3D
 Unity 2018.2.6f1
+
 ```
 
 
 ## Installing
 
-
-A step by step series of examples that tell you how to get a development env running
-
-
-Say what the step will be
-
-
-Get a clone of the project
+Get a clone of the project, save the repository on a local folder
 
 ```
 
-git clone url
+git clone https://github.com/pixframe/TowiIsland.git
+
 ```
-
-
-Save the repository on a local folder
 
 Open Unity and select open
 
+![enter image description here](https://lh3.googleusercontent.com/kNelsG9dC9zzPGoDI23WXT2J-i5289FMevwTdDYTysHns8JskuqZKlPNvtgk2D-4FDu76N1azSg)
+
 Select the folder where you clone the repository
+
+![enter image description here](https://lh3.googleusercontent.com/TLabiPiB4YAQfaTNlJIuelUJ-9As5CCUeeJcKLiZWh38QlVfRm2QaU5bGPBq6JJ5KkhmBy2T3d8)
 
 That will gives you a working copy that you will able to edit
 
