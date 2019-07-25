@@ -27,6 +27,9 @@ public class MenuManager : MonoBehaviour {
     public Button escapeButton;
     GameMenu gameMenuObject;
 
+    public GameObject registerCanvas;
+    RegisterMenu registerMenu;
+
     [Header("Log in UI")]
     public GameObject logInMenu;
     public GameObject logAndSingPanel;
@@ -198,7 +201,7 @@ public class MenuManager : MonoBehaviour {
                     }
                     else
                     {
-                        ShowLogIn();
+                        ShowFirstMenu();
                     }
                 }
                 else
@@ -210,7 +213,7 @@ public class MenuManager : MonoBehaviour {
             }
             else
             {
-                ShowLogIn();
+                ShowFirstMenu();
             }
         }
         else
@@ -271,7 +274,7 @@ public class MenuManager : MonoBehaviour {
                 }
                 else
                 {
-                    ShowLogIn();
+                    ShowFirstMenu();
                 }
             }
             else
@@ -300,7 +303,7 @@ public class MenuManager : MonoBehaviour {
                 }
                 else
                 {
-                    ShowLogIn();
+                    ShowFirstMenu();
                 }
             }
         }
@@ -327,6 +330,8 @@ public class MenuManager : MonoBehaviour {
         UpdateTexts();
         gameMenuObject = new GameMenu(gameCanvas, this);
         shopMenu = new ShopMenu(shopCanvas, this);
+        registerMenu = new RegisterMenu(registerCanvas, this);
+
         ButtonSetUp();
 
         if (FindObjectOfType<DemoKey>())
@@ -388,7 +393,7 @@ public class MenuManager : MonoBehaviour {
     {
         gotAccountButton.onClick.AddListener(LogInMenuActive);
         createAccountButton.onClick.AddListener(CreateAccount);
-        singInBackButton.onClick.AddListener(ShowLogIn);
+        singInBackButton.onClick.AddListener(ShowFirstMenu);
         logInButton.onClick.AddListener(TryToLogIn);
         forgotPassButton.onClick.AddListener(ForgotPassword);
         returnLogInButton.onClick.AddListener(GoBack);
@@ -398,7 +403,6 @@ public class MenuManager : MonoBehaviour {
         selectionKidBackButton.onClick.AddListener(CloseKids);
         newKidBackButton.onClick.AddListener(CloseKids);
         subscribeAnotherCountButton.onClick.AddListener(CloseSession);
-        warningButton.onClick.AddListener(HideWarning);
         addKidButton.onClick.AddListener(AddKidShower);
         changeProfileButton.onClick.AddListener(SetKidsProfiles);
         newKidButton.onClick.AddListener(CreateAKid);
@@ -570,8 +574,6 @@ public class MenuManager : MonoBehaviour {
             yield return null;
         }
 
-        Debug.Log($"this is the level in the lava game {sessionManager.activeKid.lavaLevel} and the current user is {sessionManager.activeUser.username}");
-
         PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString(DateTimeFormatInfo.InvariantInfo));
         HideAllCanvas();
         if (key)
@@ -597,13 +599,20 @@ public class MenuManager : MonoBehaviour {
     }
 
     //we show the log in menu for if the player has not sing in on log in
-    public void ShowLogIn()
+    public void ShowFirstMenu()
     {
         HideAllCanvas();
         gameMenuObject.ShowFirstMenu();
+        registerMenu.HideAll();
         //logInMenu.SetActive(true);
         //accountCanvas.SetActive(true);
         ShowEscapeButton();
+    }
+
+    public void ShowLogIn()
+    {
+        registerMenu.ShowLoginPanel();
+        gameMenuObject.HideThisMenu();
     }
 
     //we give the player the log in format
@@ -761,8 +770,8 @@ public class MenuManager : MonoBehaviour {
         }
         else
         {
-            continueEvaluationButton.onClick.AddListener(ShowLogIn);
-            subscribeBackButton.onClick.AddListener(ShowLogIn);
+            continueEvaluationButton.onClick.AddListener(ShowFirstMenu);
+            subscribeBackButton.onClick.AddListener(ShowFirstMenu);
         }
         escapeEvaluationButton.onClick.AddListener(EscapeApplication);
     }
@@ -974,6 +983,30 @@ public class MenuManager : MonoBehaviour {
         }
     }
 
+    public void TryALogIn(string email, string password)
+    {
+        registerMenu.HideAll();
+        var verificationUtility = new EmailVerificationUtility();
+        bool isAccountReady = verificationUtility.IsValidMail(email);
+        bool isPassReady = password != "";
+        if (isAccountReady)
+        {
+            if (isPassReady)
+            {
+                ShowLoading();
+                logInScript.PostLogin(email, password);
+            }
+            else
+            {
+                ShowWarning(0, registerMenu.ShowLoginPanel);
+            }
+        }
+        else
+        {
+            ShowWarning(1, registerMenu.ShowLoginPanel);
+        }
+    }
+
     //this method creates a user and a kid
     void CreateUser()
     {
@@ -1163,7 +1196,7 @@ public class MenuManager : MonoBehaviour {
 
         emailLogInInput.text = null;
         passLogInInput.text = null;
-        ShowLogIn();
+        ShowFirstMenu();
     }
 
     //this will send the app to terms and conditions
@@ -1196,7 +1229,7 @@ public class MenuManager : MonoBehaviour {
         PlayerPrefs.SetInt(Keys.Logged_In, 0);
         PlayerPrefs.SetString("sessions", "");
         PlayerPrefs.SetInt(Keys.Logged_Session, 0);
-        ShowLogIn();
+        ShowFirstMenu();
         sessionManager.StartAgain();
         alreadyLogged = false;
     }
@@ -1306,6 +1339,23 @@ public class MenuManager : MonoBehaviour {
         field.placeholder.GetComponent<Text>().text = lines[index];
     }
 
+    public void ShowWarning(int numberOfWarning, UnityEngine.Events.UnityAction action)
+    {
+        warningPanel.SetActive(true);
+        warningText.text = warningLines[numberOfWarning];
+        /*if (numberOfWarning == 8)
+        {
+            ShowGameMenu();
+        }*/
+
+        warningButton.onClick.RemoveAllListeners();
+        warningButton.onClick.AddListener(()=>
+        {
+            HideWarning();
+            action();
+        });
+    }
+
     //This will display a warning and show what was the error if that will occure
     public void ShowWarning(int numberOfWarning)
     {
@@ -1315,6 +1365,9 @@ public class MenuManager : MonoBehaviour {
         {
             ShowGameMenu();
         }*/
+
+        warningButton.onClick.RemoveAllListeners();
+        warningButton.onClick.AddListener(HideWarning);
     }
 
     public void GoToWebSubscriptions()
@@ -1609,12 +1662,183 @@ class KidProfileCanvas
 
 class RegisterMenu
 {
+    MenuManager manager;
+
     public GameObject gameObject;
 
-    GameObject logInMenu;
+    public GameObject division;
+
+    public GameObject add0;
+    public GameObject add1;
+
+    public GameObject logInMenu;
+    public InputPanels inputEmail;
+    public InputPanels inputPass;
+    public Button forgotPassButton;
+    public Button logInButton;
+    public Text notRegisterText;
+    public Button goToSingInButton;
+
+    public GameObject signInMenu;
+    public InputPanels inputEmailDad;
+    public InputPanels inputPassDad;
+    public InputPanels inputPassAgain;
+    public Button termsAndConditionsButton;
+    public InputPanels inputName;
+    public Text birthdateText;
+    public InputField dayInput;
+    public InputField monthInput;
+    public InputField yearInput;
+    public Text addKidLaterText;
+    public Button signInButton;
+
+    public GameObject tryPanel;
+    public Button[] buttonsOfAges;
+
+    public Button returnButton;
+
+    public Text woodText;
+
+    public RegisterMenu(GameObject mainMenu, MenuManager menu)
+    {
+        manager = menu;
+        gameObject = mainMenu;
+        var mainPanel = gameObject.transform.Find("Main Panel");
+
+        division = mainPanel.Find("Division").gameObject;
+
+        add0 = mainPanel.Find("Add 0").gameObject;
+        add1 = mainPanel.Find("Add 1").gameObject;
+
+        var logInPanel = mainPanel.Find("Log In Panel");
+        logInMenu = logInPanel.gameObject;
+        inputEmail = new InputPanels(logInPanel.Find("Input E-mail"));
+        inputPass = new InputPanels(logInPanel.Find("Input Password"));
+        forgotPassButton = logInPanel.Find("Forgot Pass Button").GetComponent<Button>();
+        logInButton = logInPanel.Find("Button Log In").GetComponent<Button>();
+        notRegisterText = logInPanel.Find("Not Sign in Text").GetComponent<Text>();
+        goToSingInButton = logInPanel.Find("Button Sign In").GetComponent<Button>();
+
+        var signInPanel = mainPanel.Find("Sing In Panel");
+        signInMenu = signInPanel.gameObject;
+        inputEmailDad = new InputPanels(signInPanel.Find("Input E-mail"));
+        inputPassDad = new InputPanels(signInPanel.Find("Input Password"));
+        inputPassAgain = new InputPanels(signInPanel.Find("Input Password Confirm"));
+        termsAndConditionsButton = signInPanel.Find("Terms And Conditions Button").GetComponent<Button>();
+        inputName = new InputPanels(signInPanel.Find("Input Name"));
+        var birthPanel = signInPanel.Find("Input BirthDate");
+        birthdateText = birthPanel.Find("Birth Date Text").GetComponent<Text>();
+        dayInput = birthPanel.Find("Day Input").GetComponent<InputField>();
+        monthInput = birthPanel.Find("Month Input").GetComponent<InputField>();
+        yearInput = birthPanel.Find("Year Input").GetComponent<InputField>();
+        addKidLaterText = signInPanel.Find("Can Add Text").GetComponent<Text>();
+        signInButton = signInPanel.Find("Button Sign In").GetComponent<Button>();
+
+        tryPanel = mainPanel.Find("Try Panel").gameObject;
+        buttonsOfAges = new Button[tryPanel.transform.childCount];
+        for (int i = 0; i < tryPanel.transform.childCount; i++)
+        {
+            buttonsOfAges[i] = tryPanel.transform.GetChild(i).GetComponent<Button>();
+        }
+
+        returnButton = mainPanel.transform.Find("Return Button").GetComponent<Button>();
+
+        var logoPanel = gameObject.transform.Find("Logo Panel");
+        woodText = logoPanel.transform.GetComponentInChildren<Text>();
+
+        HideAll();
+    }
 
 
-    GameObject signInMenu;
+    void ShouldShowAdds(bool showAdds)
+    {
+        add0.gameObject.SetActive(showAdds);
+        add1.gameObject.SetActive(showAdds);
+    }
+
+    public void HideAll()
+    {
+        gameObject.SetActive(false);
+    }
+
+    void HideAllPanels()
+    {
+        logInMenu.SetActive(false);
+        signInMenu.SetActive(false);
+        tryPanel.SetActive(false);
+    }
+
+    public void ShowLoginPanel()
+    {
+        gameObject.SetActive(true);
+        const string pathOfLoginMenuTetxs = "Login/LoginMenu";
+        HideAllPanels();
+        ShouldShowAdds(true);
+        logInMenu.SetActive(true);
+        var texts = TextReader.TextsToSet(pathOfLoginMenuTetxs);
+
+        woodText.text = texts[0];
+        add0.GetComponentInChildren<Text>().text = texts[1];
+        add1.GetComponentInChildren<Text>().text = texts[2];
+
+        inputEmail.inputNameText.text = texts[3];
+        inputPass.inputNameText.text = texts[4];
+        forgotPassButton.GetComponent<Text>().text = texts[5];
+        logInButton.GetComponentInChildren<Text>().text = texts[6];
+        notRegisterText.text = texts[7];
+        goToSingInButton.GetComponentInChildren<Text>().text = texts[8];
+
+        logInButton.onClick.RemoveAllListeners();
+        logInButton.onClick.AddListener(() => manager.TryALogIn(inputEmail.field.text, inputPass.field.text));
+
+        goToSingInButton.onClick.RemoveAllListeners();
+        goToSingInButton.onClick.AddListener(ShowSignInPanel);
+
+        returnButton.onClick.RemoveAllListeners();
+        returnButton.onClick.AddListener(manager.ShowFirstMenu);
+
+    }
+
+    public void ShowSignInPanel()
+    {
+        gameObject.SetActive(true);
+        const string pathOfLoginMenuTetxs = "Login/LoginMenu";
+        HideAllPanels();
+        ShouldShowAdds(true);
+        signInMenu.SetActive(true);
+        var texts = TextReader.TextsToSet(pathOfLoginMenuTetxs);
+
+        woodText.text = texts[0];
+        add0.GetComponentInChildren<Text>().text = texts[1];
+        add1.GetComponentInChildren<Text>().text = texts[2];
+
+        inputEmailDad.inputNameText.text = texts[3];
+        inputPassDad.inputNameText.text = texts[4];
+        inputPassAgain.inputNameText.text = texts[5];
+        termsAndConditionsButton.GetComponent<Text>().text = texts[6];
+
+        inputName.inputNameText.text = texts[7];
+        birthdateText.text = texts[8];
+        dayInput.placeholder.GetComponent<Text>().text = texts[9];
+        monthInput.placeholder.GetComponent<Text>().text = texts[10];
+        yearInput.placeholder.GetComponent<Text>().text = texts[11];
+        addKidLaterText.text = texts[12];
+        signInButton.GetComponentInChildren<Text>().text = texts[13];
+    }
+}
+
+class InputPanels
+{
+    public GameObject gameObject;
+    public Text inputNameText;
+    public InputField field;
+
+    public InputPanels(Transform panel)
+    {
+        gameObject = panel.gameObject;
+        inputNameText = panel.Find("Text").GetComponent<Text>();
+        field = panel.Find("InputField").GetComponent<InputField>();
+    }
 }
 
 class GameMenu
@@ -1671,6 +1895,12 @@ class GameMenu
         SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
         SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
         SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
+
+        gamesButton.onClick.RemoveAllListeners();
+        evaluationButton.onClick.RemoveAllListeners();
+        buyButton.onClick.RemoveAllListeners();
+
+        gamesButton.onClick.AddListener(manager.ShowLogIn);
     }
 
     public void ShowThisMenu()
@@ -1688,12 +1918,28 @@ class GameMenu
         SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
         SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
         SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
+
+        singOutButton.gameObject.SetActive(true);
+        settingsButton.gameObject.SetActive(true);
+        aboutButton.gameObject.SetActive(true);
+        kidProfile.gameObject.SetActive(true);
+
+        tryLogo.SetActive(false);
+        logoIcon.SetActive(true);
     }
 
     public void ShowThisMenu(bool isActiveTheCurrentKid, bool isInTrial, bool isEvaluationAvailable, bool isLeftTrial, bool isDemo)
     {
         mainCanvas.SetActive(true);
         SetDynamicButtonFunctions(isActiveTheCurrentKid, isInTrial, isEvaluationAvailable, isLeftTrial, isDemo);
+
+        singOutButton.gameObject.SetActive(true);
+        settingsButton.gameObject.SetActive(true);
+        aboutButton.gameObject.SetActive(true);
+        kidProfile.gameObject.SetActive(true);
+
+        tryLogo.SetActive(false);
+        logoIcon.SetActive(true);
     }
 
     public void HideThisMenu()

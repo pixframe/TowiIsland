@@ -5,7 +5,8 @@ using Boomlagoon.JSON;
 using UnityEngine.Analytics;
 using UnityEngine.Networking;
 
-public class LogInScript : MonoBehaviour {
+public class LogInScript : MonoBehaviour
+{
     #region Variables
     //This urls are set in the NewLogin Scene
     string loginUrl = Keys.Api_Web_Key + "api/login/";
@@ -26,13 +27,14 @@ public class LogInScript : MonoBehaviour {
 
     #endregion
     // Use this for initialization
-    void Awake ()
+    void Awake()
     {
         sessionManager = FindObjectOfType<SessionManager>();
         menuController = GetComponent<MenuManager>();
-	}
-	
-    public string Md5SUm(string stringToCode) {
+    }
+
+    public string Md5SUm(string stringToCode)
+    {
 
         System.Text.UTF8Encoding uTF8 = new System.Text.UTF8Encoding();
         byte[] bytes = uTF8.GetBytes(stringToCode);
@@ -42,20 +44,23 @@ public class LogInScript : MonoBehaviour {
 
         string hashString = "";
 
-        for (int i = 0; i < hashBytes.Length; i++) {
+        for (int i = 0; i < hashBytes.Length; i++)
+        {
             hashString += System.Convert.ToString(hashBytes[i], 16).PadLeft(2, '0');
         }
 
         return hashString.PadLeft(32, '0');
     }
 
-    public void PostLogin(string parentMail, string currentPasword) {
+    public void PostLogin(string parentMail, string currentPasword)
+    {
         username = parentMail;
         password = currentPasword;
         StartCoroutine(PostLoginData());
     }
 
-    IEnumerator PostLoginData() {
+    IEnumerator PostLoginData()
+    {
         Debug.Log("login in");
         string hash = password;//Md5SUm(password);
         string post_url = loginUrl;
@@ -75,23 +80,21 @@ public class LogInScript : MonoBehaviour {
             Debug.Log(request.downloadHandler.text);
             if (request.isNetworkError)
             {
-                menuController.LogInMenuActive();
-                menuController.ShowWarning(9);
+                menuController.ShowWarning(9, menuController.ShowLogIn);
             }
             else if (request.isHttpError)
             {
                 Debug.Log("this is a error");
-                menuController.LogInMenuActive();
                 JSONObject jsonObj = JSONObject.Parse(request.downloadHandler.text);
                 Debug.Log(request.error);
                 string error = jsonObj.GetString("status");
                 if (error == "USER_NOT_FOUND")
                 {
-                    menuController.ShowWarning(2);
+                    menuController.ShowWarning(2, menuController.ShowLogIn);
                 }
                 else
                 {
-                    menuController.ShowWarning(3);
+                    menuController.ShowWarning(3, menuController.ShowLogIn);
                 }
                 Debug.Log(error);
             }
@@ -181,7 +184,7 @@ public class LogInScript : MonoBehaviour {
         }
         else
         {
-            menuController.ShowLogIn();
+            menuController.ShowFirstMenu();
         }
     }
 
@@ -448,7 +451,7 @@ public class LogInScript : MonoBehaviour {
                         }
                     }
                 }
-                
+
             }
             PlayerPrefs.SetInt(Keys.Evaluations_Saved, dataNotSavedByProblems);
         }
