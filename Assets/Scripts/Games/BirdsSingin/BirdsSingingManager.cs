@@ -11,6 +11,7 @@ public class BirdsSingingManager : MonoBehaviour {
     DemoKey key;
     PauseTheGame pauser;
     LevelSaver levelSaver;
+    NeedAudioMenu needAudioMenu;
 
     //These are the public objects needed to play the scripts
     [Header("Game Elements")]
@@ -149,6 +150,13 @@ public class BirdsSingingManager : MonoBehaviour {
         audioManager = FindObjectOfType<AudioManager>();
         readyButton.gameObject.SetActive(true);
         FillList();
+        instructionPanel.SetActive(false);
+        needAudioMenu = FindObjectOfType<NeedAudioMenu>();
+        needAudioMenu.SetHideButtonFunction(Init);
+    }
+
+    void Init()
+    {
         if (firstTime == 0)
         {
             TellTheStory();
@@ -161,6 +169,7 @@ public class BirdsSingingManager : MonoBehaviour {
             pauser.howToPlayButton.onClick.AddListener(TellTheStory);
             pauser.playButton.onClick.AddListener(TellToHearTheNests);
         }
+        needAudioMenu.gameObject.SetActive(false);
     }
 
     // Update is called once per frame

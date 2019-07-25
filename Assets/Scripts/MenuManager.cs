@@ -408,6 +408,8 @@ public class MenuManager : MonoBehaviour {
         configMenu.spanishLanguageButton.onClick.AddListener(() => SetLanguageOfGame(configMenu.spanishLanguageButton.transform.GetSiblingIndex()));
         configMenu.automaticButton.onClick.AddListener(SetDeviceLanguage);
         configMenu.logoButton.onClick.AddListener(ShowTextRoute);
+        configMenu.updateDataButton.onClick.AddListener(logInScript.UpdateData);
+
     }
 
     #endregion
@@ -440,19 +442,19 @@ public class MenuManager : MonoBehaviour {
             {
                 GameObject objectToInstance = Instantiate(miniKidCanvas, miniKidContainer.transform);
                 kidos.Add(new KidProfileCanvas(objectToInstance));
-                float addableSize = kidos[i].mainCanvas.GetComponent<RectTransform>().sizeDelta.x * 2f;
+                float addableSize = kidos[i].gameObject.GetComponent<RectTransform>().sizeDelta.x * 2f;
                 miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(miniKidContainer.GetComponent<RectTransform>().sizeDelta.x + addableSize, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
-                kidos[i].mainCanvas.GetComponent<RectTransform>().parent = miniKidContainer.GetComponent<RectTransform>();
+                kidos[i].gameObject.GetComponent<RectTransform>().parent = miniKidContainer.GetComponent<RectTransform>();
                 if (i > 0)
                 {
-                    Vector2 pos = kidos[i - 1].mainCanvas.GetComponent<RectTransform>().localPosition;
+                    Vector2 pos = kidos[i - 1].gameObject.GetComponent<RectTransform>().localPosition;
                     float positionOfCanvitas = pos.x + addableSize;
-                    kidos[i].mainCanvas.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, pos.y);
+                    kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, pos.y);
                 }
                 else
                 {
                     float positionOfCanvitas = addableSize / 2;
-                    kidos[i].mainCanvas.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, kidos[i].mainCanvas.GetComponent<RectTransform>().localPosition.y);
+                    kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, kidos[i].gameObject.GetComponent<RectTransform>().localPosition.y);
                 }
                 kidos[i].SetKidName(sessionManager.activeUser.kids[i].name);
                 string parentkey = sessionManager.activeUser.kids[i].userkey;
@@ -598,8 +600,9 @@ public class MenuManager : MonoBehaviour {
     public void ShowLogIn()
     {
         HideAllCanvas();
-        logInMenu.SetActive(true);
-        accountCanvas.SetActive(true);
+        gameMenuObject.ShowFirstMenu();
+        //logInMenu.SetActive(true);
+        //accountCanvas.SetActive(true);
         ShowEscapeButton();
     }
 
@@ -880,7 +883,6 @@ public class MenuManager : MonoBehaviour {
         configMenu.panel.SetActive(true);
         configMenu.languageButtonHandler.SetActive(false);
         configMenu.logoButton.gameObject.SetActive(true);
-        configMenu.textRoute.gameObject.SetActive(false);
         configMenu.languageButton.gameObject.SetActive(true);
         logoPushes = 0;
         configMenu.backButton.onClick.RemoveAllListeners();
@@ -901,8 +903,6 @@ public class MenuManager : MonoBehaviour {
         logoPushes++;
         if (logoPushes > 11 && logoPushes < 13)
         {
-            configMenu.textRoute.gameObject.SetActive(true);
-            configMenu.textRoute.text = $"{Application.persistentDataPath}/{sessionManager.activeKid.id}_evaluation_local_save.json";
             TextEditor textEditor = new TextEditor
             {
                 text = Application.persistentDataPath
@@ -1075,19 +1075,19 @@ public class MenuManager : MonoBehaviour {
             {
                 GameObject theObject = Instantiate(miniKidCanvas, miniKidContainer.transform);
                 kidos.Add(new KidProfileCanvas(theObject));
-                float addableSize = kidos[i].mainCanvas.GetComponent<RectTransform>().sizeDelta.x * 2f;
+                float addableSize = kidos[i].gameObject.GetComponent<RectTransform>().sizeDelta.x * 2f;
                 miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(miniKidContainer.GetComponent<RectTransform>().sizeDelta.x + addableSize, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
-                kidos[i].mainCanvas.GetComponent<RectTransform>().parent = miniKidContainer.GetComponent<RectTransform>();
+                kidos[i].gameObject.GetComponent<RectTransform>().parent = miniKidContainer.GetComponent<RectTransform>();
                 if (i > 0)
                 {
-                    Vector2 pos = kidos[i - 1].mainCanvas.GetComponent<RectTransform>().localPosition;
+                    Vector2 pos = kidos[i - 1].gameObject.GetComponent<RectTransform>().localPosition;
                     float positionOfCanvitas = pos.x + addableSize;
-                    kidos[i].mainCanvas.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, pos.y);
+                    kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, pos.y);
                 }
                 else
                 {
                     float positionOfCanvitas = addableSize / 2;
-                    kidos[i].mainCanvas.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, kidos[i].mainCanvas.GetComponent<RectTransform>().localPosition.y);
+                    kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, kidos[i].gameObject.GetComponent<RectTransform>().localPosition.y);
                 }
                 kidos[i].SetKidName(sessionManager.activeUser.kids[i].name);
                 string parentkey = sessionManager.activeUser.kids[i].userkey;
@@ -1535,7 +1535,7 @@ public class MenuManager : MonoBehaviour {
     }
 }
 
-struct ConfigMenu
+class ConfigMenu
 {
     public GameObject panel;
     public Button languageButton;
@@ -1545,7 +1545,7 @@ struct ConfigMenu
     public Button automaticButton;
     public Button backButton;
     public Button logoButton;
-    public Text textRoute;
+    public Button updateDataButton;
     public Text versionText;
 
     public ConfigMenu(GameObject mainPanel)
@@ -1556,16 +1556,16 @@ struct ConfigMenu
         englishLanguageButton = languageButtonHandler.transform.GetChild(0).GetComponent<Button>();
         spanishLanguageButton = languageButtonHandler.transform.GetChild(1).GetComponent<Button>();
         automaticButton = languageButtonHandler.transform.GetChild(languageButtonHandler.transform.childCount - 1).GetComponent<Button>();
-        backButton = panel.transform.GetChild(2).GetComponent<Button>();
-        logoButton = panel.transform.GetChild(3).GetComponent<Button>();
-        textRoute = panel.transform.GetChild(4).GetComponent<Text>();
+        backButton = panel.transform.Find("Back Button").GetComponent<Button>();
+        logoButton = panel.transform.Find("Logo Button").GetComponent<Button>();
+        updateDataButton = panel.transform.Find("Upadte Button").GetComponent<Button>();
         versionText = panel.transform.Find("Version Number Text").GetComponent<Text>();
     }
 }
 
 class KidProfileCanvas
 {
-    public GameObject mainCanvas;
+    public GameObject gameObject;
     public Button buttonOfProfile;
     public Image avatarImage;
     public Image frameImage;
@@ -1574,11 +1574,11 @@ class KidProfileCanvas
 
     public KidProfileCanvas(GameObject canvas)
     {
-        mainCanvas = canvas;
-        buttonOfProfile = mainCanvas.GetComponent<Button>();
-        avatarImage = mainCanvas.transform.GetChild(0).GetComponent<Image>();
-        frameImage = mainCanvas.transform.GetChild(1).GetComponent<Image>();
-        billboardImage = mainCanvas.transform.GetChild(2).GetComponent<Image>();
+        gameObject = canvas;
+        buttonOfProfile = gameObject.GetComponent<Button>();
+        avatarImage = gameObject.transform.GetChild(0).GetComponent<Image>();
+        frameImage = gameObject.transform.GetChild(1).GetComponent<Image>();
+        billboardImage = gameObject.transform.GetChild(2).GetComponent<Image>();
         nameText = billboardImage.GetComponentInChildren<Text>();
     }
 
@@ -1607,11 +1607,22 @@ class KidProfileCanvas
     }
 }
 
+class RegisterMenu
+{
+    public GameObject gameObject;
+
+    GameObject logInMenu;
+
+
+    GameObject signInMenu;
+}
+
 class GameMenu
 {
     GameObject mainCanvas;
     MenuManager manager;
-    Image logoIcon;
+    public GameObject tryLogo;
+    public GameObject logoIcon;
     public Button gamesButton;
     public Button evaluationButton;
     public Button buyButton;
@@ -1620,20 +1631,46 @@ class GameMenu
     Button settingsButton;
     Button aboutButton;
 
+    const string pathOfFirstMenu = "Login/FirstMenu";
 
     public GameMenu(GameObject panel, MenuManager managerToRelay)
     {
         manager = managerToRelay;
         mainCanvas = panel;
-        logoIcon = mainCanvas.transform.GetChild(0).GetComponent<Image>();
-        gamesButton = mainCanvas.transform.GetChild(1).GetComponent<Button>();
-        evaluationButton = mainCanvas.transform.GetChild(2).GetComponent<Button>();
-        buyButton = mainCanvas.transform.GetChild(3).GetComponent<Button>();
-        kidProfile = new KidProfileCanvas(mainCanvas.transform.GetChild(4).gameObject);
-        singOutButton = mainCanvas.transform.GetChild(5).GetComponent<Button>();
-        settingsButton = mainCanvas.transform.GetChild(6).GetComponent<Button>();
-        aboutButton = mainCanvas.transform.GetChild(7).GetComponent<Button>();
+        tryLogo = mainCanvas.transform.Find("Try Logo").gameObject;
+        logoIcon = mainCanvas.transform.Find("Game Logo").gameObject;
+        gamesButton = mainCanvas.transform.Find("Games Button").GetComponent<Button>();
+        evaluationButton = mainCanvas.transform.Find("Evaluation Button").GetComponent<Button>();
+        buyButton = mainCanvas.transform.Find("Buy Button").GetComponent<Button>();
+        kidProfile = new KidProfileCanvas(mainCanvas.transform.Find("Change Kid Profile Button").gameObject);
+        singOutButton = mainCanvas.transform.Find("Sing Out Button").GetComponent<Button>();
+        settingsButton = mainCanvas.transform.Find("Settings Button").GetComponent<Button>();
+        aboutButton = mainCanvas.transform.Find("About Button").GetComponent<Button>();
         SetStaticButtonFuctions();
+    }
+
+    public void ShowFirstMenu()
+    {
+        var textsToSet = TextReader.TextsToSet(pathOfFirstMenu);
+
+        mainCanvas.SetActive(true);
+
+        gamesButton.GetComponentInChildren<Text>().text = textsToSet[0];
+        evaluationButton.GetComponentInChildren<Text>().text = textsToSet[1];
+        buyButton.GetComponentInChildren<Text>().text = textsToSet[2];
+        tryLogo.GetComponentInChildren<Text>().text = textsToSet[3];
+
+        tryLogo.SetActive(true);
+        logoIcon.SetActive(false);
+
+        singOutButton.gameObject.SetActive(false);
+        settingsButton.gameObject.SetActive(false);
+        aboutButton.gameObject.SetActive(false);
+        kidProfile.gameObject.SetActive(false);
+
+        SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
+        SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
+        SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
     }
 
     public void ShowThisMenu()

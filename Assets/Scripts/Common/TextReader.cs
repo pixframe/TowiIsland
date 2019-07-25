@@ -12,6 +12,14 @@ public class TextReader : MonoBehaviour {
     public static string[] addableStrings;
     public static string[] beforeStrings;
 
+    public static string[] TextsToSet(string path)
+    {
+        var stringToSplit = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}{path}").text;
+
+        return stringToSplit.Split('\n');
+        
+    }
+
     public static string[] TextsToShow(TextAsset asset)
     {
         String[] listToReturn;

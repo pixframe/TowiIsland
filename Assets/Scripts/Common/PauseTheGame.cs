@@ -64,6 +64,8 @@ public class PauseTheGame : MonoBehaviour {
         cancelButton.onClick.AddListener(GoBackGame);
         howToPlayButton.onClick.AddListener(HideTutorialButtons);
         playButton.onClick.AddListener(HideTutorialButtons);
+        HideAllPanels();
+
     }
 
     void PauseButton()

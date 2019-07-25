@@ -41,6 +41,12 @@ public class EvaluationController : MonoBehaviour
         }
         DontDestroyOnLoad(this.gameObject);
         saveHandler = GetComponent<ProgressHandler>();
+        var audioRemember = FindObjectOfType<NeedAudioMenu>();
+        audioRemember.SetHideButtonFunction(GoToSceneOne);
+    }
+
+    void GoToSceneOne()
+    {
         key = FindObjectOfType<DemoKey>();
         if (key == null)
         {
