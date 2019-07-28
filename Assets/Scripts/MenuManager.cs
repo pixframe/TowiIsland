@@ -31,40 +31,8 @@ public class MenuManager : MonoBehaviour {
     RegisterMenu registerMenu;
 
     [Header("Log in UI")]
-    public GameObject logInMenu;
-    public GameObject logAndSingPanel;
-    public GameObject accountCanvas;
-    public GameObject logInCanavas;
-    public GameObject singInCanvas;
     public GameObject kidsPanel;
     public GameObject warningPanel;
-
-    [Header("Account Manager UI")]
-    public Button gotAccountButton;
-    public Button createAccountButton;
-
-
-    [Header("Log in canvas UI")]
-    public InputField emailLogInInput;
-    public InputField passLogInInput;
-    public Button forgotPassButton;
-    public Button logInButton;
-    public Button returnLogInButton;
-
-    [Header("Sing In UI")]
-    public InputField dadMailInput;
-    public InputField dadPassInput;
-    public InputField dadPassRepeatInput;
-    public InputField kidNameInput;
-    public Text kidDateText;
-    public InputField kidDayInput;
-    public InputField kidMonthInput;
-    public InputField kidYearInput;
-    public Text kidMoreText;
-    public Text acceptTermsAndConditionText;
-    public Button termsAndConditionsButton;
-    public Button singInButton;
-    public Button singInBackButton;
 
     [Header("Kid Selector")]
     public GameObject miniKidCanvas;
@@ -391,14 +359,6 @@ public class MenuManager : MonoBehaviour {
     //here we set almost every button in the ui with the correspondent function to do
     void ButtonSetUp()
     {
-        gotAccountButton.onClick.AddListener(LogInMenuActive);
-        createAccountButton.onClick.AddListener(CreateAccount);
-        singInBackButton.onClick.AddListener(ShowFirstMenu);
-        logInButton.onClick.AddListener(TryToLogIn);
-        forgotPassButton.onClick.AddListener(ForgotPassword);
-        returnLogInButton.onClick.AddListener(GoBack);
-        singInButton.onClick.AddListener(CreateUser);
-        termsAndConditionsButton.onClick.AddListener(GoToTermsAndConditions);
         exitCredits.onClick.AddListener(ShowGameMenu);
         selectionKidBackButton.onClick.AddListener(CloseKids);
         newKidBackButton.onClick.AddListener(CloseKids);
@@ -522,10 +482,6 @@ public class MenuManager : MonoBehaviour {
     {
         gameMenuObject.HideThisMenu();
         shopMenu.HideThisMenu();
-        logInMenu.SetActive(false);
-        accountCanvas.SetActive(false);
-        logInCanavas.SetActive(false);
-        singInCanvas.SetActive(false);
         kidsPanel.SetActive(false);
         creditCanvas.SetActive(false);
         subscribeCanvas.SetActive(false);
@@ -534,6 +490,7 @@ public class MenuManager : MonoBehaviour {
         newKidPanel.SetActive(false);
         escapeButton.gameObject.SetActive(false);
         configMenu.panel.SetActive(false);
+        registerMenu.HideAll();
     }
 
     void UpdateKidInMenu()
@@ -615,20 +572,10 @@ public class MenuManager : MonoBehaviour {
         gameMenuObject.HideThisMenu();
     }
 
-    //we give the player the log in format
-    public void LogInMenuActive()
-    {
-        HideAllCanvas();
-        logInMenu.SetActive(true);
-        logInCanavas.SetActive(true);
-    }
-
     //we give the user the create account format
     public void CreateAccount()
     {
         HideAllCanvas();
-        logInMenu.SetActive(true);
-        singInCanvas.SetActive(true);
     }
 
     public void ShowDisclaimer()
@@ -957,35 +904,8 @@ public class MenuManager : MonoBehaviour {
         SceneManager.LoadScene("Loader_Scene");
     }
 
-    //this method tries to get us login 
-    void TryToLogIn()
-    {
-        string email = emailLogInInput.text;
-        string password = passLogInInput.text;
-        var verificationUtility = new EmailVerificationUtility();
-        bool isAccountReady = verificationUtility.IsValidMail(email);
-        bool isPassReady = (password != "");
-        if (isAccountReady)
-        {
-            if (isPassReady)
-            {
-                ShowLoading();
-                logInScript.PostLogin(email, password);
-            }
-            else
-            {
-                ShowWarning(0);
-            }
-        }
-        else
-        {
-            ShowWarning(1);
-        }
-    }
-
     public void TryALogIn(string email, string password)
     {
-        registerMenu.HideAll();
         var verificationUtility = new EmailVerificationUtility();
         bool isAccountReady = verificationUtility.IsValidMail(email);
         bool isPassReady = password != "";
@@ -1007,24 +927,18 @@ public class MenuManager : MonoBehaviour {
         }
     }
 
-    //this method creates a user and a kid
-    void CreateUser()
+    public void TrySignIn(string mail, string pass, string passConfirmation, string kidName)
     {
-        Debug.Log("we try to create user");
-        string mail = dadMailInput.text;
-        string pass = dadPassInput.text;
-        string pass2 = dadPassRepeatInput.text;
-        string kidName = kidNameInput.text;
         string kidDob = DefineTheDateOfBirth(0);
         EmailVerificationUtility verificationUtility = new EmailVerificationUtility();
-        if (mail != "" && pass != "" && pass2 != "" && kidName != "" && kidDob != "")
+        if (mail != "" && pass != "" && passConfirmation != "" && kidName != "" && kidDob != "")
         {
 
             if (verificationUtility.IsValidMail(mail))
             {
                 if (pass.Length >= 8)
                 {
-                    if (pass == pass2)
+                    if (pass == passConfirmation)
                     {
                         if (KidDateIsOK(0))
                         {
@@ -1182,7 +1096,7 @@ public class MenuManager : MonoBehaviour {
     }
 
     //this one goes and reset the password for a player if its needed
-    void ForgotPassword()
+    public void ForgotPassword()
     {
         Application.OpenURL(Keys.Api_Web_Key + "recuperar/");
     }
@@ -1190,12 +1104,6 @@ public class MenuManager : MonoBehaviour {
     //This is if a person regrets to start the registration process
     void GoBack()
     {
-        dadMailInput.text = null;
-        dadPassInput.text = null;
-        dadPassRepeatInput.text = null;
-
-        emailLogInInput.text = null;
-        passLogInInput.text = null;
         ShowFirstMenu();
     }
 
@@ -1277,32 +1185,14 @@ public class MenuManager : MonoBehaviour {
     void WriteTheTexts()
     {
         WriteTheText(subscribeAnotherCountButton, 3);
-        WriteTheText(gotAccountButton, 4);
-        WriteTheText(createAccountButton, 5);
         WriteTheText(creditColumOne, 6);
         WriteTheText(creditColumTwo, 7);
-        WriteTheText(logInButton, 8);
-        WriteTheText(forgotPassButton, 9);
-        WriteTheText(kidNameInput, 10);
         WriteTheText(newKidNameInput, 10);
-        WriteTheText(dadMailInput, 11);
-        WriteTheText(emailLogInInput, 11);
-        WriteTheText(dadPassInput, 12);
-        WriteTheText(passLogInInput, 12);
-        WriteTheText(dadPassRepeatInput, 13);
-        WriteTheText(singInButton, 14);
         WriteTheText(selectionKidBackButton, 15);
-        WriteTheText(kidDateText, 16);
         WriteTheText(newKidBirthday, 16);
         WriteTheText(newKidDay, 17);
-        WriteTheText(kidDayInput, 17);
         WriteTheText(newKidMonth, 18);
-        WriteTheText(kidMonthInput, 18);
         WriteTheText(newKidYear, 19);
-        WriteTheText(kidYearInput, 19);
-        WriteTheText(kidMoreText, 20);
-        WriteTheText(acceptTermsAndConditionText, 21);
-        WriteTheText(termsAndConditionsButton, 22);
         WriteTheText(creditText, 40);
         WriteTheText(configMenu.languageButton, 47);
         WriteTheText(configMenu.englishLanguageButton, 48);
@@ -1405,11 +1295,15 @@ public class MenuManager : MonoBehaviour {
     //This will set the correct date for a child
     bool DatesFromInput(int existDad)
     {
+        var day = registerMenu.dayInput.text;
+        var month = registerMenu.monthInput.text;
+        var year = registerMenu.yearInput.text;
+
         if (existDad == 0)
         {
-            if (kidDayInput.text != "" && kidMonthInput.text != "" && kidYearInput.text != "")
+            if (day != "" && month != "" && year != "")
             {
-                dobYMD = new int[] { int.Parse(kidYearInput.text), int.Parse(kidMonthInput.text), int.Parse(kidDayInput.text) };
+                dobYMD = new int[] { int.Parse(year), int.Parse(month), int.Parse(day) };
                 return true;
             }
             else
@@ -1454,11 +1348,11 @@ public class MenuManager : MonoBehaviour {
         int day = 0;
         if (typeOfKid == 0)
         {
-            year = int.Parse(kidYearInput.text);
-            month = int.Parse(kidMonthInput.text);
-            day = int.Parse(kidDayInput.text);
+            year = int.Parse(registerMenu.yearInput.text);
+            month = int.Parse(registerMenu.monthInput.text);
+            day = int.Parse(registerMenu.dayInput.text);
         }
-        else
+        if(typeOfKid != 0)
         {
             year = int.Parse(newKidYear.text);
             month = int.Parse(newKidMonth.text);
@@ -1783,10 +1677,14 @@ class RegisterMenu
 
         inputEmail.inputNameText.text = texts[3];
         inputPass.inputNameText.text = texts[4];
+        inputPass.field.inputType = InputField.InputType.Password;
         forgotPassButton.GetComponent<Text>().text = texts[5];
         logInButton.GetComponentInChildren<Text>().text = texts[6];
         notRegisterText.text = texts[7];
         goToSingInButton.GetComponentInChildren<Text>().text = texts[8];
+
+        forgotPassButton.onClick.RemoveAllListeners();
+        forgotPassButton.onClick.AddListener(manager.ForgotPassword);
 
         logInButton.onClick.RemoveAllListeners();
         logInButton.onClick.AddListener(() => manager.TryALogIn(inputEmail.field.text, inputPass.field.text));
@@ -1795,14 +1693,18 @@ class RegisterMenu
         goToSingInButton.onClick.AddListener(ShowSignInPanel);
 
         returnButton.onClick.RemoveAllListeners();
-        returnButton.onClick.AddListener(manager.ShowFirstMenu);
+        returnButton.onClick.AddListener(()=> 
+        {
+            ClearData();
+            manager.ShowFirstMenu();
+        });
 
     }
 
     public void ShowSignInPanel()
     {
         gameObject.SetActive(true);
-        const string pathOfLoginMenuTetxs = "Login/LoginMenu";
+        const string pathOfLoginMenuTetxs = "Login/SingInMenu";
         HideAllPanels();
         ShouldShowAdds(true);
         signInMenu.SetActive(true);
@@ -1814,8 +1716,12 @@ class RegisterMenu
 
         inputEmailDad.inputNameText.text = texts[3];
         inputPassDad.inputNameText.text = texts[4];
+        inputPassDad.field.inputType = InputField.InputType.Password;
         inputPassAgain.inputNameText.text = texts[5];
+        inputPassAgain.field.inputType = InputField.InputType.Password;
         termsAndConditionsButton.GetComponent<Text>().text = texts[6];
+        termsAndConditionsButton.onClick.RemoveAllListeners();
+        termsAndConditionsButton.onClick.AddListener(manager.GoToTermsAndConditions);
 
         inputName.inputNameText.text = texts[7];
         birthdateText.text = texts[8];
@@ -1824,6 +1730,38 @@ class RegisterMenu
         yearInput.placeholder.GetComponent<Text>().text = texts[11];
         addKidLaterText.text = texts[12];
         signInButton.GetComponentInChildren<Text>().text = texts[13];
+
+        signInButton.onClick.AddListener(TryASignIn);
+
+        returnButton.onClick.RemoveAllListeners();
+        returnButton.onClick.AddListener(() =>
+        {
+            ClearData();
+            ShowLoginPanel();
+        });
+    }
+
+    void ClearData()
+    {
+        dayInput.text = "";
+        monthInput.text = "";
+        yearInput.text = "";
+        inputEmail.field.text = "";
+        inputEmailDad.field.text = "";
+        inputPass.field.text = "";
+        inputPassDad.field.text = "";
+        inputPassAgain.field.text = "";
+        inputName.field.text = "";
+    }
+
+    void TryASignIn()
+    {
+        var mail = inputEmailDad.field.text;
+        var pass = inputPassDad.field.text;
+        var pass2 = inputPassAgain.field.text;
+        var kidName = inputName.field.text;
+
+        manager.TrySignIn(mail, pass, pass2, kidName);
     }
 }
 
