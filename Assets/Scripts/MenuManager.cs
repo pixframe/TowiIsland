@@ -408,7 +408,8 @@ public class MenuManager : MonoBehaviour {
                 kidos.Add(new KidProfileCanvas(objectToInstance));
                 float addableSize = kidos[i].gameObject.GetComponent<RectTransform>().sizeDelta.x * 2f;
                 miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(miniKidContainer.GetComponent<RectTransform>().sizeDelta.x + addableSize, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
-                kidos[i].gameObject.GetComponent<RectTransform>().parent = miniKidContainer.GetComponent<RectTransform>();
+                //kidos[i].gameObject.GetComponent<RectTransform>().parent = miniKidContainer.GetComponent<RectTransform>();
+                kidos[i].gameObject.GetComponent<RectTransform>().SetParent(miniKidContainer.GetComponent<RectTransform>());
                 if (i > 0)
                 {
                     Vector2 pos = kidos[i - 1].gameObject.GetComponent<RectTransform>().localPosition;
@@ -1137,6 +1138,7 @@ public class MenuManager : MonoBehaviour {
         PlayerPrefs.SetInt(Keys.Logged_In, 0);
         PlayerPrefs.SetString("sessions", "");
         PlayerPrefs.SetInt(Keys.Logged_Session, 0);
+        PlayerPrefs.SetString(Keys.Active_User_Key, "");
         ShowFirstMenu();
         sessionManager.StartAgain();
         alreadyLogged = false;

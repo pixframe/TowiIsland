@@ -109,9 +109,10 @@ public class SessionManager : MonoBehaviour
             }
             else
             {
-                string userS = PlayerPrefs.GetString("activeUser");
+                string userS = PlayerPrefs.GetString(Keys.Active_User_Key);
                 if (userS != "")
                 {
+                    Debug.Log(userS);
                     activeUser = GetUser(userS);
                     int kidS = PlayerPrefs.GetInt("activeKid", -1);
                     if (kidS != -1)

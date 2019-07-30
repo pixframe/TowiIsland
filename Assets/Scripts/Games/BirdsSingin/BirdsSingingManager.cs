@@ -374,6 +374,7 @@ public class BirdsSingingManager : MonoBehaviour {
 
     void TellTheStory()
     {
+        instructionPanel.SetActive(true);
         instructionPanel.transform.parent.gameObject.SetActive(true);
         showTutorial = true;
         readyButton.gameObject.SetActive(false);
@@ -417,6 +418,7 @@ public class BirdsSingingManager : MonoBehaviour {
             instructionPanel.SetActive(false);
             Invoke("PlayTheNestSongs", 1.5f);
         }
+
         GetTheDataInfo();
         SetNewLists();
         SetTheNests();
