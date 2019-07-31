@@ -120,6 +120,7 @@ public class MenuManager : MonoBehaviour
         //here we start the process of initrilization
         Initialization();
         dobYMD = new int[0];
+        PlayerPrefs.SetInt(Keys.First_Try, 0);
     }
 
     // Use this for initialization
@@ -550,11 +551,11 @@ public class MenuManager : MonoBehaviour
         HideAllCanvas();
         if (key)
         {
-            gameMenuObject.ShowThisMenu(true, false, IsEvaluationAvilable(), true, true);
+            gameMenuObject.ShowThisMenu(true, false, IsEvaluationAvilable(), true);
         }
         else
         {
-            gameMenuObject.ShowThisMenu(sessionManager.activeKid.isActive, sessionManager.activeKid.isInTrial, IsEvaluationAvilable(), sessionManager.activeKid.anyFirstTime, false);
+            gameMenuObject.ShowThisMenu(sessionManager.activeKid.isActive, PlayerPrefs.GetInt(Keys.First_Try) == 0, IsEvaluationAvilable(), false);
         }
 
         UpdateKidInMenu();
@@ -584,10 +585,22 @@ public class MenuManager : MonoBehaviour
         registerMenu.ShowTryPanel();
     }
 
+    public void ShowTryChancesRegistered()
+    {
+        HideAllCanvas();
+        registerMenu.ShowTryPanelRegistered();
+    }
+
     public void ShowAdd()
     {
         HideAllCanvas();
         addMenu.ShowAdd();
+    }
+
+    public void ShowRegisteredAdd()
+    {
+        HideAllCanvas();
+        addMenu.ShowAddRegister();
     }
 
     public void ShowLogIn()
@@ -1835,6 +1848,14 @@ class RegisterMenu
         for (int i = 0; i < buttonsOfAges.Length; i++)
         {
             buttonsOfAges[i].GetComponentInChildren<Text>().text = texts[i];
+            buttonsOfAges[i].onClick.RemoveAllListeners();
+
+            int x = i;
+
+            buttonsOfAges[i].onClick.AddListener(() =>
+            {
+                CanSendToTry(x);
+            });
         }
 
         woodText.text = texts[3];
@@ -1845,6 +1866,30 @@ class RegisterMenu
             ClearData();
             manager.ShowFirstMenu();
         });
+    }
+
+    public void ShowTryPanelRegistered()
+    {
+        ShowTryPanel();
+        returnButton.onClick.RemoveAllListeners();
+        returnButton.onClick.AddListener(() =>
+        {
+            manager.ShowGameMenu();
+        });
+    }
+
+    void CanSendToTry(int difficulty)
+    {
+        if (PlayerPrefs.GetInt(Keys.First_Try) == 0)
+        {
+            PlayerPrefs.SetInt(Keys.Level_Of_Try, difficulty);
+            PrefsKeys.SetNextScene("Monkey_Hiding_Scene");
+            SceneManager.LoadScene("Loader_Scene");
+        }
+        else
+        {
+            manager.ShowAdd();
+        }
     }
 
     void ClearData()
@@ -1954,7 +1999,15 @@ class GameMenu
         buyButton.onClick.RemoveAllListeners();
 
         gamesButton.onClick.AddListener(manager.ShowLogIn);
-        buyButton.onClick.AddListener(manager.ShowTryChances);
+        if (PlayerPrefs.GetInt(Keys.First_Try) != 0)
+        {
+            buyButton.onClick.AddListener(manager.ShowAdd);
+        }
+        else
+        {
+            buyButton.onClick.AddListener(manager.ShowTryChances);
+        }
+
         evaluationButton.onClick.AddListener(manager.ShowAdd);
     }
 
@@ -1983,10 +2036,10 @@ class GameMenu
         logoIcon.SetActive(true);
     }
 
-    public void ShowThisMenu(bool isActiveTheCurrentKid, bool isInTrial, bool isEvaluationAvailable, bool isLeftTrial, bool isDemo)
+    public void ShowThisMenu(bool isActiveTheCurrentKid, bool isInTrial, bool isEvaluationAvailable, bool isDemo)
     {
         mainCanvas.SetActive(true);
-        SetDynamicButtonFunctions(isActiveTheCurrentKid, isInTrial, isEvaluationAvailable, isLeftTrial, isDemo);
+        SetDynamicButtonFunctions(isActiveTheCurrentKid, isInTrial, isEvaluationAvailable, isDemo);
 
         singOutButton.gameObject.SetActive(true);
         settingsButton.gameObject.SetActive(true);
@@ -2010,7 +2063,7 @@ class GameMenu
         singOutButton.onClick.AddListener(manager.ShowSingOutWarning);
     }
 
-    public void SetDynamicButtonFunctions(bool isActiveTheCurrentKid, bool isInTrail, bool evaluationAvailable, bool isLeftTrial, bool isDemo)
+    public void SetDynamicButtonFunctions(bool isActiveTheCurrentKid, bool isInTrail, bool evaluationAvailable, bool isDemo)
     {
         gamesButton.onClick.RemoveAllListeners();
         evaluationButton.onClick.RemoveAllListeners();
@@ -2026,6 +2079,8 @@ class GameMenu
             evaluationButton.gameObject.SetActive(false);
         }
 
+        Debug.Log($"is in trail {isInTrail}");
+
         if (isActiveTheCurrentKid)
         {
             manager.WriteTheText(gamesButton, 1);
@@ -2038,38 +2093,32 @@ class GameMenu
             SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
             SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
             SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
+
+            PlayerPrefs.SetInt(Keys.First_Try, 1);
         }
         else if (isInTrail)
         {
             manager.WriteTheText(buyButton, 62);
-            if (isLeftTrial)
-            {
-                manager.WriteTheText(gamesButton, 59);
-                gamesButton.onClick.AddListener(manager.LoadGameMenus);
-                SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
-                buyButton.onClick.AddListener(() => manager.ShowShop(0));
-                evaluationButton.onClick.AddListener(manager.ShowTheEvaluationNeeds);
-            }
-            else
-            {
-                manager.WriteTheText(gamesButton, 1);
-                gamesButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
-                evaluationButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
-                buyButton.onClick.AddListener(() => manager.ShowShop(0));
-                SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
-                SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
-            }
+
+
+            manager.WriteTheText(gamesButton, 59);
+            gamesButton.onClick.AddListener(manager.ShowTryChancesRegistered);
+            SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
+            SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
+            SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
+            buyButton.onClick.AddListener(() => manager.ShowShop(0));
+            evaluationButton.onClick.AddListener(manager.ShowRegisteredAdd);
         }
         else
         {
             manager.WriteTheText(gamesButton, 1);
             manager.WriteTheText(buyButton, 62);
-            gamesButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
-            evaluationButton.onClick.AddListener(() => manager.ShowAccountWarning(0));
+            gamesButton.onClick.AddListener(manager.ShowRegisteredAdd);
+            evaluationButton.onClick.AddListener(manager.ShowRegisteredAdd);
             buyButton.onClick.AddListener(() => manager.ShowShop(0));
-            SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
-            SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
-            SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
+            SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
+            SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
+            SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
         }
 
         if (isDemo)
@@ -2095,6 +2144,7 @@ class AddMenu
     Text woodText;
     Text[] promoTexts = new Text[2];
     Button buyButton;
+    Button backButton;
 
     public AddMenu(GameObject canvas, MenuManager mainManager)
     {
@@ -2108,6 +2158,7 @@ class AddMenu
 
         woodText = main.Find("Logo Panel").GetComponentInChildren<Text>();
         buyButton = main.Find("Buy Button").GetComponent<Button>();
+        backButton = main.Find("Return Button").GetComponent<Button>();
 
         HidePanel();
     }
@@ -2130,6 +2181,32 @@ class AddMenu
         {
             manager.SetShop(0);
         });
+
+        backButton.onClick.RemoveAllListeners();
+        backButton.onClick.AddListener(manager.ShowFirstMenu);
+    }
+
+    public void ShowAddRegister()
+    {
+        gameObject.SetActive(true);
+        const string pathOfLoginMenuTetxs = "Login/Add";
+        var texts = TextReader.TextsToSet(pathOfLoginMenuTetxs);
+
+        for (int i = 0; i < promoTexts.Length; i++)
+        {
+            promoTexts[i].GetComponentInChildren<Text>().text = texts[i];
+        }
+
+        woodText.text = texts[2];
+        buyButton.GetComponentInChildren<Text>().text = texts[2];
+        buyButton.onClick.RemoveAllListeners();
+        buyButton.onClick.AddListener(() =>
+        {
+            manager.SetShop(0);
+        });
+
+        backButton.onClick.RemoveAllListeners();
+        backButton.onClick.AddListener(manager.ShowGameMenu);
     }
 
     public void HidePanel()

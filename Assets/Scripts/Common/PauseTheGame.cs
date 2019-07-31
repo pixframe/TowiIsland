@@ -65,7 +65,6 @@ public class PauseTheGame : MonoBehaviour {
         howToPlayButton.onClick.AddListener(HideTutorialButtons);
         playButton.onClick.AddListener(HideTutorialButtons);
         HideAllPanels();
-
     }
 
     void PauseButton()
@@ -139,7 +138,19 @@ public class PauseTheGame : MonoBehaviour {
             kiwiEarningPanel.kiwiText.text = TextReader.commonStrings[11];
         }
         kiwiEarningPanel.amoutOfKiwisEarnText.text = "X " + kiwisEarn;
-        kiwiEarningPanel.continueButton.onClick.AddListener(ReturnHome);
+        if (PlayerPrefs.GetInt(Keys.First_Try) == 0)
+        {
+            kiwiEarningPanel.continueButton.onClick.AddListener(()=>
+            {
+                PrefsKeys.SetNextScene("NewLogin");
+                SceneManager.LoadScene("Loader_Scene");
+                PlayerPrefs.SetInt(Keys.First_Try, 1);
+            });
+        }
+        else
+        {
+            kiwiEarningPanel.continueButton.onClick.AddListener(ReturnHome);
+        }
     }
 
     void ShowLoadingScreen()

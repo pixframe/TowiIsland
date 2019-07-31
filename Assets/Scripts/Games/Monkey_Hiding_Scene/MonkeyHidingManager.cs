@@ -60,6 +60,7 @@ public class MonkeyHidingManager : MonoBehaviour {
     bool showTutorial = false;
     bool findingMultipleObjects = false;
     bool latencyTime = false;
+    bool tryVersion;
 
     MonkeyController monkey1;
     MonkeyController monkey2;
@@ -91,10 +92,18 @@ public class MonkeyHidingManager : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
-        if (FindObjectOfType<SessionManager>())
+        tryVersion = PlayerPrefs.GetInt(Keys.First_Try) == 0;
+        if (tryVersion)
         {
-            sessionManager = FindObjectOfType<SessionManager>();
-            levelSaver = GetComponent<LevelSaver>();
+
+        }
+        else
+        {
+            if (FindObjectOfType<SessionManager>())
+            {
+                sessionManager = FindObjectOfType<SessionManager>();
+                levelSaver = GetComponent<LevelSaver>();
+            }
         }
         audioManager = FindObjectOfType<AudioManager>();
         textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/Monkeys/MonkeyText");
@@ -165,9 +174,28 @@ public class MonkeyHidingManager : MonoBehaviour {
             }
             else
             {
-                difficulty = PlayerPrefs.GetInt(Keys.Monkey_Difficulty);
-                level = PlayerPrefs.GetInt(Keys.Monkey_Level);
-                firstTime = PlayerPrefs.GetInt(Keys.Monkey_First);
+                if (tryVersion)
+                {
+                    switch (PlayerPrefs.GetInt(Keys.Level_Of_Try))
+                    {
+                        case 0:
+                            levelCategorizer = 0;
+                            break;
+                        case 1:
+                            levelCategorizer = totalLevels / 2;
+                            break;
+                        case 2:
+                            levelCategorizer = totalLevels - 5;
+                            break;
+                    }
+                    GetDataJustForLevel(levelCategorizer);
+                }
+                else
+                {
+                    difficulty = PlayerPrefs.GetInt(Keys.Monkey_Difficulty);
+                    level = PlayerPrefs.GetInt(Keys.Monkey_Level);
+                    firstTime = PlayerPrefs.GetInt(Keys.Monkey_First);
+                }
             }
         }
         else
@@ -601,7 +629,23 @@ public class MonkeyHidingManager : MonoBehaviour {
 
     void GetLevelUp()
     {
-        if (!sessionManager.activeKid.monkeyFirst)
+		if (tryVersion)
+		{
+			if (level >= 30)
+			{
+				if (difficulty < 1)
+				{
+					difficulty++;
+					level = 0;
+				}
+				else
+				{
+					difficulty = 1;
+					level = 29;
+				}
+			}
+		}
+        else if (!sessionManager.activeKid.monkeyFirst && !tryVersion)
         {
             if (level >= 30)
             {
@@ -627,32 +671,52 @@ public class MonkeyHidingManager : MonoBehaviour {
 
     void GetLevelDown()
     {
-        if (!sessionManager.activeKid.monkeyFirst)
-        {
-            if (straightBadAnswers >= 3)
-            {
-                level--;
-                straightBadAnswers = 0;
-                if (level < 0)
-                {
-                    if (difficulty <= 1)
-                    {
-                        difficulty = 0;
-                        level = 29;
-                    }
-                    else
-                    {
-                        level = 0;
-                    }
-                }
-            }
-        }
-        else
-        {
-            levelCategorizer -= LevelDifficultyChange(totalLevels);
-            levelCategorizer = Mathf.Clamp(levelCategorizer, 0, totalLevels - 1);
-            GetDataJustForLevel(levelCategorizer);
-        }
+		if (tryVersion)
+		{
+			if (straightBadAnswers >= 3)
+			{
+				level--;
+				straightBadAnswers = 0;
+				if (level < 0)
+				{
+					if (difficulty <= 1)
+					{
+						difficulty = 0;
+						level = 29;
+					}
+					else
+					{
+						level = 0;
+					}
+				}
+			}
+		}
+		else if (!sessionManager.activeKid.monkeyFirst && tryVersion)
+		{
+			if (straightBadAnswers >= 3)
+			{
+				level--;
+				straightBadAnswers = 0;
+				if (level < 0)
+				{
+					if (difficulty <= 1)
+					{
+						difficulty = 0;
+						level = 29;
+					}
+					else
+					{
+						level = 0;
+					}
+				}
+			}
+		}
+		else
+		{
+			levelCategorizer -= LevelDifficultyChange(totalLevels);
+			levelCategorizer = Mathf.Clamp(levelCategorizer, 0, totalLevels - 1);
+			GetDataJustForLevel(levelCategorizer);
+		}
     }
 
     void ExitMonkeys()
@@ -764,7 +828,10 @@ public class MonkeyHidingManager : MonoBehaviour {
 
     void FinishGame()
     {
-        SaveLevel();
+		if (!tryVersion)
+		{
+            SaveLevel();
+		}
         readyButton.onClick.RemoveAllListeners();
         readyButton.gameObject.SetActive(false);
         instructionPanel.SetActive(true);
