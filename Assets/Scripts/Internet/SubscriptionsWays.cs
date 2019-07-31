@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using Boomlagoon.JSON;
 
 public class SubscriptionsWays : MonoBehaviour
@@ -36,7 +37,7 @@ public class SubscriptionsWays : MonoBehaviour
         yield return null;
     }
 
-    //This method is used to send a´prepaid code and get an answer for it we start a corutine and works asyncronusly
+    //This method is used to send a prepaid code and get an answer for it we start a corutine and works asyncronusly
     public void SendACode(int userId, int childId, string code, int typeOfShop)
     {
         StartCoroutine(SendCode(userId, childId, code, typeOfShop));
@@ -50,48 +51,49 @@ public class SubscriptionsWays : MonoBehaviour
     //this is the corutine we use for prepaid code
     IEnumerator SendCode(int userId, int childId, string code, int typeOfShop)
     {
+        Debug.Log("We try to send a code now");
+
         //now we create a www form were we set the json that hva eall the info for the activaton
         WWWForm form = new WWWForm();
         form.AddField("code", code);
         form.AddField("child_id", childId);
         form.AddField("parent_id", userId);
 
-        //We create a post
-        WWW post = new WWW(codeURL, form);
-
-        //wait for the post to get done and get answwer
-        yield return post;
-        Debug.Log(post.text);
-        JSONObject jsonObject = JSONObject.Parse(post.text);
-        if (post.text == "")
+        using (UnityWebRequest request = UnityWebRequest.Post(codeURL, form))
         {
-            menuManager.ShopWithCode(typeOfShop);
-            menuManager.ShowWarning(9);
-        }
-        else
-        {
-            if (jsonObject.ContainsKey("status"))
+            yield return request.SendWebRequest();
+            if (request.isHttpError)
             {
-                string status = jsonObject.GetString("status");
-                if (status == "COUPON_NOT_FOUND")
-                {
-                    //JSONObject jsonObject = JSONObject.Parse(post.text);
-                    menuManager.ShopWithCode(typeOfShop);
-                    menuManager.ShowWarning(10);
-                }
+                menuManager.ShopWithCode(typeOfShop);
+                menuManager.ShowWarning(8);
+            }
+            else if (request.isNetworkError)
+            {
+                menuManager.ShopWithCode(typeOfShop);
+                menuManager.ShowWarning(9);
             }
             else
             {
-                Debug.Log("no error found");
-                sessionManager.activeKid.isActive = true;
-                menuManager.ShowGameMenu();
-                sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                var jsonObject = JSONObject.Parse(request.downloadHandler.text);
+                if (jsonObject.ContainsKey("status"))
+                {
+                    string status = jsonObject.GetString("status");
+                    if (status == "COUPON_NOT_FOUND")
+                    {
+                        //JSONObject jsonObject = JSONObject.Parse(post.text);
+                        menuManager.ShopWithCode(typeOfShop);
+                        menuManager.ShowWarning(10);
+                    }
+                }
+                else
+                {
+                    Debug.Log("no error found");
+                    sessionManager.activeKid.isActive = true;
+                    menuManager.ShowGameMenu();
+                    sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                }
             }
-
         }
-        //if error was null we activate the kid 
-        //if we have an error we dela with it
-
     }
 
     IEnumerator SendCode(int userId, string code, int typeOfShop)

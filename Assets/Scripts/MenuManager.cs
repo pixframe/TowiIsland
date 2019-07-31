@@ -8,7 +8,8 @@ using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class MenuManager : MonoBehaviour {
+public class MenuManager : MonoBehaviour
+{
 
     //this assets contains all the information that we need to create the text of the first menu
     [Header("Texts To Show")]
@@ -29,6 +30,9 @@ public class MenuManager : MonoBehaviour {
 
     public GameObject registerCanvas;
     RegisterMenu registerMenu;
+
+    public GameObject addCanvas;
+    AddMenu addMenu;
 
     [Header("Log in UI")]
     public GameObject kidsPanel;
@@ -174,7 +178,7 @@ public class MenuManager : MonoBehaviour {
                 }
                 else
                 {
-                    
+
                     ShowGameMenu();
                     PlayerPrefs.SetInt(Keys.Logged_Session, 1);
                 }
@@ -186,14 +190,21 @@ public class MenuManager : MonoBehaviour {
         }
         else
         {
-            if (sessionManager.activeKid.offlineSubscription < DateTime.Today)
+            if (sessionManager.activeKid != null)
             {
-                string user = PlayerPrefs.GetString(Keys.Active_User_Key);
-                logInScript.IsActive(user);
+                if (sessionManager.activeKid.offlineSubscription < DateTime.Today)
+                {
+                    string user = PlayerPrefs.GetString(Keys.Active_User_Key);
+                    logInScript.IsActive(user);
+                }
+                else
+                {
+                    ShowGameMenu();
+                }
             }
             else
             {
-                ShowGameMenu();
+                SetKidsProfiles();
             }
         }
     }
@@ -210,7 +221,7 @@ public class MenuManager : MonoBehaviour {
             lastSession = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Time_Were), DateTimeFormatInfo.InvariantInfo);
         }
         Debug.Log($"Last time in internte was {lastSession.ToUniversalTime()} and today is { DateTime.Today.ToUniversalTime()} compare to today is {DateTime.Compare(DateTime.Today, lastSession)}");
-        if(DateTime.Compare(DateTime.Today, lastSession) >= 0) 
+        if (DateTime.Compare(DateTime.Today, lastSession) >= 0)
         {
             PlayerPrefs.SetString(Keys.Last_Time_Were, DateTime.Today.ToString(DateTimeFormatInfo.InvariantInfo));
             if (PlayerPrefs.GetInt(Keys.Logged_Session) == 0)
@@ -299,6 +310,7 @@ public class MenuManager : MonoBehaviour {
         gameMenuObject = new GameMenu(gameCanvas, this);
         shopMenu = new ShopMenu(shopCanvas, this);
         registerMenu = new RegisterMenu(registerCanvas, this);
+        addMenu = new AddMenu(addCanvas, this);
 
         ButtonSetUp();
 
@@ -439,7 +451,8 @@ public class MenuManager : MonoBehaviour {
     //This will set the shop
     public void SetShop(int isAShopForNewKid)
     {
-
+        HideAllCanvas();
+        shopMenu.ShowThisMenu();
         if (SystemInfo.deviceType == DeviceType.Desktop)
         {
             shopMenu.SetWebShop(isAShopForNewKid);
@@ -492,6 +505,7 @@ public class MenuManager : MonoBehaviour {
         escapeButton.gameObject.SetActive(false);
         configMenu.panel.SetActive(false);
         registerMenu.HideAll();
+        addMenu.HidePanel();
     }
 
     void UpdateKidInMenu()
@@ -515,7 +529,7 @@ public class MenuManager : MonoBehaviour {
     //we show the game menu if the player has acces to it
     public void ShowGameMenu()
     {
-        if (!needInternetConectionNow) 
+        if (!needInternetConectionNow)
         {
             StartCoroutine(ShowMenuInCorrectTime());
         }
@@ -561,14 +575,24 @@ public class MenuManager : MonoBehaviour {
     {
         HideAllCanvas();
         gameMenuObject.ShowFirstMenu();
-        registerMenu.HideAll();
-        //logInMenu.SetActive(true);
-        //accountCanvas.SetActive(true);
         ShowEscapeButton();
+    }
+
+    public void ShowTryChances()
+    {
+        HideAllCanvas();
+        registerMenu.ShowTryPanel();
+    }
+
+    public void ShowAdd()
+    {
+        HideAllCanvas();
+        addMenu.ShowAdd();
     }
 
     public void ShowLogIn()
     {
+        HideAllCanvas();
         registerMenu.ShowLoginPanel();
         gameMenuObject.HideThisMenu();
     }
@@ -915,7 +939,7 @@ public class MenuManager : MonoBehaviour {
             if (isPassReady)
             {
                 ShowLoading();
-                logInScript.PostLogin(email, password);
+                logInScript.PostLogin(email, password, false);
             }
             else
             {
@@ -928,7 +952,7 @@ public class MenuManager : MonoBehaviour {
         }
     }
 
-    public void TrySignIn(string mail, string pass, string passConfirmation, string kidName)
+    public void TrySignIn(string mail, string pass, string passConfirmation, string kidName, bool isNewPaidUser)
     {
         string kidDob = DefineTheDateOfBirth(0);
         EmailVerificationUtility verificationUtility = new EmailVerificationUtility();
@@ -944,7 +968,7 @@ public class MenuManager : MonoBehaviour {
                         if (KidDateIsOK(0))
                         {
                             ShowLoading();
-                            logInScript.RegisterParentAndKid(mail, pass, kidName, kidDob);
+                            logInScript.RegisterParentAndKid(mail, pass, kidName, kidDob, isNewPaidUser);
                         }
                         else
                         {
@@ -979,7 +1003,15 @@ public class MenuManager : MonoBehaviour {
         ShowLoading();
         if (isNewChild == 0)
         {
-            subscriptionsManager.SendACode(sessionManager.activeUser.id, sessionManager.activeKid.id, shopMenu.prepaidInput.text, isNewChild);
+            if (sessionManager.activeUser != null)
+            {
+                subscriptionsManager.SendACode(sessionManager.activeUser.id, sessionManager.activeKid.id, shopMenu.prepaidInput.text, isNewChild);
+            }
+            else
+            {
+                HideAllCanvas();
+                registerMenu.ShowRegisterPanel();
+            }
         }
         else
         {
@@ -1009,7 +1041,7 @@ public class MenuManager : MonoBehaviour {
 
         if (sessionManager.activeUser != null)
         {
-            
+
             List<KidProfileCanvas> kidos = new List<KidProfileCanvas>();
             float deltaSize = miniKidContainer.GetComponent<RectTransform>().sizeDelta.x;
             miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
@@ -1045,6 +1077,11 @@ public class MenuManager : MonoBehaviour {
                 kidos[i].ChangeAvatar(sessionManager.activeUser.kids[i].avatar);
             }
         }
+        else
+        {
+            Debug.Log("its not suscribed yet");
+
+        }
         sessionManager.SaveSession();
     }
 
@@ -1074,7 +1111,7 @@ public class MenuManager : MonoBehaviour {
         }
     }
 
-    void ConfirmKidsPurchase(UnityEngine.Purchasing.PurchaseEventArgs args, int kids , string typeOfSubscription)
+    void ConfirmKidsPurchase(UnityEngine.Purchasing.PurchaseEventArgs args, int kids, string typeOfSubscription)
     {
         string idsSt = "";
 
@@ -1114,7 +1151,7 @@ public class MenuManager : MonoBehaviour {
         Application.OpenURL("https://towi.com.mx/terminos-y-condiciones/");
     }
 
-    public void GoPrivacyPolicy() 
+    public void GoPrivacyPolicy()
     {
         Application.OpenURL("https://towi.com.mx/aviso-de-privacidad/");
     }
@@ -1241,7 +1278,7 @@ public class MenuManager : MonoBehaviour {
         }*/
 
         warningButton.onClick.RemoveAllListeners();
-        warningButton.onClick.AddListener(()=>
+        warningButton.onClick.AddListener(() =>
         {
             HideWarning();
             action();
@@ -1333,7 +1370,6 @@ public class MenuManager : MonoBehaviour {
         if (DatesFromInput(newKid))
         {
             string date = dobYMD[0].ToString("D4") + "-" + dobYMD[1].ToString("D2") + "-" + dobYMD[2].ToString("D2");
-            Debug.Log("dob is " + date);
             return date;
         }
         else
@@ -1354,7 +1390,7 @@ public class MenuManager : MonoBehaviour {
             month = int.Parse(registerMenu.monthInput.text);
             day = int.Parse(registerMenu.dayInput.text);
         }
-        if(typeOfKid != 0)
+        if (typeOfKid != 0)
         {
             year = int.Parse(newKidYear.text);
             month = int.Parse(newKidMonth.text);
@@ -1367,7 +1403,7 @@ public class MenuManager : MonoBehaviour {
         if (year > 999 && day > 0 && month > 0 && month < 13)
         {
             if (months1.Contains(month) && day < 32 || months2.Contains(month) && day < 31
-                || year % 4 == 0 && month == 2 && day < 30 || year % 4 != 0 && month == 2 && day < 29) 
+                || year % 4 == 0 && month == 2 && day < 30 || year % 4 != 0 && month == 2 && day < 29)
             {
                 dobYMD = new int[] { year, month, day };
                 return true;
@@ -1470,7 +1506,7 @@ public class MenuManager : MonoBehaviour {
     bool IsEvaluationAvilable()
     {
         bool returner = false;
-        if (IsTablet() && sessionManager.activeKid.testAvailable) 
+        if (IsTablet() && sessionManager.activeKid.testAvailable)
         {
             returner = true;
         }
@@ -1478,7 +1514,8 @@ public class MenuManager : MonoBehaviour {
         return returner;
     }
 
-    void EscapeApplication() {
+    void EscapeApplication()
+    {
         Application.Quit();
         Debug.Log("shoul exit now");
     }
@@ -1650,6 +1687,7 @@ class RegisterMenu
     {
         add0.gameObject.SetActive(showAdds);
         add1.gameObject.SetActive(showAdds);
+        division.SetActive(showAdds);
     }
 
     public void HideAll()
@@ -1695,7 +1733,7 @@ class RegisterMenu
         goToSingInButton.onClick.AddListener(ShowSignInPanel);
 
         returnButton.onClick.RemoveAllListeners();
-        returnButton.onClick.AddListener(()=> 
+        returnButton.onClick.AddListener(() =>
         {
             ClearData();
             manager.ShowFirstMenu();
@@ -1731,8 +1769,9 @@ class RegisterMenu
         monthInput.placeholder.GetComponent<Text>().text = texts[10];
         yearInput.placeholder.GetComponent<Text>().text = texts[11];
         addKidLaterText.text = texts[12];
-        signInButton.GetComponentInChildren<Text>().text = texts[13];
+        signInButton.GetComponentInChildren<Text>().text = texts[0];
 
+        signInButton.onClick.RemoveAllListeners();
         signInButton.onClick.AddListener(TryASignIn);
 
         returnButton.onClick.RemoveAllListeners();
@@ -1740,6 +1779,71 @@ class RegisterMenu
         {
             ClearData();
             ShowLoginPanel();
+        });
+    }
+
+    public void ShowRegisterPanel()
+    {
+        gameObject.SetActive(true);
+        const string pathOfLoginMenuTetxs = "Login/SingInMenu";
+        HideAllPanels();
+        ShouldShowAdds(true);
+        signInMenu.SetActive(true);
+        var texts = TextReader.TextsToSet(pathOfLoginMenuTetxs);
+
+        woodText.text = texts[13];
+        add0.GetComponentInChildren<Text>().text = texts[1];
+        add1.GetComponentInChildren<Text>().text = texts[2];
+
+        inputEmailDad.inputNameText.text = texts[3];
+        inputPassDad.inputNameText.text = texts[4];
+        inputPassDad.field.inputType = InputField.InputType.Password;
+        inputPassAgain.inputNameText.text = texts[5];
+        inputPassAgain.field.inputType = InputField.InputType.Password;
+        termsAndConditionsButton.GetComponent<Text>().text = texts[6];
+        termsAndConditionsButton.onClick.RemoveAllListeners();
+        termsAndConditionsButton.onClick.AddListener(manager.GoToTermsAndConditions);
+
+        inputName.inputNameText.text = texts[7];
+        birthdateText.text = texts[8];
+        dayInput.placeholder.GetComponent<Text>().text = texts[9];
+        monthInput.placeholder.GetComponent<Text>().text = texts[10];
+        yearInput.placeholder.GetComponent<Text>().text = texts[11];
+        addKidLaterText.text = texts[12];
+        signInButton.GetComponentInChildren<Text>().text = texts[13];
+
+        signInButton.onClick.RemoveAllListeners();
+        signInButton.onClick.AddListener(TrySingInAndPurchase);
+
+        returnButton.onClick.RemoveAllListeners();
+        returnButton.onClick.AddListener(() =>
+        {
+            ClearData();
+            ShowLoginPanel();
+        });
+    }
+
+    public void ShowTryPanel()
+    {
+        gameObject.SetActive(true);
+        const string pathOfLoginMenuTetxs = "Login/TryAges";
+        HideAllPanels();
+        ShouldShowAdds(false);
+        tryPanel.SetActive(true);
+        var texts = TextReader.TextsToSet(pathOfLoginMenuTetxs);
+
+        for (int i = 0; i < buttonsOfAges.Length; i++)
+        {
+            buttonsOfAges[i].GetComponentInChildren<Text>().text = texts[i];
+        }
+
+        woodText.text = texts[3];
+
+        returnButton.onClick.RemoveAllListeners();
+        returnButton.onClick.AddListener(() =>
+        {
+            ClearData();
+            manager.ShowFirstMenu();
         });
     }
 
@@ -1763,7 +1867,16 @@ class RegisterMenu
         var pass2 = inputPassAgain.field.text;
         var kidName = inputName.field.text;
 
-        manager.TrySignIn(mail, pass, pass2, kidName);
+        manager.TrySignIn(mail, pass, pass2, kidName, false);
+    }
+
+    void TrySingInAndPurchase()
+    {
+        var mail = inputEmailDad.field.text;
+        var pass = inputPassDad.field.text;
+        var pass2 = inputPassAgain.field.text;
+        var kidName = inputName.field.text;
+        manager.TrySignIn(mail, pass, pass2, kidName, true);
     }
 }
 
@@ -1841,6 +1954,8 @@ class GameMenu
         buyButton.onClick.RemoveAllListeners();
 
         gamesButton.onClick.AddListener(manager.ShowLogIn);
+        buyButton.onClick.AddListener(manager.ShowTryChances);
+        evaluationButton.onClick.AddListener(manager.ShowAdd);
     }
 
     public void ShowThisMenu()
@@ -1973,6 +2088,56 @@ class GameMenu
     }
 }
 
+class AddMenu
+{
+    MenuManager manager;
+    GameObject gameObject;
+    Text woodText;
+    Text[] promoTexts = new Text[2];
+    Button buyButton;
+
+    public AddMenu(GameObject canvas, MenuManager mainManager)
+    {
+        gameObject = canvas;
+        manager = mainManager;
+        var main = gameObject.transform.Find("Add Panel");
+        for (int i = 0; i < promoTexts.Length; i++)
+        {
+            promoTexts[i] = main.Find($"Promotional Text {i}").GetComponent<Text>();
+        }
+
+        woodText = main.Find("Logo Panel").GetComponentInChildren<Text>();
+        buyButton = main.Find("Buy Button").GetComponent<Button>();
+
+        HidePanel();
+    }
+
+    public void ShowAdd()
+    {
+        gameObject.SetActive(true);
+        const string pathOfLoginMenuTetxs = "Login/Add";
+        var texts = TextReader.TextsToSet(pathOfLoginMenuTetxs);
+
+        for (int i = 0; i < promoTexts.Length; i++)
+        {
+            promoTexts[i].GetComponentInChildren<Text>().text = texts[i];
+        }
+
+        woodText.text = texts[2];
+        buyButton.GetComponentInChildren<Text>().text = texts[2];
+        buyButton.onClick.RemoveAllListeners();
+        buyButton.onClick.AddListener(() =>
+        {
+            manager.SetShop(0);
+        });
+    }
+
+    public void HidePanel()
+    {
+        gameObject.SetActive(false);
+    }
+}
+
 class ShopMenu
 {
     GameObject mainCanvas;
@@ -2055,7 +2220,7 @@ class ShopMenu
 
     void HideAllComponents()
     {
-        for(int i = 0; i < mainPanel.transform.childCount; i++) 
+        for (int i = 0; i < mainPanel.transform.childCount; i++)
         {
             mainPanel.transform.GetChild(i).gameObject.SetActive(false);
         }

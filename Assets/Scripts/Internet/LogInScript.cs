@@ -52,16 +52,15 @@ public class LogInScript : MonoBehaviour
         return hashString.PadLeft(32, '0');
     }
 
-    public void PostLogin(string parentMail, string currentPasword)
+    public void PostLogin(string parentMail, string currentPasword, bool newPaidUser)
     {
         username = parentMail;
         password = currentPasword;
-        StartCoroutine(PostLoginData());
+        StartCoroutine(PostLoginData(newPaidUser));
     }
 
-    IEnumerator PostLoginData()
+    IEnumerator PostLoginData(bool newPaidUser)
     {
-        Debug.Log("login in");
         string hash = password;//Md5SUm(password);
         string post_url = loginUrl;
 
@@ -74,10 +73,7 @@ public class LogInScript : MonoBehaviour
         //Post the URL to the site and download a result
         using (UnityWebRequest request = UnityWebRequest.Post(post_url, form))
         {
-            Debug.Log("here we send a request");
             yield return request.SendWebRequest();
-            Debug.Log("we got a responce");
-            Debug.Log(request.downloadHandler.text);
             if (request.isNetworkError)
             {
                 menuController.ShowWarning(9, menuController.ShowLogIn);
@@ -101,13 +97,11 @@ public class LogInScript : MonoBehaviour
             else
             {
                 PlayerPrefs.SetInt(Keys.Logged_Session, 1);
-
                 Debug.Log(request.ToString());
                 //we get a JSON object from the server  
                 JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
                 JSONArray kids = jsonObject.GetValue("children").Array;
 
-                Debug.Log(kids.ToString());
                 sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetValue("id").Number);
                 sessionManager.AddKids(kids);
                 sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
@@ -116,53 +110,17 @@ public class LogInScript : MonoBehaviour
                 sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
                 sessionManager.SaveSession();
                 menuController.SetKidsProfiles();
-                //we check if the accses is allow by a key
+                Debug.Log("We finish the login succesfully");
+                if (newPaidUser)
+                {
+                    Debug.Log("Try to log in");
+                    string parentkey = sessionManager.activeUser.kids[0].userkey;
+                    int id = sessionManager.activeUser.kids[0].id;
+                    sessionManager.SetKid(parentkey, id);
+                    menuController.ChangeAPrePaidCode(0);
+                }
             }
         }
-        //    WWW hs_post = new WWW(post_url, form);
-        //yield return hs_post;
-
-        ////this is what is do if there is no error
-        //if (hs_post.error == null)
-        //{
-        //    PlayerPrefs.SetInt(Keys.Logged_Session, 1);
-
-        //    //we get a JSON object from the server  
-        //    JSONObject jsonObject = JSONObject.Parse(hs_post.text);
-        //    JSONArray kids = jsonObject.GetValue("children").Array;
-
-        //    Debug.Log(kids.ToString());
-        //    sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetValue("id").Number);
-        //    sessionManager.AddKids(kids);
-        //    sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
-        //    menuController.LoggedNow();
-        //    sessionManager.activeUser.trialAccount = false;
-        //    sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
-        //    sessionManager.SaveSession();
-        //    menuController.SetKidsProfiles();
-        //    //we check if the accses is allow by a key
-        //}
-        //else if (hs_post.text == "")
-        //{
-        //    menuController.LogInMenuActive();
-        //    menuController.ShowWarning(9);
-        //}
-        //else
-        //{
-        //    menuController.LogInMenuActive();
-        //    JSONObject jsonObj = JSONObject.Parse(hs_post.text);
-        //    Debug.Log(jsonObj.ToString());
-        //    string error = jsonObj.GetString("status");
-        //    if (error == "USER_NOT_FOUND")
-        //    {
-        //        menuController.ShowWarning(2);
-        //    }
-        //    else
-        //    {
-        //        menuController.ShowWarning(3);
-        //    }
-        //    Debug.Log(error);
-        //}
     }
 
     public void IsActive(string user)
@@ -459,16 +417,14 @@ public class LogInScript : MonoBehaviour
         StartCoroutine(PostIsActive(user));
     }
 
-
-    public void RegisterParentAndKid(string email, string password, string kidName, string dateOfBirth)
+    public void RegisterParentAndKid(string email, string password, string kidName, string dateOfBirth, bool newPaidUser)
     {
-        StartCoroutine(PostRegisterParentAndKid(email, password, kidName, dateOfBirth));
+        StartCoroutine(PostRegisterParentAndKid(email, password, kidName, dateOfBirth, newPaidUser));
     }
 
-    IEnumerator PostRegisterParentAndKid(string email, string password, string kidName, string dateOfBirth)
+    IEnumerator PostRegisterParentAndKid(string email, string password, string kidName, string dateOfBirth, bool newPaidUser)
     {
         string psswdHash = password;//Md5SUm(password);
-        string post_url = registerUrl;
 
         JSONObject data = new JSONObject();
         //data.Add("parent_name", name);
@@ -480,35 +436,30 @@ public class LogInScript : MonoBehaviour
         data.Add("child_dob", dateOfBirth);
         //data.Add("child_gender", gender);
         data.Add("user_type", "Familiar");
-        Debug.Log(data.ToString());
+
         WWWForm form = new WWWForm();
         form.AddField("jsonToDb", data.ToString());
 
-        WWW hs_post = new WWW(post_url, form);
-        yield return hs_post;
-
-        if (hs_post.error == null)
+        using (UnityWebRequest request = UnityWebRequest.Post(registerUrl, form))
         {
-            JSONObject jsonObject = JSONObject.Parse(hs_post.text);
-            Debug.Log(jsonObject.GetValue("code").Str);
-            if (jsonObject.GetValue("code").Str == "200")
+            yield return request.SendWebRequest();
+            if (request.isNetworkError)
             {
-                PostLogin(email, password);
-                Analytics.CustomEvent("register");
+                menuController.ShowWarning(8);
+                Debug.Log($"Theres an error {request.error}");
+                Debug.Log(request.downloadHandler);
             }
-            else
+            else if (request.isHttpError)
             {
                 menuController.CreateAccount();
                 menuController.ShowWarning(13);
-                Debug.Log("Theres an error in the connection");
+                Debug.Log($"Theres an error {request.error}");
             }
-        }
-        else
-        {
-            menuController.ShowWarning(8);
-            Debug.Log("Theres an error " + hs_post.error);
-            Debug.Log(hs_post.text);
-            //trialMng.loginRef.errorText = trialMng.loginRef.language.levelStrings[39];
+            else
+            {
+                PostLogin(email, password, newPaidUser);
+                Analytics.CustomEvent("register");
+            }
         }
     }
 
