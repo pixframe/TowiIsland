@@ -173,7 +173,7 @@ public class AgeAndBuy : MonoBehaviour {
         switch (evaluationController.DifficultyLevel())
         {
             case 0:
-                if (nameInput.text != "")
+                if (!string.IsNullOrWhiteSpace(nameInput.text))
                 {
                     nameOfPlayer = nameInput.text;
                 }else{

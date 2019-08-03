@@ -9,7 +9,6 @@ using UnityEngine.Networking;
 public class EvaluationController : MonoBehaviour
 {
     //needed scrpits to handle the proyect
-    MetricsProcessing metricsProcessing;
     GameSaveLoad saveLoad;
     ProgressHandler saveHandler;
     DemoKey key;

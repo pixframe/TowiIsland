@@ -11,8 +11,6 @@ public class ProgressHandler : MonoBehaviour {
 	
 	private string secretKey = "$k1w1GAMES$"; // Edit this value and make sure it's the same as the one stored on the server
 	public string postURL = ""; //be sure to add a ? to your url
-    string syncURL = "http://www.towi.com.mx/api/sync.php";
-    string rankURL = "http://www.towi.com.mx/api/towi_index.php";
     string postSuperURL = Keys.Api_Web_Key + "api/v2/levels/assesment/";
     //string header;
     //string []data;
@@ -43,15 +41,13 @@ public class ProgressHandler : MonoBehaviour {
         levelsData = new JSONObject();
         item = new JSONObject();
         rawItem = new JSONObject();
-        localGame = Login.local;
 		//dataDynamic=new List<string>();
 		//StartCoroutine(GetScores());
 	}
 
 	void Start()
     {
-		if(!localGame)
-			Sync ();
+
 	}
 
 	public void AddLevelData(string key,int value)
@@ -339,18 +335,6 @@ public class ProgressHandler : MonoBehaviour {
         rawItem.Add(key, tempJsonArray);
     }
 
-	/*public void SetLevel()
-    {
-		levelsData.Add("", item);
-        SaveFastData();
-        item = new JSONObject();
-	}*/
-
-    public void SetRawData()
-    {
-
-    }
-
     public void SaveFlashProbes()
     {
         if (data.ContainsKey("levels"))
@@ -440,50 +424,6 @@ public class ProgressHandler : MonoBehaviour {
         data.Add("header", headerItem);
     }
 
-    public IEnumerator PostProgressConos(System.Action<bool> result)
-    {
-        bool success = false;
-        saving = true;
-        yield return StartCoroutine(PostScoresConos(value => success = value));
-        result(success);
-    }
-
-    IEnumerator PostScoresConos(System.Action<bool> result)
-    {
-        string hash = Md5Sum(data.ToString() + secretKey);
-        string post_url = postURL;
-
-        // Build form to post in server
-        WWWForm form = new WWWForm();
-
-        form.AddField("jsonToDb", data.ToString());
-
-        // Post the URL to the site and create a download object to get the result.
-        WWW hs_post = new WWW(post_url, form);
-        yield return hs_post; // Wait until the download is done
-
-        if (hs_post.error == null)
-        {
-            JSONObject response = JSONObject.Parse(hs_post.text);
-            Debug.Log(response["code"].Str);
-            if (response["code"].Str != "200")
-            {
-                result(false);
-            }
-            else
-            {
-                result(true);
-            }
-            Debug.Log(hs_post.text);
-        }
-        else
-        {
-            Debug.Log(hs_post.error);
-            result(false);
-        }
-        saving = false;
-    }
-
     public void PostEvaluationData(LastSceneManager last)
     {
         lastSceneManager = last;
@@ -512,137 +452,6 @@ public class ProgressHandler : MonoBehaviour {
             lastSceneManager.MoveToMenu();
         }
     }
-
-    public void PostProgress(bool rank){
-		if(!localGame)
-		{
-			saving = true;
-			StartCoroutine(PostScores(rank));
-		}
-	}
-	// remember to use StartCoroutine when calling this function!
-	IEnumerator PostScores(bool rank)
-	{
-		//This connects to a server side php script that will add the name and score to a MySQL DB.
-		// Supply it with a string representing the players name and the players score.
-		string hash = Md5Sum(data.ToString() + secretKey);
-		string post_url = postURL/* + "name=" + WWW.EscapeURL(name) + "&score=" + score + "&hash=" + hash*/;
-		
-		// Build form to post in server
-		WWWForm form = new WWWForm();
-		//form.AddField("data", data.ToString());
-		form.AddField("jsonToDb", data.ToString());
-		
-		// Post the URL to the site and create a download object to get the result.
-		WWW hs_post = new WWW(post_url,form);
-		yield return hs_post; // Wait until the download is done
-
-		if (hs_post.error == null) {
-			JSONObject response= JSONObject.Parse(hs_post.text);
-			Debug.Log(response["code"].Str);
-			if(response["code"].Str!="200"){
-				SavePending();
-			}else
-			{
-				switch(game)
-				{
-					case "ArbolMusical":
-						sessionManager.activeKid.dontSyncArbolMusical=0;
-					break;
-					case "Rio":
-						sessionManager.activeKid.dontSyncRio=0;
-					break;
-					case "ArenaMagica":
-						sessionManager.activeKid.dontSyncArenaMagica=0;
-					break;
-					case "DondeQuedoLaBolita":
-						sessionManager.activeKid.dontSyncDondeQuedoLaBolita=0;
-					break;
-					case "JuegoDeSombras":
-						sessionManager.activeKid.dontSyncSombras=0;
-					break;
-					case "Tesoro":
-						sessionManager.activeKid.dontSyncTesoro=0;
-					break;
-				}
-				sessionManager.SaveSession();
-
-				post_url = rankURL;
-
-				form = new WWWForm();
-				form.AddField("userKey", key);
-				form.AddField("cid", kidKey);
-				form.AddField("gameKey", game);
-				DateTime tempDate=DateTime.Today;
-				string dateString=String.Format("{0:0000}-{1:00}-{2:00}",(int)tempDate.Year,tempDate.Month,tempDate.Day);
-				Debug.Log(dateString);
-				form.AddField("date", dateString);
-				hs_post = new WWW(post_url,form);
-				yield return hs_post; 
-				
-				if (hs_post.error == null) {
-					response= JSONObject.Parse(hs_post.text);
-					Debug.Log(response["code"].Str);
-					if(response["code"].Str!="200"){
-
-					}
-				}
-			}
-			Debug.Log (hs_post.text);
-			//print("There was an error posting the high score: " + hs_post.error);
-		} else {
-			Debug.Log(hs_post.error);
-			SavePending();
-		}
-		saving = false;
-	}
-
-	
-	IEnumerator PostSync(JSONObject syncData)
-	{
-		// Build form to post in server
-		WWWForm form = new WWWForm();
-		//form.AddField("data", data.ToString());
-		form.AddField("syncjsonToDB",syncData.ToString());
-		
-		// Post the URL to the site and create a download object to get the result.
-		WWW hs_post = new WWW(syncURL,form);
-		yield return hs_post; // Wait until the download is done
-		
-		if (hs_post.error == null)
-		{
-			JSONArray response= JSONArray.Parse(hs_post.text);
-			JSONArray jsonItems=syncData["pending"].Array;
-			int offsetIdx=0;
-			bool remaining=false;
-			for(int i=0;i<response.Length;i++){
-				if(response[i].Obj["code"].Str=="200")
-				{
-					jsonItems.Remove(i-offsetIdx);
-					offsetIdx++;
-				}
-				else{
-					remaining=true;
-				}
-			}
-			if(remaining)
-			{
-				Debug.Log("Sync Incomplete");
-				Debug.Log(syncData.ToString());
-				sessionManager.activeKid.offlineData=syncData.ToString();
-				sessionManager.SaveSession();
-			}else{
-				Debug.Log("Sync Complete");
-				Debug.Log(syncData.ToString());
-				sessionManager.activeKid.offlineData="";
-				sessionManager.SaveSession();
-			}
-		} else 
-		{
-			Debug.Log("Sync Error");
-			Debug.Log(hs_post.error);
-		}
-	}
 	 
 	void SavePending(){
         if (sessionManager)
@@ -673,23 +482,6 @@ public class ProgressHandler : MonoBehaviour {
         }
 	}
 
-	void Sync(){
-		if(!localGame && sessionManager)
-		{
-			string pendingData = sessionManager.activeKid.offlineData;
-			if(pendingData!="")
-			{
-				JSONObject jsonData=JSONObject.Parse(pendingData);
-				JSONArray jsonItems=jsonData["pending"].Array;
-				for(int i=0;i<jsonItems.Length;i++){
-					jsonItems[i].Obj["header"].Obj["userKey"]=key;
-				}
-				//PlayerPrefs.SetString("offlineData",jsonData.ToString());
-				//Debug.Log(jsonData.ToString());
-				StartCoroutine(PostSync(jsonData));
-			}
-		}
-	}
 	// Get the scores from the MySQL DB to display in a GUIText.
 	// remember to use StartCoroutine when calling this function!
 	/*IEnumerator GetScores()

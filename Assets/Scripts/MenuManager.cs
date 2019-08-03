@@ -101,10 +101,10 @@ public class MenuManager : MonoBehaviour
     MyIAPManager myIAPManager;
     SubscriptionsWays subscriptionsManager;
 
-    string gender = "";
     int[] dobYMD;
     static bool alreadyLogged = false;
 
+    string subscriptionIAPType;
     int numKids;
     int monthsOfSubs;
     int availableKidsInSubscription;
@@ -1023,7 +1023,7 @@ public class MenuManager : MonoBehaviour
             else
             {
                 HideAllCanvas();
-                registerMenu.ShowRegisterPanel();
+                registerMenu.ShowRegisterPanel(false);
             }
         }
         else
@@ -1040,20 +1040,20 @@ public class MenuManager : MonoBehaviour
     }
 
     //this will set all available kids to show wich of them you will add to your subscription plan
-    public void SetKidProfilesToAddASubscription(int numOfKids, string typeOfSubscription, UnityEngine.Purchasing.PurchaseEventArgs args)
+    public void SetKidProfilesToAddASubscription(int numOfKids, string typeOfSubscription)
     {
-        WriteTheText(selectionKidText, 24);
-        HideAllCanvas();
-        kidsPanel.SetActive(true);
-        numKids = numOfKids;
-
-        WriteTheText(addKidButton, 31);
-        addKidButton.onClick.RemoveAllListeners();
-        addKidButton.onClick.AddListener(() => ConfirmKidsPurchase(args, numOfKids, typeOfSubscription));
-        selectionKidBackButton.gameObject.SetActive(false);
-
         if (sessionManager.activeUser != null)
         {
+            WriteTheText(selectionKidText, 24);
+            HideAllCanvas();
+            kidsPanel.SetActive(true);
+            numKids = numOfKids;
+            subscriptionIAPType = typeOfSubscription;
+
+            WriteTheText(addKidButton, 31);
+            addKidButton.onClick.RemoveAllListeners();
+            addKidButton.onClick.AddListener(() => ConfirmKidsPurchase());
+            selectionKidBackButton.gameObject.SetActive(false);
 
             List<KidProfileCanvas> kidos = new List<KidProfileCanvas>();
             float deltaSize = miniKidContainer.GetComponent<RectTransform>().sizeDelta.x;
@@ -1092,8 +1092,7 @@ public class MenuManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("its not suscribed yet");
-
+            registerMenu.ShowRegisterPanel(true);
         }
         sessionManager.SaveSession();
     }
@@ -1110,8 +1109,8 @@ public class MenuManager : MonoBehaviour
         {
             ids.Add(id);
             profileCanvas.avatarImage.color = Color.white;
-            Color farben;
-            ColorUtility.TryParseHtmlString("#AB6021", out farben);
+            //Color farben;
+            ColorUtility.TryParseHtmlString("#AB6021", out Color farben);
             profileCanvas.buttonOfProfile.transform.GetChild(2).GetComponent<Image>().color = farben;
             miniCanvitas.Add(profileCanvas.buttonOfProfile);
             if (miniCanvitas.Count > numKids)
@@ -1124,7 +1123,12 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    void ConfirmKidsPurchase(UnityEngine.Purchasing.PurchaseEventArgs args, int kids, string typeOfSubscription)
+    public void ConfirmKidPurchase()
+    {
+        subscriptionsManager.SendSubscriptionData(numKids, sessionManager.activeKid.id.ToString(), sessionManager.activeUser.id, subscriptionIAPType);
+    }
+
+    public void ConfirmKidsPurchase()
     {
         string idsSt = "";
 
@@ -1143,7 +1147,7 @@ public class MenuManager : MonoBehaviour
         }
         Debug.Log(idsSt);
 
-        subscriptionsManager.SendSubscriptionData(kids, idsSt, sessionManager.activeUser.id, typeOfSubscription, args);
+        subscriptionsManager.SendSubscriptionData(numKids, idsSt, sessionManager.activeUser.id, subscriptionIAPType);
     }
 
     //this one goes and reset the password for a player if its needed
@@ -1795,7 +1799,7 @@ class RegisterMenu
         });
     }
 
-    public void ShowRegisterPanel()
+    public void ShowRegisterPanel(bool isIAP)
     {
         gameObject.SetActive(true);
         const string pathOfLoginMenuTetxs = "Login/SingInMenu";
@@ -1826,7 +1830,7 @@ class RegisterMenu
         signInButton.GetComponentInChildren<Text>().text = texts[13];
 
         signInButton.onClick.RemoveAllListeners();
-        signInButton.onClick.AddListener(TrySingInAndPurchase);
+        signInButton.onClick.AddListener(()=>TrySingInAndPurchase(isIAP));
 
         returnButton.onClick.RemoveAllListeners();
         returnButton.onClick.AddListener(() =>
@@ -1834,6 +1838,10 @@ class RegisterMenu
             ClearData();
             ShowLoginPanel();
         });
+        if (isIAP)
+        {
+            returnButton.gameObject.SetActive(false);
+        }
     }
 
     public void ShowTryPanel()
@@ -1915,12 +1923,13 @@ class RegisterMenu
         manager.TrySignIn(mail, pass, pass2, kidName, false);
     }
 
-    void TrySingInAndPurchase()
+    void TrySingInAndPurchase(bool isIAP)
     {
         var mail = inputEmailDad.field.text;
         var pass = inputPassDad.field.text;
         var pass2 = inputPassAgain.field.text;
         var kidName = inputName.field.text;
+        PlayerPrefs.SetInt(Keys.Buy_IAP, Convert.ToInt32(isIAP));
         manager.TrySignIn(mail, pass, pass2, kidName, true);
     }
 }
@@ -2078,8 +2087,6 @@ class GameMenu
         {
             evaluationButton.gameObject.SetActive(false);
         }
-
-        Debug.Log($"is in trail {isInTrail}");
 
         if (isActiveTheCurrentKid)
         {

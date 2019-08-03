@@ -10,6 +10,8 @@ public class Keys : MonoBehaviour {
     public static string First_Try = "frstTry";
     public static string Level_Of_Try = "lvlFTry";
 
+    public static string Buy_IAP = "BuIAP";
+
     public static string Active_User_Key = "activeUser";
     public static string Purchase_Key = "purchased";
     public static string Subscription_Purchased_Key = "subscriptionPurchased";

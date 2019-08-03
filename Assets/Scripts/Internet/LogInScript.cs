@@ -83,6 +83,7 @@ public class LogInScript : MonoBehaviour
                 Debug.Log("this is a error");
                 JSONObject jsonObj = JSONObject.Parse(request.downloadHandler.text);
                 Debug.Log(request.error);
+                Debug.Log(jsonObj);
                 string error = jsonObj.GetString("status");
                 if (error == "USER_NOT_FOUND")
                 {
@@ -117,7 +118,14 @@ public class LogInScript : MonoBehaviour
                     string parentkey = sessionManager.activeUser.kids[0].userkey;
                     int id = sessionManager.activeUser.kids[0].id;
                     sessionManager.SetKid(parentkey, id);
-                    menuController.ChangeAPrePaidCode(0);
+                    if (System.Convert.ToBoolean(PlayerPrefs.GetInt(Keys.Buy_IAP)))
+                    {
+                        menuController.ConfirmKidPurchase();
+                    }
+                    else
+                    {
+                        menuController.ChangeAPrePaidCode(0);
+                    }
                 }
             }
         }

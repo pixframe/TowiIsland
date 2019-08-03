@@ -65,6 +65,10 @@ public class PauseTheGame : MonoBehaviour {
         howToPlayButton.onClick.AddListener(HideTutorialButtons);
         playButton.onClick.AddListener(HideTutorialButtons);
         HideAllPanels();
+        if (PlayerPrefs.GetInt(Keys.First_Try) == 0)
+        {
+            pauseButton.gameObject.SetActive(false);
+        }
     }
 
     void PauseButton()
@@ -85,6 +89,7 @@ public class PauseTheGame : MonoBehaviour {
             Time.timeScale = 1;
         }
         pauseButton.gameObject.SetActive(true);
+        Debug.Log("Activate pause");
         pausePanel.SetActive(false);
         dontTouchPanel.SetActive(false);
     }
@@ -122,6 +127,10 @@ public class PauseTheGame : MonoBehaviour {
     {
         HideAllPanels();
         pauseButton.gameObject.SetActive(true);
+        if (PlayerPrefs.GetInt(Keys.First_Try) == 0)
+        {
+            pauseButton.gameObject.SetActive(false);
+        }
     }
 
     public void ShowKiwiEarnings(int kiwisEarn)

@@ -19,7 +19,6 @@ public class SessionManager : MonoBehaviour
     string syncLevelsURL = Keys.Api_Web_Key + "api/v2/levels/children/";
     string updateProfileURL = Keys.Api_Web_Key + "api/profile/update/";
     public List<Kid> temporalKids;
-    MenuManager menuManager;
 
     string idStrings;
     int kidsIAP;
@@ -144,7 +143,7 @@ public class SessionManager : MonoBehaviour
             }
             for (int c = 0; c < users[i].kids.Count; c++)
             {
-                if (users[i].kids[c].userkey == key||(key=="_local"&&users[i].userkey==key))
+                if (users[i].kids[c].userkey == key || (key == "_local" && users[i].userkey == key))
                 {
                     return users[i];
                 }
@@ -326,7 +325,7 @@ public class SessionManager : MonoBehaviour
                         {
                             string name = kidObj.GetValue("name").Str + " " + kidObj.GetValue("lastname").Str;
                             string key = kidObj.GetValue("key").Str;
-                            users[u].kids.Add(new Kid(cid, name, key, kidObj.GetBoolean("active"),kidObj.GetBoolean("trial")));
+                            users[u].kids.Add(new Kid(cid, name, key, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial")));
                             temporalKids.Add(users[u].kids[users[u].kids.Count - 1]);
                         }
                     }
@@ -360,7 +359,7 @@ public class SessionManager : MonoBehaviour
                     }
                     else
                     {
-                        s += ","+activeUser.kids[i].id.ToString();
+                        s += "," + activeUser.kids[i].id.ToString();
                     }
                 }
             }
@@ -402,7 +401,7 @@ public class SessionManager : MonoBehaviour
         BinaryFormatter binaryFormater = new BinaryFormatter();
 
         //Create an in memory stream
-        using(MemoryStream memoryStream = new MemoryStream())
+        using (MemoryStream memoryStream = new MemoryStream())
         {
             binaryFormater.Serialize(memoryStream, users);
             //Add it to player prefs
@@ -442,7 +441,6 @@ public class SessionManager : MonoBehaviour
 
     IEnumerator PostSyncProfiles(string key)
     {
-        string post_url = syncProfileURL;
         downlodingData = true;
 
         WWWForm form = new WWWForm();
@@ -530,7 +528,7 @@ public class SessionManager : MonoBehaviour
                     {
                         activeUser.kids[index].buyedIslandObjects.Add((int)buyedItems[o].Number);
                     }
-                    
+
                     if (activeUser.kids[index].birdsFirst || activeUser.kids[index].lavaFirst || activeUser.kids[index].monkeyFirst || activeUser.kids[index].riverFirst || activeUser.kids[index].sandFirst || activeUser.kids[index].treasureFirst)
                     {
                         activeUser.kids[index].anyFirstTime = true;
@@ -539,14 +537,16 @@ public class SessionManager : MonoBehaviour
                     {
                         activeUser.kids[index].anyFirstTime = false;
                     }
-                    string tyep = kidObj.GetString("suscriptionType");
-                    if (tyep == "monthly" || tyep == "quarterly")
+                    string type = kidObj.GetString("suscriptionType");
+                    if (type == "monthly" || type == "quarterly")
                     {
                         setType = true;
+                        PlayerPrefs.SetInt(Keys.First_Try, 1);
                     }
-                    else if (tyep == "monthly_inApp" || tyep == "quarterly_inApp")
+                    else if (type == "monthly_inApp" || type == "quarterly_inApp")
                     {
                         activeUser.kids[index].isIAPSubscribed = true;
+                        PlayerPrefs.SetInt(Keys.First_Try, 1);
                     }
 
                     if (activeKid != null)
@@ -565,7 +565,7 @@ public class SessionManager : MonoBehaviour
                 if (needStoreSync)
                 {
                     idStrings = GetKidsIds();
-                    menuManager.UpdateIAPSubscription(idStrings, kidsIAP);
+                    FindObjectOfType<MenuManager>().UpdateIAPSubscription(idStrings, kidsIAP);
                 }
                 SaveSession();
             }
@@ -711,7 +711,6 @@ public class SessionManager : MonoBehaviour
     IEnumerator PostChildSyncLevels()
     {
         downlodingData = true;
-        string post_url = syncLevelsURL;
         DateTime today = DateTime.Now;
 
         WWWForm form = new WWWForm();
@@ -729,43 +728,28 @@ public class SessionManager : MonoBehaviour
             }
             else
             {
-                JSONObject response = JSONObject.Parse(request.downloadHandler.text);
+                var json = JsonUtility.FromJson(request.downloadHandler.text, typeof(LevlSyncJson)) as LevlSyncJson;
 
                 //Birds Level Set
-                int birdsDifficulty = (int)response["arbolMusicalLevel"].Number;
-                int birdsLevel = (int)response["arbolMusicalSublevel"].Number;
-                SetTheCorrectLevel(ref activeKid.birdsDifficulty, ref activeKid.birdsLevel, birdsDifficulty, birdsLevel);
+                SetTheCorrectLevel(ref activeKid.birdsDifficulty, ref activeKid.birdsLevel, json.arbolMusicalLevel, json.arbolMusicalSublevel);
 
                 //River Level Set
-                int riverDifficulty = (int)response["rioLevel"].Number;
-                int riverLevel = (int)response["rioSublevel"].Number;
-                SetTheCorrectLevel(ref activeKid.riverDifficulty, ref activeKid.riverLevel, riverDifficulty, riverLevel);
+                SetTheCorrectLevel(ref activeKid.riverDifficulty, ref activeKid.riverLevel, json.rioLevel, json.rioSublevel);
 
                 //Monkey Level Set
-                int monekeyDifficulty = (int)response["monkeyLevel"].Number;
-                int monekeyLevel = (int)response["monkeySublevel"].Number;
-                SetTheCorrectLevel(ref activeKid.monkeyDifficulty, ref activeKid.monkeyLevel, monekeyDifficulty, monekeyLevel);
+                SetTheCorrectLevel(ref activeKid.monkeyDifficulty, ref activeKid.monkeyLevel, json.monkeyLevel, json.monkeySublevel);
 
                 //Lava Level Set
-                int lavaDifficulty = (int)response["sombrasLevel"].Number;
-                int lavaLevel = (int)response["sombrasSublevel"].Number;
-                SetTheCorrectLevel(ref activeKid.lavaDifficulty, ref activeKid.lavaLevel, lavaDifficulty, lavaLevel);
+                SetTheCorrectLevel(ref activeKid.lavaDifficulty, ref activeKid.lavaLevel, json.sombrasLevel, json.sombrasSublevel);
 
                 //Treasure Level Set
-                int treasureDifficulty = (int)response["tesoroLevel"].Number;
-                int treasureLevel = (int)response["tesoroSublevel"].Number;
-                SetTheCorrectLevel(ref activeKid.treasureDifficulty, ref activeKid.treasureLevel, treasureDifficulty, treasureLevel);
+                SetTheCorrectLevel(ref activeKid.treasureDifficulty, ref activeKid.treasureLevel, json.tesoroLevel, json.tesoroSublevel);
 
                 //Sand Level Set
-                int sandDifficulty = (int)response["arenaMagicaLevel"].Number;
-                int sandLevelA = (int)response["arenaMagicaSublevel"].Number;
-                int sandLevelB = (int)response["arenaMagicaSublevel2"].Number;
-                int sandLevelC = (int)response["arenaMagicaSublevel3"].Number;
-                SetTheCorrectLevel(ref activeKid.sandDifficulty, sandDifficulty);
-                SetTheCorrectLevel(ref activeKid.sandLevel, sandLevelA);
-                SetTheCorrectLevel(ref activeKid.sandLevel2, sandLevelB);
-                SetTheCorrectLevel(ref activeKid.sandLevel3, sandLevelC);
-
+                SetTheCorrectLevel(ref activeKid.sandDifficulty, json.arenaMagicaLevel);
+                SetTheCorrectLevel(ref activeKid.sandLevel, json.arenaMagicaSublevel);
+                SetTheCorrectLevel(ref activeKid.sandLevel2, json.arenaMagicaSublevel2);
+                SetTheCorrectLevel(ref activeKid.sandLevel3, json.arenaMagicaSublevel3);
             }
         }
 
@@ -791,6 +775,7 @@ public class SessionManager : MonoBehaviour
         {
             Debug.Log("We stick to the local data");
         }
+
     }
 
     void SetTheCorrectLevel(ref int level, int levelFromWeb)
@@ -1028,5 +1013,31 @@ public class SessionManager : MonoBehaviour
             playedMonkey = 0;
             playedTreasure = 0;
         }
+    }
+
+    [System.Serializable]
+    public class LevlSyncJson
+    {
+        public int arenaMagicaSublevel2 = 0;
+        public int rioSublevel = 0;
+        public int rioLevel = 0;
+        public int sombrasLevel = 0;
+        public int sombrasToday = 0;
+        public int monkeyToday = 0;
+        public int rioToday = 0;
+        public int sombrasSublevel = 0;
+        public int tesoroLevel = 0;
+        public int tesoroSublevel = 0;
+        public int arenaMagicaSublevel = 0;
+        public int arbolMusicalLevel = 0;
+        public int code = 0;
+        public int arenaToday = 0;
+        public int arenaMagicaSublevel3 = 0;
+        public int arenaMagicaLevel = 0;
+        public int arbolMusicalSublevel = 0;
+        public int tesoroToday = 0;
+        public int monkeySublevel = 0;
+        public int monkeyLevel = 0;
+        public int arbolToday = 0;
     }
 }

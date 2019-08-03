@@ -140,12 +140,12 @@ public class SubscriptionsWays : MonoBehaviour
 
     }
 
-    public void SendSubscriptionData(int kids, string ids, int parentId, string typeOfSubscription, UnityEngine.Purchasing.PurchaseEventArgs args)
+    public void SendSubscriptionData(int kids, string ids, int parentId, string typeOfSubscription)
     {
-        StartCoroutine(SendIAP(kids, ids, parentId, typeOfSubscription, args));
+        StartCoroutine(SendIAP(kids, ids, parentId, typeOfSubscription));
     }
 
-    IEnumerator SendIAP(int kids, string ids, int parentId, string typeOfSubscription, UnityEngine.Purchasing.PurchaseEventArgs args)
+    IEnumerator SendIAP(int kids, string ids, int parentId, string typeOfSubscription)
     {
         WWWForm form = new WWWForm();
         form.AddField("number_kids", kids);
@@ -155,24 +155,28 @@ public class SubscriptionsWays : MonoBehaviour
 
         Debug.Log(form.data);
 
-        WWW post = new WWW(IAPURL, form);
-
-        yield return post;
-
-        Debug.Log(post.text);
-
-        JSONObject jsonOBJ = JSONObject.Parse(post.text);
-
-        if (jsonOBJ["status"].Str == "Succesful")
+        using (UnityWebRequest request = UnityWebRequest.Post(IAPURL, form))
         {
-            sessionManager.activeUser.suscriptionsLeft = (int)jsonOBJ.GetNumber("suscriptionsAvailables");
-            sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
-            menuManager.SetKidsProfiles();
-            FindObjectOfType<MyIAPManager>().ConfirmPurchaseProduct(args);
-        }
-        else
-        {
-            menuManager.ShowWarning(9);
+            yield return request.SendWebRequest();
+            if (request.isNetworkError || request.isHttpError)
+            {
+                menuManager.ShowWarning(9);
+            }
+            else
+            {
+                JSONObject jsonOBJ = JSONObject.Parse(request.downloadHandler.text);
+                if (jsonOBJ["status"].Str == "Succesful")
+                {
+                    sessionManager.activeUser.suscriptionsLeft = (int)jsonOBJ.GetNumber("suscriptionsAvailables");
+                    sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                    menuManager.SetKidsProfiles();
+                    FindObjectOfType<MyIAPManager>().ConfirmPurchaseProduct();
+                }
+                else
+                {
+                    menuManager.ShowWarning(9);
+                }
+            }
         }
     }
 

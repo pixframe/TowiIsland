@@ -11,7 +11,6 @@ public class MonkeyController : MonoBehaviour {
     Vector3 direct;
     Vector3 direct1;
 
-    float time = 0.3f;
     float yUpPosition = 2f;
     float yDownPosition;
     float movingSpeed;
