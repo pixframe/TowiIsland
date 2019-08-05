@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -44,6 +45,7 @@ public class MenuManager : MonoBehaviour
     public Text selectionKidText;
     public Button selectionKidBackButton;
     public Button addKidButton;
+    public InputField kidLooker;
 
     [Header("Credits")]
     public GameObject creditCanvas;
@@ -386,6 +388,7 @@ public class MenuManager : MonoBehaviour
         configMenu.automaticButton.onClick.AddListener(SetDeviceLanguage);
         configMenu.logoButton.onClick.AddListener(ShowTextRoute);
         configMenu.updateDataButton.onClick.AddListener(logInScript.UpdateData);
+        kidLooker.onValueChanged.AddListener(delegate { UpdateKids(); });
 
     }
 
@@ -400,6 +403,8 @@ public class MenuManager : MonoBehaviour
         HideAllCanvas();
         kidsPanel.SetActive(true);
 
+        kidLooker.text = "";
+
         WriteTheText(addKidButton, 30);
         addKidButton.onClick.RemoveAllListeners();
         addKidButton.onClick.AddListener(AddKidShower);
@@ -407,46 +412,57 @@ public class MenuManager : MonoBehaviour
 
         if (sessionManager.activeUser != null)
         {
-            List<KidProfileCanvas> kidos = new List<KidProfileCanvas>();
-            float deltaSize = miniKidContainer.GetComponent<RectTransform>().sizeDelta.x;
-            miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
-            for (int i = 0; i < miniKidContainer.transform.childCount; i++)
-            {
-                Destroy(miniKidContainer.transform.GetChild(i).gameObject);
-            }
-            int kidsNumber = sessionManager.activeUser.kids.Count;
-            for (int i = 0; i < kidsNumber; i++)
-            {
-                GameObject objectToInstance = Instantiate(miniKidCanvas, miniKidContainer.transform);
-                kidos.Add(new KidProfileCanvas(objectToInstance));
-                float addableSize = kidos[i].gameObject.GetComponent<RectTransform>().sizeDelta.x * 2f;
-                miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(miniKidContainer.GetComponent<RectTransform>().sizeDelta.x + addableSize, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
-                //kidos[i].gameObject.GetComponent<RectTransform>().parent = miniKidContainer.GetComponent<RectTransform>();
-                kidos[i].gameObject.GetComponent<RectTransform>().SetParent(miniKidContainer.GetComponent<RectTransform>());
-                if (i > 0)
-                {
-                    Vector2 pos = kidos[i - 1].gameObject.GetComponent<RectTransform>().localPosition;
-                    float positionOfCanvitas = pos.x + addableSize;
-                    kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, pos.y);
-                }
-                else
-                {
-                    float positionOfCanvitas = addableSize / 2;
-                    kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, kidos[i].gameObject.GetComponent<RectTransform>().localPosition.y);
-                }
-                kidos[i].SetKidName(sessionManager.activeUser.kids[i].name);
-                string parentkey = sessionManager.activeUser.kids[i].userkey;
-                int id = sessionManager.activeUser.kids[i].id;
-                kidos[i].buttonOfProfile.onClick.AddListener(() => SetKidProfile(parentkey, id));
-                kidos[i].ChangeAvatar(sessionManager.activeUser.kids[i].avatar);
-                if (!sessionManager.activeUser.kids[i].isActive)
-                {
-                    kidos[i].PutInGrey();
-                }
-            }
+            UpdateKids();
         }
 
         sessionManager.SaveSession();
+    }
+
+    void UpdateKids()
+    {
+        List<KidProfileCanvas> kidos = new List<KidProfileCanvas>();
+        float deltaSize = miniKidContainer.GetComponent<RectTransform>().sizeDelta.x;
+        miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
+        for (int i = 0; i < miniKidContainer.transform.childCount; i++)
+        {
+            Destroy(miniKidContainer.transform.GetChild(i).gameObject);
+        }
+        int kidsNumber = sessionManager.activeUser.kids.Count;
+        var kidsToShow = sessionManager.activeUser.kids.FindAll(kid => {
+            var kidName = kid.name.ToLowerInvariant();
+            var lookingKid = kidLooker.text.ToLowerInvariant();
+            return kidName.Contains(lookingKid);
+        });
+
+        for (int i = 0; i < kidsToShow.Count; i++)
+        {
+            GameObject objectToInstance = Instantiate(miniKidCanvas, miniKidContainer.transform);
+            kidos.Add(new KidProfileCanvas(objectToInstance));
+            float addableSize = kidos[i].gameObject.GetComponent<RectTransform>().sizeDelta.x * 2f;
+            miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(miniKidContainer.GetComponent<RectTransform>().sizeDelta.x + addableSize, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
+            //kidos[i].gameObject.GetComponent<RectTransform>().parent = miniKidContainer.GetComponent<RectTransform>();
+            kidos[i].gameObject.GetComponent<RectTransform>().SetParent(miniKidContainer.GetComponent<RectTransform>());
+            if (i > 0)
+            {
+                Vector2 pos = kidos[i - 1].gameObject.GetComponent<RectTransform>().localPosition;
+                float positionOfCanvitas = pos.x + addableSize;
+                kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, pos.y);
+            }
+            else
+            {
+                float positionOfCanvitas = addableSize / 2;
+                kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, kidos[i].gameObject.GetComponent<RectTransform>().localPosition.y);
+            }
+            kidos[i].SetKidName(kidsToShow[i].name);
+            string parentkey = kidsToShow[i].userkey;
+            int id = kidsToShow[i].id;
+            kidos[i].buttonOfProfile.onClick.AddListener(() => SetKidProfile(parentkey, id));
+            kidos[i].ChangeAvatar(kidsToShow[i].avatar);
+            if (!kidsToShow[i].isActive)
+            {
+                kidos[i].PutInGrey();
+            }
+        }
     }
 
     //This will set the shop

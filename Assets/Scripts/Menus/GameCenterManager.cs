@@ -22,6 +22,8 @@ public class GameCenterManager : MonoBehaviour {
     public GameObject centerPanel;
     public GameObject warningPanel;
     public GameObject loadingCanvas;
+    public Button leftButton;
+    public Button rigthButton;
 
     GamePanel previosPanel;
     GamePanel nextPanel;
@@ -44,8 +46,10 @@ public class GameCenterManager : MonoBehaviour {
     public InputField difficultyInput;
     public InputField sandOnly;
 
+
     int index;
     List<int> stations = new List<int> { 0, 1, 2, 3, 4, 5 };
+    List<bool> unlocks = new List<bool> { false, false, false, false, false, false };
     //int[] stations = new int[] { 2, 3, 5 };
     //int[] stations = new int[] { 0, 1 };
     //int[] stations = new int[] { 4 };
@@ -96,6 +100,8 @@ public class GameCenterManager : MonoBehaviour {
 
         backPanel.gameObject.GetComponent<Button>().onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Left));
         fowardPanel.gameObject.GetComponent<Button>().onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Right));
+        leftButton.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Left));
+        rigthButton.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Right));
 
         currentPanel.playButton.GetComponentInChildren<Text>().text = stringsToShow[6];
         warningPanel.GetComponentInChildren<Text>().text = stringsToShow[7];
@@ -178,35 +184,33 @@ public class GameCenterManager : MonoBehaviour {
         {
             if (sessionManager.activeKid.anyFirstTime)
             {
-                stations.Clear();
                 if (sessionManager.activeKid.birdsFirst)
                 {
-                    stations.Add(0);
+                    unlocks[0] = true;
                 }
                 if (sessionManager.activeKid.sandFirst)
                 {
-                    stations.Add(1);
+                    unlocks[1] = true;
                 }
                 if (sessionManager.activeKid.treasureFirst)
                 {
-                    stations.Add(2);
+                    unlocks[2] = true;
                 }
                 if (sessionManager.activeKid.monkeyFirst)
                 {
-                    stations.Add(3);
+                    unlocks[3] = true;
                 }
                 if (sessionManager.activeKid.riverFirst)
                 {
-                    stations.Add(4);
+                    unlocks[4] = true;
                 }
                 if (sessionManager.activeKid.lavaFirst)
                 {
-                    stations.Add(5);
+                    unlocks[5] = true;
                 }
             }
             else
             {
-                stations.Clear();
                 List<int> removeMissionsIndex = new List<int>();
                 for (int i = 0; i < sessionManager.activeKid.activeMissions.Count; i++)
                 {
@@ -215,49 +219,49 @@ public class GameCenterManager : MonoBehaviour {
                         case Keys.Bird_Game_Name:
                             if (sessionManager.activeKid.playedBird == 0)
                             {
-                                stations.Add(0);
                                 activeMissions.Add(Keys.Bird_Game_Name);
+                                unlocks[0] = true;
                             }
                             break;
                         case Keys.Sand_Game_Name:
                             if (sessionManager.activeKid.playedSand == 0)
                             {
-                                stations.Add(1);
                                 activeMissions.Add(Keys.Sand_Game_Name);
+                                unlocks[1] = true;
                             }
                             break;
                         case Keys.Treasure_Game_Name:
                             if (sessionManager.activeKid.playedTreasure == 0)
                             {
-                                stations.Add(2);
                                 activeMissions.Add(Keys.Treasure_Game_Name);
+                                unlocks[2] = true;
                             }
                             break;
                         case Keys.Monkey_Game_Name:
                             if (sessionManager.activeKid.playedMonkey == 0)
                             {
-                                stations.Add(3);
                                 activeMissions.Add(Keys.Monkey_Game_Name);
+                                unlocks[3] = true;
                             }
                             break;
                         case Keys.River_Game_Name:
                             if (sessionManager.activeKid.playedRiver == 0)
                             {
-                                stations.Add(4);
                                 activeMissions.Add(Keys.River_Game_Name);
+                                unlocks[4] = true;
                             }
                             break;
                         case Keys.Lava_Game_Name:
                             if (sessionManager.activeKid.playedLava == 0)
                             {
-                                stations.Add(5);
                                 activeMissions.Add(Keys.Lava_Game_Name);
+                                unlocks[5] = true;
                             }
                             break;
                         default:
                             if (sessionManager.activeKid.playedBird == 0)
                             {
-                                stations.Add(0);
+
                             }
                             break;
                     }
@@ -268,6 +272,13 @@ public class GameCenterManager : MonoBehaviour {
                 {
                     activeMissionToDebug += $"{s}, ";
                 }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < unlocks.Count; i++)
+            {
+                unlocks[i] = true;
             }
         }
     }
@@ -308,96 +319,46 @@ public class GameCenterManager : MonoBehaviour {
         backPanel.SetActive(true);
         centerPanel.SetActive(true);
         fowardPanel.SetActive(true);
-        if (stations.Count < 1)
+
+        if (directtion == DirectionOfSwipe.Right)
         {
-            if (sessionManager.activeKid.anyFirstTime)
-            {
-                LoadNewLogin();
-            }
-            else
-            {
-                warningPanel.SetActive(true);
-                backPanel.SetActive(false);
-                centerPanel.SetActive(false);
-                fowardPanel.SetActive(false);
-            }
+            index++;
         }
-        else
+        else if (directtion == DirectionOfSwipe.Left)
         {
-            if (directtion == DirectionOfSwipe.Right)
-            {
-                index++;
-            }
-            else if (directtion == DirectionOfSwipe.Left)
-            {
-                index--;
-            }
-
-            int count = stations.Count;
-
-            if (count < 2)
-            {
-                index = 0;
-                previosPanel.theObject.SetActive(false);
-                nextPanel.theObject.SetActive(false);
-                SetPanel(currentPanel, stations[index], true);
-            }
-            else if (count < 3)
-            {
-                if (index == count)
-                {
-                    index = count - 1;
-                }
-
-                if (index == -1)
-                {
-                    index = 0;
-                }
-
-                if (index == 0)
-                {
-                    previosPanel.theObject.SetActive(false);
-                    nextPanel.theObject.SetActive(true);
-                    SetPanel(nextPanel, stations[index + 1], false);
-                }
-                if (index == 1)
-                {
-                    previosPanel.theObject.SetActive(true);
-                    nextPanel.theObject.SetActive(false);
-                    SetPanel(previosPanel, stations[index - 1], false);
-                }
-                SetPanel(currentPanel, stations[index], true);
-            }
-            else
-            {
-                if (index == count)
-                {
-                    index = 0;
-                }
-
-                if (index == -1)
-                {
-                    index += count;
-                }
-
-                int previous = index - 1;
-
-                if (previous == -1)
-                {
-                    previous += count;
-                }
-
-                int next = index + 1;
-                if (next >= count)
-                {
-                    next = 0;
-                }
-
-                SetPanel(currentPanel, stations[index], true);
-                SetPanel(nextPanel, stations[next], false);
-                SetPanel(previosPanel, stations[previous], false);
-            }
+            index--;
         }
+
+        int count = stations.Count;
+
+        if (index >= count)
+        {
+            index = 0;
+        }
+
+        if (index == -1)
+        {
+            index += count;
+        }
+
+        int previous = index - 1;
+
+        if (previous < 0)
+        {
+            previous += count;
+        }
+
+        int next = index + 1;
+        if (next >= count)
+        {
+            next = 0;
+        }
+
+        Debug.Log($"count is {count}, previous is {previous}, index is {index}, next value is {next}");
+
+        SetPanel(currentPanel, index, true);
+        SetPanel(nextPanel, next, false);
+        SetPanel(previosPanel, previous, false);
 
     }
 
@@ -414,72 +375,37 @@ public class GameCenterManager : MonoBehaviour {
 
         int count = stations.Count;
 
-        if (count < 2)
+        if (index >= count)
         {
             index = 0;
-            previosPanel.theObject.SetActive(false);
-            nextPanel.theObject.SetActive(false);
-            SetPanel(currentPanel, stations[index], true);
         }
-        else if (count < 3)
+
+        if (index == -1)
         {
-            if (index == count)
-            {
-                index = count - 1;
-            }
-
-            if (index == -1)
-            {
-                index = 0;
-            }
-
-            if (index == 0)
-            {
-                previosPanel.theObject.SetActive(false);
-                nextPanel.theObject.SetActive(true);
-                SetPanel(nextPanel, stations[index + 1], false);
-            }
-            if (index == 1)
-            {
-                previosPanel.theObject.SetActive(true);
-                nextPanel.theObject.SetActive(false);
-                SetPanel(previosPanel, stations[index - 1], false);
-            }
-            SetPanel(currentPanel, stations[index], true);
+            index += count;
         }
-        else
+
+        int previous = index - 1;
+
+        if (previous == -1)
         {
-            if (index == count)
-            {
-                index = 0;
-            }
-
-            if (index == -1)
-            {
-                index += count;
-            }
-
-            int previous = index - 1;
-
-            if (previous == -1)
-            {
-                previous += count;
-            }
-
-            int next = index + 1;
-            if (next >= count)
-            {
-                next = 0;
-            }
-
-            SetPanel(currentPanel, stations[index], true);
-            SetPanel(nextPanel, stations[next], false);
-            SetPanel(previosPanel, stations[previous], false);
+            previous += count;
         }
+
+        int next = index + 1;
+        if (next >= count)
+        {
+            next = 0;
+        }
+
+        SetPanel(currentPanel, index, true);
+        SetPanel(nextPanel, next, false);
+        SetPanel(previosPanel, previous, false);
     }
 
     void SetPanel(GamePanel panel, int number, bool isCenter)
     {
+        Debug.Log(number);
         panel.backgroundPanel.sprite = backgrounds[number];
         panel.gameText.text = stringsToShow[number];
         panel.barColor.color = barColors[number];
@@ -491,6 +417,16 @@ public class GameCenterManager : MonoBehaviour {
         }
         else
         {
+            panel.playButton.gameObject.SetActive(false);
+        }
+
+        if (unlocks[number])
+        {
+            panel.blockPanel.SetActive(false);
+        }
+        else
+        {
+            panel.blockPanel.SetActive(true);
             panel.playButton.gameObject.SetActive(false);
         }
     }
@@ -580,6 +516,7 @@ public struct GamePanel
         iconImage = gamePanel.transform.GetChild(3).GetComponent<Image>();
         captureImage = gamePanel.transform.GetChild(4).GetComponent<Image>();
         playButton = gamePanel.transform.GetChild(5).GetComponent<Button>();
+        blockPanel = gamePanel.transform.Find("Block Panel").gameObject;
     }
 
     public GameObject theObject;
@@ -589,4 +526,6 @@ public struct GamePanel
     public Image iconImage;
     public Image captureImage;
     public Button playButton;
+    public GameObject blockPanel;
+
 }
