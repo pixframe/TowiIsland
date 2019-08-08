@@ -24,6 +24,8 @@ public class GameCenterManager : MonoBehaviour {
     public GameObject loadingCanvas;
     public Button leftButton;
     public Button rigthButton;
+    public Button panelLeftButton;
+    public Button panelRightButton;
 
     GamePanel previosPanel;
     GamePanel nextPanel;
@@ -75,7 +77,6 @@ public class GameCenterManager : MonoBehaviour {
     {
         StartCoroutine(LoadLoader());
         sessionManager = FindObjectOfType<SessionManager>();
-        sessionManager = FindObjectOfType<SessionManager>();
         audioPlayer = FindObjectOfType<AudioPlayerForMenus>();
         textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Menus/GameSelectionIsland");
         stringsToShow = TextReader.TextsToShow(textAsset);
@@ -96,15 +97,19 @@ public class GameCenterManager : MonoBehaviour {
         eventTrigger.triggers.Add(t2);
 
         goBackButton.onClick.AddListener(GoBackScene);
-        warningPanel.GetComponentInChildren<Button>().onClick.AddListener(GoBackScene);
 
-        backPanel.gameObject.GetComponent<Button>().onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Left));
-        fowardPanel.gameObject.GetComponent<Button>().onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Right));
+
+        previosPanel.button.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Left));
+        nextPanel.button.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Right));
+
+        previosPanel.blockPanel.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Left));
+        nextPanel.blockPanel.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Right));
+
         leftButton.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Left));
         rigthButton.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Right));
 
         currentPanel.playButton.GetComponentInChildren<Text>().text = stringsToShow[6];
-        warningPanel.GetComponentInChildren<Text>().text = stringsToShow[7];
+
 
         ChildGames();
         ShowLoaderCanvas();
@@ -211,7 +216,6 @@ public class GameCenterManager : MonoBehaviour {
             }
             else
             {
-                List<int> removeMissionsIndex = new List<int>();
                 for (int i = 0; i < sessionManager.activeKid.activeMissions.Count; i++)
                 {
                     switch (sessionManager.activeKid.activeMissions[i])
@@ -266,12 +270,6 @@ public class GameCenterManager : MonoBehaviour {
                             break;
                     }
                 }
-
-                string activeMissionToDebug = "";
-                foreach (string s in activeMissions)
-                {
-                    activeMissionToDebug += $"{s}, ";
-                }
             }
         }
         else
@@ -314,51 +312,58 @@ public class GameCenterManager : MonoBehaviour {
 
     public void ChangeMenus()
     {
-        goBackButton.gameObject.SetActive(true);
-        loadingCanvas.SetActive(false);
-        backPanel.SetActive(true);
-        centerPanel.SetActive(true);
-        fowardPanel.SetActive(true);
-
-        if (directtion == DirectionOfSwipe.Right)
+        if (unlocks.Contains(true))
         {
-            index++;
+            goBackButton.gameObject.SetActive(true);
+            loadingCanvas.SetActive(false);
+            backPanel.SetActive(true);
+            centerPanel.SetActive(true);
+            fowardPanel.SetActive(true);
+
+            if (directtion == DirectionOfSwipe.Right)
+            {
+                index++;
+            }
+            else if (directtion == DirectionOfSwipe.Left)
+            {
+                index--;
+            }
+
+            int count = stations.Count;
+
+            if (index >= count)
+            {
+                index = 0;
+            }
+
+            if (index == -1)
+            {
+                index += count;
+            }
+
+            int previous = index - 1;
+
+            if (previous < 0)
+            {
+                previous += count;
+            }
+
+            int next = index + 1;
+            if (next >= count)
+            {
+                next = 0;
+            }
+
+            Debug.Log($"count is {count}, previous is {previous}, index is {index}, next value is {next}");
+
+            SetPanel(currentPanel, index, true);
+            SetPanel(nextPanel, next);
+            SetPanel(previosPanel, previous);
         }
-        else if (directtion == DirectionOfSwipe.Left)
+        else
         {
-            index--;
+            ShowWarning();
         }
-
-        int count = stations.Count;
-
-        if (index >= count)
-        {
-            index = 0;
-        }
-
-        if (index == -1)
-        {
-            index += count;
-        }
-
-        int previous = index - 1;
-
-        if (previous < 0)
-        {
-            previous += count;
-        }
-
-        int next = index + 1;
-        if (next >= count)
-        {
-            next = 0;
-        }
-
-        Debug.Log($"count is {count}, previous is {previous}, index is {index}, next value is {next}");
-
-        SetPanel(currentPanel, index, true);
-        SetPanel(nextPanel, next, false);
-        SetPanel(previosPanel, previous, false);
 
     }
 
@@ -399,8 +404,13 @@ public class GameCenterManager : MonoBehaviour {
         }
 
         SetPanel(currentPanel, index, true);
-        SetPanel(nextPanel, next, false);
-        SetPanel(previosPanel, previous, false);
+        SetPanel(nextPanel, next);
+        SetPanel(previosPanel, previous);
+    }
+
+    void SetPanel(GamePanel panel, int number)
+    {
+        SetPanel(panel, number, false);
     }
 
     void SetPanel(GamePanel panel, int number, bool isCenter)
@@ -418,16 +428,22 @@ public class GameCenterManager : MonoBehaviour {
         else
         {
             panel.playButton.gameObject.SetActive(false);
+
         }
 
         if (unlocks[number])
         {
-            panel.blockPanel.SetActive(false);
+            panel.blockPanel.gameObject.SetActive(false);
         }
         else
         {
-            panel.blockPanel.SetActive(true);
+            panel.blockPanel.gameObject.SetActive(true);
             panel.playButton.gameObject.SetActive(false);
+            if (isCenter)
+            {
+                panel.blockPanel.onClick.RemoveAllListeners();
+                panel.blockPanel.onClick.AddListener(ShowDisclaimer);
+            }
         }
     }
 
@@ -441,8 +457,6 @@ public class GameCenterManager : MonoBehaviour {
     {
         if (FindObjectOfType<DemoKey>())
         {
-            int stationVar = stations[index];
-
             int change = 0;
 
             int level = 0;
@@ -503,29 +517,54 @@ public class GameCenterManager : MonoBehaviour {
         goBackButton.gameObject.SetActive(false);
         loadingCanvas.SetActive(true);
     }
+
+    void ShowWarning()
+    {
+        loadingCanvas.SetActive(false);
+        warningPanel.SetActive(true);
+        warningPanel.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
+        warningPanel.GetComponentInChildren<Button>().onClick.AddListener(GoBackScene);
+        warningPanel.GetComponentInChildren<Text>().text = stringsToShow[7];
+    }
+
+    void ShowDisclaimer()
+    {
+        loadingCanvas.SetActive(false);
+        warningPanel.SetActive(true);
+        warningPanel.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
+        warningPanel.GetComponentInChildren<Button>().onClick.AddListener(()=>
+        {
+            warningPanel.SetActive(false);
+            ChangeMenus();
+
+        });
+        warningPanel.GetComponentInChildren<Text>().text = stringsToShow[8];
+    }
 }
 
 public struct GamePanel
 {
     public GamePanel(GameObject gamePanel)
     {
-        theObject = gamePanel;
+        gameObject = gamePanel;
+        button = gameObject.GetComponent<Button>();
         backgroundPanel = gamePanel.GetComponent<Image>();
         gameText = gamePanel.transform.GetChild(1).GetComponent<Text>();
         barColor = gamePanel.transform.GetChild(2).GetComponent<Image>();
         iconImage = gamePanel.transform.GetChild(3).GetComponent<Image>();
         captureImage = gamePanel.transform.GetChild(4).GetComponent<Image>();
         playButton = gamePanel.transform.GetChild(5).GetComponent<Button>();
-        blockPanel = gamePanel.transform.Find("Block Panel").gameObject;
+        blockPanel = gamePanel.transform.Find("Block Panel").GetComponent<Button>();
     }
 
-    public GameObject theObject;
+    public GameObject gameObject;
+    public Button button;
     public Image backgroundPanel;
     public Text gameText;
     public Image barColor;
     public Image iconImage;
     public Image captureImage;
     public Button playButton;
-    public GameObject blockPanel;
+    public Button blockPanel;
 
 }

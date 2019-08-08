@@ -110,7 +110,6 @@ public class LogInScript : MonoBehaviour
                 sessionManager.activeUser.trialAccount = false;
                 sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
                 sessionManager.SaveSession();
-                menuController.SetKidsProfiles();
                 Debug.Log("We finish the login succesfully");
                 if (newPaidUser)
                 {
@@ -126,6 +125,10 @@ public class LogInScript : MonoBehaviour
                     {
                         menuController.ChangeAPrePaidCode(0);
                     }
+                }
+                else
+                {
+                    menuController.SetKidsProfiles();
                 }
             }
         }
@@ -314,7 +317,16 @@ public class LogInScript : MonoBehaviour
             PlayerPrefs.SetInt(Keys.Evaluations_Saved, dataNotSavedByProblems);
         }
 
-        Debug.Log($"Evaluations to be saved {PlayerPrefs.GetInt(Keys.Evaluations_Saved)}, Games to be saved {PlayerPrefs.GetInt(Keys.Games_Saved)}");
+        if (PlayerPrefs.GetInt(Keys.Evaluations_Saved) == 0 || PlayerPrefs.GetInt(Keys.Games_Saved) == 0)
+        {
+            Debug.Log("Ok");
+            menuController.ShowSyncMessage(1);
+        }
+        else
+        {
+            Debug.Log("Not OK");
+            menuController.ShowSyncMessage(2);
+        }
     }
 
     IEnumerator UpdateDataToSend(SessionManager.User user)

@@ -122,7 +122,7 @@ public class MenuManager : MonoBehaviour
         //here we start the process of initrilization
         Initialization();
         dobYMD = new int[0];
-        PlayerPrefs.SetInt(Keys.First_Try, 0);
+        //PlayerPrefs.SetInt(Keys.First_Try, 0);
     }
 
     // Use this for initialization
@@ -389,7 +389,6 @@ public class MenuManager : MonoBehaviour
         configMenu.logoButton.onClick.AddListener(ShowTextRoute);
         configMenu.updateDataButton.onClick.AddListener(logInScript.UpdateData);
         kidLooker.onValueChanged.AddListener(delegate { UpdateKids(); });
-
     }
 
     #endregion
@@ -462,6 +461,78 @@ public class MenuManager : MonoBehaviour
             {
                 kidos[i].PutInGrey();
             }
+        }
+    }
+
+    //this will set all available kids to show wich of them you will add to your subscription plan
+    public void SetKidProfilesToAddASubscription(int numOfKids, string typeOfSubscription)
+    {
+        WriteTheText(selectionKidText, 24);
+        HideAllCanvas();
+        kidsPanel.SetActive(true);
+        numKids = numOfKids;
+        subscriptionIAPType = typeOfSubscription;
+
+        if (sessionManager.activeUser != null)
+        {
+            WriteTheText(addKidButton, 31);
+            addKidButton.onClick.RemoveAllListeners();
+            addKidButton.onClick.AddListener(() => ConfirmKidsPurchase());
+            selectionKidBackButton.gameObject.SetActive(false);
+
+            float deltaSize = miniKidContainer.GetComponent<RectTransform>().sizeDelta.x;
+            miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
+            for (int i = 0; i < miniKidContainer.transform.childCount; i++)
+            {
+                Destroy(miniKidContainer.transform.GetChild(i).gameObject);
+            }
+
+            UpdateKidsToBuy();
+        }
+        else
+        {
+            registerMenu.ShowRegisterPanel(true);
+        }
+        sessionManager.SaveSession();
+    }
+
+    void UpdateKidsToBuy()
+    {
+
+        List<KidProfileCanvas> kidos = new List<KidProfileCanvas>();
+
+        kidLooker.text = "";
+
+        var kidsToShow = sessionManager.activeUser.kids.FindAll(kid => {
+            var kidName = kid.name.ToLowerInvariant();
+            var lookingKid = kidLooker.text.ToLowerInvariant();
+            return kidName.Contains(lookingKid);
+        });
+
+        for (int i = 0; i < kidsToShow.Count; i++)
+        {
+            GameObject theObject = Instantiate(miniKidCanvas, miniKidContainer.transform);
+            kidos.Add(new KidProfileCanvas(theObject));
+            float addableSize = kidos[i].gameObject.GetComponent<RectTransform>().sizeDelta.x * 2f;
+            miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(miniKidContainer.GetComponent<RectTransform>().sizeDelta.x + addableSize, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
+            kidos[i].gameObject.GetComponent<RectTransform>().parent = miniKidContainer.GetComponent<RectTransform>();
+            if (i > 0)
+            {
+                Vector2 pos = kidos[i - 1].gameObject.GetComponent<RectTransform>().localPosition;
+                float positionOfCanvitas = pos.x + addableSize;
+                kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, pos.y);
+            }
+            else
+            {
+                float positionOfCanvitas = addableSize / 2;
+                kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, kidos[i].gameObject.GetComponent<RectTransform>().localPosition.y);
+            }
+            kidos[i].SetKidName(kidsToShow[i].name);
+            string parentkey = kidsToShow[i].userkey;
+            int id = kidsToShow[i].id;
+            kidos[i].buttonOfProfile.onClick.AddListener(() => SetKidIdToSubscriptionPlan(id, kidos[i]));
+            kidos[i].PutInGrey();
+            kidos[i].ChangeAvatar(kidsToShow[i].avatar);
         }
     }
 
@@ -548,7 +619,14 @@ public class MenuManager : MonoBehaviour
     {
         if (!needInternetConectionNow)
         {
-            StartCoroutine(ShowMenuInCorrectTime());
+            if (sessionManager.activeKid != null)
+            {
+                StartCoroutine(ShowMenuInCorrectTime());
+            }
+            else
+            {
+                ShowFirstMenu();
+            }
         }
         else
         {
@@ -567,11 +645,11 @@ public class MenuManager : MonoBehaviour
         HideAllCanvas();
         if (key)
         {
-            gameMenuObject.ShowThisMenu(true, false, IsEvaluationAvilable(), true);
+            gameMenuObject.ShowThisMenu(true, false, IsEvaluationAvilable(), true, 0);
         }
         else
         {
-            gameMenuObject.ShowThisMenu(sessionManager.activeKid.isActive, PlayerPrefs.GetInt(Keys.First_Try) == 0, IsEvaluationAvilable(), false);
+            gameMenuObject.ShowThisMenu(sessionManager.activeKid.isActive, PlayerPrefs.GetInt(Keys.First_Try) == 0, IsEvaluationAvilable(), false, sessionManager.activeUser.suscriptionsLeft);
         }
 
         UpdateKidInMenu();
@@ -1055,64 +1133,6 @@ public class MenuManager : MonoBehaviour
         ShowGameMenu();
     }
 
-    //this will set all available kids to show wich of them you will add to your subscription plan
-    public void SetKidProfilesToAddASubscription(int numOfKids, string typeOfSubscription)
-    {
-        if (sessionManager.activeUser != null)
-        {
-            WriteTheText(selectionKidText, 24);
-            HideAllCanvas();
-            kidsPanel.SetActive(true);
-            numKids = numOfKids;
-            subscriptionIAPType = typeOfSubscription;
-
-            WriteTheText(addKidButton, 31);
-            addKidButton.onClick.RemoveAllListeners();
-            addKidButton.onClick.AddListener(() => ConfirmKidsPurchase());
-            selectionKidBackButton.gameObject.SetActive(false);
-
-            List<KidProfileCanvas> kidos = new List<KidProfileCanvas>();
-            float deltaSize = miniKidContainer.GetComponent<RectTransform>().sizeDelta.x;
-            miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
-            for (int i = 0; i < miniKidContainer.transform.childCount; i++)
-            {
-                Destroy(miniKidContainer.transform.GetChild(i).gameObject);
-            }
-            int kidsNumber = sessionManager.activeUser.kids.Count;
-            Debug.Log(kidsNumber + " this are kids numebrs");
-            for (int i = 0; i < kidsNumber; i++)
-            {
-                GameObject theObject = Instantiate(miniKidCanvas, miniKidContainer.transform);
-                kidos.Add(new KidProfileCanvas(theObject));
-                float addableSize = kidos[i].gameObject.GetComponent<RectTransform>().sizeDelta.x * 2f;
-                miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(miniKidContainer.GetComponent<RectTransform>().sizeDelta.x + addableSize, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
-                kidos[i].gameObject.GetComponent<RectTransform>().parent = miniKidContainer.GetComponent<RectTransform>();
-                if (i > 0)
-                {
-                    Vector2 pos = kidos[i - 1].gameObject.GetComponent<RectTransform>().localPosition;
-                    float positionOfCanvitas = pos.x + addableSize;
-                    kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, pos.y);
-                }
-                else
-                {
-                    float positionOfCanvitas = addableSize / 2;
-                    kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, kidos[i].gameObject.GetComponent<RectTransform>().localPosition.y);
-                }
-                kidos[i].SetKidName(sessionManager.activeUser.kids[i].name);
-                string parentkey = sessionManager.activeUser.kids[i].userkey;
-                int id = sessionManager.activeUser.kids[i].id;
-                kidos[i].buttonOfProfile.onClick.AddListener(() => SetKidIdToSubscriptionPlan(id, kidos[i]));
-                kidos[i].PutInGrey();
-                kidos[i].ChangeAvatar(sessionManager.activeUser.kids[i].avatar);
-            }
-        }
-        else
-        {
-            registerMenu.ShowRegisterPanel(true);
-        }
-        sessionManager.SaveSession();
-    }
-
     void SetKidIdToSubscriptionPlan(int id, KidProfileCanvas profileCanvas)
     {
         if (ids.Contains(id))
@@ -1299,6 +1319,20 @@ public class MenuManager : MonoBehaviour
     public void WriteTheText(InputField field, int index)
     {
         field.placeholder.GetComponent<Text>().text = lines[index];
+    }
+
+    public void ShowSyncMessage(int number)
+    {
+        warningPanel.SetActive(true);
+        var text = TextReader.TextsToSet("Login/Config")[number];
+        warningText.text = text;
+        /*if (numberOfWarning == 8)
+        {
+            ShowGameMenu();
+        }*/
+
+        warningButton.onClick.RemoveAllListeners();
+        warningButton.onClick.AddListener(HideWarning);
     }
 
     public void ShowWarning(int numberOfWarning, UnityEngine.Events.UnityAction action)
@@ -2010,6 +2044,10 @@ class GameMenu
         tryLogo.SetActive(true);
         logoIcon.SetActive(false);
 
+        gamesButton.gameObject.SetActive(true);
+        evaluationButton.gameObject.SetActive(true);
+        buyButton.gameObject.SetActive(true);
+
         singOutButton.gameObject.SetActive(false);
         settingsButton.gameObject.SetActive(false);
         aboutButton.gameObject.SetActive(false);
@@ -2061,10 +2099,10 @@ class GameMenu
         logoIcon.SetActive(true);
     }
 
-    public void ShowThisMenu(bool isActiveTheCurrentKid, bool isInTrial, bool isEvaluationAvailable, bool isDemo)
+    public void ShowThisMenu(bool isActiveTheCurrentKid, bool isInTrial, bool isEvaluationAvailable, bool isDemo, int licencesToActivate)
     {
         mainCanvas.SetActive(true);
-        SetDynamicButtonFunctions(isActiveTheCurrentKid, isInTrial, isEvaluationAvailable, isDemo);
+        SetDynamicButtonFunctions(isActiveTheCurrentKid, isInTrial, isEvaluationAvailable, isDemo, licencesToActivate);
 
         singOutButton.gameObject.SetActive(true);
         settingsButton.gameObject.SetActive(true);
@@ -2088,7 +2126,7 @@ class GameMenu
         singOutButton.onClick.AddListener(manager.ShowSingOutWarning);
     }
 
-    public void SetDynamicButtonFunctions(bool isActiveTheCurrentKid, bool isInTrail, bool evaluationAvailable, bool isDemo)
+    public void SetDynamicButtonFunctions(bool isActiveTheCurrentKid, bool isInTrail, bool evaluationAvailable, bool isDemo, int licencesToActivate)
     {
         gamesButton.onClick.RemoveAllListeners();
         evaluationButton.onClick.RemoveAllListeners();
@@ -2129,7 +2167,14 @@ class GameMenu
             SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
             SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
             SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
-            buyButton.onClick.AddListener(() => manager.ShowShop(0));
+            if (licencesToActivate > 0)
+            {
+                manager.ShowAccountWarning(1);
+            }
+            else
+            {
+                buyButton.onClick.AddListener(() => manager.ShowShop(0));
+            }
             evaluationButton.onClick.AddListener(manager.ShowRegisteredAdd);
         }
         else
@@ -2138,7 +2183,14 @@ class GameMenu
             manager.WriteTheText(buyButton, 62);
             gamesButton.onClick.AddListener(manager.ShowRegisteredAdd);
             evaluationButton.onClick.AddListener(manager.ShowRegisteredAdd);
-            buyButton.onClick.AddListener(() => manager.ShowShop(0));
+            if (licencesToActivate > 0)
+            {
+                manager.ShowAccountWarning(1);
+            }
+            else
+            {
+                buyButton.onClick.AddListener(() => manager.ShowShop(0));
+            }
             SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
             SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
             SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
