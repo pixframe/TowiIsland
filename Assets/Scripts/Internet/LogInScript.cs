@@ -110,6 +110,7 @@ public class LogInScript : MonoBehaviour
                 sessionManager.activeUser.trialAccount = false;
                 sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
                 sessionManager.SaveSession();
+                menuController.ClearInputs();
                 Debug.Log("We finish the login succesfully");
                 if (newPaidUser)
                 {
@@ -500,17 +501,39 @@ public class LogInScript : MonoBehaviour
         WWWForm form = new WWWForm();
         form.AddField("jsonToDb", jsonObj.ToString());
 
-        WWW post = new WWW(newKidURL, form);
-        yield return post;
-        Debug.Log(post.text);
-        JSONObject jsonObt = JSONObject.Parse(post.text);
-        if (post.text == "")
+        //WWW post = new WWW(newKidURL, form);
+        //yield return post;
+        //Debug.Log(post.text);
+        //JSONObject jsonObt = JSONObject.Parse(post.text);
+        //if (post.text == "")
+        //{
+        //    menuController.ShowWarning(9);
+        //}
+        //else
+        //{
+        //    if (jsonObt.ContainsKey("status"))
+        //    {
+        //        menuController.ShowWarning(9);
+        //        menuController.AddKidShower();
+        //    }
+        //    else
+        //    {
+        //        sessionManager.activeUser.suscriptionsLeft = (int)jsonObt.GetNumber("suscriptionsAvailables");
+        //        sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+        //        sessionManager.activeKid = sessionManager.activeUser.kids[sessionManager.activeUser.kids.Count - 1];
+        //        sessionManager.SyncChildLevels();
+        //        sessionManager.SaveSession();
+        //        menuController.ShowGameMenu();
+        //    }
+        //}
+
+        using (UnityWebRequest request = UnityWebRequest.Post(newKidURL, form))
         {
-            menuController.ShowWarning(9);
-        }
-        else
-        {
-            if (jsonObt.ContainsKey("status"))
+            yield return request.SendWebRequest();
+
+            JSONObject jsonObt = JSONObject.Parse(request.downloadHandler.text);
+
+            if (request.isHttpError || request.isNetworkError)
             {
                 menuController.ShowWarning(9);
                 menuController.AddKidShower();
@@ -519,9 +542,13 @@ public class LogInScript : MonoBehaviour
             {
                 sessionManager.activeUser.suscriptionsLeft = (int)jsonObt.GetNumber("suscriptionsAvailables");
                 sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                menuController.ShowLoading();
+                yield return new WaitForSeconds(5f);
                 sessionManager.activeKid = sessionManager.activeUser.kids[sessionManager.activeUser.kids.Count - 1];
+                sessionManager.SyncChildLevels();
                 sessionManager.SaveSession();
                 menuController.ShowGameMenu();
+                menuController.ClearInputs();
             }
         }
     }

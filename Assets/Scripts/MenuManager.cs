@@ -341,6 +341,15 @@ public class MenuManager : MonoBehaviour
         shopMenu.SetStaticTexts();
     }
 
+    public void ClearInputs()
+    {
+        registerMenu.ClearInputData();
+        newKidNameInput.text = "";
+        newKidDay.text = "";
+        newKidMonth.text = "";
+        newKidYear.text = "";
+    }
+
     void SetLanguageResources()
     {
         loginTextAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Login/Login");
@@ -959,7 +968,7 @@ public class MenuManager : MonoBehaviour
     }
 
     //this is a image that shows tha the game is donwloading the data for the backend to give an answer
-    void ShowLoading()
+    public void ShowLoading()
     {
         HideAllCanvas();
         loadingCanvas.SetActive(true);
@@ -976,6 +985,15 @@ public class MenuManager : MonoBehaviour
         configMenu.backButton.onClick.RemoveAllListeners();
         configMenu.backButton.onClick.AddListener(ShowGameMenu);
         configMenu.versionText.text = $"V. {Application.version}";
+        Debug.Log(PlayerPrefs.GetInt(Keys.Games_Saved) + " " + PlayerPrefs.GetInt(Keys.Evaluations_Saved));
+        if (PlayerPrefs.GetInt(Keys.Games_Saved) != 0 || PlayerPrefs.GetInt(Keys.Evaluations_Saved) != 0)
+        {
+            configMenu.updateDataButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            configMenu.updateDataButton.gameObject.SetActive(false);
+        }
     }
 
     void ShowLenguages()
@@ -1749,6 +1767,18 @@ class RegisterMenu
         HideAll();
     }
 
+    public void ClearInputData()
+    {
+        inputEmail.field.text = "";
+        inputEmailDad.field.text = "";
+        inputPass.field.text = "";
+        inputPassAgain.field.text = "";
+        inputPassDad.field.text = "";
+        inputName.field.text = "";
+        dayInput.text = "";
+        monthInput.text = "";
+        yearInput.text = "";
+    }
 
     void ShouldShowAdds(bool showAdds)
     {

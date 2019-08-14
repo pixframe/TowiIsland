@@ -354,8 +354,6 @@ public class GameCenterManager : MonoBehaviour {
                 next = 0;
             }
 
-            Debug.Log($"count is {count}, previous is {previous}, index is {index}, next value is {next}");
-
             SetPanel(currentPanel, index, true);
             SetPanel(nextPanel, next);
             SetPanel(previosPanel, previous);
@@ -415,7 +413,6 @@ public class GameCenterManager : MonoBehaviour {
 
     void SetPanel(GamePanel panel, int number, bool isCenter)
     {
-        Debug.Log(number);
         panel.backgroundPanel.sprite = backgrounds[number];
         panel.gameText.text = stringsToShow[number];
         panel.barColor.color = barColors[number];

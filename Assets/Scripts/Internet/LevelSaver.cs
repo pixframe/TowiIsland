@@ -14,6 +14,8 @@ public class LevelSaver : MonoBehaviour {
     JSONObject data;
     JSONObject item;
     JSONObject levelsData;
+    Header headers;
+    GameData gameData;
 
     bool saving = false;
 
@@ -97,7 +99,6 @@ public class LevelSaver : MonoBehaviour {
         }
         item.Add(key, tempJsonArray);
     }
-
     public void AddLevelData(string key, int[] value)
     {
         if (item == null)
@@ -114,7 +115,6 @@ public class LevelSaver : MonoBehaviour {
 
         item.Add(key, tempJsonArray);
     }
-
     public void AddLevelData(string key, float[] value)
     {
         if (item == null)
@@ -129,7 +129,6 @@ public class LevelSaver : MonoBehaviour {
         }
         item.Add(key, tempJsonArray);
     }
-
     public void AddLevelData(string key, Texture2D photo)
     {
         if (item == null)
@@ -144,7 +143,6 @@ public class LevelSaver : MonoBehaviour {
 
         item.Add(key, tempJsonArray);
     }
-
     public void AddLevelData(string key, List<string> value)
     {
         if (item == null)
@@ -161,7 +159,6 @@ public class LevelSaver : MonoBehaviour {
 
         item.Add(key, tempJsonArray);
     }
-
     public void AddLevelData(string key, List<int> value)
     {
         if (item == null)
@@ -178,7 +175,6 @@ public class LevelSaver : MonoBehaviour {
 
         item.Add(key, tempJsonArray);
     }
-
     public void AddLevelData(string key, List<float> value)
     {
         if (item == null)
@@ -192,7 +188,6 @@ public class LevelSaver : MonoBehaviour {
         }
         item.Add(key, tempJsonArray);
     }
-
     public void AddLevelData(string key, List<List<int>> value)
     {
         if (item == null)
@@ -216,7 +211,6 @@ public class LevelSaver : MonoBehaviour {
 
         item.Add(key, tempJsonArray);
     }
-
     public void AddLevelData(string key, int[][] value)
     {
         if (item == null)
@@ -239,7 +233,6 @@ public class LevelSaver : MonoBehaviour {
         }
         item.Add(key, tempJsonArray);
     }
-
     public void AddLevelData(string key, List<List<string>> value)
     {
         if (item == null)
@@ -258,7 +251,6 @@ public class LevelSaver : MonoBehaviour {
         }
         item.Add(key, tempJsonArray);
     }
-
     public void AddLevelDataAsString(string key, int[] listToConvert)
     {
         if (item == null)
@@ -276,7 +268,6 @@ public class LevelSaver : MonoBehaviour {
         }
         item.Add(key, stringToAdd);
     }
-
     public void AddLevelDataAsString(string key, float[] listToConvert)
     {
         if (item == null)
@@ -294,7 +285,6 @@ public class LevelSaver : MonoBehaviour {
         }
         item.Add(key, stringToAdd);
     }
-
     public void AddLevelDataAsString(string key, string[] listToConvert)
     {
         if (item == null)
@@ -312,7 +302,6 @@ public class LevelSaver : MonoBehaviour {
         }
         item.Add(key, stringToAdd);
     }
-
     public void AddLevelDataAsString(string key, List<int> listToConvert)
     {
         if (item == null)
@@ -330,7 +319,6 @@ public class LevelSaver : MonoBehaviour {
         }
         item.Add(key, stringToAdd);
     }
-
     public void AddLevelDataAsString(string key, List<float> listToConvert)
     {
         if (item == null)
@@ -369,6 +357,134 @@ public class LevelSaver : MonoBehaviour {
         //EmergencySave();
     }
 
+    public void SetGameData()
+    {
+        SetIcecreamData(new List<int> { 1, 1 }, new List<int>{ 1,1}, new List<int> { 1, 1 }, 
+            new List<int> { 1, 1 }, new List<int> { 1, 1 }, new List<int> { 1, 1 }, new List<int> { 1, 1 },
+            new List<float> { 1.1f, 1.1f },20.22222f,2.222222f,2.22222f,20.22222f, 2, 1);
+    }
+
+    public void SetIcecreamData(List<int> ordersAsk, List<int> correctOrders, List<int> expiredOrders,
+        List<int> deliveredOrders, List<int> madeOrders, List<int> wrongOrders, List<int> trashOrders,
+        List<float> latencies, float correctPercentage, float errorPercentage, float expiredPercentage,
+        float time, int playedLevels, int initialLevel)
+    {
+        gameData = new IcecreamDataFirstTime
+        {
+            total_orders = GetListAsArray(ordersAsk),
+            total_corrects = GetListAsArray(correctOrders),
+            total_expired = GetListAsArray(expiredOrders),
+            total_delivers = GetListAsArray(deliveredOrders),
+            total_done = GetListAsArray(madeOrders),
+            total_errors = GetListAsArray(wrongOrders),
+            total_trash = GetListAsArray(trashOrders),
+            latencies = GetListAsArray(latencies),
+            session_correct_percentage = correctPercentage,
+            session_errors_percentage = errorPercentage,
+            session_expired_percentage = expiredPercentage,
+            session_time = time,
+            played_levels = playedLevels,
+            initial_level = initialLevel
+        };
+
+        StartCoroutine(FormToReturn());
+    }
+
+    public void SetIcecreamData(List<int> ordersAsk,List<int> correctOrders, List<int> expiredOrders, 
+        List<int> deliveredOrders, List<int> madeOrders, List<int> wrongOrders, List<int> trashOrders, 
+        List<float> latencies, float correctPercentage, float errorPercentage, float expiredPercentage,
+        float time, int playedLevels)
+    {
+        gameData = new IcecreamData
+        {
+            total_orders = GetListAsArray(ordersAsk),
+            total_corrects = GetListAsArray(correctOrders),
+            total_expired = GetListAsArray(expiredOrders),
+            total_delivers = GetListAsArray(deliveredOrders),
+            total_done = GetListAsArray(madeOrders),
+            total_errors = GetListAsArray(wrongOrders),
+            total_trash = GetListAsArray(trashOrders),
+            latencies = GetListAsArray(latencies),
+            session_correct_percentage = correctPercentage,
+            session_errors_percentage = errorPercentage,
+            session_expired_percentage = expiredPercentage,
+            session_time = time,
+            played_levels = playedLevels
+        };
+
+        StartCoroutine(FormToReturn());
+    }
+
+    string GetListAsArray(List<int> listToTransform)
+    {
+        string listString = "";
+        for (int i = 0; i < listToTransform.Count; i++)
+        {
+            listString += $"{listToTransform[i]}{(listToTransform.Count - 1 > i ? "," : "")}";
+        }
+        return listString;
+    }
+    string GetListAsArray(List<float> listToTransform)
+    {
+        string listString = "";
+        for (int i = 0; i < listToTransform.Count; i++)
+        {
+            listString += $"{listToTransform[i].ToString(invariantCulture)}{(listToTransform.Count - 1 > i ? "," : "")}";
+        }
+        return listString;
+    }
+
+    public IEnumerator FormToReturn()
+    {
+        var forms = new JsonIcecream()
+        {
+            header = headers,
+            levels = gameData as IcecreamData
+        };
+
+        Debug.Log(JsonUtility.ToJson(forms));
+
+        WWWForm form = new WWWForm();
+        //form.AddField("data", data.ToString());
+        form.AddField("jsonToDb", JsonUtility.ToJson(forms));
+        using (UnityWebRequest request = UnityWebRequest.Post(postURL, form))
+        {
+
+            yield return request.SendWebRequest();
+
+            if (request.isNetworkError || request.isHttpError)
+            {
+                Debug.Log(request.downloadHandler.text);
+            }
+            else
+            {
+                Debug.Log("Done");
+            }
+        }
+    }
+
+    public void CreateSaveBlock()
+    {
+        DateTime nowT = DateTime.Now;
+
+        headers = new Header
+        {
+            device = SystemInfo.deviceType.ToString(),
+            version = Application.version,
+            game_key = "Helados",
+            parent_id = 28,
+            kid_id = 42,
+            passed_levels = 0,
+            repeated_levels = 0,
+            played_levels = 0,
+            session_time = 1.1f,
+            game_time = (int)Mathf.Round(1 * 100) / 100,
+            session_number = 1,
+            date = String.Format("{0:0000}-{1:00}-{2:00}T{3:00}:{4:00}:{5:00}", nowT.Year, nowT.Month, nowT.Day, nowT.Hour, nowT.Minute, nowT.Second)
+        };
+        SetGameData();
+    }
+
     public void CreateSaveBlock(string gameKey, float gameTime, int passedLevels, int repeatedLevels, int playedLevels, int sessionNumber)
     {
         if (sessionManager == null) {
@@ -376,6 +492,26 @@ public class LevelSaver : MonoBehaviour {
             sessionManager = FindObjectOfType<SessionManager>();
         }
         game = gameKey;
+        DateTime nowT = DateTime.Now;
+
+        headers = new Header()
+        {
+            device = SystemInfo.deviceType.ToString(),
+            version = Application.version,
+            game_key = gameKey,
+            parent_id = sessionManager.activeUser.id,
+            kid_id = kidKey,
+            passed_levels = passedLevels,
+            repeated_levels = repeatedLevels,
+            played_levels = playedLevels,
+            session_time = Mathf.Round(gameTime * 100) / 100,
+            game_time = (int)Mathf.Round(gameTime * 100) / 100,
+            session_number = sessionNumber,
+            date = String.Format("{0:0000}-{1:00}-{2:00}T{3:00}:{4:00}:{5:00}", nowT.Year, nowT.Month, nowT.Day, nowT.Hour, nowT.Minute, nowT.Second)
+        };
+
+        Debug.Log(JsonUtility.ToJson(headers));
+
         JSONObject headerItem = new JSONObject
         {
 
@@ -399,7 +535,7 @@ public class LevelSaver : MonoBehaviour {
             { "game_time",(int)Mathf.Round(gameTime * 100) / 100 },
             { "session_number",  sessionNumber}
         };
-        DateTime nowT = DateTime.Now;
+
         headerItem.Add("date", String.Format("{0:0000}-{1:00}-{2:00}T{3:00}:{4:00}:{5:00}", nowT.Year, nowT.Month, nowT.Day, nowT.Hour, nowT.Minute, nowT.Second));
         data.Add("header", headerItem);
     }
@@ -529,4 +665,73 @@ public class LevelSaver : MonoBehaviour {
             }
         }
     }
+}
+
+[System.Serializable]
+class JsonLevelToSend
+{
+    public Header header;
+    public GameData levels;
+}
+
+class JsonIcecream : JsonLevelToSend
+{
+    public new IcecreamData levels;
+}
+
+class JsonIcecreamFirst : JsonLevelToSend
+{
+    public new IcecreamDataFirstTime levels;
+}
+
+[System.Serializable]
+class Header
+{
+    public string device;
+    public string version;
+    public string game_key;
+    public int parent_id;
+    public int kid_id;
+    public int passed_levels;
+    public int repeated_levels;
+    public int played_levels;
+    public float session_time;
+    public float game_time;
+    public int session_number;
+    public string date;
+}
+
+[System.Serializable]
+class GameData
+{
+    public int current_level;
+    public int played_levels;
+    public int played_difficulty;
+    public float session_time;
+}
+
+[System.Serializable]
+class IcecreamData : GameData
+{
+    public string total_orders;
+    public string total_corrects;
+    public string total_expired;
+    public string total_errors;
+    public string total_done;
+    public string total_delivers;
+    public string total_trash;
+    public string latencies;
+    public float session_correct_percentage;
+    public float session_expired_percentage;
+    public float session_errors_percentage;
+}
+
+class IcecreamDataFirstTime : IcecreamData
+{
+    public int initial_level;
+}
+
+class BirdData : GameData
+{
+
 }

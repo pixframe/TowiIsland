@@ -507,10 +507,10 @@ public class SessionManager : MonoBehaviour
 
                     activeUser.kids[index].ResetPlayedGames();
 
-                    activeUser.kids[index].playedGames.Clear();
                     for (int o = 0; o < activeMissions.Length; o++)
                     {
                         activeUser.kids[index].activeMissions.Add(activeMissions[o].Str);
+                        Debug.Log(activeMissions[o].Str);
                     }
 
                     activeUser.kids[index].activeDay = (int)kidObj.GetNumber("activeDay");
@@ -946,6 +946,7 @@ public class SessionManager : MonoBehaviour
 
             offlineData = "";
             activeMissions = new List<string>();
+            playedGames = new List<int>();
             ownedItems = "";
             activeDay = -1;
             ageSet = false;

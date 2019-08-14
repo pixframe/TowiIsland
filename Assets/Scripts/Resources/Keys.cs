@@ -6,6 +6,7 @@ public class Keys : MonoBehaviour {
 
     public static string Api_Web_Key = "https://towi.nyx.mx:2443/";
     //public static string Api_Web_Key = "http://35.232.245.131/";
+    //public static string Api_Web_Key = "http://35.232.245.131:8000/";
     public static string Try_Connection_Key = "api/levels/connection/";
     public static string First_Try = "frstTry";
     public static string Level_Of_Try = "lvlFTry";
