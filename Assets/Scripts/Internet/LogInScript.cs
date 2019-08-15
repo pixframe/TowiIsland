@@ -478,8 +478,26 @@ public class LogInScript : MonoBehaviour
             }
             else
             {
-                PostLogin(email, password, newPaidUser);
-                Analytics.CustomEvent("register");
+                JSONObject obj = JSONObject.Parse(request.downloadHandler.text);
+                Debug.Log(obj["code"]);
+                if (obj.ContainsKey("code"))
+                {
+                    if (obj["code"].Str == "111")
+                    {
+                        Debug.Log("Heres an error");
+                        menuController.ShowWarning(13, () => menuController.ShowRegister(System.Convert.ToBoolean(PlayerPrefs.GetInt(Keys.Buy_IAP))));
+                    }
+                    else
+                    {
+                        PostLogin(email, password, newPaidUser);
+                        Analytics.CustomEvent("register");
+                    }
+                }
+                else
+                {
+                    PostLogin(email, password, newPaidUser);
+                    Analytics.CustomEvent("register");
+                }
             }
         }
     }

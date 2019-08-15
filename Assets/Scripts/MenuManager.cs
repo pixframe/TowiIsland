@@ -901,6 +901,11 @@ public class MenuManager : MonoBehaviour
 
     }
 
+    public void ShowRegister(bool isIAP)
+    {
+        registerMenu.ShowRegisterPanel(isIAP);
+    }
+
     //we shoe the genius that make this game
     public void ShowCredits()
     {
@@ -1813,7 +1818,9 @@ class RegisterMenu
         add1.GetComponentInChildren<Text>().text = texts[2];
 
         inputEmail.inputNameText.text = texts[3];
+        inputEmail.field.placeholder.GetComponent<Text>().text = texts[3];
         inputPass.inputNameText.text = texts[4];
+        inputPass.field.placeholder.GetComponent<Text>().text = texts[4];
         inputPass.field.inputType = InputField.InputType.Password;
         forgotPassButton.GetComponent<Text>().text = texts[5];
         logInButton.GetComponentInChildren<Text>().text = texts[6];
@@ -1852,15 +1859,19 @@ class RegisterMenu
         add1.GetComponentInChildren<Text>().text = texts[2];
 
         inputEmailDad.inputNameText.text = texts[3];
+        inputEmailDad.field.placeholder.GetComponent<Text>().text = texts[3];
         inputPassDad.inputNameText.text = texts[4];
+        inputPassDad.field.placeholder.GetComponent<Text>().text = texts[4];
         inputPassDad.field.inputType = InputField.InputType.Password;
         inputPassAgain.inputNameText.text = texts[5];
+        inputPassAgain.field.placeholder.GetComponent<Text>().text = texts[5];
         inputPassAgain.field.inputType = InputField.InputType.Password;
         termsAndConditionsButton.GetComponent<Text>().text = texts[6];
         termsAndConditionsButton.onClick.RemoveAllListeners();
         termsAndConditionsButton.onClick.AddListener(manager.GoToTermsAndConditions);
 
         inputName.inputNameText.text = texts[7];
+        inputName.field.placeholder.GetComponent<Text>().text = texts[7];
         birthdateText.text = texts[8];
         dayInput.placeholder.GetComponent<Text>().text = texts[9];
         monthInput.placeholder.GetComponent<Text>().text = texts[10];
@@ -1881,9 +1892,10 @@ class RegisterMenu
 
     public void ShowRegisterPanel(bool isIAP)
     {
+        HideAllPanels();
+        manager.HideAllCanvas();
         gameObject.SetActive(true);
         const string pathOfLoginMenuTetxs = "Login/SingInMenu";
-        HideAllPanels();
         ShouldShowAdds(true);
         signInMenu.SetActive(true);
         var texts = TextReader.TextsToSet(pathOfLoginMenuTetxs);
@@ -1893,15 +1905,19 @@ class RegisterMenu
         add1.GetComponentInChildren<Text>().text = texts[2];
 
         inputEmailDad.inputNameText.text = texts[3];
+        inputEmailDad.field.placeholder.GetComponent<Text>().text = texts[3];
         inputPassDad.inputNameText.text = texts[4];
+        inputPassDad.field.placeholder.GetComponent<Text>().text = texts[4];
         inputPassDad.field.inputType = InputField.InputType.Password;
         inputPassAgain.inputNameText.text = texts[5];
+        inputPassAgain.field.placeholder.GetComponent<Text>().text = texts[5];
         inputPassAgain.field.inputType = InputField.InputType.Password;
         termsAndConditionsButton.GetComponent<Text>().text = texts[6];
         termsAndConditionsButton.onClick.RemoveAllListeners();
         termsAndConditionsButton.onClick.AddListener(manager.GoToTermsAndConditions);
 
         inputName.inputNameText.text = texts[7];
+        inputName.field.placeholder.GetComponent<Text>().text = texts[7];
         birthdateText.text = texts[8];
         dayInput.placeholder.GetComponent<Text>().text = texts[9];
         monthInput.placeholder.GetComponent<Text>().text = texts[10];

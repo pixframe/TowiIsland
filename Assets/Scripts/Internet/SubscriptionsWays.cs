@@ -103,41 +103,36 @@ public class SubscriptionsWays : MonoBehaviour
         form.AddField("code", code);
         form.AddField("parent_id", userId);
 
-        //We create a post
-        WWW post = new WWW(codeURL, form);
 
-        //wait for the post to get done and get answwer
-        yield return post;
-        Debug.Log(post.text);
-        JSONObject jsonObject = JSONObject.Parse(post.text);
-        if (post.text == "")
+        using (UnityWebRequest request = UnityWebRequest.Post(codeURL, form))
         {
-            menuManager.ShopWithCode(typeOfShop);
-            menuManager.ShowWarning(9);
-        }
-        else
-        {
-            if (jsonObject.ContainsKey("status"))
+            yield return request.SendWebRequest();
+            if (request.isNetworkError || request.isHttpError)
             {
-                string status = jsonObject.GetString("status");
-                if (status == "COUPON_NOT_FOUND")
-                {
-                    //JSONObject jsonObject = JSONObject.Parse(post.text);
-                    menuManager.ShopWithCode(typeOfShop);
-                    menuManager.ShowWarning(10);
-                }
+                menuManager.ShopWithCode(typeOfShop);
+                menuManager.ShowWarning(9);
             }
             else
             {
-                sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
-                sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
-                menuManager.AddKidShower();
+                JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
+                if (jsonObject.ContainsKey("status"))
+                {
+                    string status = jsonObject.GetString("status");
+                    if (status == "COUPON_NOT_FOUND")
+                    {
+                        //JSONObject jsonObject = JSONObject.Parse(post.text);
+                        menuManager.ShopWithCode(typeOfShop);
+                        menuManager.ShowWarning(10);
+                    }
+                }
+                else
+                {
+                    sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                    sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
+                    menuManager.AddKidShower();
+                }
             }
-
         }
-        //if error was null we activate the kid 
-        //if we have an error we dela with it
-
     }
 
     public void SendSubscriptionData(int kids, string ids, int parentId, string typeOfSubscription)
@@ -191,34 +186,33 @@ public class SubscriptionsWays : MonoBehaviour
         form.AddField("parent_id", dadId);
         form.AddField("child_id", kidId);
 
-        WWW post = new WWW(activateKidURL, form);
-
-        yield return post;
-
-        Debug.Log(post.text);
-
-        if (post.text != "")
+        using (UnityWebRequest request = UnityWebRequest.Post(activateKidURL, form))
         {
-            JSONObject jsonObj = JSONObject.Parse(post.text);
-            if (jsonObj.GetString("status") == "Succesful")
-            {
-                sessionManager.activeKid = sessionManager.GetKid(kidId);
-                sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
-                sessionManager.activeUser.suscriptionsLeft = (int)jsonObj.GetNumber("suscriptionsAvailables");
-                sessionManager.SaveSession();
-                menuManager.ShowGameMenu();
-                Debug.Log("its done");
-            }
-            else
+            yield return request.SendWebRequest();
+
+            if (request.isNetworkError)
             {
                 menuManager.ShowAccountWarning(0);
                 menuManager.ShowWarning(8);
             }
-        }
-        else
-        {
-            menuManager.ShowAccountWarning(0);
-            menuManager.ShowWarning(8);
+            else
+            {
+                JSONObject jsonObj = JSONObject.Parse(request.downloadHandler.text);
+                if (jsonObj.GetString("status") == "Succesful")
+                {
+                    sessionManager.activeKid = sessionManager.GetKid(kidId);
+                    sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                    sessionManager.activeUser.suscriptionsLeft = (int)jsonObj.GetNumber("suscriptionsAvailables");
+                    sessionManager.SaveSession();
+                    menuManager.ShowGameMenu();
+                    Debug.Log("its done");
+                }
+                else
+                {
+                    menuManager.ShowAccountWarning(0);
+                    menuManager.ShowWarning(8);
+                }
+            }
         }
     }
 
@@ -234,26 +228,27 @@ public class SubscriptionsWays : MonoBehaviour
         form.AddField("parent_id", parentId);
         form.AddField("finished_date", date);
 
-        WWW post = new WWW(activateIAPRenew, form);
-
-        yield return post;
-
-        Debug.Log(post.text);
-        if (post.text != "")
+        using (UnityWebRequest request = UnityWebRequest.Post(activateIAPRenew, form))
         {
-            JSONObject jsonObj = JSONObject.Parse(post.text);
-            if (jsonObj.ContainsKey("successful"))
-            {
-
-            }
-            else
+            yield return request.SendWebRequest();
+            if (request.isNetworkError)
             {
                 menuManager.ShowAccountWarning(11);
             }
-        }
-        else
-        {
-            menuManager.ShowAccountWarning(11);
+            else
+            {
+                JSONObject jsonObj = JSONObject.Parse(request.downloadHandler.text);
+                if (jsonObj.ContainsKey("successful"))
+                {
+                    sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                    sessionManager.SaveSession();
+                    menuManager.ShowGameMenu();
+                }
+                else
+                {
+                    menuManager.ShowAccountWarning(11);
+                }
+            }
         }
     }
 }
