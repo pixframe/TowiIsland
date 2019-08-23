@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Analytics;
 
 public class MonkeyHidingManager : MonoBehaviour {
 
@@ -422,16 +423,6 @@ public class MonkeyHidingManager : MonoBehaviour {
             tempStimulus.Remove(tempStimulus[randomize]);
             tempStimulusNums.Remove(tempStimulusNums[randomize]);
         }
-
-        foreach (GameObject o in finalStimulus)
-        {
-            Debug.Log($"we have to look for {o.name}");
-        }
-
-        foreach (int i in stimulusNumbers)
-        {
-            Debug.Log($"we have in {numberOfAssays} this stimulus {i}");
-        }
     }
 
     void SendMonkeysToWalk()
@@ -532,6 +523,7 @@ public class MonkeyHidingManager : MonoBehaviour {
         {
             monkeysSwitchInCorrectPlaces = 0;
             numberOfMovements--;
+
             if (numberOfMovements > 0)
             {
                 ChooseMonkeysToMove();
@@ -772,9 +764,6 @@ public class MonkeyHidingManager : MonoBehaviour {
         monkeys.RemoveRange(0, monkeys.Count);
         monkeysHolders.RemoveRange(0, monkeysHolders.Count);
 
-        //Clear Area
-
-
         totalStimulus.RemoveRange(0, totalStimulus.Count);
         tempMonkeys.RemoveRange(0, tempMonkeys.Count);
         tempStimulus.RemoveRange(0, tempStimulus.Count);
@@ -828,10 +817,15 @@ public class MonkeyHidingManager : MonoBehaviour {
 
     void FinishGame()
     {
-		if (!tryVersion)
-		{
+        if (!tryVersion)
+        {
             SaveLevel();
-		}
+        }
+        else
+        {
+            Analytics.CustomEvent("try");
+            PlayerPrefs.SetInt(Keys.First_Try, 1);
+        }
         readyButton.onClick.RemoveAllListeners();
         readyButton.gameObject.SetActive(false);
         instructionPanel.SetActive(true);

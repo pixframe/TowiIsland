@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.Networking;
 using Boomlagoon.JSON;
 
@@ -88,6 +89,7 @@ public class SubscriptionsWays : MonoBehaviour
                 else
                 {
                     Debug.Log("no error found");
+                    Analytics.CustomEvent("buy");
                     sessionManager.activeKid.isActive = true;
                     menuManager.ShowGameMenu();
                     sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
@@ -127,6 +129,7 @@ public class SubscriptionsWays : MonoBehaviour
                 }
                 else
                 {
+                    Analytics.CustomEvent("buy");
                     sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
                     sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
                     menuManager.AddKidShower();
@@ -162,6 +165,7 @@ public class SubscriptionsWays : MonoBehaviour
                 JSONObject jsonOBJ = JSONObject.Parse(request.downloadHandler.text);
                 if (jsonOBJ["status"].Str == "Succesful")
                 {
+                    Analytics.CustomEvent("buy");
                     sessionManager.activeUser.suscriptionsLeft = (int)jsonOBJ.GetNumber("suscriptionsAvailables");
                     sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
                     menuManager.SetKidsProfiles();

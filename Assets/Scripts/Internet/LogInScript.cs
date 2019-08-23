@@ -80,7 +80,6 @@ public class LogInScript : MonoBehaviour
             }
             else if (request.isHttpError)
             {
-                Debug.Log("this is a error");
                 JSONObject jsonObj = JSONObject.Parse(request.downloadHandler.text);
                 Debug.Log(request.error);
                 Debug.Log(jsonObj);
@@ -98,7 +97,6 @@ public class LogInScript : MonoBehaviour
             else
             {
                 PlayerPrefs.SetInt(Keys.Logged_Session, 1);
-                Debug.Log(request.ToString());
                 //we get a JSON object from the server  
                 JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
                 JSONArray kids = jsonObject.GetValue("children").Array;
@@ -111,10 +109,8 @@ public class LogInScript : MonoBehaviour
                 sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
                 sessionManager.SaveSession();
                 menuController.ClearInputs();
-                Debug.Log("We finish the login succesfully");
                 if (newPaidUser)
                 {
-                    Debug.Log("Try to log in");
                     string parentkey = sessionManager.activeUser.kids[0].userkey;
                     int id = sessionManager.activeUser.kids[0].id;
                     sessionManager.SetKid(parentkey, id);
@@ -143,12 +139,10 @@ public class LogInScript : MonoBehaviour
         {
             if (PlayerPrefs.GetInt(Keys.Games_Saved) > 0 || PlayerPrefs.GetInt(Keys.Evaluations_Saved) > 0)
             {
-                Debug.Log("We try to update the data");
                 StartCoroutine(UpdateDataToSend(tempUser));
             }
             else
             {
-                Debug.Log("nothing to updtae here");
                 StartCoroutine(PostIsActive(tempUser));
             }
         }
@@ -165,7 +159,6 @@ public class LogInScript : MonoBehaviour
 
     IEnumerator PostIsActive(SessionManager.User user)
     {
-        Debug.Log("Now we start to chechk if the player its active");
         string post_url = activeUserUrl;
 
         // Build form to post in server
@@ -332,8 +325,6 @@ public class LogInScript : MonoBehaviour
 
     IEnumerator UpdateDataToSend(SessionManager.User user)
     {
-        Debug.Log("We are updating data");
-
         int gamesSaved = PlayerPrefs.GetInt(Keys.Games_Saved);
         if (gamesSaved > 0)
         {
@@ -484,7 +475,6 @@ public class LogInScript : MonoBehaviour
                 {
                     if (obj["code"].Str == "111")
                     {
-                        Debug.Log("Heres an error");
                         menuController.ShowWarning(13, () => menuController.ShowRegister(System.Convert.ToBoolean(PlayerPrefs.GetInt(Keys.Buy_IAP))));
                     }
                     else
@@ -518,32 +508,6 @@ public class LogInScript : MonoBehaviour
 
         WWWForm form = new WWWForm();
         form.AddField("jsonToDb", jsonObj.ToString());
-
-        //WWW post = new WWW(newKidURL, form);
-        //yield return post;
-        //Debug.Log(post.text);
-        //JSONObject jsonObt = JSONObject.Parse(post.text);
-        //if (post.text == "")
-        //{
-        //    menuController.ShowWarning(9);
-        //}
-        //else
-        //{
-        //    if (jsonObt.ContainsKey("status"))
-        //    {
-        //        menuController.ShowWarning(9);
-        //        menuController.AddKidShower();
-        //    }
-        //    else
-        //    {
-        //        sessionManager.activeUser.suscriptionsLeft = (int)jsonObt.GetNumber("suscriptionsAvailables");
-        //        sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
-        //        sessionManager.activeKid = sessionManager.activeUser.kids[sessionManager.activeUser.kids.Count - 1];
-        //        sessionManager.SyncChildLevels();
-        //        sessionManager.SaveSession();
-        //        menuController.ShowGameMenu();
-        //    }
-        //}
 
         using (UnityWebRequest request = UnityWebRequest.Post(newKidURL, form))
         {

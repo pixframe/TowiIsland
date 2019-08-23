@@ -752,30 +752,55 @@ public class LavaGameManager : MonoBehaviour {
         string stringChoose;
         if (winTheGame)
         {
-            stringChoose = stringsToShow[7] + "\n" + stringsToShow[6];
+            if (numberOfAssays > 0)
+            {
+                stringChoose = stringsToShow[7] + "\n" + stringsToShow[6];
+                audioManager.PlayClip(instructionsClips[7], instructionsClips[6]);
+            }
+            else
+            {
+                stringChoose = stringsToShow[7];
+                audioManager.PlayClip(instructionsClips[7]);
+            }
+
             readyButton.gameObject.SetActive(false);
-            audioManager.PlayClip(instructionsClips[7], instructionsClips[6]);
             Invoke("ReadyButtonOn", audioManager.ClipDuration());
         }
         else
         {
             if (missAnswer)
             {
-                stringChoose = stringsToShow[9] + "\n" + stringsToShow[6];
-                readyButton.gameObject.SetActive(false);
-                audioManager.PlayClip(instructionsClips[9], instructionsClips[6]);
-                Invoke("ReadyButtonOn", audioManager.ClipDuration());
+                if (numberOfAssays > 0)
+                {
+                    stringChoose = stringsToShow[9] + "\n" + stringsToShow[6];
+                    audioManager.PlayClip(instructionsClips[9], instructionsClips[6]);
+                }
+                else
+                {
+                    stringChoose = stringsToShow[9];
+                    audioManager.PlayClip(instructionsClips[9]);
+                }
             }
             else
             {
-                stringChoose = stringsToShow[8] + "\n" + stringsToShow[6];
-                readyButton.gameObject.SetActive(false);
-                audioManager.PlayClip(instructionsClips[8], instructionsClips[6]);
-                Invoke("ReadyButtonOn", audioManager.ClipDuration());
+                if (numberOfAssays > 0)
+                {
+                    stringChoose = stringsToShow[8] + "\n" + stringsToShow[6];
+                    audioManager.PlayClip(instructionsClips[8], instructionsClips[6]);
+                }
+                else
+                {
+                    stringChoose = stringsToShow[8];
+                    audioManager.PlayClip(instructionsClips[8]);
+                }
             }
         }
+
+        readyButton.gameObject.SetActive(false);
+        Invoke("ReadyButtonOn", audioManager.ClipDuration());
         instructionText.text = stringChoose;
         instructionPanel.SetActive(true);
+
         if (numberOfAssays <= 0)
         {
             readyButton.onClick.RemoveAllListeners();

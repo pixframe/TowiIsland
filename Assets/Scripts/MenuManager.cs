@@ -2,9 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -122,6 +122,7 @@ public class MenuManager : MonoBehaviour
         //here we start the process of initrilization
         Initialization();
         dobYMD = new int[0];
+        Analytics.CustomEvent("open");
         //PlayerPrefs.SetInt(Keys.First_Try, 0);
     }
 
@@ -143,6 +144,7 @@ public class MenuManager : MonoBehaviour
     IEnumerator CheckInternetConnection(string resource)
     {
         WWWForm newForm = new WWWForm();
+
         using (UnityWebRequest newRequest = UnityWebRequest.Get(resource))
         {
             yield return newRequest.SendWebRequest();
@@ -166,7 +168,6 @@ public class MenuManager : MonoBehaviour
 
             if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
             {
-                Debug.Log("its logged");
                 string user = PlayerPrefs.GetString(Keys.Active_User_Key);
                 if (user != "_local")
                 {
@@ -2287,6 +2288,7 @@ class AddMenu
     public void ShowAdd()
     {
         gameObject.SetActive(true);
+        Analytics.CustomEvent("add");
         const string pathOfLoginMenuTetxs = "Login/Add";
         var texts = TextReader.TextsToSet(pathOfLoginMenuTetxs);
 
@@ -2310,6 +2312,7 @@ class AddMenu
     public void ShowAddRegister()
     {
         gameObject.SetActive(true);
+        Analytics.CustomEvent("add");
         const string pathOfLoginMenuTetxs = "Login/Add";
         var texts = TextReader.TextsToSet(pathOfLoginMenuTetxs);
 
