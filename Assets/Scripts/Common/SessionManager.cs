@@ -441,6 +441,7 @@ public class SessionManager : MonoBehaviour
 
     IEnumerator PostSyncProfiles(string key)
     {
+        Debug.Log("Syncing now ");
         downlodingData = true;
 
         WWWForm form = new WWWForm();
@@ -453,9 +454,11 @@ public class SessionManager : MonoBehaviour
             if (request.isNetworkError || request.isHttpError)
             {
                 downlodingData = false;
+                Debug.Log(request.downloadHandler.text);
             }
             else
             {
+                Debug.Log("Syncing");
                 PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
 
                 JSONArray kids = JSONArray.Parse(request.downloadHandler.text);
@@ -503,14 +506,23 @@ public class SessionManager : MonoBehaviour
                     activeUser.kids[index].avatarClothes = kidObj.GetString("avatarClothes");
                     activeUser.kids[index].ownedItems = kidObj.GetString("ownedItems");
                     activeUser.kids[index].age = (int)kidObj.GetNumber("age");
-                    activeUser.kids[index].activeMissions.Clear();
 
                     activeUser.kids[index].ResetPlayedGames();
 
+                    activeUser.kids[index].missionsToPlay = new List<int>();
                     for (int o = 0; o < activeMissions.Length; o++)
                     {
-                        activeUser.kids[index].activeMissions.Add(activeMissions[o].Str);
-                        Debug.Log(activeMissions[o].Str);
+                        string gameKey = activeMissions[o].Str;
+                        for (int gameName = 0; gameName < Keys.Number_Of_Games; gameName++)
+                        {
+                            Debug.Log($"{gameKey} is equal to { Keys.Game_Names[gameName]}");
+                            if (gameKey == Keys.Game_Names[gameName])
+                            {
+                                activeUser.kids[index].missionsToPlay.Add(gameName);
+                                Debug.Log($"Player has mission {gameName}");
+                                break;
+                            }
+                        }
                     }
 
                     activeUser.kids[index].activeDay = (int)kidObj.GetNumber("activeDay");
@@ -587,11 +599,9 @@ public class SessionManager : MonoBehaviour
     {
         JSONArray array = new JSONArray();
 
-        activeKid.activeMissions.Clear();
         for (int i = 0; i < activeMissionsActive.Count; i++)
         {
             array.Add(activeMissionsActive[i]);
-            activeKid.activeMissions.Add(activeMissionsActive[i]);
         }
 
         JSONObject data = UpdateJsaonData(array);
@@ -626,9 +636,9 @@ public class SessionManager : MonoBehaviour
     {
         JSONArray array = new JSONArray();
 
-        for (int i = 0; i < activeKid.activeMissions.Count; i++)
+        for (int i = 0; i < activeKid.missionsToPlay.Count; i++)
         {
-            array.Add(activeKid.activeMissions[i]);
+            array.Add(Keys.Game_Names[activeKid.missionsToPlay[i]]);
         }
 
         JSONObject data = UpdateJsaonData(array);
@@ -838,8 +848,8 @@ public class SessionManager : MonoBehaviour
         public string avatarClothes;
 
         public string offlineData;
-        public List<string> activeMissions;
-        public List<int> playedGames;
+        public List<int> missionsToPlay;
+        public bool[] playedGames;
         public string ownedItems;
         public int activeDay;
         public bool ageSet;
@@ -860,19 +870,6 @@ public class SessionManager : MonoBehaviour
         public int treasureLevel;
         public int icecreamDifficulty;
         public int icecreamLevel;
-
-        public int playedBird;
-        public int blockedArbolMusical;
-        public int playedRiver;
-        public int blockedRio;
-        public int playedSand;
-        public int blockedArenaMagica;
-        public int playedLava;
-        public int blockedSombras;
-        public int playedMonkey;
-        public int blockedDondeQuedoLaBolita;
-        public int playedTreasure;
-        public int blockedTesoro;
 
         //These integers are used to keep track of the amout of sessions played by the kid
         public int birdsSessions;
@@ -945,8 +942,8 @@ public class SessionManager : MonoBehaviour
             avatarClothes = "";
 
             offlineData = "";
-            activeMissions = new List<string>();
-            playedGames = new List<int>();
+            missionsToPlay = new List<int>();
+            playedGames = new bool[Keys.Number_Of_Games];
             ownedItems = "";
             activeDay = -1;
             ageSet = false;
@@ -968,19 +965,6 @@ public class SessionManager : MonoBehaviour
             treasureDifficulty = 0;
             treasureLevel = 0;
             tesoroTutorial = 0;
-
-            playedBird = 0;
-            blockedArbolMusical = 0;
-            playedRiver = 0;
-            blockedRio = 0;
-            playedSand = 0;
-            blockedArenaMagica = 0;
-            playedLava = 0;
-            blockedSombras = 0;
-            playedMonkey = 0;
-            blockedDondeQuedoLaBolita = 0;
-            playedTreasure = 0;
-            blockedTesoro = 0;
 
             xmlArbolMusical = "";
             xmlRio = "";
@@ -1009,12 +993,7 @@ public class SessionManager : MonoBehaviour
 
         public void ResetPlayedGames()
         {
-            playedBird = 0;
-            playedRiver = 0;
-            playedSand = 0;
-            playedLava = 0;
-            playedMonkey = 0;
-            playedTreasure = 0;
+            playedGames = new bool[Keys.Number_Of_Games];
         }
     }
 

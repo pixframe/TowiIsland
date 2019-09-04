@@ -443,13 +443,15 @@ public class TreasureHuntManager : MonoBehaviour {
         counting = false;
         if (sessionManager != null)
         {
+            var startLevel = sessionManager.activeKid.treasureLevel;
+            var startDifficulty = sessionManager.activeKid.treasureDifficulty;
             sessionManager.activeKid.treasureDifficulty = difficulty;
             sessionManager.activeKid.treasureLevel= level;
             if (sessionManager.activeKid.treasureFirst)
             {
                 sessionManager.activeKid.treasureFirst = false;
             }
-            sessionManager.activeKid.playedTreasure = 1;
+            sessionManager.activeKid.playedGames[(int)GameConfigurator.KindOfGame.Treasure] = true;
             sessionManager.activeKid.needSync = true;
             sessionManager.activeKid.kiwis += passLevels;
 
@@ -480,6 +482,11 @@ public class TreasureHuntManager : MonoBehaviour {
                 sessionManager.activeKid.treasureFirst = false;
                 levelSaver.AddLevelData("initial_level", level);
                 levelSaver.AddLevelData("initial_difficulty", difficulty);
+            }
+            else
+            {
+                levelSaver.AddLevelData("initial_level", startLevel);
+                levelSaver.AddLevelData("initial_difficulty", startDifficulty);
             }
             levelSaver.AddLevelData("current_level", level);
             levelSaver.AddLevelData("current_difficulty", difficulty);

@@ -259,11 +259,13 @@ public class MonkeyHidingManager : MonoBehaviour {
         counting = false;
         if (sessionManager != null)
         {
+            var startLevel = sessionManager.activeKid.monkeyLevel;
+            var startDifficulty = sessionManager.activeKid.monkeyDifficulty;
             sessionManager.activeKid.monkeyDifficulty = difficulty;
             sessionManager.activeKid.monkeyLevel = level;
 
             sessionManager.activeKid.kiwis += passLevels;
-            sessionManager.activeKid.playedMonkey = 1;
+            sessionManager.activeKid.playedGames[(int)GameConfigurator.KindOfGame.Monkey] = true;
             sessionManager.activeKid.needSync = true;
 
             //levelSaver.AddLevelData("level", difficulty);
@@ -284,6 +286,11 @@ public class MonkeyHidingManager : MonoBehaviour {
                 sessionManager.activeKid.monkeyFirst = false;
                 levelSaver.AddLevelData("initial_level", level);
                 levelSaver.AddLevelData("initial_difficulty", difficulty);
+            }
+            else
+            {
+                levelSaver.AddLevelData("initial_level", startLevel);
+                levelSaver.AddLevelData("initial_difficulty", startDifficulty);
             }
             levelSaver.AddLevelData("current_level", level);
             levelSaver.AddLevelData("current_difficulty", difficulty);

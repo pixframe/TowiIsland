@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class GameConfigurator
 {
+    public enum KindOfGame { Birds, Sand, Treasure, Monkey, River, Lava, Icecream};
+
     /*for more information of how this works check the manual of traning*/
     /// <summary>
     /// Here we will calculate the number of the nest and birds to be used, and the banks of sounds were the sounds come from.

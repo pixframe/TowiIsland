@@ -52,6 +52,7 @@ public class GameCenterManager : MonoBehaviour {
     int index;
     List<int> stations = new List<int> { 0, 1, 2, 3, 4, 5 };
     List<bool> unlocks = new List<bool> { false, false, false, false, false, false };
+    List<int> unlockStations = new List<int>();
     //int[] stations = new int[] { 2, 3, 5 };
     //int[] stations = new int[] { 0, 1 };
     //int[] stations = new int[] { 4 };
@@ -108,7 +109,7 @@ public class GameCenterManager : MonoBehaviour {
         leftButton.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Left));
         rigthButton.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Right));
 
-        currentPanel.playButton.GetComponentInChildren<Text>().text = stringsToShow[6];
+        currentPanel.playButton.GetComponentInChildren<Text>().text = stringsToShow[stringsToShow.Length-3];
 
 
         ChildGames();
@@ -216,60 +217,20 @@ public class GameCenterManager : MonoBehaviour {
             }
             else
             {
-                for (int i = 0; i < sessionManager.activeKid.activeMissions.Count; i++)
+                List<int> missions = new List<int>();
+                for (int i = 0; i < sessionManager.activeKid.missionsToPlay.Count; i++)
                 {
-                    switch (sessionManager.activeKid.activeMissions[i])
+                    int missionToCheck = sessionManager.activeKid.missionsToPlay[i];
+                    if (!sessionManager.activeKid.playedGames[missionToCheck])
                     {
-                        case Keys.Bird_Game_Name:
-                            if (sessionManager.activeKid.playedBird == 0)
-                            {
-                                activeMissions.Add(Keys.Bird_Game_Name);
-                                unlocks[0] = true;
-                            }
-                            break;
-                        case Keys.Sand_Game_Name:
-                            if (sessionManager.activeKid.playedSand == 0)
-                            {
-                                activeMissions.Add(Keys.Sand_Game_Name);
-                                unlocks[1] = true;
-                            }
-                            break;
-                        case Keys.Treasure_Game_Name:
-                            if (sessionManager.activeKid.playedTreasure == 0)
-                            {
-                                activeMissions.Add(Keys.Treasure_Game_Name);
-                                unlocks[2] = true;
-                            }
-                            break;
-                        case Keys.Monkey_Game_Name:
-                            if (sessionManager.activeKid.playedMonkey == 0)
-                            {
-                                activeMissions.Add(Keys.Monkey_Game_Name);
-                                unlocks[3] = true;
-                            }
-                            break;
-                        case Keys.River_Game_Name:
-                            if (sessionManager.activeKid.playedRiver == 0)
-                            {
-                                activeMissions.Add(Keys.River_Game_Name);
-                                unlocks[4] = true;
-                            }
-                            break;
-                        case Keys.Lava_Game_Name:
-                            if (sessionManager.activeKid.playedLava == 0)
-                            {
-                                activeMissions.Add(Keys.Lava_Game_Name);
-                                unlocks[5] = true;
-                            }
-                            break;
-                        default:
-                            if (sessionManager.activeKid.playedBird == 0)
-                            {
-
-                            }
-                            break;
+                        activeMissions.Add(Keys.Game_Names[missionToCheck]);
+                        unlocks[missionToCheck] = true;
+                        var x = missionToCheck;
+                        missions.Add(x);
                     }
                 }
+                sessionManager.activeKid.missionsToPlay = missions;
+                Debug.Log(sessionManager.activeKid.missionsToPlay.Count);
             }
         }
         else
@@ -521,7 +482,7 @@ public class GameCenterManager : MonoBehaviour {
         warningPanel.SetActive(true);
         warningPanel.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
         warningPanel.GetComponentInChildren<Button>().onClick.AddListener(GoBackScene);
-        warningPanel.GetComponentInChildren<Text>().text = stringsToShow[7];
+        warningPanel.GetComponentInChildren<Text>().text = stringsToShow[stringsToShow.Length-2];
     }
 
     void ShowDisclaimer()
@@ -535,7 +496,7 @@ public class GameCenterManager : MonoBehaviour {
             ChangeMenus();
 
         });
-        warningPanel.GetComponentInChildren<Text>().text = stringsToShow[8];
+        warningPanel.GetComponentInChildren<Text>().text = stringsToShow[stringsToShow.Length - 1];
     }
 }
 

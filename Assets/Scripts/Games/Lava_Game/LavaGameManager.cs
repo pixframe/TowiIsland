@@ -340,9 +340,11 @@ public class LavaGameManager : MonoBehaviour {
         counting = false;
         if (sessionManager != null)
         {
+            var startLevel = sessionManager.activeKid.lavaLevel;
+            var startDifficulty = sessionManager.activeKid.lavaDifficulty;
             sessionManager.activeKid.lavaDifficulty = difficulty;
             sessionManager.activeKid.lavaLevel = level;
-            sessionManager.activeKid.playedLava = 1;
+            sessionManager.activeKid.playedGames[(int)GameConfigurator.KindOfGame.Lava] = true;
             sessionManager.activeKid.needSync = true;
             sessionManager.activeKid.kiwis += passLevels;
 
@@ -356,12 +358,17 @@ public class LavaGameManager : MonoBehaviour {
             levelSaver.AddLevelData("time", (int)time);
             levelSaver.AddLevelData("latencies", latencies);
             //Version 2 
-            sessionManager.activeKid.lavaSessions++;    
+            sessionManager.activeKid.lavaSessions++;
             if (sessionManager.activeKid.lavaFirst)
             {
-                levelSaver.AddLevelData("start_level", level);
-                levelSaver.AddLevelData("strat_difficulty", difficulty);
                 sessionManager.activeKid.lavaFirst = false;
+                levelSaver.AddLevelData("initial_level", level);
+                levelSaver.AddLevelData("initial_difficulty", difficulty);
+            }
+            else
+            {
+                levelSaver.AddLevelData("initial_level", startLevel);
+                levelSaver.AddLevelData("initial_difficulty", startDifficulty);
             }
             levelSaver.AddLevelData("current_level", level);
             levelSaver.AddLevelData("current_difficulty", difficulty);
@@ -380,7 +387,7 @@ public class LavaGameManager : MonoBehaviour {
             levelSaver.AddLevelData("miss_answers", missedAnswer);
             levelSaver.AddLevelDataAsString("latencies", latencies);
             levelSaver.AddLevelDataAsString("played_levels", levelsPlayed);
-            levelSaver.AddLevelData("played_difficulty", difficultiesPlayed);
+            levelSaver.AddLevelDataAsString("played_difficulty", difficultiesPlayed);
             levelSaver.AddLevelData("session_time", (int)time);
 
             levelSaver.CreateSaveBlock("JuegoDeSombras", time, passLevels, repeatedLevels, passLevels+repeatedLevels, sessionManager.activeKid.lavaSessions);
@@ -803,11 +810,15 @@ public class LavaGameManager : MonoBehaviour {
 
         if (numberOfAssays <= 0)
         {
+            Debug.Log(levelsPlayed.Count);
+            levelsPlayed.Add(level);
+            difficultiesPlayed.Add(difficulty);
             readyButton.onClick.RemoveAllListeners();
             readyButton.onClick.AddListener(FinishTheGame);
         }
         else
         {
+            Debug.Log(levelsPlayed.Count);
             levelsPlayed.Add(level);
             difficultiesPlayed.Add(difficulty);
         }

@@ -81,18 +81,18 @@ public class LogInScript : MonoBehaviour
             else if (request.isHttpError)
             {
                 JSONObject jsonObj = JSONObject.Parse(request.downloadHandler.text);
-                Debug.Log(request.error);
-                Debug.Log(jsonObj);
-                string error = jsonObj.GetString("status");
-                if (error == "USER_NOT_FOUND")
+                if (request.error.Contains("401"))
                 {
-                    menuController.ShowWarning(2, menuController.ShowLogIn);
+                    menuController.ShowWarning(15, menuController.ShowLogIn);
+                }
+                else if (request.error.Contains("404"))
+                {
+                    menuController.ShowWarning(14, menuController.ShowLogIn);
                 }
                 else
                 {
-                    menuController.ShowWarning(3, menuController.ShowLogIn);
+                    Debug.Log("What");
                 }
-                Debug.Log(error);
             }
             else
             {

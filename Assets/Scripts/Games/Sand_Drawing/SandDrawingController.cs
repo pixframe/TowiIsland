@@ -283,12 +283,15 @@ public class SandDrawingController : MonoBehaviour {
         {
             accuracyPercentage = (accuracyPercentage * 100) / 500;
 
+            var level1 = sessionManager.activeKid.sandLevel;
+            var level2 = sessionManager.activeKid.sandLevel2;
+            var level3 = sessionManager.activeKid.sandLevel3;
             sessionManager.activeKid.sandDifficulty = levelGame;
             sessionManager.activeKid.sandLevel = levelFill;
             sessionManager.activeKid.sandLevel2 = levelIdentyfy;
             sessionManager.activeKid.sandLevel3 = levelCompletion;
             sessionManager.activeKid.kiwis += passLevels;
-            sessionManager.activeKid.playedSand = 1;
+            sessionManager.activeKid.playedGames[(int)GameConfigurator.KindOfGame.Sand] = true;
             sessionManager.activeKid.needSync = true;
 
             //levelSaver.AddLevelData("level", levelGame);
@@ -326,6 +329,12 @@ public class SandDrawingController : MonoBehaviour {
                     sessionManager.activeKid.sandLevelSet = true;
                     levelSaver.AddLevelData("initial_level_overlapping", levelIdentyfy);
                     levelSaver.AddLevelData("initial_level_clousre", levelCompletion);
+                }
+                else
+                {
+                    levelSaver.AddLevelData("initial_level_motor", level1);
+                    levelSaver.AddLevelData("initial_level_overlapping", level2);
+                    levelSaver.AddLevelData("initial_level_clousre", level3);
                 }
             }
             levelSaver.AddLevelDataAsString("time_percentage", drawingTimes);
@@ -382,7 +391,6 @@ public class SandDrawingController : MonoBehaviour {
         else
         {
             readyButton.onClick.AddListener(TellInstruction);
-            DestroyTheStory();
         }
     }
 
@@ -396,7 +404,6 @@ public class SandDrawingController : MonoBehaviour {
         {
             instructionPanel.transform.parent.gameObject.SetActive(true);
         }
-        Destroy(storyManager.gameObject);
         stories = null;
     }
 

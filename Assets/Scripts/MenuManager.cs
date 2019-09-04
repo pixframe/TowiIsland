@@ -240,17 +240,11 @@ public class MenuManager : MonoBehaviour
                     else
                     {
                         DateTime lastFetchTime = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Play_Time), DateTimeFormatInfo.InvariantInfo);
-                        string s = "";
-                        foreach (string se in sessionManager.activeKid.activeMissions)
-                        {
-                            s += $"{se} ";
-                        }
-                        Debug.Log($"Active missions are {s}");
 
-                        if (DateTime.Compare(DateTime.Today, lastFetchTime) > 0 && sessionManager.activeKid.activeMissions.Count <= 0)
+                        if (DateTime.Compare(DateTime.Today, lastFetchTime) > 0 && sessionManager.activeKid.missionsToPlay.Count <= 0)
                         {
                             Debug.Log("Here we create a new activities");
-                            sessionManager.activeKid.activeMissions = OfflineManager.Create_Levels();
+                            sessionManager.activeKid.missionsToPlay = OfflineManager.Create_Levels();
                         }
                         ShowGameMenu();
                     }
@@ -274,11 +268,11 @@ public class MenuManager : MonoBehaviour
                         DateTime lastFetchTime = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Play_Time), DateTimeFormatInfo.InvariantInfo);
 
 
-                        if (DateTime.Compare(DateTime.Today, lastFetchTime) > 0 && sessionManager.activeKid.activeMissions.Count <= 0)
+                        if (DateTime.Compare(DateTime.Today, lastFetchTime) > 0 && sessionManager.activeKid.missionsToPlay.Count <= 0)
                         {
                             if (DateTime.Compare(DateTime.Today, lastFetchTime) > 0)
                             {
-                                sessionManager.activeKid.activeMissions = OfflineManager.Create_Levels();
+                                sessionManager.activeKid.missionsToPlay = OfflineManager.Create_Levels();
                             }
                         }
                         ShowGameMenu();
@@ -443,34 +437,42 @@ public class MenuManager : MonoBehaviour
             return kidName.Contains(lookingKid);
         });
 
-        for (int i = 0; i < kidsToShow.Count; i++)
+        if (kidsToShow.Count > 0)
         {
-            GameObject objectToInstance = Instantiate(miniKidCanvas, miniKidContainer.transform);
-            kidos.Add(new KidProfileCanvas(objectToInstance));
-            float addableSize = kidos[i].gameObject.GetComponent<RectTransform>().sizeDelta.x * 2f;
-            miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(miniKidContainer.GetComponent<RectTransform>().sizeDelta.x + addableSize, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
-            //kidos[i].gameObject.GetComponent<RectTransform>().parent = miniKidContainer.GetComponent<RectTransform>();
-            kidos[i].gameObject.GetComponent<RectTransform>().SetParent(miniKidContainer.GetComponent<RectTransform>());
-            if (i > 0)
+            HideWarning();
+            for (int i = 0; i < kidsToShow.Count; i++)
             {
-                Vector2 pos = kidos[i - 1].gameObject.GetComponent<RectTransform>().localPosition;
-                float positionOfCanvitas = pos.x + addableSize;
-                kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, pos.y);
+                GameObject objectToInstance = Instantiate(miniKidCanvas, miniKidContainer.transform);
+                kidos.Add(new KidProfileCanvas(objectToInstance));
+                float addableSize = kidos[i].gameObject.GetComponent<RectTransform>().sizeDelta.x * 2f;
+                miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(miniKidContainer.GetComponent<RectTransform>().sizeDelta.x + addableSize, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
+                //kidos[i].gameObject.GetComponent<RectTransform>().parent = miniKidContainer.GetComponent<RectTransform>();
+                kidos[i].gameObject.GetComponent<RectTransform>().SetParent(miniKidContainer.GetComponent<RectTransform>());
+                if (i > 0)
+                {
+                    Vector2 pos = kidos[i - 1].gameObject.GetComponent<RectTransform>().localPosition;
+                    float positionOfCanvitas = pos.x + addableSize;
+                    kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, pos.y);
+                }
+                else
+                {
+                    float positionOfCanvitas = addableSize / 2;
+                    kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, kidos[i].gameObject.GetComponent<RectTransform>().localPosition.y);
+                }
+                kidos[i].SetKidName(kidsToShow[i].name);
+                string parentkey = kidsToShow[i].userkey;
+                int id = kidsToShow[i].id;
+                kidos[i].buttonOfProfile.onClick.AddListener(() => SetKidProfile(parentkey, id));
+                kidos[i].ChangeAvatar(kidsToShow[i].avatar);
+                if (!kidsToShow[i].isActive)
+                {
+                    kidos[i].PutInGrey();
+                }
             }
-            else
-            {
-                float positionOfCanvitas = addableSize / 2;
-                kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, kidos[i].gameObject.GetComponent<RectTransform>().localPosition.y);
-            }
-            kidos[i].SetKidName(kidsToShow[i].name);
-            string parentkey = kidsToShow[i].userkey;
-            int id = kidsToShow[i].id;
-            kidos[i].buttonOfProfile.onClick.AddListener(() => SetKidProfile(parentkey, id));
-            kidos[i].ChangeAvatar(kidsToShow[i].avatar);
-            if (!kidsToShow[i].isActive)
-            {
-                kidos[i].PutInGrey();
-            }
+        }
+        else
+        {
+            ShowWarning(16);
         }
     }
 
@@ -519,30 +521,38 @@ public class MenuManager : MonoBehaviour
             return kidName.Contains(lookingKid);
         });
 
-        for (int i = 0; i < kidsToShow.Count; i++)
+        if (kidsToShow.Count > 0)
         {
-            GameObject theObject = Instantiate(miniKidCanvas, miniKidContainer.transform);
-            kidos.Add(new KidProfileCanvas(theObject));
-            float addableSize = kidos[i].gameObject.GetComponent<RectTransform>().sizeDelta.x * 2f;
-            miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(miniKidContainer.GetComponent<RectTransform>().sizeDelta.x + addableSize, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
-            kidos[i].gameObject.GetComponent<RectTransform>().parent = miniKidContainer.GetComponent<RectTransform>();
-            if (i > 0)
+            for (int i = 0; i < kidsToShow.Count; i++)
             {
-                Vector2 pos = kidos[i - 1].gameObject.GetComponent<RectTransform>().localPosition;
-                float positionOfCanvitas = pos.x + addableSize;
-                kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, pos.y);
+                GameObject theObject = Instantiate(miniKidCanvas, miniKidContainer.transform);
+                kidos.Add(new KidProfileCanvas(theObject));
+                float addableSize = kidos[i].gameObject.GetComponent<RectTransform>().sizeDelta.x * 2f;
+                miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(miniKidContainer.GetComponent<RectTransform>().sizeDelta.x + addableSize, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
+                kidos[i].gameObject.GetComponent<RectTransform>().parent = miniKidContainer.GetComponent<RectTransform>();
+                if (i > 0)
+                {
+                    Vector2 pos = kidos[i - 1].gameObject.GetComponent<RectTransform>().localPosition;
+                    float positionOfCanvitas = pos.x + addableSize;
+                    kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, pos.y);
+                }
+                else
+                {
+                    float positionOfCanvitas = addableSize / 2;
+                    kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, kidos[i].gameObject.GetComponent<RectTransform>().localPosition.y);
+                }
+                kidos[i].SetKidName(kidsToShow[i].name);
+                string parentkey = kidsToShow[i].userkey;
+                int id = kidsToShow[i].id;
+                kidos[i].buttonOfProfile.onClick.AddListener(() => SetKidIdToSubscriptionPlan(id, kidos[i]));
+                kidos[i].PutInGrey();
+                kidos[i].ChangeAvatar(kidsToShow[i].avatar);
             }
-            else
-            {
-                float positionOfCanvitas = addableSize / 2;
-                kidos[i].gameObject.GetComponent<RectTransform>().localPosition = new Vector2(positionOfCanvitas, kidos[i].gameObject.GetComponent<RectTransform>().localPosition.y);
-            }
-            kidos[i].SetKidName(kidsToShow[i].name);
-            string parentkey = kidsToShow[i].userkey;
-            int id = kidsToShow[i].id;
-            kidos[i].buttonOfProfile.onClick.AddListener(() => SetKidIdToSubscriptionPlan(id, kidos[i]));
-            kidos[i].PutInGrey();
-            kidos[i].ChangeAvatar(kidsToShow[i].avatar);
+        }
+        else
+        {
+            ShowWarning(16);
+            Debug.Log("Some");
         }
     }
 
@@ -885,7 +895,7 @@ public class MenuManager : MonoBehaviour
         {
             if (typeOfWarning == 0)
             {
-                subscribeButton.onClick.AddListener(() => ShowShop(0));
+                subscribeButton.onClick.AddListener(ShowRegisteredAdd);
                 WriteTheText(subscribeText, 25);
             }
             else if (typeOfWarning == 1)
@@ -1316,6 +1326,7 @@ public class MenuManager : MonoBehaviour
         WriteTheText(configMenu.automaticButton, 50);
         WriteTheText(changeProfileButton, 51);
         WriteTheText(loadingText, 52);
+        kidLooker.placeholder.GetComponent<Text>().text = lines[64];
         warningButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
         newKidButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
     }
@@ -2129,9 +2140,9 @@ class GameMenu
         evaluationButton.onClick.RemoveAllListeners();
         buyButton.onClick.RemoveAllListeners();
 
-        gamesButton.onClick.AddListener(() => manager.ShowWarning(11));
-        evaluationButton.onClick.AddListener(() => manager.ShowWarning(11));
-        buyButton.onClick.AddListener(() => manager.ShowWarning(11));
+        gamesButton.onClick.AddListener(manager.ShowRegisteredAdd);
+        evaluationButton.onClick.AddListener(manager.ShowRegisteredAdd);
+        buyButton.onClick.AddListener(manager.ShowRegisteredAdd);
 
         SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
         SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
@@ -2220,7 +2231,7 @@ class GameMenu
             }
             else
             {
-                buyButton.onClick.AddListener(() => manager.ShowShop(0));
+                buyButton.onClick.AddListener(manager.ShowRegisteredAdd);
             }
             evaluationButton.onClick.AddListener(manager.ShowRegisteredAdd);
         }
@@ -2236,7 +2247,7 @@ class GameMenu
             }
             else
             {
-                buyButton.onClick.AddListener(() => manager.ShowShop(0));
+                buyButton.onClick.AddListener(manager.ShowRegisteredAdd);
             }
             SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
             SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
@@ -2318,7 +2329,7 @@ class AddMenu
 
         for (int i = 0; i < promoTexts.Length; i++)
         {
-            promoTexts[i].GetComponentInChildren<Text>().text = texts[i];
+            promoTexts[i].GetComponentInChildren<Text>().text = texts[i + 3];
         }
 
         woodText.text = texts[2];

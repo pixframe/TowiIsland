@@ -7,18 +7,23 @@ public class OfflineManager : MonoBehaviour
 {
     
 
-    public static List<string> Create_Levels()
+    public static List<int> Create_Levels()
     {
-        var namesOfGame = new List<string> { Keys.Bird_Game_Name, Keys.Lava_Game_Name, Keys.Monkey_Game_Name, Keys.River_Game_Name, Keys.Sand_Game_Name, Keys.Treasure_Game_Name };
+        List<int> numberOfGame = new List<int>();
+        for (int i = 0; i < Keys.Number_Of_Games; i++)
+        {
+            int x = i;
+            numberOfGame.Add(x);
+        }
 
         int levelsToPlay = UnityEngine.Random.Range(2, 5);
 
-        List<string> levelsToCreate = new List<string>();
+        List<int> levelsToCreate = new List<int>();
         for (int i = 0; i < levelsToPlay; i++)
         {
-            int randomMission = UnityEngine.Random.Range(0, namesOfGame.Count);
-            levelsToCreate.Add(namesOfGame[randomMission]);
-            namesOfGame.RemoveAt(randomMission);
+            int randomMission = UnityEngine.Random.Range(0, numberOfGame.Count);
+            levelsToCreate.Add(numberOfGame[randomMission]);
+            numberOfGame.RemoveAt(randomMission);
         }
 
         PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Now.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));

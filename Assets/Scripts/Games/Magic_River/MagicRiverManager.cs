@@ -287,10 +287,12 @@ public class MagicRiverManager : MonoBehaviour {
         counting = false;
         if (sessionManager != null)
         {
+            var startLevel = sessionManager.activeKid.riverLevel;
+            var startDifficulty = sessionManager.activeKid.riverDifficulty;
             sessionManager.activeKid.riverDifficulty = difficulty;
             sessionManager.activeKid.riverLevel = level;
             sessionManager.activeKid.kiwis += passLevels;
-            sessionManager.activeKid.playedRiver = 1;
+            sessionManager.activeKid.playedGames[(int)GameConfigurator.KindOfGame.River] = true;
             sessionManager.activeKid.needSync = true;
 
 
@@ -317,6 +319,11 @@ public class MagicRiverManager : MonoBehaviour {
                 sessionManager.activeKid.riverFirst = false;
                 levelSaver.AddLevelData("initial_level", level);
                 levelSaver.AddLevelData("initial_difficulty", difficulty);
+            }
+            else
+            {
+                levelSaver.AddLevelData("initial_level", startLevel);
+                levelSaver.AddLevelData("initial_difficulty", startDifficulty);
             }
             levelSaver.AddLevelData("current_level", level);
             levelSaver.AddLevelData("current_difficulty", difficulty);
