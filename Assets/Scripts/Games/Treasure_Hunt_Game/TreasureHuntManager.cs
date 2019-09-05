@@ -363,7 +363,7 @@ public class TreasureHuntManager : MonoBehaviour {
         {
             if (!FindObjectOfType<DemoKey>())
             {
-                if (sessionManager.activeKid.treasureFirst)
+                if (sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Treasure])
                 {
                     FLISSetup();
                 }
@@ -379,12 +379,12 @@ public class TreasureHuntManager : MonoBehaviour {
                 var key = FindObjectOfType<DemoKey>();
                 if (key.IsFLISOn())
                 {
-                    sessionManager.activeKid.treasureFirst = true;
+                    sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Treasure] = true;
                     FLISSetup();
                 }
                 else
                 {
-                    sessionManager.activeKid.treasureFirst = false;
+                    sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Treasure] = false;
                     firstTime = 1;
                     if (key.IsLevelSetSpecially())
                     {
@@ -447,9 +447,9 @@ public class TreasureHuntManager : MonoBehaviour {
             var startDifficulty = sessionManager.activeKid.treasureDifficulty;
             sessionManager.activeKid.treasureDifficulty = difficulty;
             sessionManager.activeKid.treasureLevel= level;
-            if (sessionManager.activeKid.treasureFirst)
+            if (sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Treasure])
             {
-                sessionManager.activeKid.treasureFirst = false;
+                sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Treasure] = false;
             }
             sessionManager.activeKid.playedGames[(int)GameConfigurator.KindOfGame.Treasure] = true;
             sessionManager.activeKid.needSync = true;
@@ -477,9 +477,9 @@ public class TreasureHuntManager : MonoBehaviour {
 
             //Version 2
             sessionManager.activeKid.treasureSessions++;
-            if (sessionManager.activeKid.treasureFirst)
+            if (sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Treasure])
             {
-                sessionManager.activeKid.treasureFirst = false;
+                sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Treasure] = false;
                 levelSaver.AddLevelData("initial_level", level);
                 levelSaver.AddLevelData("initial_difficulty", difficulty);
             }
@@ -976,7 +976,7 @@ public class TreasureHuntManager : MonoBehaviour {
     //This will handle the level up or down accordingly to the game
     void HandleNewLevel()
     {
-        if (!sessionManager.activeKid.treasureFirst)
+        if (!sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Treasure])
         {
             if (errors < 2)
             {

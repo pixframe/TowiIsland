@@ -458,7 +458,7 @@ public class SessionManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("Syncing");
+                Debug.Log(request.downloadHandler.text);
                 PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
 
                 JSONArray kids = JSONArray.Parse(request.downloadHandler.text);
@@ -515,11 +515,9 @@ public class SessionManager : MonoBehaviour
                         string gameKey = activeMissions[o].Str;
                         for (int gameName = 0; gameName < Keys.Number_Of_Games; gameName++)
                         {
-                            Debug.Log($"{gameKey} is equal to { Keys.Game_Names[gameName]}");
                             if (gameKey == Keys.Game_Names[gameName])
                             {
                                 activeUser.kids[index].missionsToPlay.Add(gameName);
-                                Debug.Log($"Player has mission {gameName}");
                                 break;
                             }
                         }
@@ -527,12 +525,13 @@ public class SessionManager : MonoBehaviour
 
                     activeUser.kids[index].activeDay = (int)kidObj.GetNumber("activeDay");
                     activeUser.kids[index].ageSet = true;
-                    activeUser.kids[index].birdsFirst = kidObj.GetBoolean("arbolFirstTime");
-                    activeUser.kids[index].lavaFirst = kidObj.GetBoolean("sombrasFirstTime");
-                    activeUser.kids[index].monkeyFirst = kidObj.GetBoolean("bolitaFirstTime");
-                    activeUser.kids[index].riverFirst = kidObj.GetBoolean("rioFirstTime");
-                    activeUser.kids[index].sandFirst = kidObj.GetBoolean("arenaFirstTime");
-                    activeUser.kids[index].treasureFirst = kidObj.GetBoolean("tesoroFirstTime");
+                    activeUser.kids[index].firstsGames[0] = kidObj.GetBoolean("arbolFirstTime");
+                    activeUser.kids[index].firstsGames[1] = kidObj.GetBoolean("arenaFirstTime");
+                    activeUser.kids[index].firstsGames[2] = kidObj.GetBoolean("tesoroFirstTime");
+                    activeUser.kids[index].firstsGames[3] = kidObj.GetBoolean("bolitaFirstTime");
+                    activeUser.kids[index].firstsGames[4] = kidObj.GetBoolean("rioFirstTime");
+                    activeUser.kids[index].firstsGames[5] = kidObj.GetBoolean("sombrasFirstTime");
+
                     activeUser.kids[index].testAvailable = kidObj.GetBoolean("testAvailable");
                     activeUser.kids[index].sandLevelSet = kidObj.GetBoolean("arenaLevelSet");
 
@@ -542,14 +541,6 @@ public class SessionManager : MonoBehaviour
                         activeUser.kids[index].buyedIslandObjects.Add((int)buyedItems[o].Number);
                     }
 
-                    if (activeUser.kids[index].birdsFirst || activeUser.kids[index].lavaFirst || activeUser.kids[index].monkeyFirst || activeUser.kids[index].riverFirst || activeUser.kids[index].sandFirst || activeUser.kids[index].treasureFirst)
-                    {
-                        activeUser.kids[index].anyFirstTime = true;
-                    }
-                    else
-                    {
-                        activeUser.kids[index].anyFirstTime = false;
-                    }
                     string type = kidObj.GetString("suscriptionType");
                     if (type == "monthly" || type == "quarterly")
                     {
@@ -694,12 +685,12 @@ public class SessionManager : MonoBehaviour
             { "owneditems", activeKid.ownedItems },
             { "activemissions", array },
             { "activeday", activeKid.activeDay },
-            { "rioFirstTime", activeKid.riverFirst },
-            { "tesoroFirstTime", activeKid.treasureFirst },
-            { "arbolFirstTime", activeKid.birdsFirst },
-            { "arenaFirstTime", activeKid.sandFirst },
-            { "sombrasFirstTime", activeKid.lavaFirst },
-            { "bolitaFirstTime", activeKid.monkeyFirst },
+            { "rioFirstTime", activeKid.firstsGames[4] },
+            { "tesoroFirstTime", activeKid.firstsGames[2] },
+            { "arbolFirstTime", activeKid.firstsGames[0] },
+            { "arenaFirstTime", activeKid.firstsGames[1] },
+            { "sombrasFirstTime", activeKid.firstsGames[5]},
+            { "bolitaFirstTime", activeKid.firstsGames[3] },
             { "tesoroLevelSet", true },
             { "arenaLevelSet", activeKid.sandLevelSet },
             { "arbolLevelSet", true },
@@ -850,6 +841,7 @@ public class SessionManager : MonoBehaviour
         public string offlineData;
         public List<int> missionsToPlay;
         public bool[] playedGames;
+        public List<bool> firstsGames;
         public string ownedItems;
         public int activeDay;
         public bool ageSet;
@@ -896,15 +888,6 @@ public class SessionManager : MonoBehaviour
 
         public bool syncProfile = true;
 
-        public bool birdsFirst;
-        public bool lavaFirst;
-        public bool monkeyFirst;
-        public bool riverFirst;
-        public bool sandFirst;
-        public bool treasureFirst;
-        public bool icecreamFirst;
-        public bool anyFirstTime;
-
         public bool sandLevelSet;
 
         public bool needSync;
@@ -944,6 +927,11 @@ public class SessionManager : MonoBehaviour
             offlineData = "";
             missionsToPlay = new List<int>();
             playedGames = new bool[Keys.Number_Of_Games];
+            firstsGames = new List<bool>();
+            for (int i = 0; i < Keys.Number_Of_Games; i++)
+            {
+                firstsGames.Add(true);
+            }
             ownedItems = "";
             activeDay = -1;
             ageSet = false;
@@ -975,13 +963,6 @@ public class SessionManager : MonoBehaviour
 
             syncProfile = true;
 
-            birdsFirst = true;
-            lavaFirst = true;
-            monkeyFirst = true;
-            riverFirst = true;
-            sandFirst = true;
-            treasureFirst = true;
-            anyFirstTime = true;
             needSync = false;
             testAvailable = true;
             isActive = active;

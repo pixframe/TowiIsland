@@ -161,7 +161,7 @@ public class SandDrawingController : MonoBehaviour {
         {
             if (!FindObjectOfType<DemoKey>())
             {
-                if (sessionManager.activeKid.sandFirst)
+                if (sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Sand])
                 {
                     FLISSetup();
                 }
@@ -204,13 +204,13 @@ public class SandDrawingController : MonoBehaviour {
                 var key = FindObjectOfType<DemoKey>();
                 if (key.IsFLISOn())
                 {
-                    sessionManager.activeKid.sandFirst = true;
+                    sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Sand] = true;
                     sessionManager.activeKid.sandLevelSet = false;
                     FLISSetup();
                 }
                 else
                 {
-                    sessionManager.activeKid.sandFirst = false;
+                    sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Sand] = false;
                     sessionManager.activeKid.sandLevelSet = true;
                     firstTime = 1;
                     if (key.IsLevelSetSpecially())
@@ -317,9 +317,9 @@ public class SandDrawingController : MonoBehaviour {
             }
             levelSaver.AddLevelData("session_overdraw_percentage", overTotals / totalAssaysInTheGame);
             levelSaver.AddLevelData("session_accuracy_percentage", acuTotals / totalAssaysInTheGame);
-            if (sessionManager.activeKid.sandFirst)
+            if (sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Sand])
             {
-                sessionManager.activeKid.sandFirst = false;
+                sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Sand] = false;
                 levelSaver.AddLevelData("initial_level_motor", levelFill);
             }
             else
@@ -541,13 +541,13 @@ public class SandDrawingController : MonoBehaviour {
 
     void GetTheData()
     {
-        if (!sessionManager.activeKid.sandFirst && sessionManager.activeKid.sandLevelSet)
+        if (!sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Sand] && sessionManager.activeKid.sandLevelSet)
         {
             typeOfGamesIndex = GameConfigurator.SandConfig(levelGame);
         }
         else
         {
-            if (!sessionManager.activeKid.sandFirst)
+            if (!sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Sand])
             {
                 typeOfGamesIndex = new int[] { 1, 2, 1, 2, 1, 2 };
             }
@@ -951,7 +951,7 @@ public class SandDrawingController : MonoBehaviour {
         switch (typeOfGameToPlay)
         {
             case TypeOfGame.Fill:
-                if (!sessionManager.activeKid.sandFirst && sessionManager.activeKid.sandLevelSet)
+                if (!sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Sand] && sessionManager.activeKid.sandLevelSet)
                 {
                     if (isPassable)
                     {
@@ -980,7 +980,7 @@ public class SandDrawingController : MonoBehaviour {
                 }
                 break;
             case TypeOfGame.Completion:
-                if (!sessionManager.activeKid.sandFirst && sessionManager.activeKid.sandLevelSet)
+                if (!sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Sand] && sessionManager.activeKid.sandLevelSet)
                 {
                     if (isPassable)
                     {
@@ -1008,7 +1008,7 @@ public class SandDrawingController : MonoBehaviour {
                 }
                 break;
             case TypeOfGame.Identify:
-                if (!sessionManager.activeKid.sandFirst && sessionManager.activeKid.sandLevelSet)
+                if (!sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Sand] && sessionManager.activeKid.sandLevelSet)
                 {
                     if (isPassable)
                     {

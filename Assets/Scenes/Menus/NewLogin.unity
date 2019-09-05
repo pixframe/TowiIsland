@@ -4759,7 +4759,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -166.7, y: -59.865}
+  m_AnchoredPosition: {x: -166.7002, y: -59.865005}
   m_SizeDelta: {x: 280.8, y: 80.27}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &320088935
@@ -7185,8 +7185,9 @@ MonoBehaviour:
     avatar: 
     avatarClothes: 
     offlineData: 
-    activeMissions: []
+    missionsToPlay: 
     playedGames: 
+    firstsGames: 
     ownedItems: 
     activeDay: 0
     ageSet: 0
@@ -7206,18 +7207,6 @@ MonoBehaviour:
     treasureLevel: 0
     icecreamDifficulty: 0
     icecreamLevel: 0
-    playedBird: 0
-    blockedArbolMusical: 0
-    playedRiver: 0
-    blockedRio: 0
-    playedSand: 0
-    blockedArenaMagica: 0
-    playedLava: 0
-    blockedSombras: 0
-    playedMonkey: 0
-    blockedDondeQuedoLaBolita: 0
-    playedTreasure: 0
-    blockedTesoro: 0
     birdsSessions: 0
     lavaSessions: 0
     monkeySessions: 0
@@ -7237,14 +7226,6 @@ MonoBehaviour:
     extraField1: 0
     extraField2: 0
     syncProfile: 0
-    birdsFirst: 0
-    lavaFirst: 0
-    monkeyFirst: 0
-    riverFirst: 0
-    sandFirst: 0
-    treasureFirst: 0
-    icecreamFirst: 0
-    anyFirstTime: 0
     sandLevelSet: 0
     needSync: 0
     testAvailable: 0

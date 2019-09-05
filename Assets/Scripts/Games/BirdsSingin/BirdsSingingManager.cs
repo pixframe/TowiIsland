@@ -207,7 +207,7 @@ public class BirdsSingingManager : MonoBehaviour {
         {
             if (!FindObjectOfType<DemoKey>())
             {
-                if (sessionManager.activeKid.birdsFirst)
+                if (sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Birds])
                 {
                     FLISSetup();
                 }
@@ -223,12 +223,12 @@ public class BirdsSingingManager : MonoBehaviour {
                 var key = FindObjectOfType<DemoKey>();
                 if (key.IsFLISOn())
                 {
-                    sessionManager.activeKid.birdsFirst = true;
+                    sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Birds] = true;
                     FLISSetup();
                 }
                 else
                 {
-                    sessionManager.activeKid.birdsFirst = false;
+                    sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Birds] = false;
                     firstTime = 1;
                     if (key.IsLevelSetSpecially())
                     {
@@ -312,9 +312,9 @@ public class BirdsSingingManager : MonoBehaviour {
 
             //Version 2
             sessionManager.activeKid.birdsSessions++;
-            if (sessionManager.activeKid.birdsFirst)
+            if (sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Birds])
             {
-                sessionManager.activeKid.birdsFirst = false;
+                sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Birds] = false;
                 levelSaver.AddLevelData("initial_level", level);
                 levelSaver.AddLevelData("initial_difficulty", difficulty);
             }
@@ -822,7 +822,7 @@ public class BirdsSingingManager : MonoBehaviour {
         readyButton.gameObject.SetActive(false);
         audioManager.PlayClip(instructionsClips[7]);
         Invoke("ReadyButtonOn", audioManager.ClipDuration());
-        if (sessionManager.activeKid.birdsFirst)
+        if (sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Birds])
         {
             numberOfAssays--;
             FastLevelIdentificationSystem();

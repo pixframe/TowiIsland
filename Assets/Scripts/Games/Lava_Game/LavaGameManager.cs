@@ -257,7 +257,7 @@ public class LavaGameManager : MonoBehaviour {
         {
             if (!FindObjectOfType<DemoKey>())
             {
-                if (sessionManager.activeKid.lavaFirst)
+                if (sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Lava])
                 {
                     FLISSetup();
                 }
@@ -275,12 +275,12 @@ public class LavaGameManager : MonoBehaviour {
                 var key = FindObjectOfType<DemoKey>();
                 if (key.IsFLISOn())
                 {
-                    sessionManager.activeKid.lavaFirst = true;
+                    sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Lava] = true;
                     FLISSetup();
                 }
                 else
                 {
-                    sessionManager.activeKid.lavaFirst = false;
+                    sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Lava] = false;
                     firstTime = 1;
                     if (key.IsLevelSetSpecially())
                     {
@@ -359,9 +359,9 @@ public class LavaGameManager : MonoBehaviour {
             levelSaver.AddLevelData("latencies", latencies);
             //Version 2 
             sessionManager.activeKid.lavaSessions++;
-            if (sessionManager.activeKid.lavaFirst)
+            if (sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Lava])
             {
-                sessionManager.activeKid.lavaFirst = false;
+                sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Lava] = false;
                 levelSaver.AddLevelData("initial_level", level);
                 levelSaver.AddLevelData("initial_difficulty", difficulty);
             }
@@ -741,7 +741,7 @@ public class LavaGameManager : MonoBehaviour {
     void StartNewGame()
     {
         numberOfAssays--;
-        if (sessionManager.activeKid.lavaFirst)
+        if (sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Lava])
         {
             if (winTheGame)
             {

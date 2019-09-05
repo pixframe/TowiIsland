@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,13 +7,8 @@ using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 
-public class GameCenterManager : MonoBehaviour {
-
-    [Header("Sprites")]
-    public Sprite[] icons;
-    public Sprite[] captures;
-    public Sprite[] backgrounds;
-
+public class GameCenterManager : MonoBehaviour
+{
     [Header("Colors")]
     public Color[] barColors;
 
@@ -50,15 +46,16 @@ public class GameCenterManager : MonoBehaviour {
 
 
     int index;
-    List<int> stations = new List<int> { 0, 1, 2, 3, 4, 5 };
-    List<bool> unlocks = new List<bool> { false, false, false, false, false, false };
-    List<int> unlockStations = new List<int>();
-    //int[] stations = new int[] { 2, 3, 5 };
-    //int[] stations = new int[] { 0, 1 };
-    //int[] stations = new int[] { 4 };
+    List<bool> unlocks;
+    List<int> stations = new List<int>();
 
-    string[] scenes = new string[] { "Birds_Singing_Scene", "Magic_Sand_Scene", "Treasure_Hunting_Scene", "Monkey_Hiding_Scene", "Magic_River_Scene", "Lava_Game_Scene" };
+    string[] scenes = new string[] { "Birds_Singing_Scene", "Magic_Sand_Scene", "Treasure_Hunting_Scene", "Monkey_Hiding_Scene", "Magic_River_Scene", "Lava_Game_Scene", "Icecream_Madness" };
     List<string> activeMissions = new List<string>();
+
+    const string folderPath = "Sprites/GameCenter/";
+    const string bannerPath = "Banners/GamePanel_";
+    const string iconPath = "Icons/Icon_";
+    const string screenPath = "Screens/Capture_";
 
     AsyncOperation asyncLoad;
     EventTrigger eventTrigger;
@@ -186,38 +183,41 @@ public class GameCenterManager : MonoBehaviour {
 
     void ChildGames()
     {
+        unlocks = new List<bool>();
+        for (int i = 0; i < Keys.Number_Of_Games; i++)
+        {
+            unlocks.Add(false);
+        }
+
         if (!FindObjectOfType<DemoKey>())
         {
-            if (sessionManager.activeKid.anyFirstTime)
+            List<int> missions = new List<int>();
+            bool hasAFirstGame = false;
+            for (int i = 0; i < Keys.Number_Of_Games; i++)
             {
-                if (sessionManager.activeKid.birdsFirst)
+                if (sessionManager.activeKid.firstsGames[i])
                 {
-                    unlocks[0] = true;
+                    hasAFirstGame = true;
+                    break;
                 }
-                if (sessionManager.activeKid.sandFirst)
+            }
+            Debug.Log(hasAFirstGame);
+            if (hasAFirstGame)
+            {
+                for (int i = 0; i < Keys.Number_Of_Games; i++)
                 {
-                    unlocks[1] = true;
-                }
-                if (sessionManager.activeKid.treasureFirst)
-                {
-                    unlocks[2] = true;
-                }
-                if (sessionManager.activeKid.monkeyFirst)
-                {
-                    unlocks[3] = true;
-                }
-                if (sessionManager.activeKid.riverFirst)
-                {
-                    unlocks[4] = true;
-                }
-                if (sessionManager.activeKid.lavaFirst)
-                {
-                    unlocks[5] = true;
+                    var x = i;
+                    if (sessionManager.activeKid.firstsGames[i])
+                    {
+                        activeMissions.Add(Keys.Game_Names[x]);
+                        unlocks[x] = true;
+                        missions.Add(x);
+                        stations.Add(x);
+                    }
                 }
             }
             else
             {
-                List<int> missions = new List<int>();
                 for (int i = 0; i < sessionManager.activeKid.missionsToPlay.Count; i++)
                 {
                     int missionToCheck = sessionManager.activeKid.missionsToPlay[i];
@@ -227,11 +227,13 @@ public class GameCenterManager : MonoBehaviour {
                         unlocks[missionToCheck] = true;
                         var x = missionToCheck;
                         missions.Add(x);
+                        stations.Add(x);
                     }
                 }
-                sessionManager.activeKid.missionsToPlay = missions;
-                Debug.Log(sessionManager.activeKid.missionsToPlay.Count);
             }
+
+            sessionManager.activeKid.missionsToPlay = missions;
+            Debug.Log(sessionManager.activeKid.missionsToPlay.Count);
         }
         else
         {
@@ -239,6 +241,16 @@ public class GameCenterManager : MonoBehaviour {
             {
                 unlocks[i] = true;
             }
+        }
+
+        for (int i = 0; i < Keys.Number_Of_Games; i++)
+        {
+            var x = i;
+            if (stations.Contains(x))
+            {
+                continue;
+            }
+            stations.Add(x);
         }
     }
 
@@ -290,7 +302,7 @@ public class GameCenterManager : MonoBehaviour {
                 index--;
             }
 
-            int count = stations.Count;
+            int count = Keys.Number_Of_Games;
 
             if (index >= count)
             {
@@ -315,9 +327,9 @@ public class GameCenterManager : MonoBehaviour {
                 next = 0;
             }
 
-            SetPanel(currentPanel, index, true);
-            SetPanel(nextPanel, next);
-            SetPanel(previosPanel, previous);
+            SetPanel(currentPanel, stations[index], true);
+            SetPanel(nextPanel, stations[next]);
+            SetPanel(previosPanel, stations[previous]);
         }
         else
         {
@@ -337,7 +349,7 @@ public class GameCenterManager : MonoBehaviour {
             index--;
         }
 
-        int count = stations.Count;
+        int count = Keys.Number_Of_Games;
 
         if (index >= count)
         {
@@ -362,9 +374,9 @@ public class GameCenterManager : MonoBehaviour {
             next = 0;
         }
 
-        SetPanel(currentPanel, index, true);
-        SetPanel(nextPanel, next);
-        SetPanel(previosPanel, previous);
+        SetPanel(currentPanel, stations[index], true);
+        SetPanel(nextPanel, stations[next]);
+        SetPanel(previosPanel, stations[previous]);
     }
 
     void SetPanel(GamePanel panel, int number)
@@ -374,11 +386,17 @@ public class GameCenterManager : MonoBehaviour {
 
     void SetPanel(GamePanel panel, int number, bool isCenter)
     {
-        panel.backgroundPanel.sprite = backgrounds[number];
+        var banner = Resources.Load<Sprite>($"{folderPath}{bannerPath}{number}");
+        panel.backgroundPanel.sprite = banner;
+
         panel.gameText.text = stringsToShow[number];
         panel.barColor.color = barColors[number];
-        panel.iconImage.sprite = icons[number];
-        panel.captureImage.sprite = captures[number];
+
+        var icon = Resources.Load<Sprite>($"{folderPath}{iconPath}{number}");
+        panel.iconImage.sprite = icon;
+
+        var capture = Resources.Load<Sprite>($"{folderPath}{screenPath}{number}");
+        panel.captureImage.sprite = capture;
         if (isCenter)
         {
             panel.playButton.gameObject.SetActive(true);

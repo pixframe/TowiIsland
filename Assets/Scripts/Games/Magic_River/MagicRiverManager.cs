@@ -208,7 +208,7 @@ public class MagicRiverManager : MonoBehaviour {
         {
             if (sessionManager != null)
             {
-                if (sessionManager.activeKid.riverFirst)
+                if (sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.River])
                 {
                     FLISSetup();
                 }
@@ -231,12 +231,12 @@ public class MagicRiverManager : MonoBehaviour {
             var key = FindObjectOfType<DemoKey>();
             if (key.IsFLISOn())
             {
-                sessionManager.activeKid.riverFirst = true;
+                sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.River] = true;
                 FLISSetup();
             }
             else
             {
-                sessionManager.activeKid.riverFirst = false;
+                sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.River] = false;
                 firstTime = 1;
                 if (key.IsLevelSetSpecially())
                 {
@@ -314,9 +314,9 @@ public class MagicRiverManager : MonoBehaviour {
 
             //Version 2
             sessionManager.activeKid.riverSessions++;
-            if (sessionManager.activeKid.riverFirst)
+            if (sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.River])
             {
-                sessionManager.activeKid.riverFirst = false;
+                sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.River] = false;
                 levelSaver.AddLevelData("initial_level", level);
                 levelSaver.AddLevelData("initial_difficulty", difficulty);
             }
@@ -925,7 +925,7 @@ public class MagicRiverManager : MonoBehaviour {
         totalCorrectTargets += specificGoodAnswer;
         totalIncorrectTargets += specificBadAnswer + specificMissAnswer;
         numberOfAssays--;
-        if (!sessionManager.activeKid.riverFirst)
+        if (!sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.River])
         {
             if (totalErrors < 2)
             {

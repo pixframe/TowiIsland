@@ -158,7 +158,7 @@ public class MonkeyHidingManager : MonoBehaviour {
         {
             if (sessionManager != null)
             {
-                if (sessionManager.activeKid.monkeyFirst)
+                if (sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Monkey])
                 {
                     FLISSetup();
                 }
@@ -204,12 +204,12 @@ public class MonkeyHidingManager : MonoBehaviour {
             var key = FindObjectOfType<DemoKey>();
             if (key.IsFLISOn())
             {
-                sessionManager.activeKid.monkeyFirst = true;
+                sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Monkey] = true;
                 FLISSetup();
             }
             else
             {
-                sessionManager.activeKid.monkeyFirst = false;
+                sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Monkey] = false;
                 firstTime = 1;
                 if (key.IsLevelSetSpecially())
                 {
@@ -281,9 +281,9 @@ public class MonkeyHidingManager : MonoBehaviour {
             //Verison 2
             sessionManager.activeKid.monkeySessions++;
 
-            if (sessionManager.activeKid.monkeyFirst)
+            if (sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Monkey])
             {
-                sessionManager.activeKid.monkeyFirst = false;
+                sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Monkey] = false;
                 levelSaver.AddLevelData("initial_level", level);
                 levelSaver.AddLevelData("initial_difficulty", difficulty);
             }
@@ -644,7 +644,7 @@ public class MonkeyHidingManager : MonoBehaviour {
 				}
 			}
 		}
-        else if (!sessionManager.activeKid.monkeyFirst && !tryVersion)
+        else if (!sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Monkey] && !tryVersion)
         {
             if (level >= 30)
             {
@@ -690,7 +690,7 @@ public class MonkeyHidingManager : MonoBehaviour {
 				}
 			}
 		}
-		else if (!sessionManager.activeKid.monkeyFirst && tryVersion)
+		else if (!sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Monkey] && tryVersion)
 		{
 			if (straightBadAnswers >= 3)
 			{
