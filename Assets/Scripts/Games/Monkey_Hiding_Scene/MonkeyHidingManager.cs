@@ -831,7 +831,6 @@ public class MonkeyHidingManager : MonoBehaviour {
         else
         {
             Analytics.CustomEvent("try");
-            PlayerPrefs.SetInt(Keys.First_Try, 1);
         }
         readyButton.onClick.RemoveAllListeners();
         readyButton.gameObject.SetActive(false);
