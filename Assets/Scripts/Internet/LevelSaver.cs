@@ -369,7 +369,7 @@ public class LevelSaver : MonoBehaviour {
         List<float> latencies, float correctPercentage, float errorPercentage, float expiredPercentage,
         float time, int playedLevels, int initialLevel)
     {
-        gameData = new IcecreamDataFirstTime
+        gameData = new IcecreamData
         {
             total_orders = GetListAsArray(ordersAsk),
             total_corrects = GetListAsArray(correctOrders),
@@ -385,31 +385,6 @@ public class LevelSaver : MonoBehaviour {
             session_time = time,
             played_levels = playedLevels,
             initial_level = initialLevel
-        };
-
-        StartCoroutine(FormToReturn());
-    }
-
-    public void SetIcecreamData(List<int> ordersAsk,List<int> correctOrders, List<int> expiredOrders, 
-        List<int> deliveredOrders, List<int> madeOrders, List<int> wrongOrders, List<int> trashOrders, 
-        List<float> latencies, float correctPercentage, float errorPercentage, float expiredPercentage,
-        float time, int playedLevels)
-    {
-        gameData = new IcecreamData
-        {
-            total_orders = GetListAsArray(ordersAsk),
-            total_corrects = GetListAsArray(correctOrders),
-            total_expired = GetListAsArray(expiredOrders),
-            total_delivers = GetListAsArray(deliveredOrders),
-            total_done = GetListAsArray(madeOrders),
-            total_errors = GetListAsArray(wrongOrders),
-            total_trash = GetListAsArray(trashOrders),
-            latencies = GetListAsArray(latencies),
-            session_correct_percentage = correctPercentage,
-            session_errors_percentage = errorPercentage,
-            session_expired_percentage = expiredPercentage,
-            session_time = time,
-            played_levels = playedLevels
         };
 
         StartCoroutine(FormToReturn());
@@ -679,11 +654,6 @@ class JsonIcecream : JsonLevelToSend
     public new IcecreamData levels;
 }
 
-class JsonIcecreamFirst : JsonLevelToSend
-{
-    public new IcecreamDataFirstTime levels;
-}
-
 [System.Serializable]
 class Header
 {
@@ -713,6 +683,7 @@ class GameData
 [System.Serializable]
 class IcecreamData : GameData
 {
+    public int initial_level;
     public string total_orders;
     public string total_corrects;
     public string total_expired;
@@ -724,11 +695,6 @@ class IcecreamData : GameData
     public float session_correct_percentage;
     public float session_expired_percentage;
     public float session_errors_percentage;
-}
-
-class IcecreamDataFirstTime : IcecreamData
-{
-    public int initial_level;
 }
 
 class BirdData : GameData
