@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+using TMPro;
 
 public class IcecreamMadnessManager : MonoBehaviour {
 
     public GameObject TableCenterManager;
     public GameObject Canvas;
     public GameObject uiCanvas;
+
+    PauseTheGame pauseManager;
 
     GameObject ordersPanel;
     GameObject instructionPanel;
@@ -29,6 +31,8 @@ public class IcecreamMadnessManager : MonoBehaviour {
     List<GameObject> fullTables = new List<GameObject>();
     List<string> tableNames = new List<string>();
     List<string> machineTableNames = new List<string>();
+
+    List<int> playedLevels = new List<int>();
 
     Dictionary<string, int> tableMapPositions = new Dictionary<string, int>();
 
@@ -54,32 +58,37 @@ public class IcecreamMadnessManager : MonoBehaviour {
     int currentEssay;
     const int maxNumberOfEssay = 4;
 
-    int[] wellMade;
-    int[] badMade;
-    int[] trashOrders;
-    int[] ordersAsked;
-    int[] ordersDelivered;
-    int[] ordersMissed;
-    int[] ordersMade;
-    int[] tipsEarned;
-    int[] ordersWithTips;
-    int[] totalScores;
+    List<int> wellMade;
+    List<int> badMade;
+    List<int> trashOrders;
+    List<int> ordersAsked;
+    List<int> ordersDelivered;
+    List<int> ordersMissed;
+    List<int> ordersMade;
+    List<int> tipsEarned;
+    List<int> ordersWithTips;
+    List<int> totalScores;
 
-    float[] latencies;
+    List<float> latencies;
 
     int level = 0;
     const int maxLevelNumber = 33;
+
+    int passLevels;
+    int repeatedLevels;
 
     int targetCoins;
 
     const float essayTime = 180f;
     float currentEssayTime;
+    float timeOfGame;
 
     float newOrderTiming = 20f;
     float currentNewOrderTiming;
 
     bool isGameTime = false;
     bool isAlreadyMove = false;
+    bool isFLISTime = false;
 
     bool needTutorial;
     int kindOfTutorial;
@@ -90,7 +99,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
     #region Standart Region
 
     // Use this for initialization
-    void Awake()
+    void Start()
     {
         GameParametersInitialization();
     }
@@ -100,6 +109,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
     {
         if (isGameTime)
         {
+            timeOfGame += Time.deltaTime;
             NewOrderForTime();
 
             SetTimersOnTime();
@@ -114,23 +124,66 @@ public class IcecreamMadnessManager : MonoBehaviour {
     /// </summary>
     void GameParametersInitialization()
     {
+        pauseManager = FindObjectOfType<PauseTheGame>();
+
         TableInitilization();
 
         //Counters are initilized
-        wellMade = new int[maxNumberOfEssay];
-        badMade = new int[maxNumberOfEssay];
-        trashOrders = new int[maxNumberOfEssay];
-        ordersAsked = new int[maxNumberOfEssay];
-        ordersDelivered = new int[maxNumberOfEssay];
-        ordersMissed = new int[maxNumberOfEssay];
-        ordersMade = new int[maxNumberOfEssay];
-        tipsEarned = new int[maxNumberOfEssay];
-        ordersWithTips = new int[maxNumberOfEssay];
-        totalScores = new int[maxNumberOfEssay];
-        latencies = new float[maxNumberOfEssay];
+        wellMade = new List<int>(new int[maxNumberOfEssay]);
+        badMade = new List<int>(new int[maxNumberOfEssay]);
+        trashOrders = new List<int>(new int[maxNumberOfEssay]);
+        ordersAsked = new List<int>(new int[maxNumberOfEssay]);
+        ordersDelivered = new List<int>(new int[maxNumberOfEssay]);
+        ordersMissed = new List<int>(new int[maxNumberOfEssay]);
+        ordersMade = new List<int>(new int[maxNumberOfEssay]);
+        tipsEarned = new List<int>(new int[maxNumberOfEssay]);
+        ordersWithTips = new List<int>(new int[maxNumberOfEssay]);
+        totalScores = new List<int>(new int[maxNumberOfEssay]);
+        latencies = new List<float>(new float[maxNumberOfEssay]);
+        playedLevels = new List<int>(new int[maxNumberOfEssay]);
 
         //Especilieced Objects are initialized
         icecreamUI = new IcecreamUI(uiCanvas, this);
+
+        if (FindObjectOfType<DemoKey>())
+        {
+            var demoKey = FindObjectOfType<DemoKey>();
+            icecreamUI.ChooseChef();
+            level = demoKey.GetLevelA();
+            isFLISTime = demoKey.IsFLISOn();
+        }
+        else
+        {
+            var manager = FindObjectOfType<SessionManager>();
+            string character = "towi";
+            switch (manager.activeKid.avatar)
+            {
+                case "jaguar":
+                    character = "kali";
+                    break;
+                case "tortuga":
+                    character = "tello";
+                    break;
+                case "mono":
+                    character = "moki";
+                    break;
+                case "tucan":
+                    character = "tuki";
+                    break;
+            }
+            level = manager.activeKid.icecreamLevel;
+            isFLISTime = manager.activeKid.firstsGames[6];
+            SetChef(character);
+            if (!isFLISTime)
+            {
+                AskForTutorial();
+            }
+        }
+
+        if (isFLISTime)
+        {
+            level = 10;
+        }
 
         ordersPanel = Canvas.transform.GetChild(0).gameObject;
         instructionPanel = Canvas.transform.GetChild(1).gameObject;
@@ -141,12 +194,21 @@ public class IcecreamMadnessManager : MonoBehaviour {
         crossesSystem = GameObject.FindGameObjectWithTag("Ground").GetComponent<ParticleSystem>();
     }
 
+    void AskForTutorial()
+    {
+        pauseManager.WantTutorial();
+        pauseManager.howToPlayButton.onClick.AddListener(icecreamUI.PrintTheStory);
+        pauseManager.playButton.onClick.AddListener(icecreamUI.PrintAreYouReady);
+    }
+
     /// <summary>
     /// This parameters has to be set in every essay of the game session
     /// </summary>
     public void EssayParameterInitilization()
     {
         currentEssayTime = essayTime;
+
+        icecreamUI.PrintTheEarnings(GetEarnings());
 
         currentNewOrderTiming = newOrderTiming;
 
@@ -159,6 +221,15 @@ public class IcecreamMadnessManager : MonoBehaviour {
     {
         string pathOfChef = $"{FoodDicctionary.prefabGameObjectDirection}{FoodDicctionary.chefDirection}{chefName}";
         chef = Instantiate(Resources.Load<GameObject>(pathOfChef)).GetComponent<IcecreamChef>();
+        icecreamUI.HideAllManagers();
+        if (isFLISTime)
+        {
+            icecreamUI.PrintTheStory();
+        }
+        else
+        {
+            AskForTutorial();
+        }
     }
 
     /// <summary>
@@ -200,8 +271,6 @@ public class IcecreamMadnessManager : MonoBehaviour {
 
     void SetLevelData()
     {
-        level = icecreamUI.GetLevel();
-
         var levelConfigurator = GameConfigurator.GetIcecreamConfiguration(level);
 
         kindOfMachines.Clear();
@@ -252,47 +321,43 @@ public class IcecreamMadnessManager : MonoBehaviour {
         icecreamUI.SetNeedCoins(targetCoins);
     }
 
-    void SaveLevel() 
+    public void SaveLevel() 
     {
+        var sessionManager = FindObjectOfType<SessionManager>();
+        sessionManager.activeKid.kiwis += (passLevels + 1);
+        sessionManager.activeKid.playedGames[(int)GameConfigurator.KindOfGame.Icecream] = true;
+        sessionManager.activeKid.needSync = true;
+
         var levelSaver = GetComponent<LevelSaver>();
-        //TODO session data change
 
-        //TODO first seesion manager
+        sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Icecream] = false;
 
-        //levelSaver.AddLevelData("current_level", icecream level);
-        //levelSaver.AddLevelData("session_correct_percentage", (errors * 100) / interactions);
         float correctPercentage = 0;
         float errorsPercentage = 0;
         float missPercentage = 0;
 
         for (int i =0; i < maxNumberOfEssay; i++) 
         {
-            correctPercentage += Mathf.CeilToInt((wellMade[i] * 100) / ordersDelivered[i]);
-            errorsPercentage += Mathf.FloorToInt((badMade[i] * 100) / ordersDelivered[i]);
+            var ordersDeliveredNow = ordersDelivered[i];
+            if (ordersDeliveredNow < 1)
+            {
+                ordersDeliveredNow = 1;
+            }
+            correctPercentage += Mathf.CeilToInt((wellMade[i] * 100) / ordersDeliveredNow);
+            errorsPercentage += Mathf.FloorToInt((badMade[i] * 100) / ordersDeliveredNow);
             missPercentage += (ordersMissed[i] * 100) / (ordersAsked[i] - wellMade[i]);
         }
 
         correctPercentage /= maxNumberOfEssay;
         errorsPercentage /= maxNumberOfEssay;
-        missPercentage /= maxNumberOfEssay; 
+        missPercentage /= maxNumberOfEssay;
 
+        levelSaver.CreateSaveBlock("Helados", timeOfGame, passLevels, repeatedLevels, playedLevels.Count);
 
-        levelSaver.AddLevelData("session_correct_percentage", correctPercentage);
-        levelSaver.AddLevelData("session_errors_percentage", errorsPercentage);
-        levelSaver.AddLevelData("session_expired_percentage", missPercentage);
+        levelSaver.SetIcecreamData(ordersAsked, wellMade, ordersMissed, ordersDelivered, ordersMade, badMade, trashOrders, latencies,
+            correctPercentage, errorsPercentage, missPercentage, timeOfGame, playedLevels, playedLevels[0]);
 
-
-        levelSaver.AddLevelDataAsString("total_orders", ordersAsked);
-        levelSaver.AddLevelDataAsString("total_delivers", ordersDelivered);
-        levelSaver.AddLevelDataAsString("total_corrects", wellMade);
-        levelSaver.AddLevelDataAsString("total_errors", badMade);
-        levelSaver.AddLevelDataAsString("total_expired", ordersMissed);
-        levelSaver.AddLevelDataAsString("total_trash", trashOrders);
-        levelSaver.AddLevelDataAsString("total_done", ordersMade);
-
-
-        /*levelSaver.CreateSaveBlock("ArbolMusical", time, passLevels, repeatedLevels, 5, sessionManager.activeKid.birdsSessions);
-        levelSaver.AddLevelsToBlock();
+        /*levelSaver.AddLevelsToBlock();
         levelSaver.PostProgress();*/
     }
     #endregion
@@ -359,6 +424,16 @@ public class IcecreamMadnessManager : MonoBehaviour {
         }
     }
 
+    int GetEarnings()
+    {
+        int salesTotal = wellMade[currentEssay] * 20;
+        int lossesTotal = (badMade[currentEssay] + trashOrders[currentEssay]) * 5;
+        int penalizationTotal = ordersMissed[currentEssay] * 10;
+        int totals = salesTotal + tipsEarned[currentEssay] - lossesTotal - penalizationTotal;
+
+        return totals;
+    }
+
     void CloseRestaurant()
     {
         isGameTime = false;
@@ -369,7 +444,8 @@ public class IcecreamMadnessManager : MonoBehaviour {
         }
         ordersList.Clear();
         ClearTables();
-        int totalScore = icecreamUI.PrintTheEarnings(wellMade[currentEssay], tipsEarned[currentEssay], (badMade[currentEssay] + trashOrders[currentEssay]), ordersMissed[currentEssay]);
+        int totalScore = GetEarnings();
+        icecreamUI.PrintTheEarnings(wellMade[currentEssay], tipsEarned[currentEssay], (badMade[currentEssay] + trashOrders[currentEssay]), ordersMissed[currentEssay]);
         totalScores[currentEssay] = totalScore;
         icecreamUI.SetButtonToPrintResults(totalScore, targetCoins);
 
@@ -383,19 +459,47 @@ public class IcecreamMadnessManager : MonoBehaviour {
 
     public void HandleResult(bool passTheLevel)
     {
+        Debug.Log($"Amount of played levels {playedLevels.Count} cuerrent essay is {currentEssay}");
+        playedLevels[currentEssay] = level;
         currentEssay++;
         if (passTheLevel)
         {
-            level++;
-            if(level >= maxLevelNumber) 
+            if (isFLISTime)
+            {
+                level += FLISChange();
+            }
+            else
+            {
+                level++;
+            }
+
+            if(level > maxLevelNumber)
             {
                 level = maxLevelNumber;
             }
 
-            icecreamUI.SetLevel(level);
+            Debug.Log($"New Level is {level}");
+            passLevels++;
+            if (level >= maxLevelNumber)
+            {
+                level = maxLevelNumber;
+            }
 
             PlayerPrefs.SetInt("levIce", level);
         }
+        else
+        {
+            if (isFLISTime)
+            {
+                level -= FLISChange();
+            }
+            else
+            {
+                level--;
+            }
+            repeatedLevels++;
+        }
+
         if (currentEssay < maxNumberOfEssay)
         {
             icecreamUI.SetButtonToPlayAgain();
@@ -403,6 +507,15 @@ public class IcecreamMadnessManager : MonoBehaviour {
         else
         {
             icecreamUI.SetButtonToFinish();
+        }
+    }
+
+    public void ShowEarnings()
+    {
+        pauseManager.ShowKiwiEarnings(passLevels + 1);
+        if (!FindObjectOfType<DemoKey>())
+        {
+            SaveLevel();
         }
     }
 
@@ -586,6 +699,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
     {
         wellMade[currentEssay]++;
         ordersDelivered[currentEssay]++;
+        icecreamUI.PrintTheEarnings(GetEarnings());
         StartCoroutine(AnswerRoutine(confettiSystem, positionOfTable));
     }
 
@@ -593,6 +707,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
     {
         badMade[currentEssay]++;
         ordersDelivered[currentEssay]++;
+        icecreamUI.PrintTheEarnings(GetEarnings());
         crossesSystem.transform.GetChild(0).gameObject.SetActive(false);
         crossesSystem.transform.GetChild(1).gameObject.SetActive(true);
         StartCoroutine(AnswerRoutine(crossesSystem, positionOfTable));
@@ -602,6 +717,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
     public void TrashAnswer(Vector3 positionOfTable)
     {
         trashOrders[currentEssay]++;
+        icecreamUI.PrintTheEarnings(GetEarnings());
         crossesSystem.transform.GetChild(0).gameObject.SetActive(false);
         crossesSystem.transform.GetChild(1).gameObject.SetActive(true);
         StartCoroutine(AnswerRoutine(crossesSystem, positionOfTable));
@@ -627,6 +743,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
     {
 
         ordersMissed[currentEssay]++;
+        icecreamUI.PrintTheEarnings(GetEarnings());
         crossesSystem.transform.GetChild(0).gameObject.SetActive(true);
         crossesSystem.transform.GetChild(1).gameObject.SetActive(false);
         StartCoroutine(MissRoutine(crossesSystem, orderToDelete));
@@ -659,6 +776,11 @@ public class IcecreamMadnessManager : MonoBehaviour {
         {
             ordersList[i].SetOrderPosistion(i);
         }
+
+        if (ordersList.Count < 1)
+        {
+            AskForAnOrder();
+        }
     }
 
     public bool IsGameOnAction()
@@ -680,6 +802,21 @@ public class IcecreamMadnessManager : MonoBehaviour {
     public List<int> GetRecipes()
     {
         return recepiesToShow;
+    }
+
+    int FLISChange()
+    {
+        switch (currentEssay)
+        {
+            case 1:
+                return 10;
+            case 2:
+                return 5;
+            case 3:
+                return 2;
+            default:
+                return 1;
+        }
     }
 }
 
@@ -832,17 +969,22 @@ class IcecreamUI
     GameObject mainCanvas;
 
     Image timerReadyPanel;
-    Text timerReadyText;
+    TextMeshProUGUI timerReadyText;
     Button OkButton;
 
+    GameObject ropeManager;
+
     Image timerPanel;
-    Text timerText;
+    TextMeshProUGUI timerText;
+
+    Image coinsPanel;
+    TextMeshProUGUI coinsAmountText;
 
     GameObject storyManager;
     List<GameObject> storyImages = new List<GameObject>();
 
     Image storyPanel;
-    Text storyText;
+    TextMeshProUGUI storyText;
     Button nextButton;
 
     string[] storyStrings;
@@ -857,10 +999,7 @@ class IcecreamUI
 
     GameObject characterSelectionPanel;
     GameObject selectCharacterPanel;
-    Text selectCharacterText;
-
-    Slider levelSlider;
-    Text levelText;
+    TextMeshProUGUI selectCharacterText;
 
     IcecreamMadnessManager manager;
 
@@ -869,21 +1008,26 @@ class IcecreamUI
         manager = managerToRefer;
         mainCanvas = canvas;
 
-        timerReadyPanel = mainCanvas.transform.GetChild(0).GetComponent<Image>();
-        timerReadyText = timerReadyPanel.transform.GetChild(0).GetComponent<Text>();
-        OkButton = timerReadyPanel.transform.GetChild(1).GetComponent<Button>();
+        timerReadyPanel = mainCanvas.transform.Find("Timer Ready Panel").GetComponent<Image>();
+        timerReadyText = timerReadyPanel.transform.GetComponentInChildren<TextMeshProUGUI>();
+        OkButton = timerReadyPanel.transform.GetComponentInChildren<Button>();
 
-        timerPanel = mainCanvas.transform.GetChild(1).GetComponent<Image>();
-        timerText = timerPanel.GetComponentInChildren<Text>();
+        ropeManager = mainCanvas.transform.Find("Rope Manager").gameObject;
 
-        storyManager = mainCanvas.transform.GetChild(2).gameObject;
+        timerPanel = mainCanvas.transform.Find("Timer Panel").GetComponent<Image>();
+        timerText = timerPanel.GetComponentInChildren<TextMeshProUGUI>();
+
+        coinsPanel = mainCanvas.transform.Find("Coins Panel").GetComponent<Image>();
+        coinsAmountText = coinsPanel.GetComponentInChildren<TextMeshProUGUI>();
+
+        storyManager = mainCanvas.transform.Find("Story Manager").gameObject;
         for (int i = 0; i < storyManager.transform.childCount; i++)
         {
             storyImages.Add(storyManager.transform.GetChild(i).gameObject);
         }
 
-        storyPanel = mainCanvas.transform.GetChild(3).GetComponent<Image>();
-        storyText = storyPanel.GetComponentInChildren<Text>();
+        storyPanel = mainCanvas.transform.Find("Story Panel").GetComponent<Image>();
+        storyText = storyPanel.GetComponentInChildren<TextMeshProUGUI>();
 
         nextButton = storyPanel.GetComponentInChildren<Button>();
         nextButton.onClick.AddListener(PrintTheStory);
@@ -894,7 +1038,7 @@ class IcecreamUI
         var instructionAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/Icecream/Instructions");
         instructionsStrings = TextReader.TextsToShow(instructionAsset);
 
-        recipesPanel = mainCanvas.transform.GetChild(4).gameObject;
+        recipesPanel = mainCanvas.transform.Find("Recepies Panel").gameObject;
         for (int i = 0; i < recipesPanel.transform.childCount - 1; i++)
         {
             recipesObjects.Add(recipesPanel.transform.GetChild(i).gameObject);
@@ -902,54 +1046,33 @@ class IcecreamUI
         }
         recipesButton = recipesPanel.transform.GetChild(recipesPanel.transform.childCount - 1).GetComponent<Button>();
 
-        characterSelectionPanel = mainCanvas.transform.GetChild(5).gameObject;
+        characterSelectionPanel = mainCanvas.transform.Find("Character Selection Panel").gameObject;
         selectCharacterPanel = characterSelectionPanel.transform.GetChild(0).gameObject;
-        selectCharacterText = selectCharacterPanel.transform.GetComponentInChildren<Text>();
+        selectCharacterText = selectCharacterPanel.transform.GetComponentInChildren<TextMeshProUGUI>();
         var characterSelectionManager = characterSelectionPanel.transform.GetChild(1);
         for (int i = 0; i < characterSelectionManager.childCount; i++)
         {
             var buttonToSet = characterSelectionManager.GetChild(i).GetComponent<Button>();
-            buttonToSet.onClick.AddListener(() => SelectCharacter(buttonToSet.transform.GetChild(0).name));
+            buttonToSet.onClick.AddListener(() => manager.SetChef(buttonToSet.transform.GetChild(0).name));
         }
+    }
 
-        levelSlider = mainCanvas.transform.GetChild(6).GetComponent<Slider>();
-        levelText = mainCanvas.transform.GetChild(7).GetComponent<Text>();
-        levelSlider.onValueChanged.AddListener(
-            delegate{
-                levelText.text = levelSlider.value.ToString();
-            }
-        );
-
+    public void ChooseChef()
+    {
         HideAllManagers();
         characterSelectionPanel.SetActive(true);
     }
 
-    void SelectCharacter(string nameOfCharacter)
-    {
-        manager.SetChef(nameOfCharacter);
-        PrintTheStory();
-    }
-
-    void HideAllManagers()
+    public void HideAllManagers()
     {
         timerReadyPanel.gameObject.SetActive(false);
         timerPanel.gameObject.SetActive(false);
+        coinsPanel.gameObject.SetActive(false);
+        ropeManager.SetActive(false);
         storyManager.SetActive(false);
         storyPanel.gameObject.SetActive(false);
         recipesPanel.SetActive(false);
         characterSelectionPanel.SetActive(false);
-        levelSlider.gameObject.SetActive(false);
-        levelText.gameObject.SetActive(false);
-    }
-
-    public void SetLevel(int newLevel) 
-    {
-        levelSlider.value = newLevel;
-    }
-
-    public int GetLevel()
-    {
-        return (int)levelSlider.value;
     }
 
     public void PrintTheStory()
@@ -1008,9 +1131,6 @@ class IcecreamUI
         timerReadyPanel.gameObject.SetActive(true);
         timerReadyText.text = instructionsStrings[0];
 
-        levelSlider.gameObject.SetActive(true);
-        levelText.gameObject.SetActive(true);
-
         OkButton.onClick.AddListener(manager.EssayParameterInitilization);
     }
 
@@ -1055,6 +1175,8 @@ class IcecreamUI
         yield return new WaitForSeconds(1f);
         timerReadyPanel.gameObject.SetActive(false);
         timerPanel.gameObject.SetActive(true);
+        coinsPanel.gameObject.SetActive(true);
+        ropeManager.SetActive(true);
         manager.StartGameNow();
 
     }
@@ -1064,6 +1186,11 @@ class IcecreamUI
         int minutes = Mathf.FloorToInt(timeRemaining / 60f);
         int seconds = Mathf.FloorToInt(timeRemaining % 60f);
         timerText.text = $"<color=#{ColorToPrint(minutes)}>{minutes}:{seconds.ToString("00")}</color>";
+    }
+
+    public void PrintTheEarnings(int earnings)
+    {
+        coinsAmountText.text = $"x {earnings}";
     }
 
     string ColorToPrint(int minutesRemaining)
@@ -1084,7 +1211,7 @@ class IcecreamUI
         return returner;
     }
 
-    public int PrintTheEarnings(int objectsWellMade, int tipScore, int objectsBadMade, int objectsMissed)
+    public void PrintTheEarnings(int objectsWellMade, int tipScore, int objectsBadMade, int objectsMissed)
     {
         timerReadyPanel.gameObject.SetActive(true);
         timerPanel.gameObject.SetActive(false);
@@ -1095,15 +1222,13 @@ class IcecreamUI
         int penalizationTotal = objectsMissed * 10;
         int totals = salesTotal + tipScore - lossesTotal - penalizationTotal;
 
-        string sales = $"<color=#42210B>{instructionsStrings[5]}   ${salesTotal.ToString("000")}</color>";
+        string sales = $"<color=#42210B>{instructionsStrings[5]}   ${(salesTotal >= 0 ? salesTotal.ToString("000") : "000")}</color>";
         string tips = $"<color=#42210B>{instructionsStrings[6]}   ${tipScore.ToString("000")}</color>";
         string looses = $"<color=#B32006>{instructionsStrings[7]} - ${lossesTotal.ToString("000")}</color>";
         string penalization = $"<color=#B32006>{instructionsStrings[8]} - ${penalizationTotal.ToString("000")}</color>";
         string total = $"<color=#{ColorToPrintTotal(totals)}>{instructionsStrings[9]}{SimbolToPrint(totals)}${Mathf.Abs(totals).ToString("000")}</color>";
 
         timerReadyText.text = $"{sales}\n{tips}\n{looses}\n{penalization}\n{total}";
-
-        return totals;
     }
 
     public void PrintTheResults(int totalCoins, int needCoins)
@@ -1141,7 +1266,15 @@ class IcecreamUI
     public void SetButtonToFinish()
     {
         OkButton.onClick.RemoveAllListeners();
-        OkButton.onClick.AddListener(() => SceneManager.LoadScene(SceneManager.GetActiveScene().name));
+        OkButton.onClick.AddListener(()=>
+        {
+            HideAllManagers();
+            manager.ShowEarnings();
+        });
+
+        HideAllManagers();
+        timerReadyPanel.gameObject.SetActive(true);
+        timerReadyText.text = instructionsStrings[14];
     } 
 }
 
@@ -1157,7 +1290,7 @@ public class TutorialUI : MonoBehaviour
     float timePassLastInstruction;
 
     GameObject tutorialPanel;
-    Text instructionsText;
+    TextMeshProUGUI instructionsText;
 
     private void Update()
     {
@@ -1185,7 +1318,7 @@ public class TutorialUI : MonoBehaviour
 
         timePassLastInstruction = timeBetweenInstructions;
         tutorialPanel = GetComponent<IcecreamMadnessManager>().Canvas.transform.GetChild(1).gameObject;
-        instructionsText = tutorialPanel.GetComponentInChildren<Text>();
+        instructionsText = tutorialPanel.GetComponentInChildren<TextMeshProUGUI>();
 
         tutorialPanel.SetActive(true);
     }

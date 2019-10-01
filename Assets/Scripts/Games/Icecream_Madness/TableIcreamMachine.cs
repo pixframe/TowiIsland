@@ -18,6 +18,7 @@ public class TableIcreamMachine : TableInstrument
         Debug.Log($"{name} this is a icecream machine table");
         CreateAMachine(FoodDicctionary.icecreamMachine);
         armature = machine.transform.GetChild(0).GetComponent<UnityArmatureComponent>();
+        SetAudioClip("Icecream");
     }
 
     override public void DoTheAction()
@@ -89,6 +90,7 @@ public class TableIcreamMachine : TableInstrument
     {
         workingMachine = true;
         hasSomethingOn = true;
+        audioSource.Play();
         while (armature.animation.isPlaying)
         {
             yield return null;

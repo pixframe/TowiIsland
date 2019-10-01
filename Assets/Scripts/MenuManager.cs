@@ -331,7 +331,7 @@ public class MenuManager : MonoBehaviour
 
     void UpdateTexts(bool upadateLanguages)
     {
-        SetLanguageResources();
+        SetLanguageResources(upadateLanguages);
         WriteTheTexts();
         shopMenu.SetStaticTexts();
     }
@@ -368,9 +368,9 @@ public class MenuManager : MonoBehaviour
         textAddable = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Login/AddableStrings");
         textBefore = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Login/BeforeStrings");
 
-        TextReader.FillCommon(textOfAll, true);
-        TextReader.FillAddables(textAddable, true);
-        TextReader.FillBefore(textBefore, true);
+        TextReader.FillCommon(textOfAll, updateLanguages);
+        TextReader.FillAddables(textAddable, updateLanguages);
+        TextReader.FillBefore(textBefore, updateLanguages);
         lines = TextReader.TextsToShow(loginTextAsset);
         warningLines = TextReader.TextsToShow(warningAsset);
     }

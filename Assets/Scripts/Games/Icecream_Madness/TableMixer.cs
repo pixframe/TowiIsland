@@ -25,6 +25,7 @@ public class TableMixer : TableInstrument
         base.Initializing();
         CreateAMachine(FoodDicctionary.mixerMachine);
         armature = machine.transform.GetChild(0).GetComponent<UnityArmatureComponent>();
+        SetAudioClip("Mixer");
     }
 
     // Update is called once per frame
@@ -144,7 +145,7 @@ public class TableMixer : TableInstrument
     {
         workingMachine = true;
         hasSomethingOn = true;
-
+        audioSource.Play();
         armature.animation.Play(animationName, 1);
 
         switch (animationName)

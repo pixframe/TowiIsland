@@ -40,6 +40,7 @@ public class TextReader : MonoBehaviour {
         {
             commonStrings = asset.text.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
         }
+
     }
 
     public static void FillAddables(TextAsset asset)

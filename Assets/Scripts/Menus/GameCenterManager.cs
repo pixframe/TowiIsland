@@ -233,7 +233,6 @@ public class GameCenterManager : MonoBehaviour
             }
 
             sessionManager.activeKid.missionsToPlay = missions;
-            Debug.Log(sessionManager.activeKid.missionsToPlay.Count);
         }
         else
         {
@@ -374,9 +373,13 @@ public class GameCenterManager : MonoBehaviour
             next = 0;
         }
 
-        SetPanel(currentPanel, stations[index], true);
-        SetPanel(nextPanel, stations[next]);
-        SetPanel(previosPanel, stations[previous]);
+        if (stations.Count > 0)
+        {
+            Debug.Log(index);
+            SetPanel(currentPanel, stations[index], true);
+            SetPanel(nextPanel, stations[next]);
+            SetPanel(previosPanel, stations[previous]);
+        }
     }
 
     void SetPanel(GamePanel panel, int number)

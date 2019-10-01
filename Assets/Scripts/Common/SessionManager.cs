@@ -531,6 +531,7 @@ public class SessionManager : MonoBehaviour
                     activeUser.kids[index].firstsGames[3] = kidObj.GetBoolean("bolitaFirstTime");
                     activeUser.kids[index].firstsGames[4] = kidObj.GetBoolean("rioFirstTime");
                     activeUser.kids[index].firstsGames[5] = kidObj.GetBoolean("sombrasFirstTime");
+                    activeUser.kids[index].firstsGames[6] = kidObj.GetBoolean("heladosFirstTime");
 
                     activeUser.kids[index].testAvailable = kidObj.GetBoolean("testAvailable");
                     activeUser.kids[index].sandLevelSet = kidObj.GetBoolean("arenaLevelSet");
@@ -595,7 +596,7 @@ public class SessionManager : MonoBehaviour
             array.Add(activeMissionsActive[i]);
         }
 
-        JSONObject data = UpdateJsaonData(array);
+        JSONObject data = UpdateJsonData(array);
 
         WWWForm form = new WWWForm();
         form.AddField("jsonToDb", data.ToString());
@@ -603,6 +604,8 @@ public class SessionManager : MonoBehaviour
         using (UnityWebRequest request = UnityWebRequest.Post(updateProfileURL, form))
         {
             yield return request.SendWebRequest();
+
+            Debug.Log(request.downloadHandler.text);
             if (request.isNetworkError || request.isHttpError)
             {
                 if (FindObjectOfType<GameCenterManager>())
@@ -632,7 +635,7 @@ public class SessionManager : MonoBehaviour
             array.Add(Keys.Game_Names[activeKid.missionsToPlay[i]]);
         }
 
-        JSONObject data = UpdateJsaonData(array);
+        JSONObject data = UpdateJsonData(array);
 
         WWWForm form = new WWWForm();
         form.AddField("jsonToDb", data.ToString());
@@ -640,6 +643,9 @@ public class SessionManager : MonoBehaviour
         using (UnityWebRequest request = UnityWebRequest.Post(updateProfileURL, form))
         {
             yield return request.SendWebRequest();
+
+            Debug.Log(request.downloadHandler.text);
+
             if (request.isNetworkError)
             {
                 if (FindObjectOfType<GameCenterManager>())
@@ -660,7 +666,7 @@ public class SessionManager : MonoBehaviour
         SaveSession();
     }
 
-    JSONObject UpdateJsaonData(JSONArray array)
+    JSONObject UpdateJsonData(JSONArray array)
     {
         string shopingList = "";
         for (int i = 0; i < activeKid.buyedIslandObjects.Count; i++)
@@ -690,7 +696,8 @@ public class SessionManager : MonoBehaviour
             { "arbolFirstTime", activeKid.firstsGames[0] },
             { "arenaFirstTime", activeKid.firstsGames[1] },
             { "sombrasFirstTime", activeKid.firstsGames[5]},
-            { "bolitaFirstTime", activeKid.firstsGames[3] },
+            { "bolitaFirstTime", activeKid.firstsGames[3] },    
+            { "heladosFirstTime", activeKid.firstsGames[6]},
             { "tesoroLevelSet", true },
             { "arenaLevelSet", activeKid.sandLevelSet },
             { "arbolLevelSet", true },
@@ -730,6 +737,7 @@ public class SessionManager : MonoBehaviour
             }
             else
             {
+                Debug.Log(request.downloadHandler.text);
                 var json = JsonUtility.FromJson(request.downloadHandler.text, typeof(LevlSyncJson)) as LevlSyncJson;
 
                 //Birds Level Set
@@ -752,6 +760,9 @@ public class SessionManager : MonoBehaviour
                 SetTheCorrectLevel(ref activeKid.sandLevel, json.arenaMagicaSublevel);
                 SetTheCorrectLevel(ref activeKid.sandLevel2, json.arenaMagicaSublevel2);
                 SetTheCorrectLevel(ref activeKid.sandLevel3, json.arenaMagicaSublevel3);
+
+                //Icecream level set
+                SetTheCorrectLevel(ref activeKid.icecreamLevel, json.heladosLevel);
             }
         }
 
@@ -1002,6 +1013,8 @@ public class SessionManager : MonoBehaviour
         public int monkeySublevel = 0;
         public int monkeyLevel = 0;
         public int arbolToday = 0;
+        public int heladosToday = 0;
+        public int heladosLevel = 0;
     }
 
 

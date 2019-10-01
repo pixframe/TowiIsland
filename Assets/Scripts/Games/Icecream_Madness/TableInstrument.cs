@@ -21,6 +21,8 @@ public class TableInstrument : Table
 
     public UnityArmatureComponent armature;
 
+    public AudioSource audioSource;
+
     // Use this for initialization
     void Start ()
     {
@@ -32,8 +34,23 @@ public class TableInstrument : Table
         base.Initializing();
         ChangeTableSprite(FoodDicctionary.normalTable);
         ChangeTableColor();
+
+        if (!GetComponent<AudioSource>())
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+        else
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
     }
 
+    public void SetAudioClip(string audioName)
+    {
+        audioSource.clip = Resources.Load<AudioClip>($"SFX/Icecream/{audioName}");
+        audioSource.playOnAwake = false;
+        audioSource.loop = false;
+    }
 
     // Update is called once per frame
     void Update ()

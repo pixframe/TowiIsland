@@ -21,6 +21,7 @@ public class LevelSaver : MonoBehaviour {
 
     string game;
     string key;
+    int parentKey;
     int kidKey;
 
     SessionManager sessionManager;
@@ -37,6 +38,7 @@ public class LevelSaver : MonoBehaviour {
         {
             sessionManager = FindObjectOfType<SessionManager>();
             key = sessionManager.activeKid.userkey;
+            parentKey = sessionManager.activeUser.id;
             kidKey = sessionManager.activeKid.id;
         }
 	}
@@ -359,38 +361,58 @@ public class LevelSaver : MonoBehaviour {
 
     public void SetGameData()
     {
-        SetIcecreamData(new List<int> { 1, 1 }, new List<int>{ 1,1}, new List<int> { 1, 1 }, 
+        SetIcecreamData(new List<int> { 1, 1 }, new List<int> { 1, 1 }, new List<int> { 1, 1 },
             new List<int> { 1, 1 }, new List<int> { 1, 1 }, new List<int> { 1, 1 }, new List<int> { 1, 1 },
-            new List<float> { 1.1f, 1.1f },20.22222f,2.222222f,2.22222f,20.22222f, 2, 1);
+            new List<float> { 1.1f, 1.1f }, 20.22222f, 2.222222f, 2.22222f, 20.22222f, new List<int> { 1, 1 }, 1);
+    }
+    public void CreateSaveBlock(string kindOfGame, float gameTime, int passedLevels, int repeatedLevels, int playedLevels)
+    {
+        DateTime nowT = DateTime.Now;
+
+        headers = new Header
+        {
+            device = SystemInfo.deviceType.ToString(),
+            version = Application.version,
+            game_key = kindOfGame,
+            parent_id = parentKey,
+            kid_id = kidKey,
+            passed_levels = passedLevels,
+            repeated_levels = repeatedLevels,
+            played_levels = playedLevels,
+            session_time = Mathf.Round(gameTime * 100) / 100,
+            game_time = (int)Mathf.Round(gameTime * 100) / 100,
+            session_number = 0,
+            date = String.Format("{0:0000}-{1:00}-{2:00}T{3:00}:{4:00}:{5:00}", nowT.Year, nowT.Month, nowT.Day, nowT.Hour, nowT.Minute, nowT.Second)
+        };
     }
 
     public void SetIcecreamData(List<int> ordersAsk, List<int> correctOrders, List<int> expiredOrders,
         List<int> deliveredOrders, List<int> madeOrders, List<int> wrongOrders, List<int> trashOrders,
         List<float> latencies, float correctPercentage, float errorPercentage, float expiredPercentage,
-        float time, int playedLevels, int initialLevel)
+        float time, List<int> playedLevels, int initialLevel)
     {
         gameData = new IcecreamData
         {
-            total_orders = GetListAsArray(ordersAsk),
-            total_corrects = GetListAsArray(correctOrders),
-            total_expired = GetListAsArray(expiredOrders),
-            total_delivers = GetListAsArray(deliveredOrders),
-            total_done = GetListAsArray(madeOrders),
-            total_errors = GetListAsArray(wrongOrders),
-            total_trash = GetListAsArray(trashOrders),
-            latencies = GetListAsArray(latencies),
+            total_orders = GetListAsString(ordersAsk),
+            total_corrects = GetListAsString(correctOrders),
+            total_expired = GetListAsString(expiredOrders),
+            total_delivers = GetListAsString(deliveredOrders),
+            total_done = GetListAsString(madeOrders),
+            total_errors = GetListAsString(wrongOrders),
+            total_trash = GetListAsString(trashOrders),
+            latencies = GetListAsString(latencies),
             session_correct_percentage = correctPercentage,
             session_errors_percentage = errorPercentage,
             session_expired_percentage = expiredPercentage,
             session_time = time,
-            played_levels = playedLevels,
+            played_levels = GetListAsString(playedLevels),
             initial_level = initialLevel
         };
 
         StartCoroutine(FormToReturn());
     }
 
-    string GetListAsArray(List<int> listToTransform)
+    string GetListAsString(List<int> listToTransform)
     {
         string listString = "";
         for (int i = 0; i < listToTransform.Count; i++)
@@ -399,7 +421,7 @@ public class LevelSaver : MonoBehaviour {
         }
         return listString;
     }
-    string GetListAsArray(List<float> listToTransform)
+    string GetListAsString(List<float> listToTransform)
     {
         string listString = "";
         for (int i = 0; i < listToTransform.Count; i++)
@@ -430,35 +452,16 @@ public class LevelSaver : MonoBehaviour {
             if (request.isNetworkError || request.isHttpError)
             {
                 Debug.Log(request.downloadHandler.text);
+                FindObjectOfType<PauseTheGame>().DataIsSend();
             }
             else
             {
                 Debug.Log("Done");
+                FindObjectOfType<PauseTheGame>().DataIsSend();
             }
         }
     }
 
-    public void CreateSaveBlock()
-    {
-        DateTime nowT = DateTime.Now;
-
-        headers = new Header
-        {
-            device = SystemInfo.deviceType.ToString(),
-            version = Application.version,
-            game_key = "Helados",
-            parent_id = 28,
-            kid_id = 42,
-            passed_levels = 0,
-            repeated_levels = 0,
-            played_levels = 0,
-            session_time = 1.1f,
-            game_time = (int)Mathf.Round(1 * 100) / 100,
-            session_number = 1,
-            date = String.Format("{0:0000}-{1:00}-{2:00}T{3:00}:{4:00}:{5:00}", nowT.Year, nowT.Month, nowT.Day, nowT.Hour, nowT.Minute, nowT.Second)
-        };
-        SetGameData();
-    }
 
     public void CreateSaveBlock(string gameKey, float gameTime, int passedLevels, int repeatedLevels, int playedLevels, int sessionNumber)
     {
@@ -568,13 +571,12 @@ public class LevelSaver : MonoBehaviour {
             if (newRequest.isNetworkError)
             {
                 SaveDataOffline();
+                FindObjectOfType<PauseTheGame>().DataIsSend();
             }
             else
             {
                 StartCoroutine(PostScores());
             }
-
-            FindObjectOfType<PauseTheGame>().DataIsSend();
         }
     }
 
@@ -636,7 +638,8 @@ public class LevelSaver : MonoBehaviour {
                     sessionManager.SaveSession();
                 }
                 Debug.Log($"the response was {request.downloadHandler.text}");
-                //print("There was an error posting the high score: " + hs_post.error);
+
+                FindObjectOfType<PauseTheGame>().DataIsSend();
             }
         }
     }
@@ -646,12 +649,11 @@ public class LevelSaver : MonoBehaviour {
 class JsonLevelToSend
 {
     public Header header;
-    public GameData levels;
 }
 
 class JsonIcecream : JsonLevelToSend
 {
-    public new IcecreamData levels;
+    public IcecreamData levels;
 }
 
 [System.Serializable]
@@ -675,7 +677,7 @@ class Header
 class GameData
 {
     public int current_level;
-    public int played_levels;
+    public string played_levels;
     public int played_difficulty;
     public float session_time;
 }

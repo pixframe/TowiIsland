@@ -4,19 +4,28 @@ using UnityEngine;
 
 public class TableFinish : Table
 {
+    AudioSource audioSource;
+
+    //Direction of sounds direction
+    const string winSoundPath = "SFX/Birds/Win";
+    const string loseSoundPath = "SFX/Birds/Fail";
 
 	// Use this for initialization
 	void Start ()
     {
         Initializing();
         ChangeTableSprite(FoodDicctionary.finishTable);
-    }
 
-    // Update is called once per frame
-    void Update ()
-    {
-		
-	}
+        //Obtaining the audio source
+        if (!GetComponent<AudioSource>())
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+        else
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
+    }
 
     public override void Initializing()
     {
@@ -32,20 +41,24 @@ public class TableFinish : Table
             if (tempTray.HasAContainer())
             {
                 chef.PutATray(trayPositioner);
+
                 if (tempTray.IsWellMade())
                 {
                     if (manager.CompareTrays(tempTray.GetMadeComposition()))
                     {
                         manager.GoodAnswer(transform.position);
+                        PlayTheAudio(true);
                     }
                     else
                     {
                         manager.BadAnswer(transform.position);
+                        PlayTheAudio(false);
                     }
                 }
                 else
                 {
                     manager.BadAnswer(transform.position);
+                    PlayTheAudio(false);
                 }
 
                 Destroy(tempTray.gameObject);
@@ -56,5 +69,23 @@ public class TableFinish : Table
                 Debug.Log("You shuold put a container");
             }
         }
+    }
+
+    void PlayTheAudio(bool isOrderCorrect)
+    {
+        AudioClip clip;
+
+        if (isOrderCorrect)
+        {
+            clip = Resources.Load<AudioClip>(winSoundPath);
+        }
+        else
+        {
+            clip = Resources.Load<AudioClip>(loseSoundPath);
+        }
+
+        audioSource.clip = clip;
+
+        audioSource.Play();
     }
 }

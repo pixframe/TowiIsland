@@ -23,6 +23,7 @@ public class TableChopper : TableInstrument
 
         CreateAMachine(FoodDicctionary.chopperMachine);
         armature = machine.transform.GetChild(0).GetComponent<UnityArmatureComponent>();
+        SetAudioClip("Chopper");
     }
 
     override public void DoTheAction()
@@ -89,6 +90,7 @@ public class TableChopper : TableInstrument
     {
         workingMachine = true;
         armature.armature.animation.Play(FoodDicctionary.Toppings.AnimationOfChopper(ingredientsToInput[0]),1);
+        audioSource.Play();
         while (armature.armature.animation.isPlaying)
         {
             yield return null;

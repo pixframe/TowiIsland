@@ -22,6 +22,7 @@ public class TableBlender : TableInstrument
         Debug.Log($"{name} this is a blender machine table");
         CreateAMachine(FoodDicctionary.blenderMachine);
         armature = machine.transform.GetChild(0).GetComponent<UnityArmatureComponent>();
+        SetAudioClip("Blender");
     }
 
     override public void DoTheAction()
@@ -116,6 +117,8 @@ public class TableBlender : TableInstrument
     {
         workingMachine = true;
         hasSomethingOn = true;
+        audioSource.Play();
+
         while (armature.animation.isPlaying)
         {
             yield return null;
