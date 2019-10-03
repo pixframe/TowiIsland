@@ -27,6 +27,7 @@ public class TableWaffleMaker : TableInstrument
         base.Initializing();
         CreateAMachine(FoodDicctionary.waffleMachine);
         armature = machine.transform.GetChild(0).GetComponent<UnityArmatureComponent>();
+        SetAudioClip("Beep");
     }
 
     public override void DoTheAction()
@@ -77,6 +78,9 @@ public class TableWaffleMaker : TableInstrument
     {
         isOpen = true;
         workingMachine = false;
+        audioSource.Play();
+        audioSource.loop = false;
+        audioSource.pitch = 0.5f;
         if (chef.IsHoldingSomething())
         {
             Tray chefTray = chef.GetHoldingTray();
@@ -90,19 +94,18 @@ public class TableWaffleMaker : TableInstrument
         }
     }
 
-
     public IEnumerator CookRoutine(string animationName)
     {
         hasSomethingOn = true;
         workingMachine = true;
         isOpen = false;
-        armature.animation.Play(animationName,1);
+        armature.animation.Play(animationName, 1);
         while (armature.animation.isPlaying)
         {
             yield return null;
         }
 
-        armature.animation.Play(NotReady,3);
+        armature.animation.Play(NotReady, 3);
         while (armature.animation.isPlaying)
         {
             yield return null;
@@ -110,17 +113,24 @@ public class TableWaffleMaker : TableInstrument
 
         workingMachine = false;
         armature.animation.Play(Ready, 3);
+        audioSource.Play();
         while (armature.animation.isPlaying)
         {
             yield return null;
         }
 
+        audioSource.Play();
+        audioSource.loop = true;
+        audioSource.pitch = 1.5f;
         armature.animation.Play(Hurry, 4);
         while (armature.animation.isPlaying)
         {
             yield return null;
         }
 
+        audioSource.Play();
+        audioSource.loop = false;
+        audioSource.pitch = 0.5f;
         armature.animation.Play(Burn);
         kindOfCooked = 3;
     }

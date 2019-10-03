@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using DragonBones;
 
 public class TableInstrument : Table
@@ -47,9 +48,22 @@ public class TableInstrument : Table
 
     public void SetAudioClip(string audioName)
     {
-        audioSource.clip = Resources.Load<AudioClip>($"SFX/Icecream/{audioName}");
+        Addressables.LoadAssetAsync<AudioClip>($"SFX/{audioName}").Completed += LoadAudioClip;
         audioSource.playOnAwake = false;
         audioSource.loop = false;
+    }
+
+
+    void LoadAudioClip(UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<AudioClip> clip)
+    {
+        if (clip.Result == null)
+        {
+            Debug.LogError("This is Bad");
+            return;
+        }
+
+        audioSource.clip = clip.Result;
+        Debug.Log("We set the clip sucessfully");
     }
 
     // Update is called once per frame

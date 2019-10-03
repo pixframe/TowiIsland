@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.AddressableAssets;
 using TMPro;
 
 public class IcecreamMadnessManager : MonoBehaviour {
@@ -46,6 +48,14 @@ public class IcecreamMadnessManager : MonoBehaviour {
     ParticleSystem confettiSystem;
     ParticleSystem crossesSystem;
 
+    AudioClip cashClip;
+    AudioClip wrongClip;
+
+    const string cashClipDir = "SFX/Cash";
+    const string wrongClipDir = "SFX/Fail";
+
+    AudioSource audioSource;
+
     int maxAmountOfOrdersAtTheSameTime = 5;
 
     int amountOfTopings = 5;
@@ -79,7 +89,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
 
     int targetCoins;
 
-    const float essayTime = 180f;
+    const float essayTime = 30f;
     float currentEssayTime;
     float timeOfGame;
 
@@ -122,7 +132,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
     /// <summary>
     /// This one start all the parameters that only has to be initialized one time per game session
     /// </summary>
-    void GameParametersInitialization()
+    async void GameParametersInitialization()
     {
         pauseManager = FindObjectOfType<PauseTheGame>();
 
@@ -192,6 +202,33 @@ public class IcecreamMadnessManager : MonoBehaviour {
 
         confettiSystem = GameObject.FindGameObjectWithTag("Arrow").GetComponent<ParticleSystem>();
         crossesSystem = GameObject.FindGameObjectWithTag("Ground").GetComponent<ParticleSystem>();
+
+        audioSource = gameObject.AddComponent<AudioSource>();
+        cashClip = await SetClip(cashClipDir);
+        wrongClip = await SetClip(wrongClipDir);
+    }
+
+    async Task<AudioClip> SetClip(string dir)
+    {
+        var aucl = Addressables.LoadAssetAsync<AudioClip>(dir);
+        while (!aucl.IsDone)
+        {
+            await Task.Yield();
+        }
+
+        return aucl.Result;
+    }
+
+    void LoadAudioClip(UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<AudioClip> clip)
+    {
+        if (clip.Result == null)
+        {
+            Debug.LogError("This is Bad");
+            return;
+        }
+
+        audioSource.clip = clip.Result;
+        Debug.Log("We set the clip sucessfully");
     }
 
     void AskForTutorial()
@@ -208,7 +245,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
     {
         currentEssayTime = essayTime;
 
-        icecreamUI.PrintTheEarnings(GetEarnings());
+        icecreamUI.PrintTheCurrentEarnings(GetEarnings());
 
         currentNewOrderTiming = newOrderTiming;
 
@@ -676,6 +713,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
                 Destroy(ordersList[i].order);
                 ordersList.Remove(ordersList[i]);
                 hasAMatch = true;
+                confettiSystem.GetComponentInChildren<TextMeshPro>().text = $"${tip + 20}";
                 break;
             }
         }
@@ -691,7 +729,6 @@ public class IcecreamMadnessManager : MonoBehaviour {
                 AskForAnOrder();
             }
         }
-
         return hasAMatch;
     }
 
@@ -699,37 +736,37 @@ public class IcecreamMadnessManager : MonoBehaviour {
     {
         wellMade[currentEssay]++;
         ordersDelivered[currentEssay]++;
-        icecreamUI.PrintTheEarnings(GetEarnings());
-        StartCoroutine(AnswerRoutine(confettiSystem, positionOfTable));
+        icecreamUI.PrintTheCurrentEarnings(GetEarnings());
+        StartCoroutine(AnswerRoutine(confettiSystem, positionOfTable, cashClip));
     }
 
     public void BadAnswer(Vector3 positionOfTable)
     {
         badMade[currentEssay]++;
         ordersDelivered[currentEssay]++;
-        icecreamUI.PrintTheEarnings(GetEarnings());
-        crossesSystem.transform.GetChild(0).gameObject.SetActive(false);
-        crossesSystem.transform.GetChild(1).gameObject.SetActive(true);
-        StartCoroutine(AnswerRoutine(crossesSystem, positionOfTable));
+        crossesSystem.transform.GetComponentInChildren<TextMeshPro>().text = "<color=#FF0000>-$5</color>";
+        icecreamUI.PrintTheCurrentEarnings(GetEarnings());
+        StartCoroutine(AnswerRoutine(crossesSystem, positionOfTable, wrongClip));
 
     }
 
     public void TrashAnswer(Vector3 positionOfTable)
     {
         trashOrders[currentEssay]++;
-        icecreamUI.PrintTheEarnings(GetEarnings());
-        crossesSystem.transform.GetChild(0).gameObject.SetActive(false);
-        crossesSystem.transform.GetChild(1).gameObject.SetActive(true);
-        StartCoroutine(AnswerRoutine(crossesSystem, positionOfTable));
+        crossesSystem.transform.GetComponentInChildren<TextMeshPro>().text = "<color=#FF0000>-$5</color>";
+        icecreamUI.PrintTheCurrentEarnings(GetEarnings());
+        StartCoroutine(AnswerRoutine(crossesSystem, positionOfTable, wrongClip));
 
     }
 
-    IEnumerator AnswerRoutine(ParticleSystem particleSystem, Vector3 positionOfTable)
+    IEnumerator AnswerRoutine(ParticleSystem particleSystem, Vector3 positionOfTable, AudioClip clip)
     {
         var initialPos = particleSystem.transform.position;
         particleSystem.transform.position = positionOfTable;
         particleSystem.Play();
 
+        audioSource.clip = clip;
+        audioSource.Play();
         while (particleSystem.isPlaying)
         {
             yield return null;
@@ -743,9 +780,8 @@ public class IcecreamMadnessManager : MonoBehaviour {
     {
 
         ordersMissed[currentEssay]++;
-        icecreamUI.PrintTheEarnings(GetEarnings());
-        crossesSystem.transform.GetChild(0).gameObject.SetActive(true);
-        crossesSystem.transform.GetChild(1).gameObject.SetActive(false);
+        crossesSystem.transform.GetComponentInChildren<TextMeshPro>().text = "<color=#FF0000>-$10</color>";
+        icecreamUI.PrintTheCurrentEarnings(GetEarnings());
         StartCoroutine(MissRoutine(crossesSystem, orderToDelete));
     }
 
@@ -919,11 +955,6 @@ public class IceCreamOrders
         }
 
         return true;
-    }
-
-    public void ThisOrderIsServed()
-    {
-
     }
 
     public int TipsForThisOrder()
@@ -1188,7 +1219,7 @@ class IcecreamUI
         timerText.text = $"<color=#{ColorToPrint(minutes)}>{minutes}:{seconds.ToString("00")}</color>";
     }
 
-    public void PrintTheEarnings(int earnings)
+    public void PrintTheCurrentEarnings(int earnings)
     {
         coinsAmountText.text = $"x {earnings}";
     }
@@ -1213,8 +1244,8 @@ class IcecreamUI
 
     public void PrintTheEarnings(int objectsWellMade, int tipScore, int objectsBadMade, int objectsMissed)
     {
+        HideAllManagers();
         timerReadyPanel.gameObject.SetActive(true);
-        timerPanel.gameObject.SetActive(false);
         OkButton.gameObject.SetActive(true);
 
         int salesTotal = objectsWellMade * 20;
@@ -1222,7 +1253,15 @@ class IcecreamUI
         int penalizationTotal = objectsMissed * 10;
         int totals = salesTotal + tipScore - lossesTotal - penalizationTotal;
 
-        string sales = $"<color=#42210B>{instructionsStrings[5]}   ${(salesTotal >= 0 ? salesTotal.ToString("000") : "000")}</color>";
+        int salesToPrint = 0;
+        if (salesTotal > 0)
+        {
+            salesToPrint = salesTotal;
+        }
+
+        Debug.Log($"sales to print are {salesToPrint}");
+
+        string sales = $"<color=#42210B>{instructionsStrings[5]}   ${salesToPrint.ToString("000")}</color>";
         string tips = $"<color=#42210B>{instructionsStrings[6]}   ${tipScore.ToString("000")}</color>";
         string looses = $"<color=#B32006>{instructionsStrings[7]} - ${lossesTotal.ToString("000")}</color>";
         string penalization = $"<color=#B32006>{instructionsStrings[8]} - ${penalizationTotal.ToString("000")}</color>";
@@ -1233,7 +1272,7 @@ class IcecreamUI
 
     public void PrintTheResults(int totalCoins, int needCoins)
     {
-        string total = $"<color=#42210B>{instructionsStrings[10]}   ${totalCoins.ToString("000")}</color>";
+        string total = $"<color=#42210B>{instructionsStrings[10]}   ${(totalCoins >= 0 ? totalCoins.ToString("000") : "000")}</color>";
         string needs = $"<color=#42210B>{instructionsStrings[11]}   ${needCoins.ToString("000")}</color>";
         timerReadyText.text = $"{total}\n{needs}";
 
