@@ -89,7 +89,7 @@ public class IcecreamMadnessManager : MonoBehaviour {
 
     int targetCoins;
 
-    const float essayTime = 30f;
+    const float essayTime = 180f;
     float currentEssayTime;
     float timeOfGame;
 

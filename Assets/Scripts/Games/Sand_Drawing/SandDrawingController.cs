@@ -410,9 +410,12 @@ public class SandDrawingController : MonoBehaviour {
     void TellInstruction()
     {
         countTime = true;
-        foreach (GameObject g in stories)
+        if (stories != null)
         {
-            g.SetActive(false);
+            foreach (GameObject g in stories)
+            {
+                g.SetActive(false);
+            }
         }
         switch (typeOfGameToPlay)
         {
