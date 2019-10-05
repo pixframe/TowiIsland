@@ -8,6 +8,7 @@ using UnityEngine.Analytics;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class MenuManager : MonoBehaviour
 {
@@ -42,10 +43,10 @@ public class MenuManager : MonoBehaviour
     [Header("Kid Selector")]
     public GameObject miniKidCanvas;
     public GameObject miniKidContainer;
-    public Text selectionKidText;
+    public TextMeshProUGUI selectionKidText;
     public Button selectionKidBackButton;
     public Button addKidButton;
-    public InputField kidLooker;
+    public TMP_InputField kidLooker;
 
     [Header("Credits")]
     public GameObject creditCanvas;
@@ -408,7 +409,7 @@ public class MenuManager : MonoBehaviour
 
         kidLooker.text = "";
 
-        WriteTheText(addKidButton, 30);
+        WriteTheText(addKidButton, 30, 0);
         addKidButton.onClick.RemoveAllListeners();
         addKidButton.onClick.AddListener(AddKidShower);
         selectionKidBackButton.gameObject.SetActive(true);
@@ -487,7 +488,7 @@ public class MenuManager : MonoBehaviour
 
         if (sessionManager.activeUser != null)
         {
-            WriteTheText(addKidButton, 31);
+            WriteTheText(addKidButton, 31, 0);
             addKidButton.onClick.RemoveAllListeners();
             addKidButton.onClick.AddListener(() => ConfirmKidsPurchase());
             selectionKidBackButton.gameObject.SetActive(false);
@@ -1314,7 +1315,7 @@ public class MenuManager : MonoBehaviour
         WriteTheText(creditColumOne, 6);
         WriteTheText(creditColumTwo, 7);
         WriteTheText(newKidNameInput, 10);
-        WriteTheText(selectionKidBackButton, 15);
+        WriteTheText(selectionKidBackButton, 15, 0);
         WriteTheText(newKidBirthday, 16);
         WriteTheText(newKidDay, 17);
         WriteTheText(newKidMonth, 18);
@@ -1326,7 +1327,7 @@ public class MenuManager : MonoBehaviour
         WriteTheText(configMenu.automaticButton, 50);
         WriteTheText(changeProfileButton, 51);
         WriteTheText(loadingText, 52);
-        kidLooker.placeholder.GetComponent<Text>().text = lines[64];
+        kidLooker.placeholder.GetComponent<TextMeshProUGUI>().text = lines[64];
         warningButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
         newKidButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
     }
@@ -1336,6 +1337,16 @@ public class MenuManager : MonoBehaviour
     public void WriteTheText(Button but, int index)
     {
         but.GetComponentInChildren<Text>().text = lines[index];
+    }
+
+    public void WriteTheText(Button but, int index, int a)
+    {
+        but.GetComponentInChildren<TextMeshProUGUI>().text = lines[index];
+    }
+
+    public void WriteTheText(TextMeshProUGUI text, int index)
+    {
+        text.text = lines[index];
     }
 
     //This for Text
