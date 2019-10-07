@@ -144,7 +144,7 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
     }
 
 
-    private bool IsInitialized()
+    public bool IsInitialized()
     {
         // Only say we are initialized if both the Purchasing references are set.
         return m_StoreController != null && m_StoreExtensionProvider != null;

@@ -19,7 +19,6 @@ public class MenuManager : MonoBehaviour
     TextAsset textOfAll;
     TextAsset textBefore;
     TextAsset textAddable;
-    TextAsset creditsAsset;
     TextAsset warningAsset;
     string[] lines;
 
@@ -51,9 +50,9 @@ public class MenuManager : MonoBehaviour
     [Header("Credits")]
     public GameObject creditCanvas;
     public Button exitCredits;
-    public Text creditText;
-    public Text creditColumOne;
-    public Text creditColumTwo;
+    public TextMeshProUGUI creditText;
+    public TextMeshProUGUI creditColumOne;
+    public TextMeshProUGUI creditColumTwo;
 
     [Header("Subscribe")]
     public GameObject subscribeCanvas;
@@ -564,12 +563,12 @@ public class MenuManager : MonoBehaviour
         shopMenu.ShowThisMenu();
         if (SystemInfo.deviceType == DeviceType.Desktop)
         {
-            shopMenu.SetWebShop(isAShopForNewKid);
+            //shopMenu.SetWebShop(isAShopForNewKid);
 
             //This code is used to try ios shop in the editor but to realease version should be always commented
-            //shopMenu.oneMonthButton.GetComponentInChildren<Text>().text = $"{lines[33]}\n{myIAPManager.CostInCurrency(1)} {lines[35]}";
-            //shopMenu.threeMonthButton.GetComponentInChildren<Text>().text = $"{lines[34]}\n{myIAPManager.CostInCurrency(3)} {lines[35]}";
-            //shopMenu.SetIOSShop(isAShopForNewKid);
+            shopMenu.oneMonthButton.GetComponentInChildren<Text>().text = $"{lines[33]}\n{myIAPManager.CostInCurrency(1)} {lines[35]}";
+            shopMenu.threeMonthButton.GetComponentInChildren<Text>().text = $"{lines[34]}\n{myIAPManager.CostInCurrency(3)} {lines[35]}";
+            shopMenu.SetIOSShop(isAShopForNewKid, myIAPManager.IsInitialized());
         }
         else
         {
@@ -577,7 +576,7 @@ public class MenuManager : MonoBehaviour
             shopMenu.threeMonthButton.GetComponentInChildren<Text>().text = $"{lines[34]}\n{myIAPManager.CostInCurrency(3)} {lines[35]}";
             if (Application.platform == RuntimePlatform.IPhonePlayer)
             {
-                shopMenu.SetIOSShop(isAShopForNewKid);
+                shopMenu.SetIOSShop(isAShopForNewKid, myIAPManager.IsInitialized());
             }
             else
             {
@@ -1321,10 +1320,10 @@ public class MenuManager : MonoBehaviour
         WriteTheText(newKidMonth, 18);
         WriteTheText(newKidYear, 19);
         WriteTheText(creditText, 40);
-        WriteTheText(configMenu.languageButton, 47);
-        WriteTheText(configMenu.englishLanguageButton, 48);
-        WriteTheText(configMenu.spanishLanguageButton, 49);
-        WriteTheText(configMenu.automaticButton, 50);
+        WriteTheText(configMenu.languageButton, 47, 0);
+        WriteTheText(configMenu.englishLanguageButton, 48, 0);
+        WriteTheText(configMenu.spanishLanguageButton, 49, 0);
+        WriteTheText(configMenu.automaticButton, 50, 0);
         WriteTheText(changeProfileButton, 51);
         WriteTheText(loadingText, 52);
         kidLooker.placeholder.GetComponent<TextMeshProUGUI>().text = lines[64];
@@ -1645,7 +1644,7 @@ class ConfigMenu
     public Button backButton;
     public Button logoButton;
     public Button updateDataButton;
-    public Text versionText;
+    public TextMeshProUGUI versionText;
 
     public ConfigMenu(GameObject mainPanel)
     {
@@ -1658,7 +1657,7 @@ class ConfigMenu
         backButton = panel.transform.Find("Back Button").GetComponent<Button>();
         logoButton = panel.transform.Find("Logo Button").GetComponent<Button>();
         updateDataButton = panel.transform.Find("Upadte Button").GetComponent<Button>();
-        versionText = panel.transform.Find("Version Number Text").GetComponent<Text>();
+        versionText = panel.transform.Find("Version Number Text").GetComponent<TextMeshProUGUI>();
     }
 }
 
@@ -1837,18 +1836,18 @@ class RegisterMenu
         var texts = TextReader.TextsToSet(pathOfLoginMenuTetxs);
 
         woodText.text = texts[0];
-        add0.GetComponentInChildren<Text>().text = texts[1];
-        add1.GetComponentInChildren<Text>().text = texts[2];
+        add0.GetComponentInChildren<TextMeshProUGUI>().text = texts[1];
+        add1.GetComponentInChildren<TextMeshProUGUI>().text = texts[2];
 
         inputEmail.inputNameText.text = texts[3];
-        inputEmail.field.placeholder.GetComponent<Text>().text = texts[3];
+        inputEmail.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[3];
         inputPass.inputNameText.text = texts[4];
-        inputPass.field.placeholder.GetComponent<Text>().text = texts[4];
-        inputPass.field.inputType = InputField.InputType.Password;
-        forgotPassButton.GetComponent<Text>().text = texts[5];
-        logInButton.GetComponentInChildren<Text>().text = texts[6];
+        inputPass.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[4];
+        inputPass.field.inputType = TMP_InputField.InputType.Password;
+        forgotPassButton.GetComponent<TextMeshProUGUI>().text = texts[5];
+        logInButton.GetComponentInChildren<TextMeshProUGUI>().text = texts[6];
         notRegisterText.text = texts[7];
-        goToSingInButton.GetComponentInChildren<Text>().text = texts[8];
+        goToSingInButton.GetComponentInChildren<TextMeshProUGUI>().text = texts[8];
 
         forgotPassButton.onClick.RemoveAllListeners();
         forgotPassButton.onClick.AddListener(manager.ForgotPassword);
@@ -1878,29 +1877,29 @@ class RegisterMenu
         var texts = TextReader.TextsToSet(pathOfLoginMenuTetxs);
 
         woodText.text = texts[0];
-        add0.GetComponentInChildren<Text>().text = texts[1];
-        add1.GetComponentInChildren<Text>().text = texts[2];
+        add0.GetComponentInChildren<TextMeshProUGUI>().text = texts[1];
+        add1.GetComponentInChildren<TextMeshProUGUI>().text = texts[2];
 
         inputEmailDad.inputNameText.text = texts[3];
-        inputEmailDad.field.placeholder.GetComponent<Text>().text = texts[3];
+        inputEmailDad.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[3];
         inputPassDad.inputNameText.text = texts[4];
-        inputPassDad.field.placeholder.GetComponent<Text>().text = texts[4];
-        inputPassDad.field.inputType = InputField.InputType.Password;
+        inputPassDad.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[4];
+        inputPassDad.field.inputType = TMP_InputField.InputType.Password;
         inputPassAgain.inputNameText.text = texts[5];
-        inputPassAgain.field.placeholder.GetComponent<Text>().text = texts[5];
-        inputPassAgain.field.inputType = InputField.InputType.Password;
-        termsAndConditionsButton.GetComponent<Text>().text = texts[6];
+        inputPassAgain.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[5];
+        inputPassAgain.field.inputType = TMP_InputField.InputType.Password;
+        termsAndConditionsButton.GetComponent<TextMeshProUGUI>().text = texts[6];
         termsAndConditionsButton.onClick.RemoveAllListeners();
         termsAndConditionsButton.onClick.AddListener(manager.GoToTermsAndConditions);
 
         inputName.inputNameText.text = texts[7];
-        inputName.field.placeholder.GetComponent<Text>().text = texts[7];
+        inputName.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[7];
         birthdateText.text = texts[8];
-        dayInput.placeholder.GetComponent<Text>().text = texts[9];
-        monthInput.placeholder.GetComponent<Text>().text = texts[10];
-        yearInput.placeholder.GetComponent<Text>().text = texts[11];
+        dayInput.placeholder.GetComponent<TextMeshProUGUI>().text = texts[9];
+        monthInput.placeholder.GetComponent<TextMeshProUGUI>().text = texts[10];
+        yearInput.placeholder.GetComponent<TextMeshProUGUI>().text = texts[11];
         addKidLaterText.text = texts[12];
-        signInButton.GetComponentInChildren<Text>().text = texts[0];
+        signInButton.GetComponentInChildren<TextMeshProUGUI>().text = texts[0];
 
         signInButton.onClick.RemoveAllListeners();
         signInButton.onClick.AddListener(TryASignIn);
@@ -1924,29 +1923,29 @@ class RegisterMenu
         var texts = TextReader.TextsToSet(pathOfLoginMenuTetxs);
 
         woodText.text = texts[13];
-        add0.GetComponentInChildren<Text>().text = texts[1];
-        add1.GetComponentInChildren<Text>().text = texts[2];
+        add0.GetComponentInChildren<TextMeshProUGUI>().text = texts[1];
+        add1.GetComponentInChildren<TextMeshProUGUI>().text = texts[2];
 
         inputEmailDad.inputNameText.text = texts[3];
-        inputEmailDad.field.placeholder.GetComponent<Text>().text = texts[3];
+        inputEmailDad.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[3];
         inputPassDad.inputNameText.text = texts[4];
-        inputPassDad.field.placeholder.GetComponent<Text>().text = texts[4];
-        inputPassDad.field.inputType = InputField.InputType.Password;
+        inputPassDad.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[4];
+        inputPassDad.field.inputType = TMP_InputField.InputType.Password;
         inputPassAgain.inputNameText.text = texts[5];
-        inputPassAgain.field.placeholder.GetComponent<Text>().text = texts[5];
-        inputPassAgain.field.inputType = InputField.InputType.Password;
-        termsAndConditionsButton.GetComponent<Text>().text = texts[6];
+        inputPassAgain.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[5];
+        inputPassAgain.field.inputType = TMP_InputField.InputType.Password;
+        termsAndConditionsButton.GetComponent<TextMeshProUGUI>().text = texts[6];
         termsAndConditionsButton.onClick.RemoveAllListeners();
         termsAndConditionsButton.onClick.AddListener(manager.GoToTermsAndConditions);
 
         inputName.inputNameText.text = texts[7];
-        inputName.field.placeholder.GetComponent<Text>().text = texts[7];
+        inputName.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[7];
         birthdateText.text = texts[8];
-        dayInput.placeholder.GetComponent<Text>().text = texts[9];
-        monthInput.placeholder.GetComponent<Text>().text = texts[10];
-        yearInput.placeholder.GetComponent<Text>().text = texts[11];
+        dayInput.placeholder.GetComponent<TextMeshProUGUI>().text = texts[9];
+        monthInput.placeholder.GetComponent<TextMeshProUGUI>().text = texts[10];
+        yearInput.placeholder.GetComponent<TextMeshProUGUI>().text = texts[11];
         addKidLaterText.text = texts[12];
-        signInButton.GetComponentInChildren<Text>().text = texts[13];
+        signInButton.GetComponentInChildren<TextMeshProUGUI>().text = texts[13];
 
         signInButton.onClick.RemoveAllListeners();
         signInButton.onClick.AddListener(()=>TrySingInAndPurchase(isIAP));
@@ -2056,14 +2055,14 @@ class RegisterMenu
 class InputPanels
 {
     public GameObject gameObject;
-    public Text inputNameText;
-    public InputField field;
+    public TextMeshProUGUI inputNameText;
+    public TMP_InputField field;
 
     public InputPanels(Transform panel)
     {
         gameObject = panel.gameObject;
-        inputNameText = panel.Find("Text").GetComponent<Text>();
-        field = panel.Find("InputField").GetComponent<InputField>();
+        inputNameText = panel.Find("Text (TMP)").GetComponent<TextMeshProUGUI>();
+        field = panel.Find("InputField (TMP)").GetComponent<TMP_InputField>();
     }
 }
 
@@ -2105,10 +2104,10 @@ class GameMenu
 
         mainCanvas.SetActive(true);
 
-        gamesButton.GetComponentInChildren<Text>().text = textsToSet[0];
-        evaluationButton.GetComponentInChildren<Text>().text = textsToSet[1];
-        buyButton.GetComponentInChildren<Text>().text = textsToSet[2];
-        tryLogo.GetComponentInChildren<Text>().text = textsToSet[3];
+        gamesButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[0];
+        evaluationButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[1];
+        buyButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[2];
+        tryLogo.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[3];
 
         tryLogo.SetActive(true);
         logoIcon.SetActive(false);
@@ -2458,14 +2457,21 @@ class ShopMenu
         SetFunctionalIAPButtons(isAShopForNewKid);
     }
 
-    public void SetIOSShop(int isAShopForNewKid)
+    public void SetIOSShop(int isAShopForNewKid, bool storeIsSet)
     {
         HideAllComponents();
-        oneMonthButton.gameObject.SetActive(true);
-        threeMonthButton.gameObject.SetActive(true);
-        legalText.gameObject.SetActive(true);
-        termsAndConditionsButton.gameObject.SetActive(true);
-        privacyPolicyButton.gameObject.SetActive(true);
+        if (storeIsSet)
+        {
+            oneMonthButton.gameObject.SetActive(true);
+            threeMonthButton.gameObject.SetActive(true);
+            legalText.gameObject.SetActive(true);
+            termsAndConditionsButton.gameObject.SetActive(true);
+            privacyPolicyButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            manager.ShowWarning(0);
+        }
 
         SetFunctionalIAPButtons(isAShopForNewKid);
     }
