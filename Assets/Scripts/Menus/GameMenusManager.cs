@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameMenusManager : MonoBehaviour {
 
@@ -10,7 +11,6 @@ public class GameMenusManager : MonoBehaviour {
     public Button gamesButton;
     public Button avatarButton;
     public Button shopButton;
-    public Button dificultyButton;
     public Button goBackButton;
 
     public AudioClip[] Clips;
@@ -63,9 +63,9 @@ public class GameMenusManager : MonoBehaviour {
 
     void WriteButtons()
     {
-        avatarButton.GetComponentInChildren<Text>().text = stringsToShow[0];
-        gamesButton.GetComponentInChildren<Text>().text = stringsToShow[1];
-        shopButton.GetComponentInChildren<Text>().text = stringsToShow[2];
+        avatarButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[0];
+        gamesButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[1];
+        shopButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[2];
     }
 
     void GoGamingZone()

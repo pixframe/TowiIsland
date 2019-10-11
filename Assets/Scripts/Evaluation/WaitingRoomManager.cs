@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class WaitingRoomManager : MonoBehaviour {
     #region Variables
@@ -105,8 +106,8 @@ public class WaitingRoomManager : MonoBehaviour {
     //UI elemts needed for this game
     public GameObject instruccionPanel;
     public Button readyButton;
-    public Text textInstruccions;
-    public Text storyText;
+    TextMeshProUGUI textInstructions;
+    TextMeshProUGUI storyText;
     public GameObject airportView;
     #endregion
 
@@ -262,8 +263,6 @@ public class WaitingRoomManager : MonoBehaviour {
         {
             totalNumberOfFlights -= 12;
         }
-        Debug.Log(totalNumberOfFlights);
-        storyText.text = stringsToShow[0];
         audioManager.PlayClip(audioInScene[0]);
         Invoke("PlayTheTutorial", audioManager.ClipDuration() + 2f);
         extraClick = false;
@@ -273,13 +272,19 @@ public class WaitingRoomManager : MonoBehaviour {
             arrows[i] = arrowManager.transform.GetChild(i).GetComponent<SpriteRenderer>();
         }
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
+        textInstructions = GameObject.Find("Instruction Text").GetComponent<TextMeshProUGUI>();
+        storyText = GameObject.Find("Story Text").GetComponent<TextMeshProUGUI>();
+        storyText.text = stringsToShow[0];
     }
 	
 	// Update is called once per frame
-	void Update () {
+	void Update () 
+    {
         latencieTime += Time.deltaTime;
-        if (Input.GetMouseButtonDown(0)) {
-            if (!tutorialMode) {
+        if (Input.GetMouseButtonDown(0)) 
+        {
+            if (!tutorialMode) 
+            {
                 interactionRecord.Add(flightNumberIndex);
                 interactionLatencies.Add(latencieTime);
             }
@@ -329,7 +334,8 @@ public class WaitingRoomManager : MonoBehaviour {
             {
                 if (tutorialMode)
                 {
-                    if (!firstClick) {
+                    if (!firstClick) 
+                    {
                         clicked = true;
                         ErrorChecker();
                         ErrorHandler();
@@ -337,7 +343,8 @@ public class WaitingRoomManager : MonoBehaviour {
                 }
                 else
                 {
-                    if (!firstClick) {
+                    if (!firstClick) 
+                    {
                         if (extraClick)
                         {
                             extraBadClick++;
@@ -364,7 +371,6 @@ public class WaitingRoomManager : MonoBehaviour {
                         }
                     }
                 }
-
             }
         }
         if (hideTheFeed) {
@@ -390,7 +396,7 @@ public class WaitingRoomManager : MonoBehaviour {
         storyText.transform.parent.gameObject.SetActive(false);
         tutorialMode = true;
         tutorialIndex = 0;
-        textInstruccions.text = TextReader.AddStrings(0, stringsToShow[1]);
+        textInstructions.text = TextReader.AddStrings(0, stringsToShow[1]);
         audioManager.PlayClip(audioInScene[1], tryAudio);
         evaluationController.SetButtonText(readyButton, TextReader.commonStrings[0]);
         readyButton.onClick.AddListener(PlayTutorialFlights);
@@ -406,7 +412,7 @@ public class WaitingRoomManager : MonoBehaviour {
         instruccionPanel.SetActive(true);
         readyButton.gameObject.SetActive(false);
         audioManager.PlayClip(veryGoodAudio, audioInScene[4]);
-        textInstruccions.text = TextReader.AddBeforeStrings(2, stringsToShow[4]);
+        textInstructions.text = TextReader.AddBeforeStrings(2, stringsToShow[4]);
         readyButton.onClick.RemoveAllListeners();
         readyButton.onClick.AddListener(PlayTheGameFlights);
         Invoke("ReadyButtonOn", audioManager.ClipDuration());
@@ -502,7 +508,7 @@ public class WaitingRoomManager : MonoBehaviour {
     {
         ShowError();
         string firstString = TextReader.AddStrings(1, stringsToShow[2]);
-        textInstruccions.text = TextReader.AddBeforeStrings(0, firstString);
+        textInstructions.text = TextReader.AddBeforeStrings(0, firstString);
         audioManager.PlayClip(upsAudio, audioInScene[2], tryAgainAudio);
         Invoke("ActivateReadyButton", audioManager.ClipDuration());     
     }
@@ -512,7 +518,7 @@ public class WaitingRoomManager : MonoBehaviour {
     {
         ShowError();
         string firstString = TextReader.AddStrings(1, stringsToShow[3]);
-        textInstruccions.text = TextReader.AddBeforeStrings(3, firstString);
+        textInstructions.text = TextReader.AddBeforeStrings(3, firstString);
         audioManager.PlayClip(cautionAudio, audioInScene[3], tryAgainAudio);
         Invoke("ActivateReadyButton", audioManager.ClipDuration());
     }

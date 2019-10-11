@@ -2,13 +2,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class FirstLoader : MonoBehaviour {
 
     AsyncOperation asyncLoad;
 
     public Image KiwiLoading;
-    public Text loadText;
+    public TextMeshProUGUI loadText;
 
     string[] stringsToShow;
 

@@ -4,6 +4,7 @@ using System.Globalization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 using UnityEngine.Networking;
 
 public class EvaluationController : MonoBehaviour
@@ -538,7 +539,7 @@ public class EvaluationController : MonoBehaviour
 
     public void SetButtonText(Button button, string stringToText)
     {
-        button.GetComponentInChildren<Text>().text = stringToText;
+        button.GetComponentInChildren<TextMeshProUGUI>().text = stringToText;
     }
 
     //this will send to the next need scene

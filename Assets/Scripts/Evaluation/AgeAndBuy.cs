@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class AgeAndBuy : MonoBehaviour {
 
@@ -13,8 +14,9 @@ public class AgeAndBuy : MonoBehaviour {
 
     //The UI elemets that has to be transalated
     [Header("Translatables")]
-    public Text[] translatables;
-    public Text[] commonTranslatables;
+    const string translatablesPath = "Translatable_Text_{0}";
+    public List<TextMeshProUGUI> translatables = new List<TextMeshProUGUI>();
+    public List<TextMeshProUGUI> commonTranslatables = new List<TextMeshProUGUI>();
     // Assset used for the text of the game
     public TextAsset textAsset;
     //string array that saves the strings of the game
@@ -70,7 +72,8 @@ public class AgeAndBuy : MonoBehaviour {
     bool isStoryTime;
 
 	// Use this for initialization
-	void Start () {
+	void Start () 
+    {
         evaluationController = FindObjectOfType<EvaluationController>();
         audioManager = FindObjectOfType<AudioManager>();
         audioInScene = Resources.LoadAll<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Evaluation/Scene_1");
@@ -79,6 +82,8 @@ public class AgeAndBuy : MonoBehaviour {
         SetTheText();
         isStoryTime = true;
         Invoke("StarTheGame", audioManager.ClipDuration() + 1f);
+        tryPanel.SetActive(false);
+        readyButton.gameObject.SetActive(false);
     }
 
     void StarTheGame()
@@ -122,7 +127,8 @@ public class AgeAndBuy : MonoBehaviour {
 
     //Checks if the input is correct and handle the answer
     void SetAgeInput(){
-        if(IsInputCorrect()){
+        if(IsInputCorrect())
+        {
             ageOfPlayer = int.Parse(ageInput.text);
             DateFormat();
             if (birthdayDateOfPlayer == "")
@@ -148,15 +154,18 @@ public class AgeAndBuy : MonoBehaviour {
             {
                 return false;
             }
+
             return true;
-        } else
+        } 
+        else
         {
             return false;
         }
     }
 
     //Inatiliaces the second part of this secction where you get the ticket and finish the buy
-    void StartBuyActivity(){
+    void StartBuyActivity()
+    {
         agePanel.SetActive(false);
         ticketPanel.SetActive(true);
         readyButton.gameObject.SetActive(false);
@@ -169,28 +178,37 @@ public class AgeAndBuy : MonoBehaviour {
     }
 
     //this will send a text depending the input of the player
-    void SetNameInput(){
+    void SetNameInput()
+    {
         switch (evaluationController.DifficultyLevel())
         {
             case 0:
                 if (!string.IsNullOrWhiteSpace(nameInput.text))
                 {
                     nameOfPlayer = nameInput.text;
-                }else{
+                }
+                else
+                {
                     nameOfPlayer = "Sin Respuesta";
                 }
                 placeOfPlayer = "NA";
                 dateOfToday = "NA";
                 break;
             case 1:
-                if(nameInput.text != ""){
+                if(nameInput.text != "")
+                {
                     nameOfPlayer = nameInput.text;
-                }else{
+                }
+                else
+                {
                     nameOfPlayer = "Sin Respuesta";
                 }
-                if(placeInput.text != ""){
+                if(placeInput.text != "")
+                {
                     placeOfPlayer = placeInput.text;
-                }else{
+                }
+                else
+                {
                     placeOfPlayer = "Sin Respuesta";
                 }
                 dateOfToday = "NA";
@@ -214,18 +232,22 @@ public class AgeAndBuy : MonoBehaviour {
                 }
                 if (dateInput.text != ""){
                     dateOfToday = dateInput.text;
-                } else{
+                } 
+                else
+                {
                     dateOfToday =  "Sin Respuesta";
                 }
                 break;
         }
+
         evaluationController.SaveBuyTicketProgress(nameOfPlayer, placeOfPlayer, dateOfToday);
     }
 
 
 
     //In this function we call the level of dificulty to change the possible diffiicult of things
-    void PrepareTheBuyPart(int difficult){
+    void PrepareTheBuyPart(int difficult)
+    {
         switch (difficult)
         {
             case 0:
@@ -256,24 +278,33 @@ public class AgeAndBuy : MonoBehaviour {
     }
 
     //this set the correct input iin the lenguage
-    void SetTheText(){
+    void SetTheText()
+    {
+
         textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Evaluation/Evaluation_01/Evaluation_Scene1");
         textsOfGame = TextReader.TextsToShow(textAsset);
-        for (int i = 0; i < translatables.Length;i++){
+
+        for (int i = 0; i < textsOfGame.Length; i++)
+        {
+            var dir = string.Format(translatablesPath, i);
+            translatables.Add(GameObject.Find(dir).GetComponent<TextMeshProUGUI>());
             translatables[i].text = textsOfGame[i];
         }
+
         evaluationController.SetButtonText(readyButton, TextReader.commonStrings[0]);
         commonTranslatables[0].text = TextReader.commonStrings[13];
         commonTranslatables[1].text = textsOfGame[4];
     }
 
     //quits the try again panel and let try to input again
-    void InputAgain(){
+    void InputAgain()
+    {
         tryPanel.SetActive(false);
         goBackButton.gameObject.SetActive(false);
     }
 
-    void StopLatency() {
+    void StopLatency() 
+    {
         isLatencyTime = false;
         ageInput.onValueChanged.RemoveAllListeners();
         birthdayInput.onValueChanged.RemoveAllListeners();

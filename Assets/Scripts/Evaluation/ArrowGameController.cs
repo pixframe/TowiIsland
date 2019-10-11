@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class ArrowGameController : MonoBehaviour {
     //scripts needed for the game
@@ -60,7 +61,7 @@ public class ArrowGameController : MonoBehaviour {
     public Button leftArrowButton;
     public Button rightArrowButton;
     public Button readyButton;
-    public Text instruccionText;
+    public TextMeshProUGUI instrucctonText;
 
     //this is the arrow and all the posibilitie it has to transform
     public GameObject whiteArrow;
@@ -122,7 +123,7 @@ public class ArrowGameController : MonoBehaviour {
     void SetTutotrial()
     {
         audioManager.PlayClip(audioInScene[0]);
-        instruccionText.text = stringsToShow[0];
+        instrucctonText.text = stringsToShow[0];
         evaluationController.SetButtonText(readyButton, TextReader.commonStrings[0]);
         readyButton.onClick.AddListener(SetSecondTutorial);
         readyButton.gameObject.SetActive(false);
@@ -136,12 +137,12 @@ public class ArrowGameController : MonoBehaviour {
             audioManager.PlayClip(audioInScene[7]);
             if (SystemInfo.deviceType == DeviceType.Desktop)
             {
-                instruccionText.text = stringsToShow[2] + stringsToShow[4];
+                instrucctonText.text = stringsToShow[2] + stringsToShow[4];
                 audioManager.PlayClip(audioInScene[2], audioInScene[4]);
             }
             else if (SystemInfo.deviceType == DeviceType.Handheld)
             {
-                instruccionText.text = stringsToShow[1] + stringsToShow[4];
+                instrucctonText.text = stringsToShow[1] + stringsToShow[4];
                 audioManager.PlayClip(audioInScene[2], audioInScene[4]);
             }
         }
@@ -149,12 +150,12 @@ public class ArrowGameController : MonoBehaviour {
         {
             if (SystemInfo.deviceType == DeviceType.Desktop)
             {
-                instruccionText.text = stringsToShow[2] + stringsToShow[3];
+                instrucctonText.text = stringsToShow[2] + stringsToShow[3];
                 audioManager.PlayClip(audioInScene[2], audioInScene[3]);
             }
             else if (SystemInfo.deviceType == DeviceType.Handheld)
             {
-                instruccionText.text = stringsToShow[1] + stringsToShow[3];
+                instrucctonText.text = stringsToShow[1] + stringsToShow[3];
                 audioManager.PlayClip(audioInScene[1], audioInScene[3]);
             }
         }
@@ -187,12 +188,12 @@ public class ArrowGameController : MonoBehaviour {
         if (difficulty == 0)
         {
             audioManager.PlayClip(veryGoodAudio, audioInScene[6]);
-            instruccionText.text = TextReader.AddBeforeStrings(2, stringsToShow[6]);
+            instrucctonText.text = TextReader.AddBeforeStrings(2, stringsToShow[6]);
         }
         else
         {
             audioManager.PlayClip(veryGoodAudio, audioInScene[5]);
-            instruccionText.text = TextReader.AddBeforeStrings(2, stringsToShow[5]);
+            instrucctonText.text = TextReader.AddBeforeStrings(2, stringsToShow[5]);
         }
 
         readyButton.onClick.RemoveAllListeners();
@@ -536,7 +537,7 @@ public class ArrowGameController : MonoBehaviour {
     void FinishTheSection() {
         instruccionPanel.SetActive(true);
         audioManager.PlayClip(veryGoodAudio, audioInScene[11]);
-        instruccionText.text = TextReader.AddBeforeStrings(2, stringsToShow[11]);
+        instrucctonText.text = TextReader.AddBeforeStrings(2, stringsToShow[11]);
         readyButton.onClick.RemoveAllListeners();
         readyButton.onClick.AddListener(FinishTheGameOfArrows);
         readyButton.gameObject.SetActive(false);
@@ -553,27 +554,27 @@ public class ArrowGameController : MonoBehaviour {
         switch (error) {
             case TutorialErrors.Miss:
                 audioManager.PlayClip(ohNoAudio, audioInScene[9]);
-                instruccionText.text = TextReader.AddBeforeStrings(1, stringsToShow[9]);
+                instrucctonText.text = TextReader.AddBeforeStrings(1, stringsToShow[9]);
                 break;
             case TutorialErrors.BadGreen:
                 audioManager.PlayClip(ohNoAudio, audioInScene[5]);
-                instruccionText.text = TextReader.AddBeforeStrings(1, stringsToShow[5]);
+                instrucctonText.text = TextReader.AddBeforeStrings(1, stringsToShow[5]);
                 break;
             case TutorialErrors.BadDireccion:
                 if (SystemInfo.deviceType == DeviceType.Desktop)
                 {
                     audioManager.PlayClip(ohNoAudio, audioInScene[7]);
-                    instruccionText.text = TextReader.AddBeforeStrings(1, stringsToShow[7]);
+                    instrucctonText.text = TextReader.AddBeforeStrings(1, stringsToShow[7]);
                 }
                 else if (SystemInfo.deviceType == DeviceType.Handheld)
                 {
-                    instruccionText.text = TextReader.AddBeforeStrings(1, stringsToShow[8]);
+                    instrucctonText.text = TextReader.AddBeforeStrings(1, stringsToShow[8]);
                     audioManager.PlayClip(ohNoAudio, audioInScene[8]);
                 }
                 break;
             case TutorialErrors.DontTouch:
                 audioManager.PlayClip(ohNoAudio, audioInScene[6]);
-                instruccionText.text = TextReader.AddBeforeStrings(1, stringsToShow[6]);
+                instrucctonText.text = TextReader.AddBeforeStrings(1, stringsToShow[6]);
                 break;
         }
         Invoke("ReadyButtonOn", audioManager.ClipDuration());

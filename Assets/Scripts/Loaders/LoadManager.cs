@@ -1,15 +1,15 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class LoadManager : MonoBehaviour {
 
     AsyncOperation asyncLoad;
 
     public Image KiwiLoading;
-    public Text loadText;
+    public TextMeshProUGUI loadText;
 
     string[] stringsToShow;
 

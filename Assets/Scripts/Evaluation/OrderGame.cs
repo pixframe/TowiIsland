@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class OrderGame : MonoBehaviour {
 
@@ -33,10 +34,10 @@ public class OrderGame : MonoBehaviour {
     public GameObject instrucctionPanel;
     public Button readyButton;
     public Button upButton;
-    public Text textInstruction;
+    public TextMeshProUGUI textInstruction;
     public GameObject storyCanvas;
-    public Text storyText0;
-    public Text storyText1;
+    public TextMeshProUGUI storyText0;
+    public TextMeshProUGUI storyText1;
 
     #endregion
 

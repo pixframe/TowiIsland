@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using TMPro;
 
 public class GameCenterManager : MonoBehaviour
 {
@@ -106,7 +107,7 @@ public class GameCenterManager : MonoBehaviour
         leftButton.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Left));
         rigthButton.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Right));
 
-        currentPanel.playButton.GetComponentInChildren<Text>().text = stringsToShow[stringsToShow.Length-3];
+        currentPanel.playButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length-3];
 
 
         ChildGames();
@@ -503,7 +504,7 @@ public class GameCenterManager : MonoBehaviour
         warningPanel.SetActive(true);
         warningPanel.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
         warningPanel.GetComponentInChildren<Button>().onClick.AddListener(GoBackScene);
-        warningPanel.GetComponentInChildren<Text>().text = stringsToShow[stringsToShow.Length-2];
+        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length-2];
     }
 
     void ShowDisclaimer()
@@ -517,7 +518,7 @@ public class GameCenterManager : MonoBehaviour
             ChangeMenus();
 
         });
-        warningPanel.GetComponentInChildren<Text>().text = stringsToShow[stringsToShow.Length - 1];
+        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length - 1];
     }
 }
 
@@ -528,7 +529,7 @@ public struct GamePanel
         gameObject = gamePanel;
         button = gameObject.GetComponent<Button>();
         backgroundPanel = gamePanel.GetComponent<Image>();
-        gameText = gamePanel.transform.GetChild(1).GetComponent<Text>();
+        gameText = gamePanel.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
         barColor = gamePanel.transform.GetChild(2).GetComponent<Image>();
         iconImage = gamePanel.transform.GetChild(3).GetComponent<Image>();
         captureImage = gamePanel.transform.GetChild(4).GetComponent<Image>();
@@ -539,7 +540,7 @@ public struct GamePanel
     public GameObject gameObject;
     public Button button;
     public Image backgroundPanel;
-    public Text gameText;
+    public TextMeshProUGUI gameText;
     public Image barColor;
     public Image iconImage;
     public Image captureImage;

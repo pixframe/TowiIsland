@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class CoinGameManager : MonoBehaviour {
 
@@ -46,7 +47,7 @@ public class CoinGameManager : MonoBehaviour {
     public GameObject instructionPanel;
     public GameObject coinsSample;
     public GameObject coinsSample2;
-    public Text instructionText;
+    public TextMeshProUGUI instructionText;
     public Button readyButton;
     #endregion
 

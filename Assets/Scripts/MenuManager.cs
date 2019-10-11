@@ -56,7 +56,7 @@ public class MenuManager : MonoBehaviour
 
     [Header("Subscribe")]
     public GameObject subscribeCanvas;
-    public Text subscribeText;
+    public TextMeshProUGUI subscribeText;
     public Button subscribeButton;
     public Button subscribeAnotherCountButton;
     public Button changeProfileButton;
@@ -71,23 +71,23 @@ public class MenuManager : MonoBehaviour
     ShopMenu shopMenu;
 
     [Header("Warnings")]
-    public Text warningText;
+    public TextMeshProUGUI warningText;
     public Button warningButton;
     string[] warningLines;
 
     [Header("New Kid")]
     public GameObject newKidPanel;
-    public InputField newKidNameInput;
-    public InputField newKidDay;
-    public Text newKidBirthday;
-    public InputField newKidMonth;
-    public InputField newKidYear;
+    public TMP_InputField newKidNameInput;
+    public TMP_InputField newKidDay;
+    public TextMeshProUGUI newKidBirthday;
+    public TMP_InputField newKidMonth;
+    public TMP_InputField newKidYear;
     public Button newKidButton;
     public Button newKidBackButton;
 
     [Header("Loading")]
     public GameObject loadingCanvas;
-    public Text loadingText;
+    public TextMeshProUGUI loadingText;
 
     [Header("Config")]
     public GameObject configCanvas;
@@ -408,7 +408,7 @@ public class MenuManager : MonoBehaviour
 
         kidLooker.text = "";
 
-        WriteTheText(addKidButton, 30, 0);
+        WriteTheText(addKidButton, 30);
         addKidButton.onClick.RemoveAllListeners();
         addKidButton.onClick.AddListener(AddKidShower);
         selectionKidBackButton.gameObject.SetActive(true);
@@ -487,7 +487,7 @@ public class MenuManager : MonoBehaviour
 
         if (sessionManager.activeUser != null)
         {
-            WriteTheText(addKidButton, 31, 0);
+            WriteTheText(addKidButton, 31);
             addKidButton.onClick.RemoveAllListeners();
             addKidButton.onClick.AddListener(() => ConfirmKidsPurchase());
             selectionKidBackButton.gameObject.SetActive(false);
@@ -563,17 +563,17 @@ public class MenuManager : MonoBehaviour
         shopMenu.ShowThisMenu();
         if (SystemInfo.deviceType == DeviceType.Desktop)
         {
-            //shopMenu.SetWebShop(isAShopForNewKid);
+            shopMenu.SetWebShop(isAShopForNewKid);
 
             //This code is used to try ios shop in the editor but to realease version should be always commented
-            shopMenu.oneMonthButton.GetComponentInChildren<Text>().text = $"{lines[33]}\n{myIAPManager.CostInCurrency(1)} {lines[35]}";
-            shopMenu.threeMonthButton.GetComponentInChildren<Text>().text = $"{lines[34]}\n{myIAPManager.CostInCurrency(3)} {lines[35]}";
-            shopMenu.SetIOSShop(isAShopForNewKid, myIAPManager.IsInitialized());
+            //shopMenu.oneMonthButton.GetComponentInChildren<TextMeshProUGUI>().text = $"{lines[33]}\n{myIAPManager.CostInCurrency(1)} {lines[35]}";
+            //shopMenu.threeMonthButton.GetComponentInChildren<TextMeshProUGUI>().text = $"{lines[34]}\n{myIAPManager.CostInCurrency(3)} {lines[35]}";
+            //shopMenu.SetIOSShop(isAShopForNewKid, myIAPManager.IsInitialized());
         }
         else
         {
-            shopMenu.oneMonthButton.GetComponentInChildren<Text>().text = $"{lines[33]}\n{myIAPManager.CostInCurrency(1)} {lines[35]}";
-            shopMenu.threeMonthButton.GetComponentInChildren<Text>().text = $"{lines[34]}\n{myIAPManager.CostInCurrency(3)} {lines[35]}";
+            shopMenu.oneMonthButton.GetComponentInChildren<TextMeshProUGUI>().text = $"{lines[33]}\n{myIAPManager.CostInCurrency(1)} {lines[35]}";
+            shopMenu.threeMonthButton.GetComponentInChildren<TextMeshProUGUI>().text = $"{lines[34]}\n{myIAPManager.CostInCurrency(3)} {lines[35]}";
             if (Application.platform == RuntimePlatform.IPhonePlayer)
             {
                 shopMenu.SetIOSShop(isAShopForNewKid, myIAPManager.IsInitialized());
@@ -1314,31 +1314,26 @@ public class MenuManager : MonoBehaviour
         WriteTheText(creditColumOne, 6);
         WriteTheText(creditColumTwo, 7);
         WriteTheText(newKidNameInput, 10);
-        WriteTheText(selectionKidBackButton, 15, 0);
+        WriteTheText(selectionKidBackButton, 15);
         WriteTheText(newKidBirthday, 16);
         WriteTheText(newKidDay, 17);
         WriteTheText(newKidMonth, 18);
         WriteTheText(newKidYear, 19);
         WriteTheText(creditText, 40);
-        WriteTheText(configMenu.languageButton, 47, 0);
-        WriteTheText(configMenu.englishLanguageButton, 48, 0);
-        WriteTheText(configMenu.spanishLanguageButton, 49, 0);
-        WriteTheText(configMenu.automaticButton, 50, 0);
+        WriteTheText(configMenu.languageButton, 47);
+        WriteTheText(configMenu.englishLanguageButton, 48);
+        WriteTheText(configMenu.spanishLanguageButton, 49);
+        WriteTheText(configMenu.automaticButton, 50);
         WriteTheText(changeProfileButton, 51);
         WriteTheText(loadingText, 52);
         kidLooker.placeholder.GetComponent<TextMeshProUGUI>().text = lines[64];
-        warningButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
-        newKidButton.GetComponentInChildren<Text>().text = TextReader.commonStrings[0];
+        warningButton.GetComponentInChildren<TextMeshProUGUI>().text = TextReader.commonStrings[0];
+        newKidButton.GetComponentInChildren<TextMeshProUGUI>().text = TextReader.commonStrings[0];
     }
 
     //This metods will set the text accordingly with the type of objects
     //This is for buttons
     public void WriteTheText(Button but, int index)
-    {
-        but.GetComponentInChildren<Text>().text = lines[index];
-    }
-
-    public void WriteTheText(Button but, int index, int a)
     {
         but.GetComponentInChildren<TextMeshProUGUI>().text = lines[index];
     }
@@ -1361,9 +1356,9 @@ public class MenuManager : MonoBehaviour
     }
 
     //This for InputField placeholders
-    public void WriteTheText(InputField field, int index)
+    public void WriteTheText(TMP_InputField field, int index)
     {
-        field.placeholder.GetComponent<Text>().text = lines[index];
+        field.placeholder.GetComponent<TextMeshProUGUI>().text = lines[index];
     }
 
     public void ShowSyncMessage(int number)
@@ -1668,7 +1663,7 @@ class KidProfileCanvas
     public Image avatarImage;
     public Image frameImage;
     public Image billboardImage;
-    public Text nameText;
+    public TextMeshProUGUI nameText;
 
     public KidProfileCanvas(GameObject canvas)
     {
@@ -1677,7 +1672,7 @@ class KidProfileCanvas
         avatarImage = gameObject.transform.GetChild(0).GetComponent<Image>();
         frameImage = gameObject.transform.GetChild(1).GetComponent<Image>();
         billboardImage = gameObject.transform.GetChild(2).GetComponent<Image>();
-        nameText = billboardImage.GetComponentInChildren<Text>();
+        nameText = billboardImage.GetComponentInChildren<TextMeshProUGUI>();
     }
 
     public void PutInGrey()
@@ -1721,7 +1716,7 @@ class RegisterMenu
     public InputPanels inputPass;
     public Button forgotPassButton;
     public Button logInButton;
-    public Text notRegisterText;
+    public TextMeshProUGUI notRegisterText;
     public Button goToSingInButton;
 
     public GameObject signInMenu;
@@ -1730,11 +1725,11 @@ class RegisterMenu
     public InputPanels inputPassAgain;
     public Button termsAndConditionsButton;
     public InputPanels inputName;
-    public Text birthdateText;
-    public InputField dayInput;
-    public InputField monthInput;
-    public InputField yearInput;
-    public Text addKidLaterText;
+    public TextMeshProUGUI birthdateText;
+    public TMP_InputField dayInput;
+    public TMP_InputField monthInput;
+    public TMP_InputField yearInput;
+    public TextMeshProUGUI addKidLaterText;
     public Button signInButton;
 
     public GameObject tryPanel;
@@ -1742,7 +1737,7 @@ class RegisterMenu
 
     public Button returnButton;
 
-    public Text woodText;
+    public TextMeshProUGUI woodText;
 
     public RegisterMenu(GameObject mainMenu, MenuManager menu)
     {
@@ -1761,7 +1756,7 @@ class RegisterMenu
         inputPass = new InputPanels(logInPanel.Find("Input Password"));
         forgotPassButton = logInPanel.Find("Forgot Pass Button").GetComponent<Button>();
         logInButton = logInPanel.Find("Button Log In").GetComponent<Button>();
-        notRegisterText = logInPanel.Find("Not Sign in Text").GetComponent<Text>();
+        notRegisterText = logInPanel.Find("Not Sign in Text").GetComponent<TextMeshProUGUI>();
         goToSingInButton = logInPanel.Find("Button Sign In").GetComponent<Button>();
 
         var signInPanel = mainPanel.Find("Sing In Panel");
@@ -1772,11 +1767,11 @@ class RegisterMenu
         termsAndConditionsButton = signInPanel.Find("Terms And Conditions Button").GetComponent<Button>();
         inputName = new InputPanels(signInPanel.Find("Input Name"));
         var birthPanel = signInPanel.Find("Input BirthDate");
-        birthdateText = birthPanel.Find("Birth Date Text").GetComponent<Text>();
-        dayInput = birthPanel.Find("Day Input").GetComponent<InputField>();
-        monthInput = birthPanel.Find("Month Input").GetComponent<InputField>();
-        yearInput = birthPanel.Find("Year Input").GetComponent<InputField>();
-        addKidLaterText = signInPanel.Find("Can Add Text").GetComponent<Text>();
+        birthdateText = birthPanel.Find("Birth Date Text").GetComponent<TextMeshProUGUI>();
+        dayInput = birthPanel.Find("Day Input").GetComponent<TMP_InputField>();
+        monthInput = birthPanel.Find("Month Input").GetComponent<TMP_InputField>();
+        yearInput = birthPanel.Find("Year Input").GetComponent<TMP_InputField>();
+        addKidLaterText = signInPanel.Find("Can Add Text").GetComponent<TextMeshProUGUI>();
         signInButton = signInPanel.Find("Button Sign In").GetComponent<Button>();
 
         tryPanel = mainPanel.Find("Try Panel").gameObject;
@@ -1789,7 +1784,7 @@ class RegisterMenu
         returnButton = mainPanel.transform.Find("Return Button").GetComponent<Button>();
 
         var logoPanel = gameObject.transform.Find("Logo Panel");
-        woodText = logoPanel.transform.GetComponentInChildren<Text>();
+        woodText = logoPanel.transform.GetComponentInChildren<TextMeshProUGUI>();
 
         HideAll();
     }
@@ -1844,7 +1839,7 @@ class RegisterMenu
         inputPass.inputNameText.text = texts[4];
         inputPass.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[4];
         inputPass.field.inputType = TMP_InputField.InputType.Password;
-        forgotPassButton.GetComponent<TextMeshProUGUI>().text = texts[5];
+        forgotPassButton.GetComponentInChildren<TextMeshProUGUI>().text = texts[5];
         logInButton.GetComponentInChildren<TextMeshProUGUI>().text = texts[6];
         notRegisterText.text = texts[7];
         goToSingInButton.GetComponentInChildren<TextMeshProUGUI>().text = texts[8];
@@ -1973,7 +1968,7 @@ class RegisterMenu
 
         for (int i = 0; i < buttonsOfAges.Length; i++)
         {
-            buttonsOfAges[i].GetComponentInChildren<Text>().text = texts[i];
+            buttonsOfAges[i].GetComponentInChildren<TextMeshProUGUI>().text = texts[i];
             buttonsOfAges[i].onClick.RemoveAllListeners();
 
             int x = i;
@@ -2284,8 +2279,8 @@ class AddMenu
 {
     MenuManager manager;
     GameObject gameObject;
-    Text woodText;
-    Text[] promoTexts = new Text[2];
+    TextMeshProUGUI woodText;
+    TextMeshProUGUI[] promoTexts = new TextMeshProUGUI[2];
     Button buyButton;
     Button backButton;
 
@@ -2296,10 +2291,10 @@ class AddMenu
         var main = gameObject.transform.Find("Add Panel");
         for (int i = 0; i < promoTexts.Length; i++)
         {
-            promoTexts[i] = main.Find($"Promotional Text {i}").GetComponent<Text>();
+            promoTexts[i] = main.Find($"Promotional Text {i}").GetComponent<TextMeshProUGUI>();
         }
 
-        woodText = main.Find("Logo Panel").GetComponentInChildren<Text>();
+        woodText = main.Find("Logo Panel").GetComponentInChildren<TextMeshProUGUI>();
         buyButton = main.Find("Buy Button").GetComponent<Button>();
         backButton = main.Find("Return Button").GetComponent<Button>();
 
@@ -2315,11 +2310,11 @@ class AddMenu
 
         for (int i = 0; i < promoTexts.Length; i++)
         {
-            promoTexts[i].GetComponentInChildren<Text>().text = texts[i];
+            promoTexts[i].GetComponentInChildren<TextMeshProUGUI>().text = texts[i];
         }
 
         woodText.text = texts[2];
-        buyButton.GetComponentInChildren<Text>().text = texts[2];
+        buyButton.GetComponentInChildren<TextMeshProUGUI>().text = texts[2];
         buyButton.onClick.RemoveAllListeners();
         buyButton.onClick.AddListener(() =>
         {
@@ -2339,11 +2334,11 @@ class AddMenu
 
         for (int i = 0; i < promoTexts.Length; i++)
         {
-            promoTexts[i].GetComponentInChildren<Text>().text = texts[i + 3];
+            promoTexts[i].GetComponentInChildren<TextMeshProUGUI>().text = texts[i + 3];
         }
 
         woodText.text = texts[2];
-        buyButton.GetComponentInChildren<Text>().text = texts[2];
+        buyButton.GetComponentInChildren<TextMeshProUGUI>().text = texts[2];
         buyButton.onClick.RemoveAllListeners();
         buyButton.onClick.AddListener(() =>
         {
@@ -2367,18 +2362,18 @@ class ShopMenu
     GameObject mainPanel;
     Button backButton;
 
-    Text shopText;
+    TextMeshProUGUI shopText;
     Button shopButton;
 
     Button shopWebButton;
     public Button oneMonthButton;
     public Button threeMonthButton;
     Button gotCardButton;
-    Text legalText;
+    TextMeshProUGUI legalText;
 
-    public InputField prepaidInput;
+    public TMP_InputField prepaidInput;
 
-    public Dropdown kidsNumberDropdown;
+    public TMP_Dropdown kidsNumberDropdown;
     Button moreKidsButton;
 
     Button termsAndConditionsButton;
@@ -2391,18 +2386,18 @@ class ShopMenu
         mainPanel = mainCanvas.transform.GetChild(0).gameObject;
         backButton = mainCanvas.transform.GetChild(1).GetComponent<Button>();
 
-        shopText = mainPanel.transform.GetChild(1).GetComponent<Text>();
+        shopText = mainPanel.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
         shopButton = mainPanel.transform.GetChild(2).GetComponent<Button>();
 
         shopWebButton = mainPanel.transform.GetChild(3).GetComponent<Button>();
         oneMonthButton = mainPanel.transform.GetChild(4).GetComponent<Button>();
         threeMonthButton = mainPanel.transform.GetChild(5).GetComponent<Button>();
         gotCardButton = mainPanel.transform.GetChild(6).GetComponent<Button>();
-        legalText = mainPanel.transform.GetChild(7).GetComponent<Text>();
+        legalText = mainPanel.transform.GetChild(7).GetComponent<TextMeshProUGUI>();
 
-        prepaidInput = mainPanel.transform.GetChild(8).GetComponent<InputField>();
+        prepaidInput = mainPanel.transform.GetChild(8).GetComponent<TMP_InputField>();
 
-        kidsNumberDropdown = mainPanel.transform.GetChild(9).GetComponent<Dropdown>();
+        kidsNumberDropdown = mainPanel.transform.GetChild(9).GetComponent<TMP_Dropdown>();
         moreKidsButton = mainPanel.transform.GetChild(10).GetComponent<Button>();
 
         termsAndConditionsButton = mainPanel.transform.GetChild(11).GetComponent<Button>();

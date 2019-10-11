@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using Boomlagoon.JSON;
 
 public class LastSceneManager : MonoBehaviour {
@@ -12,7 +13,7 @@ public class LastSceneManager : MonoBehaviour {
     AudioSource player;
     public TextAsset textAsset;
 
-    public Text storyText;
+    public TextMeshProUGUI storyText;
 
     AudioClip[] audioInScene;
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class PackGame : MonoBehaviour
 {
@@ -30,7 +31,7 @@ public class PackGame : MonoBehaviour
     //Needed UI Elements
     [Header("UI Elements")]
     public Button readyButton;
-    public Text instruccionText;
+    public TextMeshProUGUI instructionText;
     public GameObject instruccionsPanel;
     #endregion
 
@@ -209,7 +210,7 @@ public class PackGame : MonoBehaviour
     void SetTheIntro()
     {
         audioManager.PlayClip(audioInScene[0]);
-        instruccionText.text = stringsToShow[0];
+        instructionText.text = stringsToShow[0];
         readyButton.onClick.RemoveAllListeners();
         readyButton.onClick.AddListener(() => SetTheFirstInstruccions());
         readyButton.gameObject.SetActive(false);
@@ -222,12 +223,12 @@ public class PackGame : MonoBehaviour
         if (SystemInfo.deviceType == DeviceType.Handheld)
         {
             audioManager.PlayClip(audioInScene[2]);
-            instruccionText.text = stringsToShow[2];
+            instructionText.text = stringsToShow[2];
         }
         else
         {
             audioManager.PlayClip(audioInScene[1]);
-            instruccionText.text = stringsToShow[1];
+            instructionText.text = stringsToShow[1];
         }
         readyButton.onClick.RemoveAllListeners();
         readyButton.onClick.AddListener(MakeSelectableObjects);
@@ -241,7 +242,7 @@ public class PackGame : MonoBehaviour
         PutOrderInTheRoom();
         instruccionsPanel.SetActive(true);
         audioManager.PlayClip(audioInScene[3], tryAudio);
-        instruccionText.text = TextReader.AddStrings(0, stringsToShow[3]);
+        instructionText.text = TextReader.AddStrings(0, stringsToShow[3]);
         selectableTime = false;
         readyButton.onClick.RemoveAllListeners();
         readyButton.onClick.AddListener(PlayTheTutorial);
@@ -256,7 +257,7 @@ public class PackGame : MonoBehaviour
     void PassToTheTest()
     {
         instruccionsPanel.SetActive(true);
-        instruccionText.text = TextReader.AddBeforeStrings(2, stringsToShow[5]);
+        instructionText.text = TextReader.AddBeforeStrings(2, stringsToShow[5]);
         selectableTime = false;
         tutorialMode = false;
         audioManager.PlayClip(veryGoodAudio, audioInScene[5]);
@@ -294,7 +295,7 @@ public class PackGame : MonoBehaviour
         PutOrderInTheRoom();
         instruccionsPanel.SetActive(true);
         audioManager.PlayClip(audioInScene[6], tryAudio);
-        instruccionText.text = TextReader.AddStrings(0, stringsToShow[6]);
+        instructionText.text = TextReader.AddStrings(0, stringsToShow[6]);
         selectableTime = false;
         readyButton.onClick.RemoveAllListeners();
         readyButton.onClick.AddListener(PlayTheTutorial);
@@ -318,7 +319,7 @@ public class PackGame : MonoBehaviour
     //This section will say which weather will be there
     void ChatAboutWeather() {
         instruccionsPanel.SetActive(true);
-        instruccionText.text = stringsToShow[10];
+        instructionText.text = stringsToShow[10];
         evaluationController.SetButtonText(readyButton, TextReader.commonStrings[0]);
         cameraAnimator.Play("CameraFrontRotation");
         audioManager.PlayClip(audioInScene[10]);
@@ -343,11 +344,11 @@ public class PackGame : MonoBehaviour
             audioManager.PlayClip(audioInScene[11]);
             readyButton.gameObject.SetActive(false);
             instruccionsPanel.SetActive(true);
-            instruccionText.text = stringsToShow[11];
+            instructionText.text = stringsToShow[11];
             Invoke("PresentTheObjects", audioManager.ClipDuration());
         } else {
             audioManager.PlayClip(audioInScene[12]);
-            instruccionText.text = stringsToShow[12];
+            instructionText.text = stringsToShow[12];
             Invoke("PresentTheObjects", audioManager.ClipDuration());
         }
     }
@@ -359,7 +360,7 @@ public class PackGame : MonoBehaviour
         readyButton.onClick.AddListener(() => FinishPackGame());
         Invoke("FinishPackGame", 3f);
         evaluationController.SetButtonText(readyButton, TextReader.commonStrings[0]);
-        instruccionText.text = stringsToShow[11] + "\n" + stringsObjects[needObjects[0]] +
+        instructionText.text = stringsToShow[11] + "\n" + stringsObjects[needObjects[0]] +
             "\n" + stringsObjects[needObjects[1]] + "\n" + stringsObjects[needObjects[2]];
     }
 
@@ -517,13 +518,13 @@ public class PackGame : MonoBehaviour
             {
                 audioManager.PlayClip(audioInScene[4], tryAgainAudio);
                 firstBigString = TextReader.AddStrings(1, stringsToShow[4]);
-                instruccionText.text = firstBigString;
+                instructionText.text = firstBigString;
             }
             else if (tutorialErrors == TutorialErrors.wrongOrder)
             {
                 audioManager.PlayClip(upsAudio, audioInScene[8], tryAgainAudio);
                 firstBigString = TextReader.AddStrings(1, stringsToShow[8]);
-                instruccionText.text = TextReader.AddBeforeStrings(0, firstBigString);
+                instructionText.text = TextReader.AddBeforeStrings(0, firstBigString);
             }
         }
         else
@@ -532,13 +533,13 @@ public class PackGame : MonoBehaviour
             {
                 audioManager.PlayClip(upsAudio, audioInScene[7], tryAgainAudio);
                 firstBigString = TextReader.AddStrings(1, stringsToShow[7]);
-                instruccionText.text = TextReader.AddBeforeStrings(0, firstBigString);
+                instructionText.text = TextReader.AddBeforeStrings(0, firstBigString);
             }
             else if (tutorialErrors == TutorialErrors.wrongOrder)
             {
                 audioManager.PlayClip(upsAudio, audioInScene[9], tryAgainAudio);
                 firstBigString = TextReader.AddStrings(1, stringsToShow[9]);
-                instruccionText.text = TextReader.AddBeforeStrings(0, firstBigString);
+                instructionText.text = TextReader.AddBeforeStrings(0, firstBigString);
             }
         }
         Invoke("ReadyButtonOn", audioManager.ClipDuration());
@@ -549,7 +550,7 @@ public class PackGame : MonoBehaviour
     void PresentTheObjects()
     {
         audioManager.PlayClip(stimulus[needObjects[needsIndex]]);
-        instruccionText.text = stringsObjects[needObjects[needsIndex]];
+        instructionText.text = stringsObjects[needObjects[needsIndex]];
         selectableTime = false;
         if (needsIndex < needObjects.Count - 1)
         {

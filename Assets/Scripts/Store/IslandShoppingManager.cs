@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+using TMPro;
 
 public class IslandShoppingManager : MonoBehaviour {
 
@@ -12,9 +12,9 @@ public class IslandShoppingManager : MonoBehaviour {
     public GameObject kiwiLogoPanel;
     public GameObject finishPartciles;
 
-    public Text confirmationText;
-    public Text priceTag;
-    public Text kiwiAmountText;
+    public TextMeshProUGUI confirmationText;
+    public TextMeshProUGUI priceTag;
+    public TextMeshProUGUI kiwiAmountText;
 
     public Button viewButton;
     public Button goBackButton;
@@ -63,7 +63,7 @@ public class IslandShoppingManager : MonoBehaviour {
         goBackButton.onClick.AddListener(GoBack);
 
         SetCorrectButtons();
-        viewButton.GetComponentInChildren<Text>().text = stringsToShow[5];
+        viewButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[5];
     }
 
     // Update is called once per frame
@@ -133,8 +133,8 @@ public class IslandShoppingManager : MonoBehaviour {
             confirmationText.text = stringsToShow[0];
             priceTag.gameObject.SetActive(true);
             priceTag.text = "x " + IslandPrices[objectToActivate];
-            yesButton.GetComponentInChildren<Text>().text = stringsToShow[2];
-            noButton.GetComponentInChildren<Text>().text = stringsToShow[3];
+            yesButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[2];
+            noButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[3];
             kiwiLogoPanel.SetActive(true);
             noButton.gameObject.SetActive(true);
 
@@ -184,12 +184,12 @@ public class IslandShoppingManager : MonoBehaviour {
     {
         if (cam.EnableMoveCamera())
         {
-            viewButton.GetComponentInChildren<Text>().text = stringsToShow[6];
+            viewButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[6];
             HidePanels();
         }
         else
         {
-            viewButton.GetComponentInChildren<Text>().text = stringsToShow[5];
+            viewButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[5];
             ViewPanels();
         }
     }
@@ -209,14 +209,14 @@ struct IslandShopButton
 {
     public Button mainButton;
     public GameObject objectShown;
-    public Text priceText;
+    public TextMeshProUGUI priceText;
     public Image kiwiImage;
 
     public IslandShopButton(Button buttonToBeMain)
     {
         mainButton = buttonToBeMain;
         objectShown = mainButton.transform.GetChild(0).gameObject;
-        priceText = mainButton.transform.GetChild(1).GetComponent<Text>();
+        priceText = mainButton.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
         kiwiImage = mainButton.transform.GetChild(2).GetComponent<Image>();
     }
 }

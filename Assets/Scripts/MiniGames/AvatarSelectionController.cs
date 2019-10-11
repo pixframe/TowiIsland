@@ -1,14 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class AvatarSelectionController : MonoBehaviour {
 
     [Header("UI Elements")]
     public GameObject instructionPanel;
-    public Text instructionText;
+    public TextMeshProUGUI instructionText;
     public Button noButton;
     public Button yesButton;
 	public Button returnButton;

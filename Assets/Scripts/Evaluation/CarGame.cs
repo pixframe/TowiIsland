@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class CarGame : MonoBehaviour {
 
@@ -42,7 +43,7 @@ public class CarGame : MonoBehaviour {
     [Header("UI Elements")]
     public GameObject instruccionPanel;
     public Button readyButton;
-    public Text insttruccionText;
+    public TextMeshProUGUI instructionText;
     #endregion
 
     #region Ornaments Data
@@ -214,7 +215,7 @@ public class CarGame : MonoBehaviour {
             s = stringsToShow[0] + stringsToShow[1] + stringsToShow[3];
             audioManager.PlayClip(audioInScene[0], audioInScene[2], audioInScene[3]);
         }
-        insttruccionText.text = s;
+        instructionText.text = s;
 
         evaluationController.SetButtonText(readyButton, TextReader.commonStrings[0]);
         readyButton.onClick.AddListener(StartNewLaberynth);

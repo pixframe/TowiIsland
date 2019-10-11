@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class PauseTheGame : MonoBehaviour {
 
@@ -11,7 +12,7 @@ public class PauseTheGame : MonoBehaviour {
     GameObject miniPausePanel;
     GameObject dontTouchPanel;
     GameObject loadingPanel;
-    Text pauseText;
+    TextMeshProUGUI pauseText;
     Button goBackButton;
     Button goMenuButton;
     Button cancelButton;
@@ -42,7 +43,7 @@ public class PauseTheGame : MonoBehaviour {
         pausePanel = transform.GetChild(1).gameObject;
 
         miniPausePanel = pausePanel.transform.GetChild(0).gameObject;
-        pauseText = miniPausePanel.transform.GetChild(0).GetComponentInChildren<Text>();
+        pauseText = miniPausePanel.transform.GetChild(0).GetComponentInChildren<TextMeshProUGUI>();
         goBackButton = miniPausePanel.transform.GetChild(1).GetComponent<Button>();
         goMenuButton = miniPausePanel.transform.GetChild(2).GetComponent<Button>();
         cancelButton = miniPausePanel.transform.GetChild(3).GetComponent<Button>();
@@ -53,11 +54,11 @@ public class PauseTheGame : MonoBehaviour {
         loadingPanel = transform.GetChild(5).gameObject;
 
         pauseText.text = stringsToShow[0];
-        goBackButton.GetComponentInChildren<Text>().text = stringsToShow[1];
-        kiwiEarningPanel.continueButton.GetComponentInChildren<Text>().text = stringsToShow[1];
-        goMenuButton.GetComponentInChildren<Text>().text = stringsToShow[2];
-        playButton.GetComponentInChildren<Text>().text = stringsToShow[3];
-        howToPlayButton.GetComponentInChildren<Text>().text = stringsToShow[4];
+        goBackButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[1];
+        kiwiEarningPanel.continueButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[1];
+        goMenuButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[2];
+        playButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[3];
+        howToPlayButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[4];
         pauseButton.onClick.AddListener(PauseButton);
         goMenuButton.onClick.AddListener(GoBackIsland);
         goBackButton.onClick.AddListener(GoBackGame);
@@ -196,15 +197,15 @@ public class PauseTheGame : MonoBehaviour {
 struct KiwiEarningPanel
 {
     public GameObject mainPanel;
-    public Text kiwiText;
-    public Text amoutOfKiwisEarnText;
+    public TextMeshProUGUI kiwiText;
+    public TextMeshProUGUI amoutOfKiwisEarnText;
     public Button continueButton;
 
     public KiwiEarningPanel(GameObject panel)
     {
         mainPanel = panel;
-        kiwiText = panel.transform.GetChild(0).GetComponent<Text>();
-        amoutOfKiwisEarnText = panel.transform.GetChild(1).GetComponent<Text>();
+        kiwiText = panel.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+        amoutOfKiwisEarnText = panel.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
         continueButton = panel.transform.GetChild(2).GetComponent<Button>();
     }
 }
