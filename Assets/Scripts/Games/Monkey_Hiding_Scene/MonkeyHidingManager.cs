@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Analytics;
+using TMPro;
 
 public class MonkeyHidingManager : MonoBehaviour {
 
@@ -14,7 +15,7 @@ public class MonkeyHidingManager : MonoBehaviour {
     public GameObject positions2;
 
     [Header("UI Elements")]
-    public Text instructionText;
+    public TextMeshProUGUI instructionText;
     public Button readyButton;
     public GameObject instructionPanel;
 

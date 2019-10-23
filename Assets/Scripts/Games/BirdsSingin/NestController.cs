@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NestController : MonoBehaviour {
-
-    BirdsSingingManager manager;
+public class NestController : MonoBehaviour 
+{
     ParticleSystem notesToAir;
     AudioManager audioManager;
     int songOfTheNest;
     Vector3 dadBirdPos;
 
 
-    void Start() {
-        manager = FindObjectOfType<BirdsSingingManager>();
-        dadBirdPos = transform.GetChild(3).transform.position;
+    void Start() 
+    {
+        dadBirdPos = transform.Find("Dad Pos").position;
+        notesToAir = transform.GetComponentInChildren<ParticleSystem>();
     }
 
     public void SetANestSong(int data)
@@ -38,7 +38,6 @@ public class NestController : MonoBehaviour {
 
     public void PlayTheNotes()
     {
-        notesToAir = transform.GetChild(2).GetComponent<ParticleSystem>();
         audioManager = FindObjectOfType<AudioManager>();
         ChangeNotesColor(Color.black);
         notesToAir.Play();

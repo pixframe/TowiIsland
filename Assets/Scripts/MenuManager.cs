@@ -12,7 +12,6 @@ using TMPro;
 
 public class MenuManager : MonoBehaviour
 {
-
     //this assets contains all the information that we need to create the text of the first menu
     [Header("Texts To Show")]
     TextAsset loginTextAsset;
@@ -21,6 +20,7 @@ public class MenuManager : MonoBehaviour
     TextAsset textAddable;
     TextAsset warningAsset;
     string[] lines;
+    string[] configTexts;
 
     //this region contains all the ui elements of this menu
     #region UI Elements
@@ -89,9 +89,12 @@ public class MenuManager : MonoBehaviour
     public GameObject loadingCanvas;
     public TextMeshProUGUI loadingText;
 
-    [Header("Config")]
+    [Header("Configuration Menu")]
     public GameObject configCanvas;
     ConfigMenu configMenu;
+    bool timeLimitActivation;
+    readonly List<float> limitTimes = new List<float> { 15, 30, 45 };
+    int limitTimeIndex = 0;
     #endregion
 
     AudioManager audioManager;
@@ -386,12 +389,18 @@ public class MenuManager : MonoBehaviour
         changeProfileButton.onClick.AddListener(SetKidsProfiles);
         newKidButton.onClick.AddListener(CreateAKid);
         escapeButton.onClick.AddListener(ShowTheEscapeApp);
+
+        //configuration Menu SetUp
         configMenu.languageButton.onClick.AddListener(ShowLenguages);
+        configMenu.timeLimitButton.onClick.AddListener(ShowTimeLimitConfig);
         configMenu.englishLanguageButton.onClick.AddListener(() => SetLanguageOfGame(configMenu.englishLanguageButton.transform.GetSiblingIndex()));
         configMenu.spanishLanguageButton.onClick.AddListener(() => SetLanguageOfGame(configMenu.spanishLanguageButton.transform.GetSiblingIndex()));
         configMenu.automaticButton.onClick.AddListener(SetDeviceLanguage);
         configMenu.logoButton.onClick.AddListener(ShowTextRoute);
         configMenu.updateDataButton.onClick.AddListener(logInScript.UpdateData);
+        configMenu.activationDeactivationButton.onClick.AddListener(ChangeTimeLimitActivation);
+        configMenu.saveButton.onClick.AddListener(AskFofPasswordToChangeConfig);
+
         kidLooker.onValueChanged.AddListener(delegate { UpdateKids(); });
     }
 
@@ -990,13 +999,18 @@ public class MenuManager : MonoBehaviour
         loadingCanvas.SetActive(true);
     }
 
+
+    #region Configuration Menu
     public void ShowSettings()
     {
         HideAllCanvas();
         configMenu.panel.SetActive(true);
-        configMenu.languageButtonHandler.SetActive(false);
+        configMenu.languagePanelHandler.SetActive(false);
+        configMenu.timeLimitPanel.SetActive(false);
+        configMenu.changeConfigPanel.SetActive(false);
         configMenu.logoButton.gameObject.SetActive(true);
         configMenu.languageButton.gameObject.SetActive(true);
+        configMenu.timeLimitButton.gameObject.SetActive(true);
         logoPushes = 0;
         configMenu.backButton.onClick.RemoveAllListeners();
         configMenu.backButton.onClick.AddListener(ShowGameMenu);
@@ -1014,11 +1028,47 @@ public class MenuManager : MonoBehaviour
 
     void ShowLenguages()
     {
-        configMenu.languageButtonHandler.SetActive(true);
+        configMenu.languagePanelHandler.SetActive(true);
         configMenu.languageButton.gameObject.SetActive(false);
+        configMenu.timeLimitButton.gameObject.SetActive(false);
+        configMenu.updateDataButton.gameObject.SetActive(false);
         configMenu.backButton.onClick.RemoveAllListeners();
         configMenu.backButton.onClick.AddListener(ShowSettings);
     }
+
+    void ShowTimeLimitConfig()
+    {
+        configMenu.timeLimitPanel.SetActive(true);
+        configMenu.languageButton.gameObject.SetActive(false);
+        configMenu.timeLimitButton.gameObject.SetActive(false);
+        configMenu.updateDataButton.gameObject.SetActive(false);
+        configMenu.backButton.onClick.RemoveAllListeners();
+        configMenu.backButton.onClick.AddListener(ShowSettings);
+        configMenu.dropdwonTime.value = limitTimes.FindIndex(x => x == sessionManager.activeKid.timeLimit);
+        timeLimitActivation = sessionManager.activeKid.isTimeLimited;
+        WriteTheText(configMenu.activationDeactivationButton, configTexts[5 + Convert.ToInt32(timeLimitActivation)]);
+    }
+
+    void ChangeTimeLimitActivation() 
+    {
+        timeLimitActivation = !timeLimitActivation;
+        WriteTheText(configMenu.activationDeactivationButton, configTexts[5 + Convert.ToInt32(timeLimitActivation)]);
+    }
+
+    void AskFofPasswordToChangeConfig() 
+    {
+        configMenu.changeConfigPanel.SetActive(true);
+    }
+
+    void SaveChangesTimeLimit() 
+    {
+        sessionManager.activeKid.isTimeLimited = timeLimitActivation;
+        sessionManager.activeKid.timeLimit = limitTimes[configMenu.dropdwonTime.value];
+        ShowSettings();
+        sessionManager.SaveSession();
+    }
+
+    #endregion
 
     public void ShowTextRoute()
     {
@@ -1329,6 +1379,26 @@ public class MenuManager : MonoBehaviour
         kidLooker.placeholder.GetComponent<TextMeshProUGUI>().text = lines[64];
         warningButton.GetComponentInChildren<TextMeshProUGUI>().text = TextReader.commonStrings[0];
         newKidButton.GetComponentInChildren<TextMeshProUGUI>().text = TextReader.commonStrings[0];
+
+        //Set all the Configuration Button Languages
+        configTexts = TextReader.TextsToSet("Login/Config");
+        WriteTheText(configMenu.timeLimitButton, configTexts[3]);
+        WriteTheText(configMenu.dropdwonTime, configTexts[7]);
+
+    }
+
+    public void WriteTheText(Button button, string text)
+    {
+        button.GetComponentInChildren<TextMeshProUGUI>().text = text;
+    }
+
+    public void WriteTheText(TMP_Dropdown dropdown, string sameLabel) 
+    {
+        for (int i = 0; i < dropdown.options.Count; i++) 
+        {
+            var x = i;
+            dropdown.options[i].text = $"{limitTimes[x]} {sameLabel}";
+        }
     }
 
     //This metods will set the text accordingly with the type of objects
@@ -1632,27 +1702,51 @@ class ConfigMenu
 {
     public GameObject panel;
     public Button languageButton;
-    public GameObject languageButtonHandler;
-    public Button englishLanguageButton;
-    public Button spanishLanguageButton;
     public Button automaticButton;
     public Button backButton;
     public Button logoButton;
     public Button updateDataButton;
+    public Button timeLimitButton;
     public TextMeshProUGUI versionText;
+
+    public GameObject languagePanelHandler;
+    public Button englishLanguageButton;
+    public Button spanishLanguageButton;
+
+    public GameObject timeLimitPanel;
+    public TextMeshProUGUI timeLimitLabel;
+    public TMP_Dropdown dropdwonTime;
+    public Button saveButton;
+    public Button activationDeactivationButton;
+
+    public GameObject changeConfigPanel;
+    public TextMeshProUGUI messageToChangeConfig;
+    public TMP_InputField passwordField;
 
     public ConfigMenu(GameObject mainPanel)
     {
         panel = mainPanel;
-        languageButton = panel.transform.GetChild(0).GetComponent<Button>();
-        languageButtonHandler = panel.transform.GetChild(1).gameObject;
-        englishLanguageButton = languageButtonHandler.transform.GetChild(0).GetComponent<Button>();
-        spanishLanguageButton = languageButtonHandler.transform.GetChild(1).GetComponent<Button>();
-        automaticButton = languageButtonHandler.transform.GetChild(languageButtonHandler.transform.childCount - 1).GetComponent<Button>();
+        languageButton = panel.transform.Find("Language Button").GetComponent<Button>();
         backButton = panel.transform.Find("Back Button").GetComponent<Button>();
         logoButton = panel.transform.Find("Logo Button").GetComponent<Button>();
         updateDataButton = panel.transform.Find("Upadte Button").GetComponent<Button>();
         versionText = panel.transform.Find("Version Number Text").GetComponent<TextMeshProUGUI>();
+        timeLimitButton = panel.transform.Find("Time Limit").GetComponent<Button>();
+
+        languagePanelHandler = panel.transform.Find("Language Panel Handler").gameObject;
+        englishLanguageButton = languagePanelHandler.transform.GetChild(0).GetComponent<Button>();
+        spanishLanguageButton = languagePanelHandler.transform.GetChild(1).GetComponent<Button>();
+        automaticButton = languagePanelHandler.transform.GetChild(languagePanelHandler.transform.childCount - 1).GetComponent<Button>();
+
+        timeLimitPanel = panel.transform.Find("Time Limit Panel").gameObject;
+        timeLimitLabel = timeLimitPanel.transform.Find("Time Limit Label").GetComponent<TextMeshProUGUI>();
+        dropdwonTime = timeLimitPanel.transform.Find("Dropdown Time").GetComponent<TMP_Dropdown>();
+        saveButton = timeLimitPanel.transform.Find("Save Time Config Button").GetComponent<Button>();
+        activationDeactivationButton = timeLimitPanel.transform.Find("Activation Button").GetComponent<Button>();
+
+        changeConfigPanel = panel.transform.Find("Change Config Panel").gameObject;
+        messageToChangeConfig = changeConfigPanel.transform.Find("Message Config").GetComponent<TextMeshProUGUI>();
+        passwordField = changeConfigPanel.transform.Find("Password Field").GetComponent<TMP_InputField>();
     }
 }
 

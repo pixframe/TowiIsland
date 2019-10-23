@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using TMPro;
 
 public class SandDrawingController : MonoBehaviour {
 
@@ -29,7 +30,7 @@ public class SandDrawingController : MonoBehaviour {
     [Header("UI Elements")]
     public GameObject storyManager;
     public GameObject instructionPanel;
-    public Text instructionText;
+    public TextMeshProUGUI instructionText;
     public Button readyButton;
     public Button endButton;
 

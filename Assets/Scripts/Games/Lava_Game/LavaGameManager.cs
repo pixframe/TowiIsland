@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class LavaGameManager : MonoBehaviour {
     #region Variables
@@ -29,7 +30,7 @@ public class LavaGameManager : MonoBehaviour {
     #region UI Elements
     [Header("UI Elments")]
     public GameObject instructionPanel;
-    public Text instructionText;
+    public TextMeshProUGUI instructionText;
     public Button readyButton;
 
     [Header("UI World")]

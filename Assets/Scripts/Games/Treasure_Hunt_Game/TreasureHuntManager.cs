@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityStandardAssets.CrossPlatformInput;
+using TMPro;
 
 public class TreasureHuntManager : MonoBehaviour {
 
@@ -43,14 +44,14 @@ public class TreasureHuntManager : MonoBehaviour {
     public GameObject faceTimeApp;
     public GameObject needApp;
     public GameObject backpackApp;
-    public Text instructionText;
-    public Text instrctionSpecialText;
+    public TextMeshProUGUI instructionText;
+    public TextMeshProUGUI instrctionSpecialText;
     public Button readyButton;
     public Button cellPhoneButton;
     public Button stopCellPhoneButton;
 
     [Header("Mini UI elements")]
-    public Text miniUIInstructionsText;
+    public TextMeshProUGUI miniUIInstructionsText;
     public Button yesButton;
     public Button noButton;
 
@@ -893,7 +894,7 @@ public class TreasureHuntManager : MonoBehaviour {
     void HandlePackingResult()
     {
         noButton.gameObject.SetActive(false);
-        yesButton.GetComponentInChildren<Text>().text = stringsToShow[23];
+        yesButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[23];
         numberOfAnswers++;
         
         switch (packingStatuts)
@@ -1045,7 +1046,7 @@ public class TreasureHuntManager : MonoBehaviour {
         cellPhone.SetActive(true);
         normalCam.gameObject.SetActive(true);
         faceTimeApp.SetActive(true);
-        yesButton.GetComponentInChildren<Text>().text = stringsToShow[22];
+        yesButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[22];
 
         //Here willl be set some condition accordingly to the try number or other stuff we consider
         if (trys > 1)
@@ -1127,7 +1128,7 @@ public class TreasureHuntManager : MonoBehaviour {
         StopAllCoroutines();
         miniUIInstructionsText.text = stringsToShow[20];
         audioManager.PlayClip(instructionsClips[20]);
-        yesButton.GetComponentInChildren<Text>().text = stringsToShow[22];
+        yesButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[22];
         faceTimeApp.SetActive(true);
         normalCam.gameObject.SetActive(true);
 
@@ -1303,13 +1304,13 @@ public class TreasureHuntManager : MonoBehaviour {
 public struct MiniCanvas
 {
     public Image image;
-    public Text numberText;
+    public TextMeshProUGUI numberText;
     public GameObject theObject;
 
     public MiniCanvas(GameObject obj)
     {
         theObject = obj;
         image = obj.transform.GetChild(0).GetComponent<Image>();
-        numberText = obj.transform.GetChild(1).GetComponent<Text>();
+        numberText = obj.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
     }
 }

@@ -887,6 +887,9 @@ public class SessionManager : MonoBehaviour
         public int tesoroTutorial;
         public int arbolMusicalTutorial;
 
+        public bool isTimeLimited;
+        public float timeLimit;
+
         public string xmlArbolMusical;
         public string xmlRio;
         public string xmlArenaMagica;
@@ -964,6 +967,9 @@ public class SessionManager : MonoBehaviour
             treasureDifficulty = 0;
             treasureLevel = 0;
             tesoroTutorial = 0;
+
+            isTimeLimited = false;
+            timeLimit = 20;
 
             xmlArbolMusical = "";
             xmlRio = "";

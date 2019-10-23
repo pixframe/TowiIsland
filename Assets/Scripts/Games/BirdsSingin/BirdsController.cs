@@ -5,9 +5,6 @@ using UnityEngine;
 public class BirdsController : MonoBehaviour {
 
     Animator anim;
-    SkinnedMeshRenderer bodyRenderer;
-    SkinnedMeshRenderer upperPickRenderer;
-    SkinnedMeshRenderer downPickRenderer;
     BirdsSingingManager manager;
     ParticleSystem singingParticles;
     GameObject singingNote;
@@ -29,11 +26,8 @@ public class BirdsController : MonoBehaviour {
     // Use this for initialization
     void Start () {
         audioManager = FindObjectOfType<AudioManager>();
-        bodyRenderer = transform.GetChild(1).GetComponent<SkinnedMeshRenderer>();
-        upperPickRenderer = transform.GetChild(2).GetComponent<SkinnedMeshRenderer>();
-        downPickRenderer = transform.GetChild(3).GetComponent<SkinnedMeshRenderer>();
-        singingParticles = transform.GetChild(4).GetComponent<ParticleSystem>();
-        singingNote = transform.GetChild(5).gameObject;
+        singingParticles = transform.Find("Note Particle System").GetComponent<ParticleSystem>();
+        singingNote = transform.Find("Note").gameObject;
         anim = GetComponent<Animator>();
         manager = FindObjectOfType<BirdsSingingManager>();
         singingNote.SetActive(false);

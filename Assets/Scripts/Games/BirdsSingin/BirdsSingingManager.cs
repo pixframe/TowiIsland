@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class BirdsSingingManager : MonoBehaviour {
     //These Objects are Needed and are made available ina previous scene
@@ -24,10 +25,9 @@ public class BirdsSingingManager : MonoBehaviour {
 
     //These objects are the UI that will change the stuff
     [Header("UI Elements")]
-    public Text instructionText;
+    public TextMeshProUGUI instructionText;
     public GameObject instructionPanel;
     public Button readyButton;
-    Text buttonText;
 
     GameObject[] storyScreens;
 
@@ -146,7 +146,6 @@ public class BirdsSingingManager : MonoBehaviour {
         stringsToShow = TextReader.TextsToShow(textAsset);
         pauser = FindObjectOfType<PauseTheGame>();
         audioBank = new List<AudioClip[]> { categories0, categories1, categories2, categories3, categories4, categories5 };
-        buttonText = readyButton.GetComponentInChildren<Text>();
         audioManager = FindObjectOfType<AudioManager>();
         readyButton.gameObject.SetActive(true);
         FillList();

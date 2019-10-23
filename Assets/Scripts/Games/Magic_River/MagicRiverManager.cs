@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class MagicRiverManager : MonoBehaviour {
 
     [Header("UI Elements")]
     public GameObject instructionPanel;
-    public Text instructionText;
+    public TextMeshProUGUI instructionText;
     public Button readyButton;
     public GameObject[] instructionScreens;
 
