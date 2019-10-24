@@ -969,7 +969,7 @@ public class SessionManager : MonoBehaviour
             tesoroTutorial = 0;
 
             isTimeLimited = false;
-            timeLimit = 20;
+            timeLimit = 15;
 
             xmlArbolMusical = "";
             xmlRio = "";

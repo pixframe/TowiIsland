@@ -93,7 +93,7 @@ public class MenuManager : MonoBehaviour
     public GameObject configCanvas;
     ConfigMenu configMenu;
     bool timeLimitActivation;
-    readonly List<float> limitTimes = new List<float> { 15, 30, 45 };
+    readonly List<float> limitTimes = new List<float> { 15, 30, 45, 60, 75};
     int limitTimeIndex = 0;
     #endregion
 
@@ -400,7 +400,9 @@ public class MenuManager : MonoBehaviour
         configMenu.updateDataButton.onClick.AddListener(logInScript.UpdateData);
         configMenu.activationDeactivationButton.onClick.AddListener(ChangeTimeLimitActivation);
         configMenu.saveButton.onClick.AddListener(AskFofPasswordToChangeConfig);
-
+        configMenu.plusButton.onClick.AddListener(() => ChangeTime(1));
+        configMenu.lessButton.onClick.AddListener(() => ChangeTime(-1));
+        configMenu.sendPassButton.onClick.AddListener(SaveChangesTimeLimit);
         kidLooker.onValueChanged.AddListener(delegate { UpdateKids(); });
     }
 
@@ -1016,6 +1018,7 @@ public class MenuManager : MonoBehaviour
         configMenu.backButton.onClick.AddListener(ShowGameMenu);
         configMenu.versionText.text = $"V. {Application.version}";
         Debug.Log(PlayerPrefs.GetInt(Keys.Games_Saved) + " " + PlayerPrefs.GetInt(Keys.Evaluations_Saved));
+
         if (PlayerPrefs.GetInt(Keys.Games_Saved) != 0 || PlayerPrefs.GetInt(Keys.Evaluations_Saved) != 0)
         {
             configMenu.updateDataButton.gameObject.SetActive(true);
@@ -1044,9 +1047,47 @@ public class MenuManager : MonoBehaviour
         configMenu.updateDataButton.gameObject.SetActive(false);
         configMenu.backButton.onClick.RemoveAllListeners();
         configMenu.backButton.onClick.AddListener(ShowSettings);
-        configMenu.dropdwonTime.value = limitTimes.FindIndex(x => x == sessionManager.activeKid.timeLimit);
+        limitTimeIndex = limitTimes.FindIndex(x => {
+            Debug.Log($"x is {x} and timelimit is {sessionManager.activeKid.timeLimit}");
+            return x == sessionManager.activeKid.timeLimit;
+        });
+        Debug.Log(limitTimeIndex);
         timeLimitActivation = sessionManager.activeKid.isTimeLimited;
+        configMenu.timeAmountLabel.text = $"{limitTimes[limitTimeIndex]} {configTexts[7]}";
+        ShowCorrectChangeButtons();
         WriteTheText(configMenu.activationDeactivationButton, configTexts[5 + Convert.ToInt32(timeLimitActivation)]);
+    }
+
+    void ChangeTime(int amount)
+    {
+        limitTimeIndex += amount;
+        if (limitTimeIndex >= limitTimes.Count - 1)
+        {
+            limitTimeIndex = limitTimes.Count - 1;
+        }
+        else if (limitTimeIndex < 0)
+        {
+            limitTimeIndex = 0;
+        }
+        configMenu.timeAmountLabel.text = $"{limitTimes[limitTimeIndex]} {configTexts[7]}";
+        ShowCorrectChangeButtons();
+    }
+
+    void ShowCorrectChangeButtons()
+    {
+
+        configMenu.plusButton.gameObject.SetActive(true);
+        configMenu.lessButton.gameObject.SetActive(true);
+
+        if (limitTimeIndex >= limitTimes.Count - 1)
+        {
+            configMenu.plusButton.gameObject.SetActive(false);
+        }
+        else if(limitTimeIndex <= 0)
+        {
+            configMenu.lessButton.gameObject.SetActive(false);
+        }
+        Debug.Log(limitTimeIndex);
     }
 
     void ChangeTimeLimitActivation() 
@@ -1062,10 +1103,17 @@ public class MenuManager : MonoBehaviour
 
     void SaveChangesTimeLimit() 
     {
-        sessionManager.activeKid.isTimeLimited = timeLimitActivation;
-        sessionManager.activeKid.timeLimit = limitTimes[configMenu.dropdwonTime.value];
-        ShowSettings();
-        sessionManager.SaveSession();
+        if (configMenu.passwordField.text == sessionManager.activeUser.psswdHash)
+        {
+            sessionManager.activeKid.isTimeLimited = timeLimitActivation;
+            sessionManager.activeKid.timeLimit = limitTimes[limitTimeIndex];
+            ShowSettings();
+            sessionManager.SaveSession();
+        }
+        else
+        {
+            configMenu.passwordField.text = "";
+        }
     }
 
     #endregion
@@ -1383,6 +1431,7 @@ public class MenuManager : MonoBehaviour
         //Set all the Configuration Button Languages
         configTexts = TextReader.TextsToSet("Login/Config");
         WriteTheText(configMenu.timeLimitButton, configTexts[3]);
+        WriteTheText(configMenu.timeLimitLabel, configTexts[4]);
         WriteTheText(configMenu.dropdwonTime, configTexts[7]);
 
     }
@@ -1390,6 +1439,11 @@ public class MenuManager : MonoBehaviour
     public void WriteTheText(Button button, string text)
     {
         button.GetComponentInChildren<TextMeshProUGUI>().text = text;
+    }
+
+    public void WriteTheText(TextMeshProUGUI text, string line)
+    {
+        text.text = line;
     }
 
     public void WriteTheText(TMP_Dropdown dropdown, string sameLabel) 
@@ -1718,10 +1772,14 @@ class ConfigMenu
     public TMP_Dropdown dropdwonTime;
     public Button saveButton;
     public Button activationDeactivationButton;
+    public TextMeshProUGUI timeAmountLabel;
+    public Button plusButton;
+    public Button lessButton;
 
     public GameObject changeConfigPanel;
     public TextMeshProUGUI messageToChangeConfig;
     public TMP_InputField passwordField;
+    public Button sendPassButton;
 
     public ConfigMenu(GameObject mainPanel)
     {
@@ -1743,10 +1801,14 @@ class ConfigMenu
         dropdwonTime = timeLimitPanel.transform.Find("Dropdown Time").GetComponent<TMP_Dropdown>();
         saveButton = timeLimitPanel.transform.Find("Save Time Config Button").GetComponent<Button>();
         activationDeactivationButton = timeLimitPanel.transform.Find("Activation Button").GetComponent<Button>();
+        timeAmountLabel = timeLimitPanel.transform.Find("Time Label").GetComponentInChildren<TextMeshProUGUI>();
+        plusButton = timeLimitPanel.transform.Find("Plus Button").GetComponent<Button>();
+        lessButton = timeLimitPanel.transform.Find("Less Button").GetComponent<Button>();
 
         changeConfigPanel = panel.transform.Find("Change Config Panel").gameObject;
         messageToChangeConfig = changeConfigPanel.transform.Find("Message Config").GetComponent<TextMeshProUGUI>();
         passwordField = changeConfigPanel.transform.Find("Password Field").GetComponent<TMP_InputField>();
+        sendPassButton = changeConfigPanel.transform.Find("SendPassButton").GetComponent<Button>();
     }
 }
 
