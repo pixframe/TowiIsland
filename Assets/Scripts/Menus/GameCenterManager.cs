@@ -193,47 +193,19 @@ public class GameCenterManager : MonoBehaviour
         if (!FindObjectOfType<DemoKey>())
         {
             List<int> missions = new List<int>();
-            bool hasAFirstGame = false;
+
             for (int i = 0; i < Keys.Number_Of_Games; i++)
             {
-                if (sessionManager.activeKid.firstsGames[i])
+                Debug.Log($"{i} is unlocked {sessionManager.activeKid.gamesUnlocked[i]}");
+                if (sessionManager.activeKid.gamesUnlocked[i])
                 {
-                    hasAFirstGame = true;
-                    break;
-                }
-            }
-            Debug.Log(hasAFirstGame);
-            if (hasAFirstGame)
-            {
-                for (int i = 0; i < Keys.Number_Of_Games; i++)
-                {
+                    activeMissions.Add(Keys.Game_Names[i]);
+                    unlocks[i] = true;
                     var x = i;
-                    if (sessionManager.activeKid.firstsGames[i])
-                    {
-                        activeMissions.Add(Keys.Game_Names[x]);
-                        unlocks[x] = true;
-                        missions.Add(x);
-                        stations.Add(x);
-                    }
+                    missions.Add(x);
+                    stations.Add(x);
                 }
             }
-            else
-            {
-                for (int i = 0; i < sessionManager.activeKid.missionsToPlay.Count; i++)
-                {
-                    int missionToCheck = sessionManager.activeKid.missionsToPlay[i];
-                    if (!sessionManager.activeKid.playedGames[missionToCheck])
-                    {
-                        activeMissions.Add(Keys.Game_Names[missionToCheck]);
-                        unlocks[missionToCheck] = true;
-                        var x = missionToCheck;
-                        missions.Add(x);
-                        stations.Add(x);
-                    }
-                }
-            }
-
-            sessionManager.activeKid.missionsToPlay = missions;
         }
         else
         {
@@ -468,7 +440,7 @@ public class GameCenterManager : MonoBehaviour
                 FindObjectOfType<DemoKey>().SetSpecialLevels(level, difficulty, specialLevel);
             }
         }
-
+        
         Destroy(audioPlayer.gameObject);
         PrefsKeys.SetNextScene(scenes[stations[index]]);
         asyncLoad.allowSceneActivation = true;

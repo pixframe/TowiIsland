@@ -74,6 +74,7 @@ public class LogInScript : MonoBehaviour
         using (UnityWebRequest request = UnityWebRequest.Post(post_url, form))
         {
             yield return request.SendWebRequest();
+            Debug.Log(request.downloadHandler.text);
             if (request.isNetworkError)
             {
                 menuController.ShowWarning(9, menuController.ShowLogIn);
@@ -105,8 +106,6 @@ public class LogInScript : MonoBehaviour
                 sessionManager.AddKids(kids);
                 sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
                 menuController.LoggedNow();
-                sessionManager.activeUser.trialAccount = false;
-                sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
                 sessionManager.SaveSession();
                 menuController.ClearInputs();
                 if (newPaidUser)
@@ -180,7 +179,6 @@ public class LogInScript : MonoBehaviour
 
                 sessionManager.LoadActiveUser(user.userkey);
                 sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
-                sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
 
                 while (sessionManager.IsDownlodingData())
                 {
@@ -522,7 +520,6 @@ public class LogInScript : MonoBehaviour
             }
             else
             {
-                sessionManager.activeUser.suscriptionsLeft = (int)jsonObt.GetNumber("suscriptionsAvailables");
                 sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
                 menuController.ShowLoading();
                 yield return new WaitForSeconds(5f);

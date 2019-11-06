@@ -614,27 +614,6 @@ public class LevelSaver : MonoBehaviour {
                 }
                 else
                 {
-                    switch (game)
-                    {
-                        case "ArbolMusical":
-                            sessionManager.activeKid.dontSyncArbolMusical = 0;
-                            break;
-                        case "Rio":
-                            sessionManager.activeKid.dontSyncRio = 0;
-                            break;
-                        case "ArenaMagica":
-                            sessionManager.activeKid.dontSyncArenaMagica = 0;
-                            break;
-                        case "DondeQuedoLaBolita":
-                            sessionManager.activeKid.dontSyncDondeQuedoLaBolita = 0;
-                            break;
-                        case "JuegoDeSombras":
-                            sessionManager.activeKid.dontSyncSombras = 0;
-                            break;
-                        case "Tesoro":
-                            sessionManager.activeKid.dontSyncTesoro = 0;
-                            break;
-                    }
                     sessionManager.SaveSession();
                 }
                 Debug.Log($"the response was {request.downloadHandler.text}");

@@ -92,9 +92,10 @@ public class MenuManager : MonoBehaviour
     [Header("Configuration Menu")]
     public GameObject configCanvas;
     ConfigMenu configMenu;
-    bool timeLimitActivation;
-    readonly List<float> limitTimes = new List<float> { 15, 30, 45, 60, 75};
+    readonly List<float> limitTimes = new List<float> { 10, 15, 20, 30, 45, 60, 75, 1 };
     int limitTimeIndex = 0;
+    public Sprite activeSprite;
+    public Sprite deactivateSprite;
     #endregion
 
     AudioManager audioManager;
@@ -165,7 +166,6 @@ public class MenuManager : MonoBehaviour
 
     void InternetAvailableLogin()
     {
-        PlayerPrefs.SetString(Keys.Last_Time_Were, DateTime.Today.ToString(DateTimeFormatInfo.InvariantInfo));
         if (PlayerPrefs.GetInt(Keys.Logged_Session) == 0)
         {
 
@@ -199,15 +199,7 @@ public class MenuManager : MonoBehaviour
         {
             if (sessionManager.activeKid != null)
             {
-                if (sessionManager.activeKid.offlineSubscription < DateTime.Today)
-                {
-                    string user = PlayerPrefs.GetString(Keys.Active_User_Key);
-                    logInScript.IsActive(user);
-                }
-                else
-                {
-                    ShowGameMenu();
-                }
+                ShowGameMenu();
             }
             else
             {
@@ -235,22 +227,7 @@ public class MenuManager : MonoBehaviour
             {
                 if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
                 {
-                    if (DateTime.Compare(sessionManager.activeKid.offlineSubscription, DateTime.Today) < 0)
-                    {
-                        Debug.Log("here are less");
-                        ShowNeedConectionToPlay();
-                    }
-                    else
-                    {
-                        DateTime lastFetchTime = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Play_Time), DateTimeFormatInfo.InvariantInfo);
-
-                        if (DateTime.Compare(DateTime.Today, lastFetchTime) > 0 && sessionManager.activeKid.missionsToPlay.Count <= 0)
-                        {
-                            Debug.Log("Here we create a new activities");
-                            sessionManager.activeKid.missionsToPlay = OfflineManager.Create_Levels();
-                        }
-                        ShowGameMenu();
-                    }
+                    ShowGameMenu();
                 }
                 else
                 {
@@ -261,25 +238,7 @@ public class MenuManager : MonoBehaviour
             {
                 if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
                 {
-                    if (DateTime.Compare(sessionManager.activeKid.offlineSubscription, DateTime.Today) < 0)
-                    {
-                        ShowNeedConectionToPlay();
-                    }
-                    else
-                    {
-
-                        DateTime lastFetchTime = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Play_Time), DateTimeFormatInfo.InvariantInfo);
-
-
-                        if (DateTime.Compare(DateTime.Today, lastFetchTime) > 0 && sessionManager.activeKid.missionsToPlay.Count <= 0)
-                        {
-                            if (DateTime.Compare(DateTime.Today, lastFetchTime) > 0)
-                            {
-                                sessionManager.activeKid.missionsToPlay = OfflineManager.Create_Levels();
-                            }
-                        }
-                        ShowGameMenu();
-                    }
+                    ShowGameMenu();
                 }
                 else
                 {
@@ -398,11 +357,11 @@ public class MenuManager : MonoBehaviour
         configMenu.automaticButton.onClick.AddListener(SetDeviceLanguage);
         configMenu.logoButton.onClick.AddListener(ShowTextRoute);
         configMenu.updateDataButton.onClick.AddListener(logInScript.UpdateData);
-        configMenu.activationDeactivationButton.onClick.AddListener(ChangeTimeLimitActivation);
+        configMenu.toogleActivate.onValueChanged.AddListener((value) => ChangeTimeLimitActivation());
         configMenu.saveButton.onClick.AddListener(AskFofPasswordToChangeConfig);
         configMenu.plusButton.onClick.AddListener(() => ChangeTime(1));
         configMenu.lessButton.onClick.AddListener(() => ChangeTime(-1));
-        configMenu.sendPassButton.onClick.AddListener(SaveChangesTimeLimit);
+
         kidLooker.onValueChanged.AddListener(delegate { UpdateKids(); });
     }
 
@@ -475,10 +434,6 @@ public class MenuManager : MonoBehaviour
                 int id = kidsToShow[i].id;
                 kidos[i].buttonOfProfile.onClick.AddListener(() => SetKidProfile(parentkey, id));
                 kidos[i].ChangeAvatar(kidsToShow[i].avatar);
-                if (!kidsToShow[i].isActive)
-                {
-                    kidos[i].PutInGrey();
-                }
             }
         }
         else
@@ -674,14 +629,7 @@ public class MenuManager : MonoBehaviour
 
         PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString(DateTimeFormatInfo.InvariantInfo));
         HideAllCanvas();
-        if (key)
-        {
-            gameMenuObject.ShowThisMenu(true, false, IsEvaluationAvilable(), true, 0);
-        }
-        else
-        {
-            gameMenuObject.ShowThisMenu(sessionManager.activeKid.isActive, PlayerPrefs.GetInt(Keys.First_Try) == 0, IsEvaluationAvilable(), false, sessionManager.activeUser.suscriptionsLeft);
-        }
+        gameMenuObject.ShowThisMenu(IsEvaluationAvilable(), 0);
 
         UpdateKidInMenu();
         ShowEscapeButton();
@@ -902,24 +850,8 @@ public class MenuManager : MonoBehaviour
         subscribeBackButton.onClick.RemoveAllListeners();
         subscribeBackButton.onClick.AddListener(ShowGameMenu);
         WriteTheText(subscribeButton, 29);
-        if (sessionManager.activeUser.suscriptionsLeft < 1)
-        {
-            if (typeOfWarning == 0)
-            {
-                subscribeButton.onClick.AddListener(ShowRegisteredAdd);
-                WriteTheText(subscribeText, 25);
-            }
-            else if (typeOfWarning == 1)
-            {
-                subscribeButton.onClick.AddListener(() => ShowShop(1));
-                WriteTheText(subscribeText, 27);
-            }
-        }
-        else
-        {
-            subscribeButton.onClick.AddListener(GiveASuscription);
-            WriteTheText(subscribeText, 28);
-        }
+        subscribeButton.onClick.AddListener(GiveASuscription);
+        WriteTheText(subscribeText, 28);
 
     }
 
@@ -984,14 +916,7 @@ public class MenuManager : MonoBehaviour
     public void AddKidShower()
     {
         HideAllCanvas();
-        if (sessionManager.activeUser.suscriptionsLeft > 0)
-        {
-            newKidPanel.SetActive(true);
-        }
-        else
-        {
-            ShowAccountWarning(1);
-        }
+        newKidPanel.SetActive(true);
     }
 
     //this is a image that shows tha the game is donwloading the data for the backend to give an answer
@@ -1009,7 +934,7 @@ public class MenuManager : MonoBehaviour
         configMenu.panel.SetActive(true);
         configMenu.languagePanelHandler.SetActive(false);
         configMenu.timeLimitPanel.SetActive(false);
-        configMenu.changeConfigPanel.SetActive(false);
+        configMenu.passwordNeedMenu.panel.gameObject.SetActive(false);
         configMenu.logoButton.gameObject.SetActive(true);
         configMenu.languageButton.gameObject.SetActive(true);
         configMenu.timeLimitButton.gameObject.SetActive(true);
@@ -1042,20 +967,22 @@ public class MenuManager : MonoBehaviour
     void ShowTimeLimitConfig()
     {
         configMenu.timeLimitPanel.SetActive(true);
+        configMenu.saveButton.gameObject.SetActive(true);
         configMenu.languageButton.gameObject.SetActive(false);
         configMenu.timeLimitButton.gameObject.SetActive(false);
         configMenu.updateDataButton.gameObject.SetActive(false);
         configMenu.backButton.onClick.RemoveAllListeners();
         configMenu.backButton.onClick.AddListener(ShowSettings);
+
         limitTimeIndex = limitTimes.FindIndex(x => {
             Debug.Log($"x is {x} and timelimit is {sessionManager.activeKid.timeLimit}");
             return x == sessionManager.activeKid.timeLimit;
         });
-        Debug.Log(limitTimeIndex);
-        timeLimitActivation = sessionManager.activeKid.isTimeLimited;
+
+        configMenu.toogleActivate.isOn = sessionManager.activeKid.isTimeLimited;
         configMenu.timeAmountLabel.text = $"{limitTimes[limitTimeIndex]} {configTexts[7]}";
         ShowCorrectChangeButtons();
-        WriteTheText(configMenu.activationDeactivationButton, configTexts[5 + Convert.ToInt32(timeLimitActivation)]);
+        SetValuesOfActivation();
     }
 
     void ChangeTime(int amount)
@@ -1087,32 +1014,58 @@ public class MenuManager : MonoBehaviour
         {
             configMenu.lessButton.gameObject.SetActive(false);
         }
-        Debug.Log(limitTimeIndex);
+    }
+
+    void SetValuesOfActivation() 
+    {
+        Debug.Log("Change things");
+        WriteTheText(configMenu.textActivate, configTexts[5 + Convert.ToInt32(configMenu.toogleActivate.isOn)]);
+        var image = configMenu.toogleActivate.transform.Find("Background").GetComponent<Image>();
+
+        if (configMenu.toogleActivate.isOn)
+        {
+            configMenu.toogleActivate.image.sprite = activeSprite;
+            configMenu.timeAmountLabel.color = Color.white;
+            ShowCorrectChangeButtons();
+        }
+        else
+        {
+            configMenu.toogleActivate.image.sprite = deactivateSprite;
+            configMenu.timeAmountLabel.color = Color.grey;
+            configMenu.plusButton.gameObject.SetActive(false);
+            configMenu.lessButton.gameObject.SetActive(false);
+        }
     }
 
     void ChangeTimeLimitActivation() 
     {
-        timeLimitActivation = !timeLimitActivation;
-        WriteTheText(configMenu.activationDeactivationButton, configTexts[5 + Convert.ToInt32(timeLimitActivation)]);
+        SetValuesOfActivation();
     }
 
     void AskFofPasswordToChangeConfig() 
     {
-        configMenu.changeConfigPanel.SetActive(true);
+        configMenu.passwordNeedMenu.panel.gameObject.SetActive(true);
+        configMenu.saveButton.gameObject.SetActive(false);
+        configMenu.passwordNeedMenu.SendPass(SuccessfulChange, sessionManager.activeUser.psswdHash);
+    }
+
+    void SuccessfulChange() 
+    {
+        sessionManager.activeKid.isTimeLimited = configMenu.toogleActivate.isOn;
+        sessionManager.activeKid.timeLimit = limitTimes[limitTimeIndex] * 60;
+        ShowSettings();
+        sessionManager.SaveSession();
     }
 
     void SaveChangesTimeLimit() 
     {
-        if (configMenu.passwordField.text == sessionManager.activeUser.psswdHash)
+        if (configMenu.passwordNeedMenu.passwordField.text == sessionManager.activeUser.psswdHash)
         {
-            sessionManager.activeKid.isTimeLimited = timeLimitActivation;
-            sessionManager.activeKid.timeLimit = limitTimes[limitTimeIndex];
-            ShowSettings();
-            sessionManager.SaveSession();
+
         }
         else
         {
-            configMenu.passwordField.text = "";
+            configMenu.passwordNeedMenu.passwordField.text = "";
         }
     }
 
@@ -1752,6 +1705,7 @@ public class MenuManager : MonoBehaviour
     }
 }
 
+//Configuration menu
 class ConfigMenu
 {
     public GameObject panel;
@@ -1771,15 +1725,12 @@ class ConfigMenu
     public TextMeshProUGUI timeLimitLabel;
     public TMP_Dropdown dropdwonTime;
     public Button saveButton;
-    public Button activationDeactivationButton;
     public TextMeshProUGUI timeAmountLabel;
     public Button plusButton;
     public Button lessButton;
-
-    public GameObject changeConfigPanel;
-    public TextMeshProUGUI messageToChangeConfig;
-    public TMP_InputField passwordField;
-    public Button sendPassButton;
+    public Toggle toogleActivate;
+    public TextMeshProUGUI textActivate;
+    public PasswordNeedMenu passwordNeedMenu;
 
     public ConfigMenu(GameObject mainPanel)
     {
@@ -1800,15 +1751,13 @@ class ConfigMenu
         timeLimitLabel = timeLimitPanel.transform.Find("Time Limit Label").GetComponent<TextMeshProUGUI>();
         dropdwonTime = timeLimitPanel.transform.Find("Dropdown Time").GetComponent<TMP_Dropdown>();
         saveButton = timeLimitPanel.transform.Find("Save Time Config Button").GetComponent<Button>();
-        activationDeactivationButton = timeLimitPanel.transform.Find("Activation Button").GetComponent<Button>();
         timeAmountLabel = timeLimitPanel.transform.Find("Time Label").GetComponentInChildren<TextMeshProUGUI>();
         plusButton = timeLimitPanel.transform.Find("Plus Button").GetComponent<Button>();
         lessButton = timeLimitPanel.transform.Find("Less Button").GetComponent<Button>();
+        toogleActivate = timeLimitPanel.transform.Find("Change Time Limit").GetComponent<Toggle>();
+        textActivate = toogleActivate.GetComponentInChildren<TextMeshProUGUI>();
 
-        changeConfigPanel = panel.transform.Find("Change Config Panel").gameObject;
-        messageToChangeConfig = changeConfigPanel.transform.Find("Message Config").GetComponent<TextMeshProUGUI>();
-        passwordField = changeConfigPanel.transform.Find("Password Field").GetComponent<TMP_InputField>();
-        sendPassButton = changeConfigPanel.transform.Find("SendPassButton").GetComponent<Button>();
+        passwordNeedMenu = new PasswordNeedMenu(timeLimitPanel.transform.Find("Pasword Need Component"));
     }
 }
 
@@ -2260,6 +2209,7 @@ class GameMenu
         buyButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[2];
         tryLogo.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[3];
 
+
         tryLogo.SetActive(true);
         logoIcon.SetActive(false);
 
@@ -2296,6 +2246,9 @@ class GameMenu
     public void ShowThisMenu()
     {
         mainCanvas.SetActive(true);
+        manager.WriteTheText(evaluationButton, 0);
+        manager.WriteTheText(gamesButton, 1);
+        manager.WriteTheText(buyButton, 57);
 
         gamesButton.onClick.RemoveAllListeners();
         evaluationButton.onClick.RemoveAllListeners();
@@ -2318,10 +2271,20 @@ class GameMenu
         logoIcon.SetActive(true);
     }
 
-    public void ShowThisMenu(bool isActiveTheCurrentKid, bool isInTrial, bool isEvaluationAvailable, bool isDemo, int licencesToActivate)
+    public void ShowThisMenu(bool isEvaluationAvailable, int licencesToActivate)
     {
         mainCanvas.SetActive(true);
-        SetDynamicButtonFunctions(isActiveTheCurrentKid, isInTrial, isEvaluationAvailable, isDemo, licencesToActivate);
+        manager.WriteTheText(evaluationButton, 0);
+        manager.WriteTheText(gamesButton, 1);
+        manager.WriteTheText(buyButton, 57);
+
+        gamesButton.onClick.AddListener(manager.LoadGameMenus);
+        evaluationButton.onClick.AddListener(manager.ShowDisclaimer);
+        buyButton.onClick.AddListener(manager.ShowYouHaveASuscription);
+
+        SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
+        SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
+        SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
 
         singOutButton.gameObject.SetActive(true);
         settingsButton.gameObject.SetActive(true);
@@ -2343,84 +2306,6 @@ class GameMenu
         settingsButton.onClick.AddListener(manager.ShowSettings);
         kidProfile.buttonOfProfile.onClick.AddListener(manager.SetKidsProfiles);
         singOutButton.onClick.AddListener(manager.ShowSingOutWarning);
-    }
-
-    public void SetDynamicButtonFunctions(bool isActiveTheCurrentKid, bool isInTrail, bool evaluationAvailable, bool isDemo, int licencesToActivate)
-    {
-        gamesButton.onClick.RemoveAllListeners();
-        evaluationButton.onClick.RemoveAllListeners();
-        buyButton.onClick.RemoveAllListeners();
-        manager.WriteTheText(evaluationButton, 0);
-
-        if (evaluationAvailable)
-        {
-            evaluationButton.gameObject.SetActive(true);
-        }
-        else
-        {
-            evaluationButton.gameObject.SetActive(false);
-        }
-
-        if (isActiveTheCurrentKid)
-        {
-            manager.WriteTheText(gamesButton, 1);
-            manager.WriteTheText(buyButton, 57);
-
-            gamesButton.onClick.AddListener(manager.LoadGameMenus);
-            evaluationButton.onClick.AddListener(manager.ShowDisclaimer);
-            buyButton.onClick.AddListener(manager.ShowYouHaveASuscription);
-
-            SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
-            SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
-            SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
-
-            PlayerPrefs.SetInt(Keys.First_Try, 1);
-        }
-        else if (isInTrail)
-        {
-            manager.WriteTheText(buyButton, 62);
-
-
-            manager.WriteTheText(gamesButton, 59);
-            gamesButton.onClick.AddListener(manager.ShowTryChancesRegistered);
-            SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
-            SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
-            SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
-            if (licencesToActivate > 0)
-            {
-                manager.ShowAccountWarning(1);
-            }
-            else
-            {
-                buyButton.onClick.AddListener(manager.ShowRegisteredAdd);
-            }
-            evaluationButton.onClick.AddListener(manager.ShowRegisteredAdd);
-        }
-        else
-        {
-            manager.WriteTheText(gamesButton, 1);
-            manager.WriteTheText(buyButton, 62);
-            gamesButton.onClick.AddListener(manager.ShowRegisteredAdd);
-            evaluationButton.onClick.AddListener(manager.ShowRegisteredAdd);
-            if (licencesToActivate > 0)
-            {
-                manager.ShowAccountWarning(1);
-            }
-            else
-            {
-                buyButton.onClick.AddListener(manager.ShowRegisteredAdd);
-            }
-            SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
-            SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
-            SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
-        }
-
-        if (isDemo)
-        {
-            evaluationButton.gameObject.SetActive(true);
-            evaluationButton.onClick.RemoveAllListeners();
-            evaluationButton.onClick.AddListener(manager.ShowDisclaimer);
-        }
     }
 
     void SetImageColor(Image imageToChange, string colorToSet)

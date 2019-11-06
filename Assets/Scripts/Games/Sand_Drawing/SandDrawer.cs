@@ -15,7 +15,8 @@ public class SandDrawer : MonoBehaviour {
     }
 	
 	// Update is called once per frame
-	void Update () {
+	void Update () 
+    {
         if (drawing)
         {
             Instantiate(dot, transform.position, dot.transform.rotation, dotCollector.transform);

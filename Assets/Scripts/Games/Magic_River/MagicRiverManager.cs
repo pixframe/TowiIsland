@@ -170,6 +170,8 @@ public class MagicRiverManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
+        sessionManager.UpdateTime();
+
         if (counting)
         {
             time += Time.deltaTime;

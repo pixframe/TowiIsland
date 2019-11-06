@@ -174,6 +174,8 @@ public class BirdsSingingManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        sessionManager.UpdateTime();
+
         if (countTime)
         {
             time += Time.deltaTime;

@@ -25,7 +25,6 @@ public class ConfigurationSync : MonoBehaviour {
 		{
 			if (www.text != "") 
 			{
-				sessionMng.activeKid.xmlArenaMagica=www.text;
 				sessionMng.SaveSession();
 			}
 			Debug.Log (www.text);

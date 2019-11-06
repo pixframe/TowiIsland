@@ -90,7 +90,6 @@ public class SubscriptionsWays : MonoBehaviour
                 {
                     Debug.Log("no error found");
                     Analytics.CustomEvent("buy");
-                    sessionManager.activeKid.isActive = true;
                     menuManager.ShowGameMenu();
                     sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
                 }
@@ -131,7 +130,6 @@ public class SubscriptionsWays : MonoBehaviour
                 {
                     Analytics.CustomEvent("buy");
                     sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
-                    sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
                     menuManager.AddKidShower();
                 }
             }
@@ -166,7 +164,6 @@ public class SubscriptionsWays : MonoBehaviour
                 if (jsonOBJ["status"].Str == "Succesful")
                 {
                     Analytics.CustomEvent("buy");
-                    sessionManager.activeUser.suscriptionsLeft = (int)jsonOBJ.GetNumber("suscriptionsAvailables");
                     sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
                     menuManager.SetKidsProfiles();
                     FindObjectOfType<MyIAPManager>().ConfirmPurchaseProduct();
@@ -206,7 +203,6 @@ public class SubscriptionsWays : MonoBehaviour
                 {
                     sessionManager.activeKid = sessionManager.GetKid(kidId);
                     sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
-                    sessionManager.activeUser.suscriptionsLeft = (int)jsonObj.GetNumber("suscriptionsAvailables");
                     sessionManager.SaveSession();
                     menuManager.ShowGameMenu();
                     Debug.Log("its done");
