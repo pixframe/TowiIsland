@@ -50,13 +50,14 @@ public class GameCenterManager : MonoBehaviour
     List<bool> unlocks;
     List<int> stations = new List<int>();
 
-    string[] scenes = new string[] { "Birds_Singing_Scene", "Magic_Sand_Scene", "Treasure_Hunting_Scene", "Monkey_Hiding_Scene", "Magic_River_Scene", "Lava_Game_Scene", "Icecream_Madness" };
-    List<string> activeMissions = new List<string>();
+    string[] scenes = { "Birds_Singing_Scene", "Magic_Sand_Scene", "Treasure_Hunting_Scene", "Monkey_Hiding_Scene", "Magic_River_Scene", "Lava_Game_Scene", "Icecream_Madness" };
 
     const string folderPath = "Sprites/GameCenter/";
     const string bannerPath = "Banners/GamePanel_";
     const string iconPath = "Icons/Icon_";
     const string screenPath = "Screens/Capture_";
+
+    readonly string urlBuy = $"{Keys.Api_Web_Key}api/subscription/purchase/";
 
     AsyncOperation asyncLoad;
     EventTrigger eventTrigger;
@@ -107,7 +108,7 @@ public class GameCenterManager : MonoBehaviour
         leftButton.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Left));
         rigthButton.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Right));
 
-        currentPanel.playButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length-3];
+        currentPanel.playButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length- 4];
 
 
         ChildGames();
@@ -161,7 +162,6 @@ public class GameCenterManager : MonoBehaviour
 
     void InternetAvailableUpdate()
     {
-        sessionManager.UpdateProfile(activeMissions);
         int funelGame = PlayerPrefs.GetInt(Keys.Funnel_Games, 1);
         if (funelGame < 7)
         {
@@ -199,7 +199,6 @@ public class GameCenterManager : MonoBehaviour
                 Debug.Log($"{i} is unlocked {sessionManager.activeKid.gamesUnlocked[i]}");
                 if (sessionManager.activeKid.gamesUnlocked[i])
                 {
-                    activeMissions.Add(Keys.Game_Names[i]);
                     unlocks[i] = true;
                     var x = i;
                     missions.Add(x);
@@ -394,7 +393,7 @@ public class GameCenterManager : MonoBehaviour
             if (isCenter)
             {
                 panel.blockPanel.onClick.RemoveAllListeners();
-                panel.blockPanel.onClick.AddListener(ShowDisclaimer);
+                panel.blockPanel.onClick.AddListener(()=>ShowDisclaimer(stations[number]));
             }
         }
     }
@@ -479,19 +478,54 @@ public class GameCenterManager : MonoBehaviour
         warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length-2];
     }
 
-    void ShowDisclaimer()
+    void ShowDisclaimer(int numberOfGame)
     {
         loadingCanvas.SetActive(false);
         warningPanel.SetActive(true);
-        warningPanel.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
-        warningPanel.GetComponentInChildren<Button>().onClick.AddListener(()=>
+        var button = warningPanel.GetComponentInChildren<Button>();
+        button.onClick.RemoveAllListeners();
+        button.onClick.AddListener(()=>
         {
+            Debug.Log($"{numberOfGame}");
+            Debug.Log($"this is the station {unlocks[numberOfGame]}");
             warningPanel.SetActive(false);
             ChangeMenus();
+            //BuyItem(numberOfGame);
 
         });
-        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length - 1];
+        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length - 2];
+        button.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length - 1];
     }
+
+    void BuyItem(int numberOfGame)
+    {
+        StartCoroutine(SendABuy(numberOfGame));
+    }
+
+    IEnumerator SendABuy(int numberOfGame)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("userKey", sessionManager.activeUser.userkey);
+        form.AddField("cid", sessionManager.activeKid.id);
+        form.AddField("games", Keys.Game_Names[numberOfGame]);
+
+        print("Sending");
+
+        using (UnityWebRequest request = UnityWebRequest.Post(urlBuy, form))
+        {
+            yield return request.SendWebRequest();
+            if (request.isNetworkError || request.isHttpError)
+            {
+                Debug.Log(request.downloadHandler.text);
+            }
+            else
+            {
+                sessionManager.activeKid.gamesUnlocked[numberOfGame] = true;
+                Debug.Log(request.downloadHandler.text);
+            }
+        }
+    }
+
 }
 
 public struct GamePanel

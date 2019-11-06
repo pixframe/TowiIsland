@@ -1258,15 +1258,12 @@ public class MenuManager : MonoBehaviour
             if (i > 0)
             {
                 idsSt += "," + ids[i].ToString();
-                Debug.Log(idsSt);
             }
             else
             {
                 idsSt += ids[i].ToString();
-                Debug.Log(idsSt);
             }
         }
-        Debug.Log(idsSt);
 
         subscriptionsManager.SendSubscriptionData(numKids, idsSt, sessionManager.activeUser.id, subscriptionIAPType);
     }

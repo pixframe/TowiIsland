@@ -9287,7 +9287,6 @@ MonoBehaviour:
     psswdHash: 
     kids: []
     id: 0
-    suscriptionsLeft: 0
     language: 
     isPossibleBuyIAP: 0
   activeKid:
@@ -9299,7 +9298,6 @@ MonoBehaviour:
     avatar: 
     avatarClothes: 
     offlineData: 
-    missionsToPlay: 
     playedGames: 
     firstsGames: 
     gamesUnlocked: 
@@ -9341,7 +9339,6 @@ MonoBehaviour:
     sandLevelSet: 0
     needSync: 0
     testAvailable: 0
-    isIAPSubscribed: 0
     buyedIslandObjects: 
   main: 0
   temporalKids: []
@@ -9758,10 +9755,10 @@ RectTransform:
   m_Father: {fileID: 1580607347}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -600, y: -416}
-  m_SizeDelta: {x: 310.77, y: 67.7}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 184}
+  m_SizeDelta: {x: 310.77, y: 67.70001}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &529051278
 MonoBehaviour:
@@ -21713,16 +21710,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1580607347}
     m_Modifications:
-    - target: {fileID: 480330452516358341, guid: 4cc93f00d148cf9448e656e559fa42df,
-        type: 3}
-      propertyPath: m_Name
-      value: Pasword Need Component
-      objectReference: {fileID: 0}
-    - target: {fileID: 480330452516358341, guid: 4cc93f00d148cf9448e656e559fa42df,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 480330452516358340, guid: 4cc93f00d148cf9448e656e559fa42df,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -21828,6 +21815,16 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 480330452516358341, guid: 4cc93f00d148cf9448e656e559fa42df,
+        type: 3}
+      propertyPath: m_Name
+      value: Pasword Need Component
+      objectReference: {fileID: 0}
+    - target: {fileID: 480330452516358341, guid: 4cc93f00d148cf9448e656e559fa42df,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 480330450867204895, guid: 4cc93f00d148cf9448e656e559fa42df,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -21853,42 +21850,42 @@ PrefabInstance:
       propertyPath: m_textInfo.pageCount
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 480330452120095618, guid: 4cc93f00d148cf9448e656e559fa42df,
+    - target: {fileID: 480330451473454965, guid: 4cc93f00d148cf9448e656e559fa42df,
         type: 3}
       propertyPath: m_textInfo.characterCount
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 480330452120095618, guid: 4cc93f00d148cf9448e656e559fa42df,
+    - target: {fileID: 480330451473454965, guid: 4cc93f00d148cf9448e656e559fa42df,
         type: 3}
       propertyPath: m_textInfo.wordCount
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 480330452120095618, guid: 4cc93f00d148cf9448e656e559fa42df,
+    - target: {fileID: 480330451473454965, guid: 4cc93f00d148cf9448e656e559fa42df,
         type: 3}
       propertyPath: m_textInfo.lineCount
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 480330452120095618, guid: 4cc93f00d148cf9448e656e559fa42df,
+    - target: {fileID: 480330451473454965, guid: 4cc93f00d148cf9448e656e559fa42df,
         type: 3}
       propertyPath: m_textInfo.pageCount
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 480330451473454965, guid: 4cc93f00d148cf9448e656e559fa42df,
+    - target: {fileID: 480330452120095618, guid: 4cc93f00d148cf9448e656e559fa42df,
         type: 3}
       propertyPath: m_textInfo.characterCount
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 480330451473454965, guid: 4cc93f00d148cf9448e656e559fa42df,
+    - target: {fileID: 480330452120095618, guid: 4cc93f00d148cf9448e656e559fa42df,
         type: 3}
       propertyPath: m_textInfo.wordCount
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 480330451473454965, guid: 4cc93f00d148cf9448e656e559fa42df,
+    - target: {fileID: 480330452120095618, guid: 4cc93f00d148cf9448e656e559fa42df,
         type: 3}
       propertyPath: m_textInfo.lineCount
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 480330451473454965, guid: 4cc93f00d148cf9448e656e559fa42df,
+    - target: {fileID: 480330452120095618, guid: 4cc93f00d148cf9448e656e559fa42df,
         type: 3}
       propertyPath: m_textInfo.pageCount
       value: 0
