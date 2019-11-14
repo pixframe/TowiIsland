@@ -9,7 +9,7 @@ public class DemoKey : MonoBehaviour {
     public TextAsset addableAsset;
     public TextAsset beforeAssets;
 
-    int difficulty;
+    DemoPanel.Difficulty difficulty;
 
     int levelA;
     int levelB;
@@ -37,13 +37,12 @@ public class DemoKey : MonoBehaviour {
         Debug.Log("is FLIS active? " + isFLISActive);
     }
 
-    public void SetDifficulty(int difficultyInput)
+    public void SetDifficulty(DemoPanel.Difficulty selectedDifficulty)
     {
-        difficulty = Mathf.Clamp(difficultyInput, 0, 2);
-        Debug.Log("difficulty is" + difficulty);
+        difficulty = selectedDifficulty;
     }
 
-    public int GetDifficulty()
+    public DemoPanel.Difficulty GetDifficulty()
     {
         return difficulty;
     }

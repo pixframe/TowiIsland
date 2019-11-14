@@ -9694,7 +9694,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2300000, guid: 14ceae39d18b5b546b247938895e9c1c, type: 3}
       propertyPath: m_Materials.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2300000, guid: 14ceae39d18b5b546b247938895e9c1c, type: 3}
       propertyPath: m_Materials.Array.data[1]
@@ -21710,6 +21710,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1580607347}
     m_Modifications:
+    - target: {fileID: 480330452516358341, guid: 4cc93f00d148cf9448e656e559fa42df,
+        type: 3}
+      propertyPath: m_Name
+      value: Pasword Need Component
+      objectReference: {fileID: 0}
+    - target: {fileID: 480330452516358341, guid: 4cc93f00d148cf9448e656e559fa42df,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 480330452516358340, guid: 4cc93f00d148cf9448e656e559fa42df,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -21814,16 +21824,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 480330452516358341, guid: 4cc93f00d148cf9448e656e559fa42df,
-        type: 3}
-      propertyPath: m_Name
-      value: Pasword Need Component
-      objectReference: {fileID: 0}
-    - target: {fileID: 480330452516358341, guid: 4cc93f00d148cf9448e656e559fa42df,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 480330450867204895, guid: 4cc93f00d148cf9448e656e559fa42df,
         type: 3}
@@ -31366,7 +31366,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1785662055
 MonoBehaviour:
   m_ObjectHideFlags: 0

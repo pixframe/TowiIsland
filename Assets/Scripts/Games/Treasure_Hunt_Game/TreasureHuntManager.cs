@@ -379,36 +379,29 @@ public class TreasureHuntManager : MonoBehaviour {
             else
             {
                 var key = FindObjectOfType<DemoKey>();
-                if (key.IsFLISOn())
+                var isFLISOn = false;
+                sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Treasure] = false;
+                firstTime = 1;
+                switch (key.GetDifficulty())
                 {
-                    sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Treasure] = true;
-                    FLISSetup();
+                    case DemoPanel.Difficulty.Easy:
+                        levelCategorizer = 0;
+                        break;
+                    case DemoPanel.Difficulty.Normal:
+                        levelCategorizer = totalLevels / 2;
+                        break;
+                    case DemoPanel.Difficulty.Hard:
+                        levelCategorizer = totalLevels - 5;
+                        break;
+                    case DemoPanel.Difficulty.Flis:
+                        isFLISOn = true;
+                        sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Treasure] = true;
+                        FLISSetup();
+                        break;
                 }
-                else
+                if (!isFLISOn)
                 {
-                    sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Treasure] = false;
-                    firstTime = 1;
-                    if (key.IsLevelSetSpecially())
-                    {
-                        level = key.GetLevelA();
-                        difficulty = key.GetLevelB();
-                    }
-                    else
-                    {
-                        switch (key.GetDifficulty())
-                        {
-                            case 0:
-                                levelCategorizer = 0;
-                                break;
-                            case 1:
-                                levelCategorizer = totalLevels / 2;
-                                break;
-                            case 2:
-                                levelCategorizer = totalLevels - 5;
-                                break;
-                        }
-                        GetDataJustForLevel(levelCategorizer);
-                    }
+                    GetDataJustForLevel(levelCategorizer);
                 }
             }
 

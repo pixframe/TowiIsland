@@ -36,15 +36,8 @@ public class GameCenterManager : MonoBehaviour
     public Button goBackButton;
 
     [Header("Demo Version")]
-    public GameObject demoPanel;
-    public Slider difficultySlider;
-    public Toggle flisActivation;
-    public Button ageButton;
-    public InputField ageValue;
-    public InputField levelInput;
-    public InputField difficultyInput;
-    public InputField sandOnly;
-
+    public GameObject demoPanelObject;
+    DemoPanel demoPanel;
 
     int index;
     List<bool> unlocks;
@@ -57,7 +50,7 @@ public class GameCenterManager : MonoBehaviour
     const string iconPath = "Icons/Icon_";
     const string screenPath = "Screens/Capture_";
 
-    readonly string urlBuy = $"{Keys.Api_Web_Key}api/subscription/purchase/";
+    readonly string urlBuy = $"{Keys.Api_Web_Key}api/store/purchase/";
 
     AsyncOperation asyncLoad;
     EventTrigger eventTrigger;
@@ -118,18 +111,18 @@ public class GameCenterManager : MonoBehaviour
         {
             key = FindObjectOfType<DemoKey>();
             key.ResetSpecial();
-            demoPanel.SetActive(true);
-            difficultySlider.value = key.GetDifficulty();
-            difficultySlider.onValueChanged.AddListener(delegate { key.SetDifficulty((int)difficultySlider.value); });
-            flisActivation.isOn = key.IsFLISOn();
-            flisActivation.onValueChanged.AddListener(delegate { key.ChangeFLIS(); });
-            ageButton.onClick.AddListener(ChangeAge);
-            ageValue.placeholder.GetComponent<Text>().text = "Age is " + sessionManager.activeKid.age.ToString("00");
+            demoPanel = new DemoPanel(demoPanelObject.transform, true);
+            //difficultySlider.value = key.GetDifficulty();
+            //difficultySlider.onValueChanged.AddListener(delegate { key.SetDifficulty((int)difficultySlider.value); });
+            //flisActivation.isOn = key.IsFLISOn();
+            //flisActivation.onValueChanged.AddListener(delegate { key.ChangeFLIS(); });
+            //ageButton.onClick.AddListener(ChangeAge);
+            //ageValue.placeholder.GetComponent<Text>().text = "Age is " + sessionManager.activeKid.age.ToString("00");
             ChangeMenus();
         }
         else
         {
-            demoPanel.SetActive(false);
+            demoPanelObject.SetActive(false);
             if (sessionManager.activeKid.needSync)
             {
                 StartCoroutine(CheckInternetConnection(Keys.Api_Web_Key + Keys.Try_Connection_Key));
@@ -175,13 +168,6 @@ public class GameCenterManager : MonoBehaviour
         ChangeMenus();
     }
 
-    void ChangeAge()
-    {
-        sessionManager.activeKid.age = int.Parse(ageValue.text);
-        ageValue.text = "";
-        ageValue.placeholder.GetComponent<Text>().text = "Age is " + sessionManager.activeKid.age.ToString("00");
-    }
-
     void ChildGames()
     {
         unlocks = new List<bool>();
@@ -196,7 +182,6 @@ public class GameCenterManager : MonoBehaviour
 
             for (int i = 0; i < Keys.Number_Of_Games; i++)
             {
-                Debug.Log($"{i} is unlocked {sessionManager.activeKid.gamesUnlocked[i]}");
                 if (sessionManager.activeKid.gamesUnlocked[i])
                 {
                     unlocks[i] = true;
@@ -347,7 +332,6 @@ public class GameCenterManager : MonoBehaviour
 
         if (stations.Count > 0)
         {
-            Debug.Log(index);
             SetPanel(currentPanel, stations[index], true);
             SetPanel(nextPanel, stations[next]);
             SetPanel(previosPanel, stations[previous]);
@@ -393,7 +377,7 @@ public class GameCenterManager : MonoBehaviour
             if (isCenter)
             {
                 panel.blockPanel.onClick.RemoveAllListeners();
-                panel.blockPanel.onClick.AddListener(()=>ShowDisclaimer(stations[number]));
+                panel.blockPanel.onClick.AddListener(()=>ShowDisclaimer(number));
             }
         }
     }
@@ -408,41 +392,34 @@ public class GameCenterManager : MonoBehaviour
     {
         if (FindObjectOfType<DemoKey>())
         {
-            int change = 0;
-
-            int level = 0;
-            int difficulty = 0;
-            int specialLevel = 0;
-
-            if (levelInput.text != "")
-            {
-                level = int.Parse(levelInput.text);
-                change++;
-            }
-
-            if (difficultyInput.text != "")
-            {
-                difficulty = int.Parse(difficultyInput.text);
-                change++;
-            }
-
-            if (stations[index] == 1)
-            {
-                if (sandOnly.text != "")
-                {
-                    specialLevel = int.Parse(sandOnly.text);
-                    change++;
-                }
-            }
-            if (change > 0)
-            {
-                FindObjectOfType<DemoKey>().SetSpecialLevels(level, difficulty, specialLevel);
-            }
+            demoPanelObject.SetActive(true);
+            backPanel.SetActive(false);
+            centerPanel.SetActive(false);
+            fowardPanel.SetActive(false);
+            warningPanel.SetActive(false);
+            goBackButton.gameObject.SetActive(false);
+            leftButton.gameObject.SetActive(false);
+            rigthButton.gameObject.SetActive(false);
+            demoPanel.ShowDemoPanel(LoadNewScene);
         }
-        
+        else
+        {
+            LoadNewScene(scenes[stations[index]]);
+        }
+    }
+
+    void LoadNewScene(string sceneName) 
+    {
         Destroy(audioPlayer.gameObject);
-        PrefsKeys.SetNextScene(scenes[stations[index]]);
+        PrefsKeys.SetNextScene(sceneName);
         asyncLoad.allowSceneActivation = true;
+    }
+
+    void LoadNewScene(DemoPanel.Difficulty difficulty) 
+    {
+        Debug.Log("Doing some");
+        FindObjectOfType<DemoKey>().SetDifficulty(difficulty);
+        LoadNewScene(scenes[stations[index]]);
     }
 
     void LoadNewLogin()
@@ -486,11 +463,10 @@ public class GameCenterManager : MonoBehaviour
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(()=>
         {
-            Debug.Log($"{numberOfGame}");
-            Debug.Log($"this is the station {unlocks[numberOfGame]}");
-            warningPanel.SetActive(false);
-            ChangeMenus();
-            //BuyItem(numberOfGame);
+            //Debug.Log($"this is the station {numberOfGame}");
+            //warningPanel.SetActive(false);
+            //ChangeMenus();
+            BuyItem(numberOfGame);
 
         });
         warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length - 2];
@@ -508,19 +484,27 @@ public class GameCenterManager : MonoBehaviour
         form.AddField("userKey", sessionManager.activeUser.userkey);
         form.AddField("cid", sessionManager.activeKid.id);
         form.AddField("games", Keys.Game_Names[numberOfGame]);
-
-        print("Sending");
+        warningPanel.SetActive(false);
+        loadingCanvas.SetActive(true);
 
         using (UnityWebRequest request = UnityWebRequest.Post(urlBuy, form))
         {
             yield return request.SendWebRequest();
             if (request.isNetworkError || request.isHttpError)
             {
+                Debug.Log("Error");
                 Debug.Log(request.downloadHandler.text);
+                ShowDisclaimer(numberOfGame);
             }
             else
             {
+                warningPanel.SetActive(false);
+                loadingCanvas.SetActive(false);
                 sessionManager.activeKid.gamesUnlocked[numberOfGame] = true;
+                unlocks[numberOfGame] = true;
+                SetPanel(currentPanel, numberOfGame, true);
+                sessionManager.SaveSession();
+
                 Debug.Log(request.downloadHandler.text);
             }
         }

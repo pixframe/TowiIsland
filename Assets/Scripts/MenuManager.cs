@@ -942,7 +942,6 @@ public class MenuManager : MonoBehaviour
         configMenu.backButton.onClick.RemoveAllListeners();
         configMenu.backButton.onClick.AddListener(ShowGameMenu);
         configMenu.versionText.text = $"V. {Application.version}";
-        Debug.Log(PlayerPrefs.GetInt(Keys.Games_Saved) + " " + PlayerPrefs.GetInt(Keys.Evaluations_Saved));
 
         if (PlayerPrefs.GetInt(Keys.Games_Saved) != 0 || PlayerPrefs.GetInt(Keys.Evaluations_Saved) != 0)
         {
@@ -975,8 +974,7 @@ public class MenuManager : MonoBehaviour
         configMenu.backButton.onClick.AddListener(ShowSettings);
 
         limitTimeIndex = limitTimes.FindIndex(x => {
-            Debug.Log($"x is {x} and timelimit is {sessionManager.activeKid.timeLimit}");
-            return x == sessionManager.activeKid.timeLimit;
+            return x == (sessionManager.activeKid.timeLimit / 60);
         });
 
         configMenu.toogleActivate.isOn = sessionManager.activeKid.isTimeLimited;
@@ -1018,7 +1016,6 @@ public class MenuManager : MonoBehaviour
 
     void SetValuesOfActivation() 
     {
-        Debug.Log("Change things");
         WriteTheText(configMenu.textActivate, configTexts[5 + Convert.ToInt32(configMenu.toogleActivate.isOn)]);
         var image = configMenu.toogleActivate.transform.Find("Background").GetComponent<Image>();
 

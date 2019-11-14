@@ -159,8 +159,22 @@ public class IcecreamMadnessManager : MonoBehaviour {
         {
             var demoKey = FindObjectOfType<DemoKey>();
             icecreamUI.ChooseChef();
-            level = demoKey.GetLevelA();
-            isFLISTime = demoKey.IsFLISOn();
+            isFLISTime = false;
+            switch (demoKey.GetDifficulty()) 
+            {
+                case DemoPanel.Difficulty.Easy:
+                    level = 0;
+                    break;
+                case DemoPanel.Difficulty.Normal:
+                    level = 10;
+                    break;
+                case DemoPanel.Difficulty.Hard:
+                    level = 20;
+                    break;
+                case DemoPanel.Difficulty.Flis:
+                    isFLISTime = true;
+                    break;
+            }
         }
         else
         {

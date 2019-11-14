@@ -15,7 +15,7 @@ public class GameCenterCamera : MonoBehaviour {
         manager = FindObjectOfType<GameMenusManager>();
         anim = GetComponent<Animator>();
         sessionManager = FindObjectOfType<SessionManager>();
-        Debug.Log($"the games has been played at least one {sessionManager.activeKid.firstsGames.Contains(true)}");
+
         if (!sessionManager.activeKid.firstsGames.Contains(false) && !FindObjectOfType<DemoKey>())
         {
             anim.enabled = true;;

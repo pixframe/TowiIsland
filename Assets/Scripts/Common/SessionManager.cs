@@ -170,9 +170,9 @@ public class SessionManager : MonoBehaviour
         if (activeKid.isTimeLimited) 
         {
             activeKid.timePassInThisSeason += Time.deltaTime;
+            Debug.Log(activeKid.timePassInThisSeason);
             if (activeKid.timePassInThisSeason >= activeKid.timeLimit && !isShowingTimeLimit) 
             {
-                Debug.Log("Time is set");
                 Instantiate(limitTime);
                 isShowingTimeLimit = true;
             }

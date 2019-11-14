@@ -203,48 +203,33 @@ public class SandDrawingController : MonoBehaviour {
             else
             {
                 var key = FindObjectOfType<DemoKey>();
-                if (key.IsFLISOn())
+
+                sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Sand] = false;
+                firstTime = 1;
+                switch (key.GetDifficulty())
                 {
-                    sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Sand] = true;
-                    sessionManager.activeKid.sandLevelSet = false;
-                    FLISSetup();
-                }
-                else
-                {
-                    sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Sand] = false;
-                    sessionManager.activeKid.sandLevelSet = true;
-                    firstTime = 1;
-                    if (key.IsLevelSetSpecially())
-                    {
+                    case DemoPanel.Difficulty.Easy:
                         levelGame = 9;
-                        levelFill = key.GetLevelA();
-                        levelIdentyfy = key.GetLevelB();
-                        levelCompletion = key.GetLevelC();
-                    }
-                    else
-                    {
-                        switch (key.GetDifficulty())
-                        {
-                            case 0:
-                                levelGame = 9;
-                                levelFill = 0;
-                                levelIdentyfy = 0;
-                                levelCompletion = 0;
-                                break;
-                            case 1:
-                                levelGame = 9;
-                                levelFill = totalLevelsNormal / 2;
-                                levelIdentyfy = totalSpecialLevels / 2;
-                                levelCompletion = totalSpecialLevels / 2;
-                                break;
-                            case 2:
-                                levelGame = 10;
-                                levelFill = totalLevelsNormal - 5;
-                                levelIdentyfy = totalSpecialLevels - 3;
-                                levelCompletion = totalSpecialLevels - 3;
-                                break;
-                        }
-                    }
+                        levelFill = 0;
+                        levelIdentyfy = 0;
+                        levelCompletion = 0;
+                        break;
+                    case DemoPanel.Difficulty.Normal:
+                        levelGame = 9;
+                        levelFill = totalLevelsNormal / 2;
+                        levelIdentyfy = totalSpecialLevels / 2;
+                        levelCompletion = totalSpecialLevels / 2;
+                        break;
+                    case DemoPanel.Difficulty.Hard:
+                        levelGame = 10;
+                        levelFill = totalLevelsNormal - 5;
+                        levelIdentyfy = totalSpecialLevels - 3;
+                        levelCompletion = totalSpecialLevels - 3;
+                        break;
+                    case DemoPanel.Difficulty.Flis:
+                        sessionManager.activeKid.firstsGames[(int)GameConfigurator.KindOfGame.Sand] = true;
+                        FLISSetup();
+                        break;
                 }
             }
         }

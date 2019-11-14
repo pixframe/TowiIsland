@@ -605,18 +605,7 @@ public class LevelSaver : MonoBehaviour {
             }
             else
             {
-                JSONObject response = JSONObject.Parse(request.downloadHandler.text);
-                Debug.Log(response["code"].Str);
-                if (response["code"].Str != "200" && response["code"].Str != "201")
-                {
-                    //SavePending();
-                    Debug.Log($"the error has the next messsage {request.downloadHandler.text}");
-                }
-                else
-                {
-                    sessionManager.SaveSession();
-                }
-                Debug.Log($"the response was {request.downloadHandler.text}");
+                sessionManager.SaveSession();
 
                 FindObjectOfType<PauseTheGame>().DataIsSend();
             }
