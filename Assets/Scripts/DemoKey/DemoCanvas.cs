@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class DemoCanvas : MonoBehaviour {
 
@@ -26,6 +27,9 @@ public class DemoCanvas : MonoBehaviour {
         if (key == null) {
             Destroy(this.gameObject);
         }
+        var texts = TextReader.TextsToSet("Components/PauseEvaluation");
+        returnGame.GetComponentInChildren<TextMeshProUGUI>().text = texts[0];
+        goBackMenu.GetComponentInChildren<TextMeshProUGUI>().text = texts[1];
 	}
 
     void EnableMenu() {

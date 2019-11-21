@@ -538,7 +538,14 @@ public class LevelSaver : MonoBehaviour {
     public void PostProgress()
     {
         saving = true;
-        StartCoroutine(CheckInternetConecction("www.towi.com.mx"));
+        if (FindObjectOfType<DemoKey>())
+        {
+            FindObjectOfType<PauseTheGame>().DataIsSend();
+        }
+        else
+        { 
+            StartCoroutine(CheckInternetConecction("www.towi.com.mx"));
+        }
     }
 
     public void SaveDataOffline()

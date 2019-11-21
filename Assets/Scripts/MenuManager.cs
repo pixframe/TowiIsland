@@ -978,6 +978,7 @@ public class MenuManager : MonoBehaviour
         });
 
         configMenu.toogleActivate.isOn = sessionManager.activeKid.isTimeLimited;
+        ChangeTime(0);
         configMenu.timeAmountLabel.text = $"{limitTimes[limitTimeIndex]} {configTexts[7]}";
         ShowCorrectChangeButtons();
         SetValuesOfActivation();
@@ -2168,7 +2169,6 @@ class GameMenu
     public GameObject logoIcon;
     public Button gamesButton;
     public Button evaluationButton;
-    public Button buyButton;
     public KidProfileCanvas kidProfile;
     Button singOutButton;
     Button settingsButton;
@@ -2184,7 +2184,6 @@ class GameMenu
         logoIcon = mainCanvas.transform.Find("Game Logo").gameObject;
         gamesButton = mainCanvas.transform.Find("Games Button").GetComponent<Button>();
         evaluationButton = mainCanvas.transform.Find("Evaluation Button").GetComponent<Button>();
-        buyButton = mainCanvas.transform.Find("Buy Button").GetComponent<Button>();
         kidProfile = new KidProfileCanvas(mainCanvas.transform.Find("Change Kid Profile Button").gameObject);
         singOutButton = mainCanvas.transform.Find("Sing Out Button").GetComponent<Button>();
         settingsButton = mainCanvas.transform.Find("Settings Button").GetComponent<Button>();
@@ -2200,7 +2199,6 @@ class GameMenu
 
         gamesButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[0];
         evaluationButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[1];
-        buyButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[2];
         tryLogo.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[3];
 
 
@@ -2209,30 +2207,19 @@ class GameMenu
 
         gamesButton.gameObject.SetActive(true);
         evaluationButton.gameObject.SetActive(true);
-        buyButton.gameObject.SetActive(true);
 
         singOutButton.gameObject.SetActive(false);
         settingsButton.gameObject.SetActive(false);
         aboutButton.gameObject.SetActive(false);
         kidProfile.gameObject.SetActive(false);
 
-        SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
         SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
         SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
 
         gamesButton.onClick.RemoveAllListeners();
         evaluationButton.onClick.RemoveAllListeners();
-        buyButton.onClick.RemoveAllListeners();
 
         gamesButton.onClick.AddListener(manager.ShowLogIn);
-        if (PlayerPrefs.GetInt(Keys.First_Try) != 0)
-        {
-            buyButton.onClick.AddListener(manager.ShowAdd);
-        }
-        else
-        {
-            buyButton.onClick.AddListener(manager.ShowTryChances);
-        }
 
         evaluationButton.onClick.AddListener(manager.ShowAdd);
     }
@@ -2242,18 +2229,14 @@ class GameMenu
         mainCanvas.SetActive(true);
         manager.WriteTheText(evaluationButton, 0);
         manager.WriteTheText(gamesButton, 1);
-        manager.WriteTheText(buyButton, 57);
 
         gamesButton.onClick.RemoveAllListeners();
         evaluationButton.onClick.RemoveAllListeners();
-        buyButton.onClick.RemoveAllListeners();
 
         gamesButton.onClick.AddListener(manager.ShowRegisteredAdd);
         evaluationButton.onClick.AddListener(manager.ShowRegisteredAdd);
-        buyButton.onClick.AddListener(manager.ShowRegisteredAdd);
 
         SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
-        SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
         SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
 
         singOutButton.gameObject.SetActive(true);
@@ -2270,13 +2253,10 @@ class GameMenu
         mainCanvas.SetActive(true);
         manager.WriteTheText(evaluationButton, 0);
         manager.WriteTheText(gamesButton, 1);
-        manager.WriteTheText(buyButton, 57);
 
         gamesButton.onClick.AddListener(manager.LoadGameMenus);
         evaluationButton.onClick.AddListener(manager.ShowDisclaimer);
-        buyButton.onClick.AddListener(manager.ShowYouHaveASuscription);
 
-        SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
         SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
         SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
 

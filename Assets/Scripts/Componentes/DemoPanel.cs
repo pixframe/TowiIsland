@@ -27,15 +27,31 @@ public class DemoPanel
         hardButton = panel.Find("Hard Button").GetComponent<Button>();
         flisButton = panel.Find("FLIS Button").GetComponent<Button>();
         flisButton.gameObject.SetActive(isFlisActive);
+        if (!isFlisActive) 
+        {
+            var localPos = hardButton.transform.localPosition;
+            localPos.x = 0;
+            hardButton.transform.localPosition = localPos;
+        }
         easyButton.onClick.AddListener(() => function(Difficulty.Easy));
         mediumButton.onClick.AddListener(() => function(Difficulty.Normal));
         hardButton.onClick.AddListener(() => function(Difficulty.Hard));
         flisButton.onClick.AddListener(() => function(Difficulty.Flis));
         this.panel.SetActive(false);
+
+        var textsToShow = TextReader.TextsToSet("Components/DemoPanel");
+
+        difficultyText.text = textsToShow[0];
+        Debug.Log(textsToShow[1]);
+        easyButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToShow[1];
+        mediumButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToShow[2];
+        hardButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToShow[3];
+        flisButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToShow[4];
     }
 
     public void ShowDemoPanel(UnityAction<Difficulty> action) 
     {
+        Debug.Log("Show me");
         function = action;
         panel.SetActive(true);
     }
