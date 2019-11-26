@@ -102,7 +102,7 @@ public class LogInScript : MonoBehaviour
                 JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
                 JSONArray kids = jsonObject.GetValue("children").Array;
 
-                sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetValue("id").Number);
+                sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetNumber("id"), (int)jsonObject.GetNumber("assessmentsAvailables"));
                 sessionManager.AddKids(kids);
                 sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
                 menuController.LoggedNow();
@@ -142,7 +142,7 @@ public class LogInScript : MonoBehaviour
             }
             else
             {
-                StartCoroutine(PostIsActive(tempUser));
+                StartCoroutine(SyncProfile(tempUser.userkey));
             }
         }
         else
@@ -154,6 +154,21 @@ public class LogInScript : MonoBehaviour
     public void UpdateData()
     {
         StartCoroutine(UpdateDataRoutine());
+    }
+
+    IEnumerator SyncProfile(string userKey) 
+    {
+        sessionManager.SyncProfiles(userKey);
+        yield return new WaitWhile(() => !sessionManager.isSyncing);
+        PlayerPrefs.SetInt(Keys.Logged_Session, 1);
+        if (sessionManager.activeKid != null)
+        {
+            menuController.ShowGameMenu();
+        }
+        else
+        {
+            menuController.SetKidsProfiles();
+        }
     }
 
     IEnumerator PostIsActive(SessionManager.User user)
@@ -319,6 +334,8 @@ public class LogInScript : MonoBehaviour
             Debug.Log("Not OK");
             menuController.ShowSyncMessage(2);
         }
+
+        sessionManager.SyncProfiles(user.userkey);
     }
 
     IEnumerator UpdateDataToSend(SessionManager.User user)
@@ -424,7 +441,7 @@ public class LogInScript : MonoBehaviour
             PlayerPrefs.SetInt(Keys.Evaluations_Saved, dataNotSavedByProblems);
         }
 
-        StartCoroutine(PostIsActive(user));
+        sessionManager.SyncProfiles(user.userkey);
     }
 
     public void RegisterParentAndKid(string email, string password, string kidName, string dateOfBirth, bool newPaidUser)

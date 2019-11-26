@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Purchasing;
 
-public class MyIAPManager : MonoBehaviour, IStoreListener {
+public class MyIAPManager : MonoBehaviour, IStoreListener
+{
 
 
     static IStoreController m_StoreController;          // The Unity Purchasing system.
@@ -51,7 +52,33 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
     static string threeMonthAppleFive = "three_month_five_kids";
     static string threeMonthGoolgeFive = "three_month_five_kids";
 
-    MenuManager menuManager;
+    //Game Identifier
+    public static string birdsGame = "BirdsGame";
+    static string birdsGoogle = "birds";
+    static string birdsApple = "birds";
+    public static string sandGame = "SandGame";
+    static string sandGoogle = "sand";
+    static string sandApple = "sand";
+    public static string treasureGame = "TresureGame";
+    static string treasureGoogle = "treasure";
+    static string treasureApple = "treasure";
+    public static string monkeyGame = "MonkeyGame";
+    static string monkeyGoolge = "monkeys";
+    static string monkeyApple = "monkeys";
+    public static string riverGame = "RiverGame";
+    static string riverGoogle = "river";
+    static string riverApple = "river";
+    public static string lavaGame = "LavaGame";
+    static string lavaGoogle = "lava";
+    static string lavaApple = "lava";
+    public static string icecreamGame = "IcecreamGame";
+    static string icecreamGoogle = "icecream";
+    static string icecreamApple = "icecream";
+
+    public static string evaluationID = "evaluation";
+    static string evaluationGoogle = "evaluation";
+    static string evaluationApple = "evaluation";
+
     bool isSubscribedInIAP;
 
     DateTime dateExpiration;
@@ -75,8 +102,6 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
             // Begin to configure our connection to Purchasing
             InitializePurchasing();
         }
-
-        menuManager = FindObjectOfType<MenuManager>();
     }
 
     public void InitializePurchasing()
@@ -138,6 +163,46 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
             { threeMonthGoolgeFive, GooglePlay.Name}
         });
 
+        builder.AddProduct(birdsGame, ProductType.Consumable, new IDs()
+        {
+            { birdsApple, AppleAppStore.Name},
+            { birdsGoogle, GooglePlay.Name}
+        });
+        builder.AddProduct(sandGame, ProductType.Consumable, new IDs()
+        {
+            { sandApple, AppleAppStore.Name},
+            { sandGoogle, GooglePlay.Name}
+        });
+        builder.AddProduct(treasureGame, ProductType.Consumable, new IDs()
+        {
+            { treasureApple, AppleAppStore.Name},
+            { treasureGoogle, GooglePlay.Name}
+        });
+        builder.AddProduct(monkeyGame, ProductType.Consumable, new IDs()
+        {
+            { monkeyApple, AppleAppStore.Name},
+            { monkeyGoolge, GooglePlay.Name}
+        });
+        builder.AddProduct(riverGame, ProductType.Consumable, new IDs()
+        {
+            { riverApple, AppleAppStore.Name},
+            { riverGoogle, GooglePlay.Name}
+        });
+        builder.AddProduct(lavaGame, ProductType.Consumable, new IDs()
+        {
+            { lavaApple, AppleAppStore.Name},
+            { lavaGoogle, GooglePlay.Name}
+        });
+        builder.AddProduct(icecreamGame, ProductType.Consumable, new IDs()
+        {
+            { icecreamApple, AppleAppStore.Name},
+            { icecreamGoogle, GooglePlay.Name}
+        });
+        builder.AddProduct(evaluationID, ProductType.Consumable, new IDs()
+        {
+            { evaluationApple, AppleAppStore.Name},
+            { evaluationGoogle, GooglePlay.Name}
+        });
         // Kick off the remainder of the set-up with an asynchrounous call, passing the configuration 
         // and this class' instance. Expect a response either in OnInitialized or OnInitializeFailed.
         UnityPurchasing.Initialize(this, builder);
@@ -150,6 +215,35 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
         return m_StoreController != null && m_StoreExtensionProvider != null;
     }
 
+
+    public void BuyAGame(int numberOfGame)
+    {
+        switch (numberOfGame)
+        {
+            case 0:
+                BuyProductID(birdsGame);
+                break;
+            case 1:
+                BuyProductID(sandGame);
+                break;
+            case 2:
+                BuyProductID(treasureGame);
+                break;
+            case 3:
+                BuyProductID(monkeyGame);
+                break;
+            case 4:
+                BuyProductID(riverGame);
+                break;
+            case 5:
+                BuyProductID(lavaGame);
+                break;
+            case 6:
+                BuyProductID(icecreamGame);
+                break;
+
+        }
+    }
 
     public void BuySubscriptionOneMonth(int numOfKids)
     {
@@ -223,7 +317,7 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
     }
 
 
-    void BuyProductID(string productId)
+    public void BuyProductID(string productId)
     {
         // If Purchasing has been initialized ...
         if (IsInitialized())
@@ -257,7 +351,6 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
         }
     }
 
-
     // Restore purchases previously made by this customer. Some platforms automatically restore purchases, like Google. 
     // Apple currently requires explicit purchase restoration for IAP, conditionally displaying a password prompt.
     public void RestorePurchases()
@@ -281,7 +374,8 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
             var apple = m_StoreExtensionProvider.GetExtension<IAppleExtensions>();
             // Begin the asynchronous process of restoring purchases. Expect a confirmation response in 
             // the Action<bool> below, and ProcessPurchase if there are previously purchased products to restore.
-            apple.RestoreTransactions((result) => {
+            apple.RestoreTransactions((result) =>
+            {
                 // The first phase of restoration. If no more responses are received on ProcessPurchase then 
                 // no purchases are available to be restored.
                 Debug.Log("RestorePurchases continuing: " + result + ". If no further messages, no purchases available to restore.");
@@ -368,20 +462,6 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
 
                                 dateExpiration = info.getExpireDate();
                             }
-
-                            Debug.Log("product id is: " + info.getProductId());
-                            Debug.Log("purchase date is: " + info.getPurchaseDate());
-                            Debug.Log("subscription next billing date is: " + info.getExpireDate());
-                            Debug.Log("is subscribed? " + info.isSubscribed().ToString());
-                            Debug.Log("is expired? " + info.isExpired().ToString());
-                            Debug.Log("is cancelled? " + info.isCancelled());
-                            Debug.Log("product is in free trial peroid? " + info.isFreeTrial());
-                            Debug.Log("product is auto renewing? " + info.isAutoRenewing());
-                            Debug.Log("subscription remaining valid time until next billing date is: " + info.getRemainingTime());
-                            Debug.Log("is this product in introductory price period? " + info.isIntroductoryPricePeriod());
-                            Debug.Log("the product introductory localized price is: " + info.getIntroductoryPrice());
-                            Debug.Log("the product introductory price period is: " + info.getIntroductoryPricePeriod());
-                            Debug.Log("the number of product introductory price period cycles is: " + info.getIntroductoryPricePeriodCycles());
                         }
                         else
                         {
@@ -479,68 +559,124 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
     public void ConfirmPurchaseProduct()
     {
         UnityEngine.Analytics.Analytics.CustomEvent("subscribe");
-        
+
         m_StoreController.ConfirmPendingPurchase(eventArgs.purchasedProduct);
     }
 
     public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args)
     {
         eventArgs = args;
-        if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscription, StringComparison.Ordinal))
-        {
-            menuManager.SetKidProfilesToAddASubscription(1, "monthly_inApp");
-            return PurchaseProcessingResult.Pending;
+        if (FindObjectOfType<MenuManager>()) 
+        { 
+            var menuManager = FindObjectOfType<MenuManager>();
+            if (String.Equals(args.purchasedProduct.definition.id, evaluationID, StringComparison.Ordinal))
+            {
+                menuManager.BuySuccesfullEvaluation();
+                return PurchaseProcessingResult.Pending;
+            }
+            else
+            {
+                Debug.Log(string.Format("ProcessPurchase: FAIL. Unrecognized product: '{0}'", args.purchasedProduct.definition.id));
+            }
+
         }
-        else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionTwo, StringComparison.Ordinal))
+        else if (FindObjectOfType<GameCenterManager>()) 
         {
-            menuManager.SetKidProfilesToAddASubscription(2, "monthly_inApp");
-            return PurchaseProcessingResult.Pending;
+            var manager = FindObjectOfType<GameCenterManager>();
+
+
+            if (String.Equals(args.purchasedProduct.definition.id, birdsGame, StringComparison.Ordinal))
+            {
+                manager.SendBuy();
+                return PurchaseProcessingResult.Pending;
+            }
+            else if (String.Equals(args.purchasedProduct.definition.id, sandGame, StringComparison.Ordinal))
+            {
+                manager.SendBuy();
+                return PurchaseProcessingResult.Pending;
+            }
+            else if (String.Equals(args.purchasedProduct.definition.id, treasureGame, StringComparison.Ordinal))
+            {
+                manager.SendBuy();
+                return PurchaseProcessingResult.Pending;
+            }
+            else if (String.Equals(args.purchasedProduct.definition.id, monkeyGame, StringComparison.Ordinal))
+            {
+                manager.SendBuy();
+                return PurchaseProcessingResult.Pending;
+            }
+            else if (String.Equals(args.purchasedProduct.definition.id, riverGame, StringComparison.Ordinal))
+            {
+                manager.SendBuy();
+                return PurchaseProcessingResult.Pending;
+            }
+            else if (String.Equals(args.purchasedProduct.definition.id, lavaGame, StringComparison.Ordinal))
+            {
+                manager.SendBuy();
+                return PurchaseProcessingResult.Pending;
+            }
+            else if (String.Equals(args.purchasedProduct.definition.id, icecreamGame, StringComparison.Ordinal))
+            {
+                manager.SendBuy();
+                return PurchaseProcessingResult.Pending;
+            }
+            // Or ... an unknown product has been purchased by this user. Fill in additional products here....
+            else
+            {
+                Debug.Log(string.Format("ProcessPurchase: FAIL. Unrecognized product: '{0}'", args.purchasedProduct.definition.id));
+            }
         }
-        else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionThree, StringComparison.Ordinal))
-        {
-            menuManager.SetKidProfilesToAddASubscription(3, "monthly_inApp");
-            return PurchaseProcessingResult.Pending;
-        }
-        else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionFour, StringComparison.Ordinal))
-        {
-            menuManager.SetKidProfilesToAddASubscription(4, "monthly_inApp");
-            return PurchaseProcessingResult.Pending;
-        }
-        else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionFive, StringComparison.Ordinal))
-        {
-            menuManager.SetKidProfilesToAddASubscription(5, "monthly_inApp");
-            return PurchaseProcessingResult.Pending;
-        }
-        else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscription, StringComparison.Ordinal))
-        {
-            menuManager.SetKidProfilesToAddASubscription(1, "quarterly_inApp");
-            return PurchaseProcessingResult.Pending;
-        }
-        else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionTwo, StringComparison.Ordinal))
-        {
-            menuManager.SetKidProfilesToAddASubscription(2, "quarterly_inApp");
-            return PurchaseProcessingResult.Pending;
-        }
-        else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionThree, StringComparison.Ordinal))
-        {
-            menuManager.SetKidProfilesToAddASubscription(3, "quarterly_inApp");
-            return PurchaseProcessingResult.Pending;
-        }
-        else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionFour, StringComparison.Ordinal))
-        {
-            menuManager.SetKidProfilesToAddASubscription(4, "quarterly_inApp");
-            return PurchaseProcessingResult.Pending;
-        }
-        else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionFive, StringComparison.Ordinal))
-        {
-            menuManager.SetKidProfilesToAddASubscription(5, "quarterly_inApp");
-            return PurchaseProcessingResult.Pending;
-        }
-        // Or ... an unknown product has been purchased by this user. Fill in additional products here....
-        else
-        {
-            Debug.Log(string.Format("ProcessPurchase: FAIL. Unrecognized product: '{0}'", args.purchasedProduct.definition.id));
-        }
+        //if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscription, StringComparison.Ordinal))
+        //{
+        //    menuManager.SetKidProfilesToAddASubscription(1, "monthly_inApp");
+        //    return PurchaseProcessingResult.Pending;
+        //}
+        //else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionTwo, StringComparison.Ordinal))
+        //{
+        //    menuManager.SetKidProfilesToAddASubscription(2, "monthly_inApp");
+        //    return PurchaseProcessingResult.Pending;
+        //}
+        //else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionThree, StringComparison.Ordinal))
+        //{
+        //    menuManager.SetKidProfilesToAddASubscription(3, "monthly_inApp");
+        //    return PurchaseProcessingResult.Pending;
+        //}
+        //else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionFour, StringComparison.Ordinal))
+        //{
+        //    menuManager.SetKidProfilesToAddASubscription(4, "monthly_inApp");
+        //    return PurchaseProcessingResult.Pending;
+        //}
+        //else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionFive, StringComparison.Ordinal))
+        //{
+        //    menuManager.SetKidProfilesToAddASubscription(5, "monthly_inApp");
+        //    return PurchaseProcessingResult.Pending;
+        //}
+        //else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscription, StringComparison.Ordinal))
+        //{
+        //    menuManager.SetKidProfilesToAddASubscription(1, "quarterly_inApp");
+        //    return PurchaseProcessingResult.Pending;
+        //}
+        //else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionTwo, StringComparison.Ordinal))
+        //{
+        //    menuManager.SetKidProfilesToAddASubscription(2, "quarterly_inApp");
+        //    return PurchaseProcessingResult.Pending;
+        //}
+        //else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionThree, StringComparison.Ordinal))
+        //{
+        //    menuManager.SetKidProfilesToAddASubscription(3, "quarterly_inApp");
+        //    return PurchaseProcessingResult.Pending;
+        //}
+        //else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionFour, StringComparison.Ordinal))
+        //{
+        //    menuManager.SetKidProfilesToAddASubscription(4, "quarterly_inApp");
+        //    return PurchaseProcessingResult.Pending;
+        //}
+        //else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionFive, StringComparison.Ordinal))
+        //{
+        //    menuManager.SetKidProfilesToAddASubscription(5, "quarterly_inApp");
+        //    return PurchaseProcessingResult.Pending;
+        //}
+
 
         // Return a flag indicating whether this product has completely been received, or if the application needs 
         // to be reminded of this purchase at next app launch. Use PurchaseProcessingResult.Pending when still 
@@ -553,8 +689,15 @@ public class MyIAPManager : MonoBehaviour, IStoreListener {
     {
         // A product purchase attempt did not succeed. Check failureReason for more detail. Consider sharing 
         // this reason with the user to guide their troubleshooting actions.
-        FindObjectOfType<MenuManager>().ShopNumOfKids();
-        FindObjectOfType<MenuManager>().ShowWarning(8);
+        if (FindObjectOfType<MenuManager>())
+        {
+            FindObjectOfType<MenuManager>().ShopNumOfKids();
+            FindObjectOfType<MenuManager>().ShowWarning(8);
+        }
+        else if (FindObjectOfType<GameCenterManager>())
+        {
+            FindObjectOfType<GameCenterManager>().ShowBuyOptionError();
+        }
         Debug.Log(string.Format("OnPurchaseFailed: FAIL. Product: '{0}', PurchaseFailureReason: {1}", product.definition.storeSpecificId, failureReason));
     }
 }

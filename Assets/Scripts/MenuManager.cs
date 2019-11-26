@@ -107,6 +107,8 @@ public class MenuManager : MonoBehaviour
     MyIAPManager myIAPManager;
     SubscriptionsWays subscriptionsManager;
 
+    readonly string urlBuy = $"{Keys.Api_Web_Key}api/store/purchase/";
+
     int[] dobYMD;
     static bool alreadyLogged = false;
 
@@ -199,6 +201,7 @@ public class MenuManager : MonoBehaviour
         {
             if (sessionManager.activeKid != null)
             {
+                Debug.Log("Second Load");
                 ShowGameMenu();
             }
             else
@@ -697,7 +700,14 @@ public class MenuManager : MonoBehaviour
         }
         else
         {
-            ShowTheDisclaimer();
+            if (sessionManager.activeUser.numberOfEvaluations > 0 && sessionManager.activeKid.testAvailable)
+            {
+                ShowTheDisclaimer();
+            }
+            else
+            {
+                ShowTheEvaluationNeeds();
+            }
         }
     }
 
@@ -741,6 +751,56 @@ public class MenuManager : MonoBehaviour
         subscribeBackButton.onClick.AddListener(ShowGameMenu);
     }
 
+    void BuyAnEvaluation() 
+    {
+        ShowLoading();
+#if UNITY_ANDROID || UNITY_IOS
+        myIAPManager.BuyProductID(MyIAPManager.evaluationID);
+#elif UNITY_EDITOR
+        //BuySuccesfullEvaluation();
+        Application.OpenURL($"{Keys.Api_Web_Key}/tienda");
+#else
+        Application.OpenURL($"{Keys.Api_Web_Key}/tienda");
+#endif
+    }
+
+    public void BuySuccesfullEvaluation() 
+    {
+        StartCoroutine(BuyAssestmentProcess());
+    }
+
+    IEnumerator BuyAssestmentProcess() 
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("userKey", sessionManager.activeUser.userkey);
+        form.AddField("assessments", 1);
+        warningPanel.SetActive(false);
+        loadingCanvas.SetActive(true);
+
+        using (UnityWebRequest request = UnityWebRequest.Post(urlBuy, form))
+        {
+            yield return request.SendWebRequest();
+            if (request.isNetworkError || request.isHttpError)
+            {
+                Debug.Log("Error");
+                Debug.Log(request.downloadHandler.text);
+                sessionManager.activeUser.numberOfEvaluations += 1;
+            }
+            else
+            {
+                Debug.Log("We succesfully buy an evaluation");
+                sessionManager.activeUser.numberOfEvaluations += 1;
+            }
+            ShowDisclaimer();
+#if UNITY_ANDROID || UNITY_IOS
+            if (FindObjectOfType<MyIAPManager>())
+            {
+                FindObjectOfType<MyIAPManager>().ConfirmPurchaseProduct();
+            }
+#endif
+        }
+    }
+
     void ShowTheDisclaimer()
     {
         HideAllCanvas();
@@ -770,14 +830,17 @@ public class MenuManager : MonoBehaviour
         subscribeAnotherCountButton.gameObject.SetActive(false);
         changeProfileButton.gameObject.SetActive(false);
         subscribeButton.gameObject.SetActive(false);
-        continueEvaluationButton.gameObject.SetActive(false);
+        continueEvaluationButton.gameObject.SetActive(true);
         escapeEvaluationButton.gameObject.SetActive(true);
-        WriteTheText(subscribeText, 63);
+        WriteTheText(subscribeText, 65);
         warningLogo.gameObject.SetActive(true);
         suscripctionLogo.gameObject.SetActive(false);
-        WriteTheText(escapeEvaluationButton, 41);
+        WriteTheText(escapeEvaluationButton, 66);
+        WriteTheText(continueEvaluationButton, 41);
+        continueEvaluationButton.onClick.RemoveAllListeners();
+        continueEvaluationButton.onClick.AddListener(ShowGameMenu);
         escapeEvaluationButton.onClick.RemoveAllListeners();
-        escapeEvaluationButton.onClick.AddListener(ShowGameMenu);
+        escapeEvaluationButton.onClick.AddListener(BuyAnEvaluation);
         subscribeBackButton.onClick.RemoveAllListeners();
         subscribeBackButton.onClick.AddListener(ShowGameMenu);
     }
@@ -927,7 +990,7 @@ public class MenuManager : MonoBehaviour
     }
 
 
-    #region Configuration Menu
+#region Configuration Menu
     public void ShowSettings()
     {
         HideAllCanvas();
@@ -1053,6 +1116,7 @@ public class MenuManager : MonoBehaviour
         sessionManager.activeKid.timeLimit = limitTimes[limitTimeIndex] * 60;
         ShowSettings();
         sessionManager.SaveSession();
+        sessionManager.UpdateProfile();
     }
 
     void SaveChangesTimeLimit() 
@@ -1067,7 +1131,7 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    #endregion
+#endregion
 
     public void ShowTextRoute()
     {
@@ -1084,9 +1148,9 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    #endregion
+#endregion
 
-    #region Button Functions
+#region Button Functions
 
     //this one is used to load the evaluation
     void LoadEvaluation()
@@ -1351,7 +1415,7 @@ public class MenuManager : MonoBehaviour
         UpdateTexts(true);
     }
 
-    #endregion
+#endregion
 
     //This will set all the texts need for the menus
     void WriteTheTexts()
@@ -1619,7 +1683,7 @@ public class MenuManager : MonoBehaviour
             }
         }
     }
-    #endregion
+#endregion
 
     //this class will check if a email is well set
     class EmailVerificationUtility
@@ -2206,7 +2270,15 @@ class GameMenu
         logoIcon.SetActive(false);
 
         gamesButton.gameObject.SetActive(true);
-        evaluationButton.gameObject.SetActive(true);
+        for (int i = 0; i < gamesButton.transform.childCount; i++)
+        {
+            var child = gamesButton.transform.GetChild(i);
+            if (!child.GetComponent<TextMeshProUGUI>()) 
+            { 
+                gamesButton.transform.GetChild(i).gameObject.SetActive(false);
+            }
+        }
+        evaluationButton.gameObject.SetActive(false);
 
         singOutButton.gameObject.SetActive(false);
         settingsButton.gameObject.SetActive(false);
@@ -2229,6 +2301,17 @@ class GameMenu
         mainCanvas.SetActive(true);
         manager.WriteTheText(evaluationButton, 0);
         manager.WriteTheText(gamesButton, 1);
+
+        gamesButton.gameObject.SetActive(true);
+        for (int i = 0; i < gamesButton.transform.childCount; i++)
+        {
+            gamesButton.transform.GetChild(i).gameObject.SetActive(true);
+        }
+        evaluationButton.gameObject.SetActive(true);
+        for (int i = 0; i < evaluationButton.transform.childCount; i++)
+        {
+            evaluationButton.transform.GetChild(i).gameObject.SetActive(true);
+        }
 
         gamesButton.onClick.RemoveAllListeners();
         evaluationButton.onClick.RemoveAllListeners();
@@ -2253,6 +2336,17 @@ class GameMenu
         mainCanvas.SetActive(true);
         manager.WriteTheText(evaluationButton, 0);
         manager.WriteTheText(gamesButton, 1);
+
+        gamesButton.gameObject.SetActive(true);
+        for (int i = 0; i < gamesButton.transform.childCount; i++) 
+        {
+            gamesButton.transform.GetChild(i).gameObject.SetActive(true);
+        }
+        evaluationButton.gameObject.SetActive(true);
+        for (int i = 0; i < evaluationButton.transform.childCount; i++)
+        {
+            evaluationButton.transform.GetChild(i).gameObject.SetActive(true);
+        }
 
         gamesButton.onClick.AddListener(manager.LoadGameMenus);
         evaluationButton.onClick.AddListener(manager.ShowDisclaimer);

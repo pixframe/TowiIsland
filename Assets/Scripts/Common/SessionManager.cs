@@ -27,6 +27,8 @@ public class SessionManager : MonoBehaviour
     bool downlodingData;
     bool isShowingTimeLimit = false;
 
+    public bool isSyncing;
+
     Firebase.FirebaseApp firebaseApp;
 
     void Awake()
@@ -236,7 +238,7 @@ public class SessionManager : MonoBehaviour
         return false;*/
     }
 
-    public void LoadUser(string username, string psswd, string key, string[] kids, int id)
+    public void LoadUser(string username, string psswd, string key, string[] kids, int id, int amountOfEvaluations)
     {
         bool missing = true;
         if (users.Count > 0)
@@ -249,6 +251,7 @@ public class SessionManager : MonoBehaviour
                     users[i].username = username;
                     users[i].psswdHash = psswd;
                     users[i].id = id;
+                    users[i].numberOfEvaluations = amountOfEvaluations;
                     SaveSession();
                     activeUser = users[i];
                     if (activeUser.kids.Count > 0)
@@ -269,7 +272,9 @@ public class SessionManager : MonoBehaviour
         }
         if (missing)
         {
-            users.Add(new User(key, username, psswd, id));
+            var newUser = new User(key, username, psswd, id);
+            newUser.numberOfEvaluations = amountOfEvaluations;
+            users.Add(newUser);
 
             activeUser = users[users.Count - 1];
             if (activeUser.kids.Count > 0)
@@ -307,7 +312,7 @@ public class SessionManager : MonoBehaviour
         SaveSession();
     }
 
-    public void AddKid(int kidID, string name, string key, bool actiive, bool trial)
+    public void AddKid(int kidID, string name, string key)
     {
         //TODO Add Age
         activeUser.kids.Add(new Kid(kidID, name, key));
@@ -466,6 +471,7 @@ public class SessionManager : MonoBehaviour
 
     public void SyncProfiles(string key)
     {
+        isSyncing = true;
         StartCoroutine(PostSyncProfiles(key));
     }
 
@@ -514,7 +520,7 @@ public class SessionManager : MonoBehaviour
 
                     if (!cidsOfActiveKids.Contains(cid))
                     {
-                        AddKid(cid, kidName, activeUser.userkey, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial"));
+                        AddKid(cid, kidName, activeUser.userkey);
                         index = activeUser.kids.Count - 1;
                     }
                     else
@@ -557,6 +563,39 @@ public class SessionManager : MonoBehaviour
                         activeUser.kids[index].buyedIslandObjects.Add((int)buyedItems[o].Number);
                     }
 
+                    if (!activeUser.kids[index].gamesUnlocked[0])
+                    {
+                        activeUser.kids[index].gamesUnlocked[0] = kidObj.GetObject("unlockedGames").GetBoolean("arbol_musical");
+                    }
+                    if (!activeUser.kids[index].gamesUnlocked[1])
+                    {
+                        activeUser.kids[index].gamesUnlocked[1] = kidObj.GetObject("unlockedGames").GetBoolean("arbol_musical");
+                    }
+                    if (!activeUser.kids[index].gamesUnlocked[2])
+                    {
+                        activeUser.kids[index].gamesUnlocked[2] = kidObj.GetObject("unlockedGames").GetBoolean("arbol_musical");
+                    }
+                    if (!activeUser.kids[index].gamesUnlocked[3])
+                    {
+                        activeUser.kids[index].gamesUnlocked[3] = kidObj.GetObject("unlockedGames").GetBoolean("arbol_musical");
+                    }
+                    if (!activeUser.kids[index].gamesUnlocked[4])
+                    {
+                        activeUser.kids[index].gamesUnlocked[4] = kidObj.GetObject("unlockedGames").GetBoolean("arbol_musical");
+                    }
+                    if (!activeUser.kids[index].gamesUnlocked[5])
+                    {
+                        activeUser.kids[index].gamesUnlocked[5] = kidObj.GetObject("unlockedGames").GetBoolean("arbol_musical");
+                    }
+                    if (!activeUser.kids[index].gamesUnlocked[6])
+                    {
+                        activeUser.kids[index].gamesUnlocked[6] = kidObj.GetObject("unlockedGames").GetBoolean("arbol_musical");
+                    }
+
+                    activeUser.kids[index].isTimeLimited = kidObj.GetBoolean("limitTime");
+                    activeUser.kids[index].timeLimit = (float)kidObj.GetNumber("limitTimeHave");
+                    activeUser.kids[index].timePassInThisSeason = (float)kidObj.GetNumber("deviceTimeToday");
+
                     if (activeKid != null)
                     {
                         if (activeKid.id == cid)
@@ -577,6 +616,8 @@ public class SessionManager : MonoBehaviour
                 }
                 SaveSession();
             }
+
+            isSyncing = false;
         }
     }
 
@@ -642,7 +683,7 @@ public class SessionManager : MonoBehaviour
         {
             yield return request.SendWebRequest();
 
-            Debug.Log(request.downloadHandler.text);
+            Debug.Log($"Update result was:\n{request.downloadHandler.text}");
 
             if (request.isNetworkError)
             {
@@ -704,7 +745,10 @@ public class SessionManager : MonoBehaviour
             { "bolitaLevelSet", true },
             { "rioLevelSet", true },
             { "islandShoppingList", shopingList },
-            { "userKey", activeKid.userkey }
+            { "userKey", activeKid.userkey },
+            { "limitTime", activeKid.isTimeLimited},
+            { "limitTimeHave", activeKid.timeLimit},
+            { "deviceTimeToday", activeKid.timePassInThisSeason}
         };
 
         return data;
@@ -735,7 +779,6 @@ public class SessionManager : MonoBehaviour
             }
             else
             {
-                Debug.Log(request.downloadHandler.text);
                 var json = JsonUtility.FromJson(request.downloadHandler.text, typeof(LevlSyncJson)) as LevlSyncJson;
 
                 //Birds Level Set
@@ -806,6 +849,7 @@ public class SessionManager : MonoBehaviour
         public string psswdHash;
         public List<Kid> kids;
         public int id;
+        public int numberOfEvaluations;
         public string language;
         public bool isPossibleBuyIAP;
         public User(string key, string user, string psswd, int ide)

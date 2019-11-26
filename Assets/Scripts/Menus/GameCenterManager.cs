@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using UnityEngine.Monetization;
 using TMPro;
 
 public class GameCenterManager : MonoBehaviour
@@ -62,11 +63,11 @@ public class GameCenterManager : MonoBehaviour
     float firstXPos;
     float secondXPos;
 
-    enum DirectionOfSwipe { Left, Right, None};
+    enum DirectionOfSwipe { Left, Right, None };
     DirectionOfSwipe directtion = DirectionOfSwipe.None;
 
     // Use this for initialization
-    void Start ()
+    void Start()
     {
         StartCoroutine(LoadLoader());
         sessionManager = FindObjectOfType<SessionManager>();
@@ -101,7 +102,7 @@ public class GameCenterManager : MonoBehaviour
         leftButton.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Left));
         rigthButton.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Right));
 
-        currentPanel.playButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length- 4];
+        currentPanel.playButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length - 4];
 
 
         ChildGames();
@@ -211,7 +212,7 @@ public class GameCenterManager : MonoBehaviour
     }
 
     void FisrtTouch(PointerEventData data)
-    {   
+    {
         firstXPos = Input.mousePosition.x;
     }
 
@@ -233,11 +234,11 @@ public class GameCenterManager : MonoBehaviour
         ChangeMenus();
     }
 
-	// Update is called once per frame
-	void Update ()
+    // Update is called once per frame
+    void Update()
     {
 
-	}
+    }
 
     public void ChangeMenus()
     {
@@ -377,7 +378,7 @@ public class GameCenterManager : MonoBehaviour
             if (isCenter)
             {
                 panel.blockPanel.onClick.RemoveAllListeners();
-                panel.blockPanel.onClick.AddListener(()=>ShowDisclaimer(number));
+                panel.blockPanel.onClick.AddListener(ShowBuyOptions);
             }
         }
     }
@@ -408,14 +409,14 @@ public class GameCenterManager : MonoBehaviour
         }
     }
 
-    void LoadNewScene(string sceneName) 
+    void LoadNewScene(string sceneName)
     {
         Destroy(audioPlayer.gameObject);
         PrefsKeys.SetNextScene(sceneName);
         asyncLoad.allowSceneActivation = true;
     }
 
-    void LoadNewScene(DemoPanel.Difficulty difficulty) 
+    void LoadNewScene(DemoPanel.Difficulty difficulty)
     {
         Debug.Log("Doing some");
         FindObjectOfType<DemoKey>().SetDifficulty(difficulty);
@@ -452,30 +453,80 @@ public class GameCenterManager : MonoBehaviour
         warningPanel.SetActive(true);
         warningPanel.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
         warningPanel.GetComponentInChildren<Button>().onClick.AddListener(GoBackScene);
-        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length-2];
+        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length - 3];
     }
 
-    void ShowDisclaimer(int numberOfGame)
+    public void ShowBuyOptionError() 
     {
+        ShowBuyOptions();
+        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = string.Format(stringsToShow[stringsToShow.Length - 1], stringsToShow[stations[index]]);
+    }
+
+    void ShowBuyOptions()
+    {
+        DeactivateMainPanel();
         loadingCanvas.SetActive(false);
         warningPanel.SetActive(true);
         var button = warningPanel.GetComponentInChildren<Button>();
         button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(()=>
+        button.onClick.AddListener(() =>
         {
             //Debug.Log($"this is the station {numberOfGame}");
             //warningPanel.SetActive(false);
             //ChangeMenus();
-            BuyItem(numberOfGame);
+            BuyItem();
 
         });
-        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length - 2];
-        button.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length - 1];
+        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = string.Format(stringsToShow[stringsToShow.Length - 3], stringsToShow[stations[index]]);
+        button.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length - 2];
     }
 
-    void BuyItem(int numberOfGame)
+    void DeactivateMainPanel()
     {
-        StartCoroutine(SendABuy(numberOfGame));
+        backPanel.SetActive(false);
+        centerPanel.SetActive(false);
+        fowardPanel.SetActive(false);
+        leftButton.gameObject.SetActive(false);
+        rigthButton.gameObject.SetActive(false);
+        goBackButton.gameObject.SetActive(true);
+        goBackButton.onClick.RemoveAllListeners();
+        goBackButton.onClick.AddListener(DeactivateDisclaimer);
+    }
+
+    void DeactivateDisclaimer()
+    {
+        backPanel.SetActive(true);
+        centerPanel.SetActive(true);
+        fowardPanel.SetActive(true);
+        leftButton.gameObject.SetActive(true);
+        rigthButton.gameObject.SetActive(true);
+        goBackButton.gameObject.SetActive(true);
+        warningPanel.SetActive(false);
+        goBackButton.onClick.RemoveAllListeners();
+        goBackButton.onClick.AddListener(GoBackScene);
+    }
+
+    void BuyItem()
+    {
+#if UNITY_ANDROID
+        ShowLoaderCanvas();
+        var iapManager = FindObjectOfType<MyIAPManager>();
+        iapManager.BuyAGame(stations[index]);
+#elif UNITY_IOS
+        ShowLoaderCanvas();
+        var iapManager = FindObjectOfType<MyIAPManager>();
+        iapManager.BuyAGame(stations[index]);
+#elif UNITY_EDITOR
+        ShowLoaderCanvas();
+        ShowBuyOptionError();
+#else
+        Application.OpenURL($"{Keys.Api_Web_Key}tienda");
+#endif
+    }
+
+    public void SendBuy()
+    {
+        SendABuy(stations[index]);
     }
 
     IEnumerator SendABuy(int numberOfGame)
@@ -486,6 +537,7 @@ public class GameCenterManager : MonoBehaviour
         form.AddField("games", Keys.Game_Names[numberOfGame]);
         warningPanel.SetActive(false);
         loadingCanvas.SetActive(true);
+        goBackButton.gameObject.SetActive(false);
 
         using (UnityWebRequest request = UnityWebRequest.Post(urlBuy, form))
         {
@@ -494,18 +546,25 @@ public class GameCenterManager : MonoBehaviour
             {
                 Debug.Log("Error");
                 Debug.Log(request.downloadHandler.text);
-                ShowDisclaimer(numberOfGame);
-            }
-            else
-            {
-                warningPanel.SetActive(false);
+                DeactivateDisclaimer();
                 loadingCanvas.SetActive(false);
                 sessionManager.activeKid.gamesUnlocked[numberOfGame] = true;
                 unlocks[numberOfGame] = true;
                 SetPanel(currentPanel, numberOfGame, true);
                 sessionManager.SaveSession();
-
-                Debug.Log(request.downloadHandler.text);
+            }
+            else
+            {
+                DeactivateDisclaimer();
+                loadingCanvas.SetActive(false);
+                sessionManager.activeKid.gamesUnlocked[numberOfGame] = true;
+                unlocks[numberOfGame] = true;
+                SetPanel(currentPanel, numberOfGame, true);
+                sessionManager.SaveSession();
+            }
+            if (FindObjectOfType<MyIAPManager>()) 
+            {
+                FindObjectOfType<MyIAPManager>().ConfirmPurchaseProduct();
             }
         }
     }
