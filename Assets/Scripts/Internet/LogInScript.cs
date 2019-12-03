@@ -98,6 +98,7 @@ public class LogInScript : MonoBehaviour
             else
             {
                 PlayerPrefs.SetInt(Keys.Logged_Session, 1);
+                PlayerPrefs.SetInt(Keys.First_Try, 1);
                 //we get a JSON object from the server  
                 JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
                 JSONArray kids = jsonObject.GetValue("children").Array;

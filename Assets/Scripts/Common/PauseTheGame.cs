@@ -162,8 +162,18 @@ public class PauseTheGame : MonoBehaviour {
 
     void ReturnHome()
     {
+        Debug.Log("Go Home Now");
         ShowLoadingScreen();
-        StartCoroutine(GoToTheGameCenterWhenDataIsSend());
+        if (PlayerPrefs.GetInt(Keys.First_Try) == 0)
+        {
+            Debug.Log("Here should go");
+            PlayerPrefs.SetInt(Keys.First_Try, 1);
+            SendInmiediatlyToIsland("NewLogin");
+        }
+        else
+        {
+            StartCoroutine(GoToTheGameCenterWhenDataIsSend());
+        }
     }
 
     IEnumerator GoToTheGameCenterWhenDataIsSend()
@@ -175,7 +185,14 @@ public class PauseTheGame : MonoBehaviour {
 
     void SendInmiediatlyToIsland()
     {
-        PrefsKeys.SetNextScene("GameCenter");
+        SendInmiediatlyToIsland("GameCenter");
+    }
+
+
+    void SendInmiediatlyToIsland(string sceneToGo)
+    {
+        PrefsKeys.SetNextScene(sceneToGo);
+
         SceneManager.LoadScene("Loader_Scene");
     }
 }

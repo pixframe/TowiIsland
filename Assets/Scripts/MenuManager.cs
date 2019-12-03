@@ -2262,7 +2262,7 @@ class GameMenu
         mainCanvas.SetActive(true);
 
         gamesButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[0];
-        evaluationButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[1];
+        evaluationButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[2];
         tryLogo.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[3];
 
 
@@ -2278,7 +2278,16 @@ class GameMenu
                 gamesButton.transform.GetChild(i).gameObject.SetActive(false);
             }
         }
-        evaluationButton.gameObject.SetActive(false);
+        evaluationButton.gameObject.SetActive(true);
+        for (int i = 0; i < evaluationButton.transform.childCount; i++)
+        {
+            var child = gamesButton.transform.GetChild(i);
+            if (!child.GetComponent<TextMeshProUGUI>())
+            {
+                gamesButton.transform.GetChild(i).gameObject.SetActive(false);
+            }
+        }
+
 
         singOutButton.gameObject.SetActive(false);
         settingsButton.gameObject.SetActive(false);
@@ -2293,7 +2302,14 @@ class GameMenu
 
         gamesButton.onClick.AddListener(manager.ShowLogIn);
 
-        evaluationButton.onClick.AddListener(manager.ShowAdd);
+        if (PlayerPrefs.GetInt(Keys.First_Try) != 0)
+        {
+            evaluationButton.onClick.AddListener(manager.ShowAdd);
+        }
+        else
+        {
+            evaluationButton.onClick.AddListener(manager.ShowTryChances);
+        }
     }
 
     public void ShowThisMenu()
