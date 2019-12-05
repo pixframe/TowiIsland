@@ -758,9 +758,9 @@ public class MenuManager : MonoBehaviour
         myIAPManager.BuyProductID(MyIAPManager.evaluationID);
 #elif UNITY_EDITOR
         //BuySuccesfullEvaluation();
-        Application.OpenURL($"{Keys.Api_Web_Key}/tienda");
+        Application.OpenURL($"{Keys.Api_Web_Key}tienda");
 #else
-        Application.OpenURL($"{Keys.Api_Web_Key}/tienda");
+        Application.OpenURL($"{Keys.Api_Web_Key}tienda");
 #endif
     }
 

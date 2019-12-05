@@ -150,7 +150,7 @@ public class IslandShoppingManager : MonoBehaviour {
 
             confirmationText.text = stringsToShow[1];
             priceTag.gameObject.SetActive(false);
-            yesButton.GetComponentInChildren<Text>().text = stringsToShow[4];
+            yesButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[4];
             kiwiLogoPanel.SetActive(false);
             noButton.gameObject.SetActive(false);
 
