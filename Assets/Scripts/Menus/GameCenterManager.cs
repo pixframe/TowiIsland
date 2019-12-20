@@ -80,6 +80,7 @@ public class GameCenterManager : MonoBehaviour
         currentPanel.playButton.onClick.AddListener(LoadNewScene);
         eventTrigger = FindObjectOfType<EventTrigger>();
         tPos = eventTrigger.transform.GetSiblingIndex();
+        loadingCanvas.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[12];
 
         EventTrigger.Entry t1 = new EventTrigger.Entry();
         t1.eventID = EventTriggerType.BeginDrag;
@@ -102,7 +103,7 @@ public class GameCenterManager : MonoBehaviour
         leftButton.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Left));
         rigthButton.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Right));
 
-        currentPanel.playButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length - 5];
+        currentPanel.playButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[7];
 
 
         ChildGames();
@@ -453,13 +454,13 @@ public class GameCenterManager : MonoBehaviour
         warningPanel.SetActive(true);
         warningPanel.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
         warningPanel.GetComponentInChildren<Button>().onClick.AddListener(GoBackScene);
-        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length - 3];
+        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[8];
     }
 
     public void ShowBuyOptionError() 
     {
         ShowBuyOptions();
-        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = string.Format(stringsToShow[stringsToShow.Length - 1], stringsToShow[stations[index]]);
+        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = string.Format(stringsToShow[11], stringsToShow[stations[index]]);
     }
 
     void ShowBuyOptions()
@@ -477,8 +478,8 @@ public class GameCenterManager : MonoBehaviour
             BuyItem();
 
         });
-        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = string.Format(stringsToShow[stringsToShow.Length - 3], stringsToShow[stations[index]]);
-        button.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length - 2];
+        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = string.Format(stringsToShow[9], stringsToShow[stations[index]]);
+        button.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[10];
     }
 
     void DeactivateMainPanel()

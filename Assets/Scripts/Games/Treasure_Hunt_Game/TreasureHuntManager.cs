@@ -157,10 +157,11 @@ public class TreasureHuntManager : MonoBehaviour {
             pauser.howToPlayButton.onClick.AddListener(TellAStory);
             pauser.playButton.onClick.AddListener(TalkInstruction);
         }
+        noButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[24];
     }
 
-	// Update is called once per frame
-	void Update ()
+    // Update is called once per frame
+    void Update ()
     {
         sessionManager.UpdateTime();
         if (counting)

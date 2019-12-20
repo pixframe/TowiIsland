@@ -95,7 +95,7 @@ public class MonkeyHidingManager : MonoBehaviour {
     void Start ()
     {
         tryVersion = PlayerPrefs.GetInt(Keys.First_Try) == 0;
-        if (tryVersion)
+        if (tryVersion && !FindObjectOfType<DemoKey>())
         {
 
         }

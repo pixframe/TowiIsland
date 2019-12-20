@@ -1445,7 +1445,7 @@ public class MenuManager : MonoBehaviour
         WriteTheText(configMenu.timeLimitButton, configTexts[3]);
         WriteTheText(configMenu.timeLimitLabel, configTexts[4]);
         WriteTheText(configMenu.dropdwonTime, configTexts[7]);
-
+        configMenu.passwordNeedMenu.SetTexts();
     }
 
     public void WriteTheText(Button button, string text)

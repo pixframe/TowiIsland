@@ -12,22 +12,18 @@ public class PasswordNeedMenu
     public TMP_InputField passwordField;
     public Button sendPassButton;
 
-    readonly string messageNormal;
-    readonly string badPassword;
+    string messageNormal;
+    string badPassword;
 
     public PasswordNeedMenu(Transform panel) 
     {
         this.panel = panel;
-        var text = TextReader.TextsToSet("Components/Password_Need");
-        messageNormal = text[0];
-        badPassword = text[3];
         needPassText = this.panel.Find("Message Config").GetComponent<TextMeshProUGUI>();
-        needPassText.text = messageNormal;
         sendPassButton = this.panel.Find("SendPassButton").GetComponent<Button>();
-        sendPassButton.GetComponentInChildren<TextMeshProUGUI>().text = text[2];
         passwordField = this.panel.Find("Password Field").GetComponent<TMP_InputField>();
-        passwordField.placeholder.GetComponent<TextMeshProUGUI>().text = text[1];
         passwordField.inputType = TMP_InputField.InputType.Password;
+
+        SetTexts();
     }
 
     public void SendPass(UnityAction action, string currentPass) 
@@ -48,5 +44,15 @@ public class PasswordNeedMenu
             needPassText.text = $"{badPassword}\n{messageNormal}";
             passwordField.text = string.Empty;
         }
+    }
+
+    public void SetTexts() 
+    {
+        var text = TextReader.TextsToSet("Components/Password_Need");
+        messageNormal = text[0];
+        passwordField.placeholder.GetComponent<TextMeshProUGUI>().text = text[1];
+        sendPassButton.GetComponentInChildren<TextMeshProUGUI>().text = text[2];
+        badPassword = text[3];
+        needPassText.text = messageNormal;
     }
 }
