@@ -700,7 +700,7 @@ public class MenuManager : MonoBehaviour
         }
         else
         {
-            if (sessionManager.activeUser.numberOfEvaluations > 0 && sessionManager.activeKid.testAvailable)
+            if (sessionManager.activeUser.numberOfEvaluations > 0 && sessionManager.activeKid.testAvailable || key != null)
             {
                 ShowTheDisclaimer();
             }
