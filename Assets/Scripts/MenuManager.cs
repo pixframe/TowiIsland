@@ -1009,7 +1009,6 @@ public class MenuManager : MonoBehaviour
         configMenu.panel.SetActive(true);
         configMenu.languagePanelHandler.SetActive(false);
         configMenu.timeLimitPanel.SetActive(false);
-        configMenu.changeConfigPanel.SetActive(false);
         configMenu.passwordNeedMenu.panel.gameObject.SetActive(false);
         configMenu.logoButton.gameObject.SetActive(true);
         configMenu.languageButton.gameObject.SetActive(true);

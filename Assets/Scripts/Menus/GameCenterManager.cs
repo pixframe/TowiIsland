@@ -103,7 +103,7 @@ public class GameCenterManager : MonoBehaviour
         rigthButton.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Right));
 
         currentPanel.playButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[7];
-
+        warningPanel.GetComponentInChildren<Button>().GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[13];
 
         ChildGames();
         ShowLoaderCanvas();
@@ -488,7 +488,7 @@ public class GameCenterManager : MonoBehaviour
         warningPanel.SetActive(true);
         warningPanel.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
         warningPanel.GetComponentInChildren<Button>().onClick.AddListener(GoBackScene);
-        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[stringsToShow.Length - 2];
+        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[11];
     }
 
     void ShowDisclaimer()
@@ -503,7 +503,7 @@ public class GameCenterManager : MonoBehaviour
             ChangeMenus();
 
         });
-        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = string.Format(stringsToShow[9], stringsToShow[stations[index]]);
+        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[9];
     }
 
     void DeactivateMainPanel()
