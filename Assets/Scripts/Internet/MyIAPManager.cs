@@ -88,6 +88,7 @@ public class MyIAPManager : MonoBehaviour, IStoreListener
     List<int> ids = new List<int>();
 
     PurchaseEventArgs eventArgs;
+    MenuManager menuManager;
 
     void Awake()
     {
@@ -102,6 +103,7 @@ public class MyIAPManager : MonoBehaviour, IStoreListener
             // Begin to configure our connection to Purchasing
             InitializePurchasing();
         }
+        menuManager = FindObjectOfType<MenuManager>();
     }
 
     public void InitializePurchasing()
@@ -566,116 +568,116 @@ public class MyIAPManager : MonoBehaviour, IStoreListener
     public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args)
     {
         eventArgs = args;
-        if (FindObjectOfType<MenuManager>()) 
-        { 
-            var menuManager = FindObjectOfType<MenuManager>();
-            if (String.Equals(args.purchasedProduct.definition.id, evaluationID, StringComparison.Ordinal))
-            {
-                menuManager.BuySuccesfullEvaluation();
-                return PurchaseProcessingResult.Pending;
-            }
-            else
-            {
-                Debug.Log(string.Format("ProcessPurchase: FAIL. Unrecognized product: '{0}'", args.purchasedProduct.definition.id));
-            }
+        //if (FindObjectOfType<MenuManager>()) 
+        //{ 
+        //    var menuManager = FindObjectOfType<MenuManager>();
+        //    if (String.Equals(args.purchasedProduct.definition.id, evaluationID, StringComparison.Ordinal))
+        //    {
+        //        menuManager.BuySuccesfullEvaluation();
+        //        return PurchaseProcessingResult.Pending;
+        //    }
+        //    else
+        //    {
+        //        Debug.Log(string.Format("ProcessPurchase: FAIL. Unrecognized product: '{0}'", args.purchasedProduct.definition.id));
+        //    }
 
-        }
-        else if (FindObjectOfType<GameCenterManager>()) 
+        //}
+        //else if (FindObjectOfType<GameCenterManager>()) 
+        //{
+        //    var manager = FindObjectOfType<GameCenterManager>();
+
+
+        //    if (String.Equals(args.purchasedProduct.definition.id, birdsGame, StringComparison.Ordinal))
+        //    {
+        //        manager.SendBuy();
+        //        return PurchaseProcessingResult.Pending;
+        //    }
+        //    else if (String.Equals(args.purchasedProduct.definition.id, sandGame, StringComparison.Ordinal))
+        //    {
+        //        manager.SendBuy();
+        //        return PurchaseProcessingResult.Pending;
+        //    }
+        //    else if (String.Equals(args.purchasedProduct.definition.id, treasureGame, StringComparison.Ordinal))
+        //    {
+        //        manager.SendBuy();
+        //        return PurchaseProcessingResult.Pending;
+        //    }
+        //    else if (String.Equals(args.purchasedProduct.definition.id, monkeyGame, StringComparison.Ordinal))
+        //    {
+        //        manager.SendBuy();
+        //        return PurchaseProcessingResult.Pending;
+        //    }
+        //    else if (String.Equals(args.purchasedProduct.definition.id, riverGame, StringComparison.Ordinal))
+        //    {
+        //        manager.SendBuy();
+        //        return PurchaseProcessingResult.Pending;
+        //    }
+        //    else if (String.Equals(args.purchasedProduct.definition.id, lavaGame, StringComparison.Ordinal))
+        //    {
+        //        manager.SendBuy();
+        //        return PurchaseProcessingResult.Pending;
+        //    }
+        //    else if (String.Equals(args.purchasedProduct.definition.id, icecreamGame, StringComparison.Ordinal))
+        //    {
+        //        manager.SendBuy();
+        //        return PurchaseProcessingResult.Pending;
+        //    }
+        //    // Or ... an unknown product has been purchased by this user. Fill in additional products here....
+        //    else
+        //    {
+        //        Debug.Log(string.Format("ProcessPurchase: FAIL. Unrecognized product: '{0}'", args.purchasedProduct.definition.id));
+        //    }
+        //}
+        if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscription, StringComparison.Ordinal))
         {
-            var manager = FindObjectOfType<GameCenterManager>();
-
-
-            if (String.Equals(args.purchasedProduct.definition.id, birdsGame, StringComparison.Ordinal))
-            {
-                manager.SendBuy();
-                return PurchaseProcessingResult.Pending;
-            }
-            else if (String.Equals(args.purchasedProduct.definition.id, sandGame, StringComparison.Ordinal))
-            {
-                manager.SendBuy();
-                return PurchaseProcessingResult.Pending;
-            }
-            else if (String.Equals(args.purchasedProduct.definition.id, treasureGame, StringComparison.Ordinal))
-            {
-                manager.SendBuy();
-                return PurchaseProcessingResult.Pending;
-            }
-            else if (String.Equals(args.purchasedProduct.definition.id, monkeyGame, StringComparison.Ordinal))
-            {
-                manager.SendBuy();
-                return PurchaseProcessingResult.Pending;
-            }
-            else if (String.Equals(args.purchasedProduct.definition.id, riverGame, StringComparison.Ordinal))
-            {
-                manager.SendBuy();
-                return PurchaseProcessingResult.Pending;
-            }
-            else if (String.Equals(args.purchasedProduct.definition.id, lavaGame, StringComparison.Ordinal))
-            {
-                manager.SendBuy();
-                return PurchaseProcessingResult.Pending;
-            }
-            else if (String.Equals(args.purchasedProduct.definition.id, icecreamGame, StringComparison.Ordinal))
-            {
-                manager.SendBuy();
-                return PurchaseProcessingResult.Pending;
-            }
-            // Or ... an unknown product has been purchased by this user. Fill in additional products here....
-            else
-            {
-                Debug.Log(string.Format("ProcessPurchase: FAIL. Unrecognized product: '{0}'", args.purchasedProduct.definition.id));
-            }
+            menuManager.SetKidProfilesToAddASubscription(1, "monthly_inApp");
+            return PurchaseProcessingResult.Pending;
         }
-        //if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscription, StringComparison.Ordinal))
-        //{
-        //    menuManager.SetKidProfilesToAddASubscription(1, "monthly_inApp");
-        //    return PurchaseProcessingResult.Pending;
-        //}
-        //else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionTwo, StringComparison.Ordinal))
-        //{
-        //    menuManager.SetKidProfilesToAddASubscription(2, "monthly_inApp");
-        //    return PurchaseProcessingResult.Pending;
-        //}
-        //else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionThree, StringComparison.Ordinal))
-        //{
-        //    menuManager.SetKidProfilesToAddASubscription(3, "monthly_inApp");
-        //    return PurchaseProcessingResult.Pending;
-        //}
-        //else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionFour, StringComparison.Ordinal))
-        //{
-        //    menuManager.SetKidProfilesToAddASubscription(4, "monthly_inApp");
-        //    return PurchaseProcessingResult.Pending;
-        //}
-        //else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionFive, StringComparison.Ordinal))
-        //{
-        //    menuManager.SetKidProfilesToAddASubscription(5, "monthly_inApp");
-        //    return PurchaseProcessingResult.Pending;
-        //}
-        //else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscription, StringComparison.Ordinal))
-        //{
-        //    menuManager.SetKidProfilesToAddASubscription(1, "quarterly_inApp");
-        //    return PurchaseProcessingResult.Pending;
-        //}
-        //else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionTwo, StringComparison.Ordinal))
-        //{
-        //    menuManager.SetKidProfilesToAddASubscription(2, "quarterly_inApp");
-        //    return PurchaseProcessingResult.Pending;
-        //}
-        //else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionThree, StringComparison.Ordinal))
-        //{
-        //    menuManager.SetKidProfilesToAddASubscription(3, "quarterly_inApp");
-        //    return PurchaseProcessingResult.Pending;
-        //}
-        //else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionFour, StringComparison.Ordinal))
-        //{
-        //    menuManager.SetKidProfilesToAddASubscription(4, "quarterly_inApp");
-        //    return PurchaseProcessingResult.Pending;
-        //}
-        //else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionFive, StringComparison.Ordinal))
-        //{
-        //    menuManager.SetKidProfilesToAddASubscription(5, "quarterly_inApp");
-        //    return PurchaseProcessingResult.Pending;
-        //}
+        else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionTwo, StringComparison.Ordinal))
+        {
+            menuManager.SetKidProfilesToAddASubscription(2, "monthly_inApp");
+            return PurchaseProcessingResult.Pending;
+        }
+        else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionThree, StringComparison.Ordinal))
+        {
+            menuManager.SetKidProfilesToAddASubscription(3, "monthly_inApp");
+            return PurchaseProcessingResult.Pending;
+        }
+        else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionFour, StringComparison.Ordinal))
+        {
+            menuManager.SetKidProfilesToAddASubscription(4, "monthly_inApp");
+            return PurchaseProcessingResult.Pending;
+        }
+        else if (String.Equals(args.purchasedProduct.definition.id, oneMonthSuscriptionFive, StringComparison.Ordinal))
+        {
+            menuManager.SetKidProfilesToAddASubscription(5, "monthly_inApp");
+            return PurchaseProcessingResult.Pending;
+        }
+        else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscription, StringComparison.Ordinal))
+        {
+            menuManager.SetKidProfilesToAddASubscription(1, "quarterly_inApp");
+            return PurchaseProcessingResult.Pending;
+        }
+        else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionTwo, StringComparison.Ordinal))
+        {
+            menuManager.SetKidProfilesToAddASubscription(2, "quarterly_inApp");
+            return PurchaseProcessingResult.Pending;
+        }
+        else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionThree, StringComparison.Ordinal))
+        {
+            menuManager.SetKidProfilesToAddASubscription(3, "quarterly_inApp");
+            return PurchaseProcessingResult.Pending;
+        }
+        else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionFour, StringComparison.Ordinal))
+        {
+            menuManager.SetKidProfilesToAddASubscription(4, "quarterly_inApp");
+            return PurchaseProcessingResult.Pending;
+        }
+        else if (String.Equals(args.purchasedProduct.definition.id, threeMonthSuscriptionFive, StringComparison.Ordinal))
+        {
+            menuManager.SetKidProfilesToAddASubscription(5, "quarterly_inApp");
+            return PurchaseProcessingResult.Pending;
+        }
 
 
         // Return a flag indicating whether this product has completely been received, or if the application needs 
@@ -696,7 +698,7 @@ public class MyIAPManager : MonoBehaviour, IStoreListener
         }
         else if (FindObjectOfType<GameCenterManager>())
         {
-            FindObjectOfType<GameCenterManager>().ShowBuyOptionError();
+            //FindObjectOfType<GameCenterManager>().ShowBuyOptionError();
         }
         Debug.Log(string.Format("OnPurchaseFailed: FAIL. Product: '{0}', PurchaseFailureReason: {1}", product.definition.storeSpecificId, failureReason));
     }

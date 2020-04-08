@@ -88,7 +88,7 @@ public class SessionManager : MonoBehaviour
             AddUser("_local", "", "_local", null, 0);
             if (activeUser != null)
             {
-                activeUser.kids.Add(new Kid(0, "local_kid", "_local"));
+                activeUser.kids.Add(new Kid(0, "local_kid", "_local", false, false));
             }
             activeUser = null;
             SaveSession();
@@ -117,6 +117,7 @@ public class SessionManager : MonoBehaviour
                 string userS = PlayerPrefs.GetString(Keys.Active_User_Key);
                 if (userS != "")
                 {
+                    Debug.Log(userS);
                     activeUser = GetUser(userS);
                     int kidS = PlayerPrefs.GetInt("activeKid", -1);
                     if (kidS != -1)
@@ -169,13 +170,13 @@ public class SessionManager : MonoBehaviour
         return null;
     }
 
-    public void UpdateTime() 
+    public void UpdateTime()
     {
-        if (activeKid.isTimeLimited) 
+        if (activeKid.isTimeLimited)
         {
             activeKid.timePassInThisSeason += Time.deltaTime;
             Debug.Log(activeKid.timePassInThisSeason);
-            if (activeKid.timePassInThisSeason >= activeKid.timeLimit && !isShowingTimeLimit) 
+            if (activeKid.timePassInThisSeason >= activeKid.timeLimit && !isShowingTimeLimit)
             {
                 Instantiate(limitTime);
                 isShowingTimeLimit = true;
@@ -201,12 +202,19 @@ public class SessionManager : MonoBehaviour
         {
             if (users[i].username == username && users[i].psswdHash == psswd)
             {
-                activeUser = users[i];
-                activeKid = activeUser.kids[0];
-                PlayerPrefs.SetString("activeUser", activeKid.userkey);
-                PlayerPrefs.SetInt("activeKid", 1);
-                SyncProfiles(activeKid.userkey);
-                return 1;
+                if (DateTime.Now <= users[i].suscriptionDate)
+                {
+                    activeUser = users[i];
+                    activeKid = activeUser.kids[0];
+                    PlayerPrefs.SetString("activeUser", activeKid.userkey);
+                    PlayerPrefs.SetInt("activeKid", 1);
+                    SyncProfiles(activeKid.userkey);
+                    return 1;
+                }
+                else
+                {
+                    return 2;
+                }
             }
         }
         return -1;
@@ -240,7 +248,7 @@ public class SessionManager : MonoBehaviour
         return false;*/
     }
 
-    public void LoadUser(string username, string psswd, string key, string[] kids, int id, int amountOfEvaluations)
+    public void LoadUser(string username, string psswd, string key, string[] kids, int id)
     {
         bool missing = true;
         if (users.Count > 0)
@@ -253,7 +261,6 @@ public class SessionManager : MonoBehaviour
                     users[i].username = username;
                     users[i].psswdHash = psswd;
                     users[i].id = id;
-                    users[i].numberOfEvaluations = amountOfEvaluations;
                     SaveSession();
                     activeUser = users[i];
                     if (activeUser.kids.Count > 0)
@@ -274,9 +281,7 @@ public class SessionManager : MonoBehaviour
         }
         if (missing)
         {
-            var newUser = new User(key, username, psswd, id);
-            newUser.numberOfEvaluations = amountOfEvaluations;
-            users.Add(newUser);
+            users.Add(new User(key, username, psswd, id));
 
             activeUser = users[users.Count - 1];
             if (activeUser.kids.Count > 0)
@@ -314,10 +319,10 @@ public class SessionManager : MonoBehaviour
         SaveSession();
     }
 
-    public void AddKid(int kidID, string name, string key)
+    public void AddKid(int kidID, string name, string key, bool actiive, bool trial)
     {
         //TODO Add Age
-        activeUser.kids.Add(new Kid(kidID, name, key));
+        activeUser.kids.Add(new Kid(kidID, name, key, actiive, trial));
         SaveSession();
     }
 
@@ -340,20 +345,7 @@ public class SessionManager : MonoBehaviour
                         {
                             string name = kidObj.GetValue("name").Str + " " + kidObj.GetValue("lastname").Str;
                             string key = kidObj.GetValue("key").Str;
-
-                            var kidToAdd = new Kid(cid, name, key);
-                            var unlocks = kidObj.GetObject("unlockedGames");
-                            kidToAdd.gamesUnlocked[0] = unlocks.GetBoolean("arbol_musical");
-                            kidToAdd.gamesUnlocked[1] = unlocks.GetBoolean("arena_magica");
-                            kidToAdd.gamesUnlocked[2] = unlocks.GetBoolean("tesoro");
-                            //kidToAdd.gamesUnlocked[3] = kidObj.GetBoolean("monos_traviesos");
-                            kidToAdd.gamesUnlocked[3] = true;
-                            kidToAdd.gamesUnlocked[4] = unlocks.GetBoolean("rio");
-                            kidToAdd.gamesUnlocked[5] = unlocks.GetBoolean("juego_sombras");
-                            kidToAdd.gamesUnlocked[6] = unlocks.GetBoolean("helados");
-
-                            users[u].kids.Add(kidToAdd);
-
+                            users[u].kids.Add(new Kid(cid, name, key, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial")));
                             temporalKids.Add(users[u].kids[users[u].kids.Count - 1]);
                         }
                     }
@@ -361,20 +353,7 @@ public class SessionManager : MonoBehaviour
                     {
                         string name = kidObj.GetValue("name").Str + " " + kidObj.GetValue("lastname").Str;
                         string key = kidObj.GetValue("key").Str;
-
-                        var kidToAdd = new Kid(cid, name, key);
-                        var unlocks = kidObj.GetObject("unlockedGames");
-                        kidToAdd.gamesUnlocked[0] = unlocks.GetBoolean("arbol_musical");
-                        kidToAdd.gamesUnlocked[1] = unlocks.GetBoolean("arena_magica");
-                        kidToAdd.gamesUnlocked[2] = unlocks.GetBoolean("tesoro");
-                        //kidToAdd.gamesUnlocked[3] = kidObj.GetBoolean("monos_traviesos");
-                        kidToAdd.gamesUnlocked[3] = true;
-                        kidToAdd.gamesUnlocked[4] = unlocks.GetBoolean("rio");
-                        kidToAdd.gamesUnlocked[5] = unlocks.GetBoolean("juego_sombras");
-                        kidToAdd.gamesUnlocked[6] = unlocks.GetBoolean("helados");
-
-                        users[u].kids.Add(kidToAdd);
-
+                        users[u].kids.Add(new Kid(cid, name, key, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial")));
                         temporalKids.Add(users[u].kids[users[u].kids.Count - 1]);
                     }
 
@@ -389,14 +368,20 @@ public class SessionManager : MonoBehaviour
         string s = "";
         for (int i = 0; i < activeUser.kids.Count; i++)
         {
-            kidsIAP++;
-            if (s == "")
+            if (!activeUser.kids[i].isActive)
             {
-                s += activeUser.kids[i].id.ToString();
-            }
-            else
-            {
-                s += "," + activeUser.kids[i].id.ToString();
+                if (activeUser.kids[i].isIAPSubscribed)
+                {
+                    kidsIAP++;
+                    if (s == "")
+                    {
+                        s += activeUser.kids[i].id.ToString();
+                    }
+                    else
+                    {
+                        s += "," + activeUser.kids[i].id.ToString();
+                    }
+                }
             }
         }
         return s;
@@ -512,6 +497,7 @@ public class SessionManager : MonoBehaviour
                 for (int i = 0; i < kids.Length; i++)
                 {
                     JSONObject kidObj = kids[i].Obj;
+                    JSONArray activeMissions = kidObj.GetArray("activeMissions");
                     JSONArray buyedItems = kidObj.GetArray("islandShoppingList");
 
                     int cid = (int)kidObj.GetNumber("cid");
@@ -520,7 +506,7 @@ public class SessionManager : MonoBehaviour
 
                     if (!cidsOfActiveKids.Contains(cid))
                     {
-                        AddKid(cid, kidName, activeUser.userkey);
+                        AddKid(cid, kidName, activeUser.userkey, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial"));
                         index = activeUser.kids.Count - 1;
                     }
                     else
@@ -528,6 +514,7 @@ public class SessionManager : MonoBehaviour
                         index = cidsOfActiveKids.IndexOf(cid);
                     }
 
+                    activeUser.kids[index].isActive = kidObj.GetBoolean("active");
                     activeUser.kids[index].kiwis = (int)kidObj.GetNumber("kiwis");
                     if (kidObj.GetString("avatar") != null)
                     {
@@ -543,6 +530,19 @@ public class SessionManager : MonoBehaviour
 
                     activeUser.kids[index].ResetPlayedGames();
 
+                    activeUser.kids[index].missionsToPlay = new List<int>();
+                    for (int o = 0; o < activeMissions.Length; o++)
+                    {
+                        string gameKey = activeMissions[o].Str;
+                        for (int gameName = 0; gameName < Keys.Number_Of_Games; gameName++)
+                        {
+                            if (gameKey == Keys.Game_Names[gameName])
+                            {
+                                activeUser.kids[index].missionsToPlay.Add(gameName);
+                                break;
+                            }
+                        }
+                    }
 
                     activeUser.kids[index].activeDay = (int)kidObj.GetNumber("activeDay");
                     activeUser.kids[index].ageSet = true;
@@ -552,7 +552,7 @@ public class SessionManager : MonoBehaviour
                     activeUser.kids[index].firstsGames[3] = kidObj.GetBoolean("bolitaFirstTime");
                     activeUser.kids[index].firstsGames[4] = kidObj.GetBoolean("rioFirstTime");
                     activeUser.kids[index].firstsGames[5] = kidObj.GetBoolean("sombrasFirstTime");
-                    activeUser.kids[index].firstsGames[6] = kidObj.GetBoolean("heladosFirstTime");
+                    //activeUser.kids[index].firstsGames[6] = kidObj.GetBoolean("heladosFirstTime");
 
                     activeUser.kids[index].testAvailable = kidObj.GetBoolean("testAvailable");
                     activeUser.kids[index].sandLevelSet = kidObj.GetBoolean("arenaLevelSet");
@@ -563,38 +563,17 @@ public class SessionManager : MonoBehaviour
                         activeUser.kids[index].buyedIslandObjects.Add((int)buyedItems[o].Number);
                     }
 
-                    if (!activeUser.kids[index].gamesUnlocked[0])
+                    string type = kidObj.GetString("suscriptionType");
+                    if (type == "monthly" || type == "quarterly")
                     {
-                        activeUser.kids[index].gamesUnlocked[0] = kidObj.GetObject("unlockedGames").GetBoolean("arbol_musical");
+                        setType = true;
+                        PlayerPrefs.SetInt(Keys.First_Try, 1);
                     }
-                    if (!activeUser.kids[index].gamesUnlocked[1])
+                    else if (type == "monthly_inApp" || type == "quarterly_inApp")
                     {
-                        activeUser.kids[index].gamesUnlocked[1] = kidObj.GetObject("unlockedGames").GetBoolean("arena_magica");
+                        activeUser.kids[index].isIAPSubscribed = true;
+                        PlayerPrefs.SetInt(Keys.First_Try, 1);
                     }
-                    if (!activeUser.kids[index].gamesUnlocked[2])
-                    {
-                        activeUser.kids[index].gamesUnlocked[2] = kidObj.GetObject("unlockedGames").GetBoolean("tesoro");
-                    }
-                    if (!activeUser.kids[index].gamesUnlocked[3])
-                    {
-                        activeUser.kids[index].gamesUnlocked[3] = kidObj.GetObject("unlockedGames").GetBoolean("monos_traviesos");
-                    }
-                    if (!activeUser.kids[index].gamesUnlocked[4])
-                    {
-                        activeUser.kids[index].gamesUnlocked[4] = kidObj.GetObject("unlockedGames").GetBoolean("rio");
-                    }
-                    if (!activeUser.kids[index].gamesUnlocked[5])
-                    {
-                        activeUser.kids[index].gamesUnlocked[5] = kidObj.GetObject("unlockedGames").GetBoolean("juego_sombras");
-                    }
-                    if (!activeUser.kids[index].gamesUnlocked[6])
-                    {
-                        activeUser.kids[index].gamesUnlocked[6] = kidObj.GetObject("unlockedGames").GetBoolean("helados");
-                    }
-
-                    activeUser.kids[index].isTimeLimited = kidObj.GetBoolean("limitTime");
-                    activeUser.kids[index].timeLimit = (float)kidObj.GetNumber("limitTimeHave");
-                    activeUser.kids[index].timePassInThisSeason = (float)kidObj.GetNumber("deviceTimeToday");
 
                     if (activeKid != null)
                     {
@@ -674,6 +653,11 @@ public class SessionManager : MonoBehaviour
     {
         JSONArray array = new JSONArray();
 
+        for (int i = 0; i < activeKid.missionsToPlay.Count; i++)
+        {
+            array.Add(Keys.Game_Names[activeKid.missionsToPlay[i]]);
+        }
+
         JSONObject data = UpdateJsonData(array);
 
         WWWForm form = new WWWForm();
@@ -735,7 +719,7 @@ public class SessionManager : MonoBehaviour
             { "arbolFirstTime", activeKid.firstsGames[0] },
             { "arenaFirstTime", activeKid.firstsGames[1] },
             { "sombrasFirstTime", activeKid.firstsGames[5]},
-            { "bolitaFirstTime", activeKid.firstsGames[3] },    
+            { "bolitaFirstTime", activeKid.firstsGames[3] },
             { "heladosFirstTime", activeKid.firstsGames[6]},
             { "tesoroLevelSet", true },
             { "arenaLevelSet", activeKid.sandLevelSet },
@@ -745,10 +729,7 @@ public class SessionManager : MonoBehaviour
             { "bolitaLevelSet", true },
             { "rioLevelSet", true },
             { "islandShoppingList", shopingList },
-            { "userKey", activeKid.userkey },
-            { "limitTime", activeKid.isTimeLimited},
-            { "limitTimeHave", activeKid.timeLimit},
-            { "deviceTimeToday", activeKid.timePassInThisSeason}
+            { "userKey", activeKid.userkey }
         };
 
         return data;
@@ -849,8 +830,10 @@ public class SessionManager : MonoBehaviour
         public string psswdHash;
         public List<Kid> kids;
         public int id;
-        public int numberOfEvaluations;
+        public int suscriptionsLeft;
         public string language;
+        public bool trialAccount;
+        public DateTime suscriptionDate;
         public bool isPossibleBuyIAP;
         public User(string key, string user, string psswd, int ide)
         {
@@ -860,6 +843,10 @@ public class SessionManager : MonoBehaviour
             psswdHash = psswd;
             id = ide;
             kids = new List<Kid>();
+            trialAccount = true;
+            suscriptionDate = DateTime.Now;
+            suscriptionDate.AddDays(7);
+            suscriptionsLeft = 0;
             isPossibleBuyIAP = false;
         }
     }
@@ -872,14 +859,22 @@ public class SessionManager : MonoBehaviour
         public int age;
         public string name;
         public int kiwis;
+        public int dontSyncArbolMusical;
+        public int dontSyncRio;
+        public int dontSyncArenaMagica;
+        public int dontSyncDondeQuedoLaBolita;
+        public int dontSyncSombras;
+        public int dontSyncTesoro;
+
+        public DateTime offlineSubscription;
 
         public string avatar;
         public string avatarClothes;
 
         public string offlineData;
+        public List<int> missionsToPlay;
         public bool[] playedGames;
         public List<bool> firstsGames;
-        public List<bool> gamesUnlocked;
         public string ownedItems;
         public int activeDay;
         public bool ageSet;
@@ -927,34 +922,46 @@ public class SessionManager : MonoBehaviour
 
         public bool needSync;
         public bool testAvailable;
+        public bool isActive;
+        public bool isInTrial;
+        public bool isIAPSubscribed;
 
         public List<int> buyedIslandObjects;
 
-        public Kid(int id, string name, string key)
+        public Kid(int id, string name, string key, bool active, bool trial)
         {
             this.id = id;
             this.name = name;
             userkey = key;
             kiwis = 0;
             age = 0;
+            dontSyncArbolMusical = 0;
+            dontSyncRio = 0;
+            dontSyncArenaMagica = 0;
+            dontSyncDondeQuedoLaBolita = 0;
+            dontSyncSombras = 0;
+            dontSyncTesoro = 0;
+
+            if (active)
+            {
+                offlineSubscription = DateTime.Today.AddDays(7);
+            }
+            else
+            {
+                offlineSubscription = DateTime.Today.AddDays(-365);
+            }
 
             avatar = "";
             avatarClothes = "";
 
             offlineData = "";
+            missionsToPlay = new List<int>();
             playedGames = new bool[Keys.Number_Of_Games];
             firstsGames = new List<bool>();
             for (int i = 0; i < Keys.Number_Of_Games; i++)
             {
                 firstsGames.Add(true);
             }
-
-            gamesUnlocked = new List<bool>();
-            for (int i = 0; i < Keys.Number_Of_Games; i++) 
-            {
-                gamesUnlocked.Add(false);
-            }
-
             ownedItems = "";
             activeDay = -1;
             ageSet = false;
@@ -984,6 +991,9 @@ public class SessionManager : MonoBehaviour
 
             needSync = false;
             testAvailable = true;
+            isActive = active;
+            isInTrial = trial;
+            isIAPSubscribed = false;
             buyedIslandObjects = new List<int>();
 
         }

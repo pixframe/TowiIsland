@@ -74,7 +74,6 @@ public class LogInScript : MonoBehaviour
         using (UnityWebRequest request = UnityWebRequest.Post(post_url, form))
         {
             yield return request.SendWebRequest();
-            Debug.Log(request.downloadHandler.text);
             if (request.isNetworkError)
             {
                 menuController.ShowWarning(9, menuController.ShowLogIn);
@@ -103,10 +102,12 @@ public class LogInScript : MonoBehaviour
                 JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
                 JSONArray kids = jsonObject.GetValue("children").Array;
 
-                sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetNumber("id"), (int)jsonObject.GetNumber("assessmentsAvailables"));
+                sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetValue("id").Number);
                 sessionManager.AddKids(kids);
                 sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
                 menuController.LoggedNow();
+                sessionManager.activeUser.trialAccount = false;
+                sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
                 sessionManager.SaveSession();
                 menuController.ClearInputs();
                 if (newPaidUser)
@@ -143,7 +144,7 @@ public class LogInScript : MonoBehaviour
             }
             else
             {
-                StartCoroutine(SyncProfile(tempUser.userkey));
+                StartCoroutine(PostIsActive(tempUser));
             }
         }
         else
@@ -155,21 +156,6 @@ public class LogInScript : MonoBehaviour
     public void UpdateData()
     {
         StartCoroutine(UpdateDataRoutine());
-    }
-
-    IEnumerator SyncProfile(string userKey) 
-    {
-        sessionManager.SyncProfiles(userKey);
-        yield return new WaitWhile(() => !sessionManager.isSyncing);
-        PlayerPrefs.SetInt(Keys.Logged_Session, 1);
-        if (sessionManager.activeKid != null)
-        {
-            menuController.ShowGameMenu();
-        }
-        else
-        {
-            menuController.SetKidsProfiles();
-        }
     }
 
     IEnumerator PostIsActive(SessionManager.User user)
@@ -195,6 +181,7 @@ public class LogInScript : MonoBehaviour
 
                 sessionManager.LoadActiveUser(user.userkey);
                 sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
 
                 while (sessionManager.IsDownlodingData())
                 {
@@ -335,8 +322,6 @@ public class LogInScript : MonoBehaviour
             Debug.Log("Not OK");
             menuController.ShowSyncMessage(2);
         }
-
-        sessionManager.SyncProfiles(user.userkey);
     }
 
     IEnumerator UpdateDataToSend(SessionManager.User user)
@@ -442,7 +427,7 @@ public class LogInScript : MonoBehaviour
             PlayerPrefs.SetInt(Keys.Evaluations_Saved, dataNotSavedByProblems);
         }
 
-        sessionManager.SyncProfiles(user.userkey);
+        StartCoroutine(PostIsActive(user));
     }
 
     public void RegisterParentAndKid(string email, string password, string kidName, string dateOfBirth, bool newPaidUser)
@@ -538,6 +523,7 @@ public class LogInScript : MonoBehaviour
             }
             else
             {
+                sessionManager.activeUser.suscriptionsLeft = (int)jsonObt.GetNumber("suscriptionsAvailables");
                 sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
                 menuController.ShowLoading();
                 yield return new WaitForSeconds(5f);

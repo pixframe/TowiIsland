@@ -3262,7 +3262,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &156557603
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3334,7 +3334,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &169585209
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4080,7 +4080,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &207504946
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9506,8 +9506,9 @@ MonoBehaviour:
     psswdHash: 
     kids: []
     id: 0
-    numberOfEvaluations: 0
+    suscriptionsLeft: 0
     language: 
+    trialAccount: 0
     isPossibleBuyIAP: 0
   activeKid:
     userkey: 
@@ -9515,12 +9516,18 @@ MonoBehaviour:
     age: 0
     name: 
     kiwis: 0
+    dontSyncArbolMusical: 0
+    dontSyncRio: 0
+    dontSyncArenaMagica: 0
+    dontSyncDondeQuedoLaBolita: 0
+    dontSyncSombras: 0
+    dontSyncTesoro: 0
     avatar: 
     avatarClothes: 
     offlineData: 
+    missionsToPlay: 
     playedGames: 
     firstsGames: 
-    gamesUnlocked: 
     ownedItems: 
     activeDay: 0
     ageSet: 0
@@ -9559,6 +9566,9 @@ MonoBehaviour:
     sandLevelSet: 0
     needSync: 0
     testAvailable: 0
+    isActive: 0
+    isInTrial: 0
+    isIAPSubscribed: 0
     buyedIslandObjects: 
   main: 0
   temporalKids: []
@@ -9694,7 +9704,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &507205085
 RectTransform:
   m_ObjectHideFlags: 0
@@ -31734,7 +31744,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1785662055
 MonoBehaviour:
   m_ObjectHideFlags: 0
