@@ -29,7 +29,9 @@ public class SessionManager : MonoBehaviour
 
     public bool isSyncing;
 
+#if UNITY_ANDROID || UNITY_IOS || UNITY_EDITOR
     Firebase.FirebaseApp firebaseApp;
+#endif
 
     void Awake()
     {
@@ -41,27 +43,27 @@ public class SessionManager : MonoBehaviour
         {
             DontDestroyOnLoad(gameObject);
         }
-        if (SystemInfo.deviceType == DeviceType.Handheld)
-        {
-            Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => {
-                var dependencyStatus = task.Result;
-                if (dependencyStatus == Firebase.DependencyStatus.Available)
-                {
-                    // Create and hold a reference to your FirebaseApp, i.e.
-                    //   app = Firebase.FirebaseApp.DefaultInstance;
-                    // where app is a Firebase.FirebaseApp property of your application class.
-                    firebaseApp = Firebase.FirebaseApp.DefaultInstance;
-                    // Set a flag here indicating that Firebase is ready to use by your
-                    // application.
-                    //GameObject.FindGameObjectWithTag("Coin").GetComponent<UnityEngine.UI.Text>().text = "firebase is set All right";
-                }
-                else
-                {
-                    // Firebase Unity SDK is not safe to use here
-                    //GameObject.FindGameObjectWithTag("Coin").GetComponent<UnityEngine.UI.Text>().text = $"firebase is not correctly set: {dependencyStatus}";
-                }
-            });
-        }
+#if UNITY_ANDROID || UNITY_IOS || UNITY_EDITOR
+
+        Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => {
+            var dependencyStatus = task.Result;
+            if (dependencyStatus == Firebase.DependencyStatus.Available)
+            {
+                // Create and hold a reference to your FirebaseApp, i.e.
+                //   app = Firebase.FirebaseApp.DefaultInstance;
+                // where app is a Firebase.FirebaseApp property of your application class.
+                firebaseApp = Firebase.FirebaseApp.DefaultInstance;
+                // Set a flag here indicating that Firebase is ready to use by your
+                // application.
+                //GameObject.FindGameObjectWithTag("Coin").GetComponent<UnityEngine.UI.Text>().text = "firebase is set All right";
+            }
+            else
+            {
+                // Firebase Unity SDK is not safe to use here
+                //GameObject.FindGameObjectWithTag("Coin").GetComponent<UnityEngine.UI.Text>().text = $"firebase is not correctly set: {dependencyStatus}";
+            }
+        });
+#endif
         //if(main)
         //PlayerPrefs.DeleteAll ();
         string version = Application.version;
@@ -351,7 +353,6 @@ public class SessionManager : MonoBehaviour
                             kidToAdd.gamesUnlocked[6] = unlocks.GetBoolean("helados");
 
                             users[u].kids.Add(kidToAdd);
-                            Debug.Log(kidToAdd.gamesUnlocked[3]);
 
                             temporalKids.Add(users[u].kids[users[u].kids.Count - 1]);
                         }
@@ -373,7 +374,6 @@ public class SessionManager : MonoBehaviour
                         kidToAdd.gamesUnlocked[6] = unlocks.GetBoolean("helados");
 
                         users[u].kids.Add(kidToAdd);
-                        Debug.Log(kidToAdd.gamesUnlocked[3]);
 
                         temporalKids.Add(users[u].kids[users[u].kids.Count - 1]);
                     }
@@ -569,27 +569,27 @@ public class SessionManager : MonoBehaviour
                     }
                     if (!activeUser.kids[index].gamesUnlocked[1])
                     {
-                        activeUser.kids[index].gamesUnlocked[1] = kidObj.GetObject("unlockedGames").GetBoolean("arbol_musical");
+                        activeUser.kids[index].gamesUnlocked[1] = kidObj.GetObject("unlockedGames").GetBoolean("arena_magica");
                     }
                     if (!activeUser.kids[index].gamesUnlocked[2])
                     {
-                        activeUser.kids[index].gamesUnlocked[2] = kidObj.GetObject("unlockedGames").GetBoolean("arbol_musical");
+                        activeUser.kids[index].gamesUnlocked[2] = kidObj.GetObject("unlockedGames").GetBoolean("tesoro");
                     }
                     if (!activeUser.kids[index].gamesUnlocked[3])
                     {
-                        activeUser.kids[index].gamesUnlocked[3] = kidObj.GetObject("unlockedGames").GetBoolean("arbol_musical");
+                        activeUser.kids[index].gamesUnlocked[3] = kidObj.GetObject("unlockedGames").GetBoolean("monos_traviesos");
                     }
                     if (!activeUser.kids[index].gamesUnlocked[4])
                     {
-                        activeUser.kids[index].gamesUnlocked[4] = kidObj.GetObject("unlockedGames").GetBoolean("arbol_musical");
+                        activeUser.kids[index].gamesUnlocked[4] = kidObj.GetObject("unlockedGames").GetBoolean("rio");
                     }
                     if (!activeUser.kids[index].gamesUnlocked[5])
                     {
-                        activeUser.kids[index].gamesUnlocked[5] = kidObj.GetObject("unlockedGames").GetBoolean("arbol_musical");
+                        activeUser.kids[index].gamesUnlocked[5] = kidObj.GetObject("unlockedGames").GetBoolean("juego_sombras");
                     }
                     if (!activeUser.kids[index].gamesUnlocked[6])
                     {
-                        activeUser.kids[index].gamesUnlocked[6] = kidObj.GetObject("unlockedGames").GetBoolean("arbol_musical");
+                        activeUser.kids[index].gamesUnlocked[6] = kidObj.GetObject("unlockedGames").GetBoolean("helados");
                     }
 
                     activeUser.kids[index].isTimeLimited = kidObj.GetBoolean("limitTime");

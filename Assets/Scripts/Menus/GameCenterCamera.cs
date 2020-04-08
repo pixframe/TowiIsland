@@ -16,9 +16,10 @@ public class GameCenterCamera : MonoBehaviour {
         anim = GetComponent<Animator>();
         sessionManager = FindObjectOfType<SessionManager>();
 
-        if (!sessionManager.activeKid.firstsGames.Contains(false) && !FindObjectOfType<DemoKey>())
+        if (!sessionManager.activeKid.firstsGames.Contains(false) && !FindObjectOfType<DemoKey>() && PlayerPrefs.GetInt(Keys.firstAnim) == 0)
         {
-            anim.enabled = true;;
+            anim.enabled = true;
+            PlayerPrefs.SetInt(Keys.firstAnim, 1);
         }
         else
         {

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Analytics;
@@ -281,11 +282,11 @@ public class MenuManager : MonoBehaviour
         {
             key = FindObjectOfType<DemoKey>();
         }
-
-        if (SystemInfo.deviceType == DeviceType.Handheld)
-        {
-            escapeButton.gameObject.SetActive(false);
-        }
+#if UNITY_STANDALONE
+        escapeButton.gameObject.SetActive(true);
+#else
+        escapeButton.gameObject.SetActive(false);
+#endif
     }
 
     void UpdateTexts()
@@ -368,9 +369,9 @@ public class MenuManager : MonoBehaviour
         kidLooker.onValueChanged.AddListener(delegate { UpdateKids(); });
     }
 
-    #endregion
+#endregion
 
-    #region Set Functions
+#region Set Functions
 
     //we show the kids that are available for the player
     public void SetKidsProfiles()
@@ -565,9 +566,9 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    #endregion
+#endregion
 
-    #region Show Functions
+#region Show Functions
 
     public void HideAllCanvas()
     {
@@ -593,14 +594,11 @@ public class MenuManager : MonoBehaviour
 
     public void ShowEscapeButton()
     {
-        if (SystemInfo.deviceType == DeviceType.Handheld)
-        {
-            escapeButton.gameObject.SetActive(false);
-        }
-        else
-        {
-            escapeButton.gameObject.SetActive(true);
-        }
+#if UNITY_STANDALONE
+        escapeButton.gameObject.SetActive(true);
+#else
+        escapeButton.gameObject.SetActive(false);
+#endif
     }
 
     //we show the game menu if the player has acces to it
@@ -759,6 +757,8 @@ public class MenuManager : MonoBehaviour
 #elif UNITY_EDITOR
         //BuySuccesfullEvaluation();
         Application.OpenURL($"{Keys.Api_Web_Key}tienda");
+#elif UNITY_WEBGL
+        openWindow($"{Keys.Api_Web_Key}tienda");
 #else
         Application.OpenURL($"{Keys.Api_Web_Key}tienda");
 #endif
@@ -1333,7 +1333,11 @@ public class MenuManager : MonoBehaviour
     //this one goes and reset the password for a player if its needed
     public void ForgotPassword()
     {
-        Application.OpenURL(Keys.Api_Web_Key + "recuperar/");
+#if UNITY_WEBGL
+        openWindow($"{Keys.Api_Web_Key}recuperar/");
+#else
+        Application.OpenURL($"{Keys.Api_Web_Key}recuperar/");
+#endif
     }
 
     //This is if a person regrets to start the registration process
@@ -1345,12 +1349,20 @@ public class MenuManager : MonoBehaviour
     //this will send the app to terms and conditions
     public void GoToTermsAndConditions()
     {
+#if UNITY_WEBGL
+        openWindow("https://towi.com.mx/terminos-y-condiciones/");
+#else
         Application.OpenURL("https://towi.com.mx/terminos-y-condiciones/");
+#endif
     }
 
     public void GoPrivacyPolicy()
     {
+#if UNITY_WEBGL
+        openWindow("https://towi.com.mx/aviso-de-privacidad/");
+#else
         Application.OpenURL("https://towi.com.mx/aviso-de-privacidad/");
+#endif
     }
 
     //This will not set any active kids
@@ -1544,7 +1556,11 @@ public class MenuManager : MonoBehaviour
 
     public void GoToWebSubscriptions()
     {
-        Application.OpenURL(Keys.Api_Web_Key + "subscripciones/");
+#if UNITY_WEBGL
+        openWindow($"{Keys.Api_Web_Key}subscripciones/");
+#else
+        Application.OpenURL($"{Keys.Api_Web_Key}subscripciones/");
+#endif
     }
 
     void GiveASuscription()
@@ -1565,13 +1581,6 @@ public class MenuManager : MonoBehaviour
         alreadyLogged = true;
         PlayerPrefs.SetInt(Keys.Logged_In, 1);
         PlayerPrefs.SetString(Keys.Active_User_Key, sessionManager.activeUser.userkey);
-    }
-
-    //This is what happens if you are buyinhg in windows
-    void ShopWindows()
-    {
-        Application.OpenURL(Keys.Api_Web_Key + "subscripciones/");
-        Debug.Log("Open shop");
     }
 
     //This will set the correct date for a child
@@ -1762,6 +1771,9 @@ public class MenuManager : MonoBehaviour
         Application.Quit();
         Debug.Log("shoul exit now");
     }
+
+    [DllImport("__Internal")]
+    private static extern void openWindow(string url);
 }
 
 //Configuration menu
@@ -2237,6 +2249,9 @@ class GameMenu
     Button singOutButton;
     Button settingsButton;
     Button aboutButton;
+#if UNITY_WEBGL
+    Transform buyButton;
+#endif
 
     const string pathOfFirstMenu = "Login/FirstMenu";
 
@@ -2253,8 +2268,12 @@ class GameMenu
         settingsButton = mainCanvas.transform.Find("Settings Button").GetComponent<Button>();
         aboutButton = mainCanvas.transform.Find("About Button").GetComponent<Button>();
         SetStaticButtonFuctions();
+#if UNITY_WEBGL
+        buyButton = mainCanvas.transform.Find("Buy Button");
+#endif
     }
 
+    //This is where we show the first menu of the before login or sign in
     public void ShowFirstMenu()
     {
         var textsToSet = TextReader.TextsToSet(pathOfFirstMenu);
@@ -2269,7 +2288,10 @@ class GameMenu
         tryLogo.SetActive(true);
         logoIcon.SetActive(false);
 
+
         gamesButton.gameObject.SetActive(true);
+
+
         for (int i = 0; i < gamesButton.transform.childCount; i++)
         {
             var child = gamesButton.transform.GetChild(i);
@@ -2278,6 +2300,10 @@ class GameMenu
                 gamesButton.transform.GetChild(i).gameObject.SetActive(false);
             }
         }
+#if UNITY_WEBGL
+        evaluationButton.gameObject.SetActive(false);
+        gamesButton.transform.position = buyButton.position;
+#else
         evaluationButton.gameObject.SetActive(true);
         for (int i = 0; i < evaluationButton.transform.childCount; i++)
         {
@@ -2287,7 +2313,7 @@ class GameMenu
                 gamesButton.transform.GetChild(i).gameObject.SetActive(false);
             }
         }
-
+#endif
 
         singOutButton.gameObject.SetActive(false);
         settingsButton.gameObject.SetActive(false);
@@ -2353,11 +2379,17 @@ class GameMenu
         manager.WriteTheText(evaluationButton, 0);
         manager.WriteTheText(gamesButton, 1);
 
+#if UNITY_WEBGL
+        gamesButton.gameObject.SetActive(false);
+        evaluationButton.transform.position = buyButton.position;
+#else
         gamesButton.gameObject.SetActive(true);
         for (int i = 0; i < gamesButton.transform.childCount; i++) 
         {
             gamesButton.transform.GetChild(i).gameObject.SetActive(true);
         }
+#endif
+
         evaluationButton.gameObject.SetActive(true);
         for (int i = 0; i < evaluationButton.transform.childCount; i++)
         {

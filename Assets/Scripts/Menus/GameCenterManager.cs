@@ -186,12 +186,15 @@ public class GameCenterManager : MonoBehaviour
             {
                 if (sessionManager.activeKid.gamesUnlocked[i])
                 {
+                    Debug.Log($"{i} is unlocked ?{sessionManager.activeKid.gamesUnlocked[i]}");
                     unlocks[i] = true;
                     var x = i;
                     missions.Add(x);
                     stations.Add(x);
                 }
             }
+
+            Debug.Log($"missions are {missions.Count}");
         }
         else
         {

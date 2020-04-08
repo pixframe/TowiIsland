@@ -92,4 +92,5 @@ public class Keys : MonoBehaviour {
     public const string Evaluation_To_Save = "_evaluation_data.json";
     public const string Evaluations_Saved = "evaSav";
     public const string Games_Saved = "gamSav";
+    public const string firstAnim = "animG";
 }
