@@ -20,9 +20,11 @@ public class MagicRiverManager : MonoBehaviour {
 
     [Header("Text Assets")]
     TextAsset textAsset;
+    TextAsset storyAsset;
     TextAsset beachTextAsset;
     TextAsset forestTextAsset;
     string[] stringsToShow;
+    string[] historyStrings;
     string[] beachStrings;
     string[] forestStrings;
 
@@ -129,11 +131,16 @@ public class MagicRiverManager : MonoBehaviour {
         }
         audioManager = FindObjectOfType<AudioManager>();
         textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/River/RiverText");
+        storyAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/River/History");
         beachTextAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/River/BeachObjectsTextAsset");
         forestTextAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/River/ForestObjectsTextAsset");
         instructionsClips = Resources.LoadAll<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Games/River");
         GetLevel();
+
+        Debug.Log(storyAsset.text);
+
         stringsToShow = TextReader.TextsToShow(textAsset);
+        historyStrings = TextReader.TextsToShow(storyAsset);
         beachStrings = TextReader.TextsToShow(beachTextAsset);
         forestStrings = TextReader.TextsToShow(forestTextAsset);
 
@@ -199,7 +206,7 @@ public class MagicRiverManager : MonoBehaviour {
         instructionPanel.transform.parent.gameObject.SetActive(true);
         readyButton.onClick.AddListener(TellStory);
         instructionScreens[instructionIndex].SetActive(true);
-        instructionText.text = stringsToShow[instructionIndex];
+        instructionText.text = historyStrings[instructionIndex];
         readyButton.gameObject.SetActive(false);
         audioManager.PlayClip(instructionsClips[instructionIndex]);
         Invoke("ReadyButtonOn", audioManager.ClipDuration());
@@ -347,10 +354,17 @@ public class MagicRiverManager : MonoBehaviour {
         instructionIndex++;
         instructionScreens[instructionIndex - 1].SetActive(false);
         instructionScreens[instructionIndex].SetActive(true);
-        instructionText.text = stringsToShow[instructionIndex];
+        instructionText.text = historyStrings[instructionIndex];
         readyButton.gameObject.SetActive(false);
-        audioManager.PlayClip(instructionsClips[instructionIndex]);
-        Invoke("ReadyButtonOn", audioManager.ClipDuration());
+        if (instructionIndex < 3)
+        {
+            audioManager.PlayClip(instructionsClips[instructionIndex]);
+            Invoke("ReadyButtonOn", audioManager.ClipDuration());
+        }
+        else
+        { 
+            readyButton.gameObject.SetActive(true); 
+        }
         if (instructionIndex >= instructionScreens.Length - 1)
         {
             readyButton.onClick.RemoveAllListeners();
@@ -1227,8 +1241,6 @@ public class MagicRiverManager : MonoBehaviour {
         }
 
         level = levelInput - (difficulty * baseLevelDifficulty);
-
-        Debug.Log("Level is " + level + " Difficulty is " + difficulty);
     }
 
     /// <summary>
