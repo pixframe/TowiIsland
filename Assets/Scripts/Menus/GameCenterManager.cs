@@ -440,7 +440,7 @@ public class GameCenterManager : MonoBehaviour
             //{
             //    FindObjectOfType<DemoKey>().SetSpecialLevels(level, difficulty, specialLevel);
             //}
-            LoadNewScene(scenes[index]);
+            LoadNewScene(scenes[stations[index]]);
         }
     }
 
