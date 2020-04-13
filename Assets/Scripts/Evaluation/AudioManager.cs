@@ -50,6 +50,16 @@ public class AudioManager : MonoBehaviour {
         }
     }
 
+    public void PauseTheAudio()
+    {
+        master.Pause();
+    }
+
+    public void UnpauseTheAudio()
+    {
+        master.Play();
+    }
+
     public void StopTheAudio() {
         master.Stop();
     }
