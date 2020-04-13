@@ -448,7 +448,7 @@ public class SandDrawingController : MonoBehaviour {
         {
             time += Time.deltaTime;
         }
-        if (playGame)
+        if (playGame && !pauser.isPaused) 
         {
             drawTime += Time.deltaTime;
             if (Input.GetMouseButtonDown(0))
