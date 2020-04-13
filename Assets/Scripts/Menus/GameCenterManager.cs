@@ -488,7 +488,7 @@ public class GameCenterManager : MonoBehaviour
         warningPanel.SetActive(true);
         warningPanel.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
         warningPanel.GetComponentInChildren<Button>().onClick.AddListener(GoBackScene);
-        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[11];
+        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[8];
     }
 
     void ShowDisclaimer()

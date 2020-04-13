@@ -14,7 +14,7 @@ public class Keys
     public static string Level_Of_Try = "lvlFTry";
 
     public static string Buy_IAP = "BuIAP";
-    public const int Number_Of_Games = 7;
+    public const int Number_Of_Games = 6;
 
     public static string Active_User_Key = "activeUser";
     public static string Purchase_Key = "purchased";

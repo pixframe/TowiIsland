@@ -91,7 +91,7 @@ public class LogInScript : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("What");
+                    Debug.Log(request.downloadHandler.text);
                 }
             }
             else
