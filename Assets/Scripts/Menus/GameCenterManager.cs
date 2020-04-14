@@ -501,7 +501,7 @@ public class GameCenterManager : MonoBehaviour
         {
             warningPanel.SetActive(false);
             ChangeMenus();
-
+            DeactivateDisclaimer();
         });
         warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[9];
     }
