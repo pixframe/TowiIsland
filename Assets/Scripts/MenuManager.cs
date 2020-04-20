@@ -1791,9 +1791,10 @@ public class MenuManager : MonoBehaviour
         Application.Quit();
         Debug.Log("shoul exit now");
     }
-
+#if UNITY_WEBGL
     [DllImport("__Internal")]
     private static extern void openWindow(string url);
+#endif
 }
 
 //Configuration menu
