@@ -720,7 +720,7 @@ public class SessionManager : MonoBehaviour
             { "arenaFirstTime", activeKid.firstsGames[1] },
             { "sombrasFirstTime", activeKid.firstsGames[5]},
             { "bolitaFirstTime", activeKid.firstsGames[3] },
-            { "heladosFirstTime", activeKid.firstsGames[6]},
+            //{ "heladosFirstTime", activeKid.firstsGames[6]},
             { "tesoroLevelSet", true },
             { "arenaLevelSet", activeKid.sandLevelSet },
             { "arbolLevelSet", true },

@@ -137,8 +137,6 @@ public class MagicRiverManager : MonoBehaviour {
         instructionsClips = Resources.LoadAll<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Games/River");
         GetLevel();
 
-        Debug.Log(storyAsset.text);
-
         stringsToShow = TextReader.TextsToShow(textAsset);
         historyStrings = TextReader.TextsToShow(storyAsset);
         beachStrings = TextReader.TextsToShow(beachTextAsset);

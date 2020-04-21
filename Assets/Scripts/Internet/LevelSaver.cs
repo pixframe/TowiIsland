@@ -609,6 +609,7 @@ public class LevelSaver : MonoBehaviour {
             {
                 Debug.Log($"the error has the next messsage {request.downloadHandler.text}");
                 SaveDataOffline();
+                FindObjectOfType<PauseTheGame>().DataIsSend();
             }
             else
             {
