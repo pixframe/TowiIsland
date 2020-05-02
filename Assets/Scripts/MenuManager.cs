@@ -2036,7 +2036,7 @@ class RegisterMenu
         inputEmail.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[3];
         inputPass.inputNameText.text = texts[4];
         inputPass.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[4];
-        inputPass.field.inputType = TMP_InputField.InputType.Password;
+        //inputPass.field.inputType = TMP_InputField.InputType.Password;
         forgotPassButton.GetComponentInChildren<TextMeshProUGUI>().text = texts[5];
         logInButton.GetComponentInChildren<TextMeshProUGUI>().text = texts[6];
         notRegisterText.text = texts[7];
@@ -2077,10 +2077,10 @@ class RegisterMenu
         inputEmailDad.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[3];
         inputPassDad.inputNameText.text = texts[4];
         inputPassDad.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[4];
-        inputPassDad.field.inputType = TMP_InputField.InputType.Password;
+        //inputPassDad.field.inputType = TMP_InputField.InputType.Password;
         inputPassAgain.inputNameText.text = texts[5];
         inputPassAgain.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[5];
-        inputPassAgain.field.inputType = TMP_InputField.InputType.Password;
+        //inputPassAgain.field.inputType = TMP_InputField.InputType.Password;
         termsAndConditionsButton.GetComponent<TextMeshProUGUI>().text = texts[6];
         termsAndConditionsButton.onClick.RemoveAllListeners();
         termsAndConditionsButton.onClick.AddListener(manager.GoToTermsAndConditions);
@@ -2123,10 +2123,10 @@ class RegisterMenu
         inputEmailDad.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[3];
         inputPassDad.inputNameText.text = texts[4];
         inputPassDad.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[4];
-        inputPassDad.field.inputType = TMP_InputField.InputType.Password;
+        //inputPassDad.field.inputType = TMP_InputField.InputType.Password;
         inputPassAgain.inputNameText.text = texts[5];
         inputPassAgain.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[5];
-        inputPassAgain.field.inputType = TMP_InputField.InputType.Password;
+        //inputPassAgain.field.inputType = TMP_InputField.InputType.Password;
         termsAndConditionsButton.GetComponent<TextMeshProUGUI>().text = texts[6];
         termsAndConditionsButton.onClick.RemoveAllListeners();
         termsAndConditionsButton.onClick.AddListener(manager.GoToTermsAndConditions);

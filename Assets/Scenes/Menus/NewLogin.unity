@@ -4271,7 +4271,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &209181099
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6994,8 +6994,8 @@ MonoBehaviour:
   m_VerticalScrollbar: {fileID: 0}
   m_VerticalScrollbarEventHandler: {fileID: 0}
   m_ScrollSensitivity: 1
-  m_ContentType: 0
-  m_InputType: 0
+  m_ContentType: 7
+  m_InputType: 2
   m_AsteriskChar: 42
   m_KeyboardType: 0
   m_LineType: 0
@@ -13233,7 +13233,6 @@ GameObject:
   m_Component:
   - component: {fileID: 687690704}
   - component: {fileID: 687690706}
-  - component: {fileID: 687690705}
   m_Layer: 5
   m_Name: Input E-mail
   m_TagString: Untagged
@@ -13262,33 +13261,6 @@ RectTransform:
   m_AnchoredPosition: {x: 164, y: 13.6}
   m_SizeDelta: {x: -490.335, y: -507.88}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &687690705
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 687690703}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
 --- !u!222 &687690706
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15013,7 +14985,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &854402030
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16276,7 +16248,6 @@ GameObject:
   m_Component:
   - component: {fileID: 905543480}
   - component: {fileID: 905543482}
-  - component: {fileID: 905543481}
   m_Layer: 5
   m_Name: Input E-mail
   m_TagString: Untagged
@@ -16305,33 +16276,6 @@ RectTransform:
   m_AnchoredPosition: {x: -176.15002, y: 35.8}
   m_SizeDelta: {x: 237.63, y: 60.119995}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &905543481
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 905543479}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
 --- !u!222 &905543482
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -18705,7 +18649,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1031849180}
   - component: {fileID: 1031849182}
-  - component: {fileID: 1031849181}
   m_Layer: 5
   m_Name: Input Password Confirm
   m_TagString: Untagged
@@ -18734,33 +18677,6 @@ RectTransform:
   m_AnchoredPosition: {x: -176.1499, y: -124.20001}
   m_SizeDelta: {x: 237.63, y: 60.119995}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1031849181
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1031849179}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
 --- !u!222 &1031849182
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -22663,7 +22579,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1285244556
 RectTransform:
   m_ObjectHideFlags: 0
@@ -23580,8 +23496,8 @@ MonoBehaviour:
   m_VerticalScrollbar: {fileID: 0}
   m_VerticalScrollbarEventHandler: {fileID: 0}
   m_ScrollSensitivity: 1
-  m_ContentType: 0
-  m_InputType: 0
+  m_ContentType: 7
+  m_InputType: 2
   m_AsteriskChar: 42
   m_KeyboardType: 0
   m_LineType: 0
@@ -24029,7 +23945,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1344941590}
   - component: {fileID: 1344941592}
-  - component: {fileID: 1344941591}
   m_Layer: 5
   m_Name: Input Password
   m_TagString: Untagged
@@ -24058,33 +23973,6 @@ RectTransform:
   m_AnchoredPosition: {x: -176.15, y: -44.200016}
   m_SizeDelta: {x: 237.63, y: 60.119995}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1344941591
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1344941589}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
 --- !u!222 &1344941592
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -28427,7 +28315,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1622095731}
   - component: {fileID: 1622095733}
-  - component: {fileID: 1622095732}
   m_Layer: 5
   m_Name: Input Password
   m_TagString: Untagged
@@ -28456,33 +28343,6 @@ RectTransform:
   m_AnchoredPosition: {x: 164, y: -66.19998}
   m_SizeDelta: {x: -490.3349, y: -507.88}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1622095732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1622095730}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
 --- !u!222 &1622095733
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33072,8 +32932,8 @@ MonoBehaviour:
   m_VerticalScrollbar: {fileID: 0}
   m_VerticalScrollbarEventHandler: {fileID: 0}
   m_ScrollSensitivity: 1
-  m_ContentType: 0
-  m_InputType: 0
+  m_ContentType: 7
+  m_InputType: 2
   m_AsteriskChar: 42
   m_KeyboardType: 0
   m_LineType: 0
