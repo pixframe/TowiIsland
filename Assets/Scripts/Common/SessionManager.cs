@@ -29,7 +29,7 @@ public class SessionManager : MonoBehaviour
 
     public bool isSyncing;
 
-#if UNITY_ANDROID || UNITY_IOS || UNITY_EDITOR
+#if UNITY_ANDROID || UNITY_IOS
     Firebase.FirebaseApp firebaseApp;
 #endif
 
@@ -43,7 +43,7 @@ public class SessionManager : MonoBehaviour
         {
             DontDestroyOnLoad(gameObject);
         }
-#if UNITY_ANDROID || UNITY_IOS || UNITY_EDITOR
+#if UNITY_ANDROID || UNITY_IOS
 
         Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => {
             var dependencyStatus = task.Result;
@@ -117,7 +117,6 @@ public class SessionManager : MonoBehaviour
                 string userS = PlayerPrefs.GetString(Keys.Active_User_Key);
                 if (userS != "")
                 {
-                    Debug.Log(userS);
                     activeUser = GetUser(userS);
                     int kidS = PlayerPrefs.GetInt("activeKid", -1);
                     if (kidS != -1)
@@ -147,13 +146,6 @@ public class SessionManager : MonoBehaviour
             {
                 return users[i];
             }
-            for (int c = 0; c < users[i].kids.Count; c++)
-            {
-                if (users[i].kids[c].userkey == key || (key == "_local" && users[i].userkey == key))
-                {
-                    return users[i];
-                }
-            }
         }
         return null;
     }
@@ -175,7 +167,6 @@ public class SessionManager : MonoBehaviour
         if (activeKid.isTimeLimited)
         {
             activeKid.timePassInThisSeason += Time.deltaTime;
-            Debug.Log(activeKid.timePassInThisSeason);
             if (activeKid.timePassInThisSeason >= activeKid.timeLimit && !isShowingTimeLimit)
             {
                 Instantiate(limitTime);
@@ -194,30 +185,6 @@ public class SessionManager : MonoBehaviour
             }
         }
         return false;
-    }
-
-    public int TryLogin(string username, string psswd)
-    {
-        for (int i = 0; i < users.Count; i++)
-        {
-            if (users[i].username == username && users[i].psswdHash == psswd)
-            {
-                if (DateTime.Now <= users[i].suscriptionDate)
-                {
-                    activeUser = users[i];
-                    activeKid = activeUser.kids[0];
-                    PlayerPrefs.SetString("activeUser", activeKid.userkey);
-                    PlayerPrefs.SetInt("activeKid", 1);
-                    SyncProfiles(activeKid.userkey);
-                    return 1;
-                }
-                else
-                {
-                    return 2;
-                }
-            }
-        }
-        return -1;
     }
 
     public void Logout()
@@ -274,7 +241,7 @@ public class SessionManager : MonoBehaviour
                         PlayerPrefs.SetInt("activeKid", -1);
                     }
                     PlayerPrefs.SetString("activeUser", activeUser.userkey);
-                    //SyncProfiles(key);
+                    SyncProfiles(key);
                     break;
                 }
             }
@@ -336,27 +303,23 @@ public class SessionManager : MonoBehaviour
             //bool missing = true;
             for (int u = 0; u < users.Count; u++)
             {
-                if (users[u].userkey == kidObj.GetValue("key").Str)
+                int cid = (int)kidObj.GetValue("cid").Number;
+                if (users[u].kids.Count >= kids.Length)
                 {
-                    int cid = (int)kidObj.GetValue("cid").Number;
-                    if (users[u].kids.Count >= kids.Length)
-                    {
-                        if (cid != users[u].kids[i].id)
-                        {
-                            string name = kidObj.GetValue("name").Str + " " + kidObj.GetValue("lastname").Str;
-                            string key = kidObj.GetValue("key").Str;
-                            users[u].kids.Add(new Kid(cid, name, key, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial")));
-                            temporalKids.Add(users[u].kids[users[u].kids.Count - 1]);
-                        }
-                    }
-                    else
+                    if (cid != users[u].kids[i].id)
                     {
                         string name = kidObj.GetValue("name").Str + " " + kidObj.GetValue("lastname").Str;
                         string key = kidObj.GetValue("key").Str;
                         users[u].kids.Add(new Kid(cid, name, key, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial")));
                         temporalKids.Add(users[u].kids[users[u].kids.Count - 1]);
                     }
-
+                }
+                else
+                {
+                    string name = kidObj.GetValue("name").Str + " " + kidObj.GetValue("lastname").Str;
+                    string key = kidObj.GetValue("key").Str;
+                    users[u].kids.Add(new Kid(cid, name, key, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial")));
+                    temporalKids.Add(users[u].kids[users[u].kids.Count - 1]);
                 }
             }
         }
@@ -391,7 +354,7 @@ public class SessionManager : MonoBehaviour
     {
         for (int u = 0; u < users.Count; u++)
         {
-            if (users[u].userkey == parentkey)
+            if (users[u].userkey == activeUser.userkey)
             {
                 for (int i = 0; i < users[u].kids.Count; i++)
                 {
@@ -462,9 +425,7 @@ public class SessionManager : MonoBehaviour
 
     IEnumerator PostSyncProfiles(string key)
     {
-        Debug.Log("Syncing now ");
         downlodingData = true;
-
         WWWForm form = new WWWForm();
         form.AddField("userKey", key);
 
@@ -479,7 +440,6 @@ public class SessionManager : MonoBehaviour
             }
             else
             {
-                Debug.Log(request.downloadHandler.text);
                 PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
 
                 JSONArray kids = JSONArray.Parse(request.downloadHandler.text);
@@ -746,8 +706,8 @@ public class SessionManager : MonoBehaviour
         DateTime today = DateTime.Now;
 
         WWWForm form = new WWWForm();
-        form.AddField("userKey", activeKid.userkey);
-        form.AddField("cid", activeKid.id);
+        form.AddField("userKey", activeUser.userkey);
+        form.AddField("cid", activeUser.id);
         form.AddField("date", String.Format("{0:0000}-{1:00}-{2:00}", today.Year, today.Month, today.Day));
         //WWW hs_post = new WWW(post_url);
 

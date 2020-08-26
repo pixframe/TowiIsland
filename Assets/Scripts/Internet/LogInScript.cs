@@ -18,10 +18,6 @@ public class LogInScript : MonoBehaviour
     string username;
     string password;
 
-    string errorText;
-
-    bool loading;
-
     SessionManager sessionManager;
     MenuManager menuController;
 
@@ -134,7 +130,7 @@ public class LogInScript : MonoBehaviour
 
     public void IsActive(string user)
     {
-        SessionManager.User tempUser = sessionManager.GetUser(user);
+        var tempUser = sessionManager.GetUser(user);
 
         if (tempUser != null)
         {
@@ -160,8 +156,6 @@ public class LogInScript : MonoBehaviour
 
     IEnumerator PostIsActive(SessionManager.User user)
     {
-        string post_url = activeUserUrl;
-
         // Build form to post in server
         WWWForm form = new WWWForm();
         form.AddField("parent_email", user.username);

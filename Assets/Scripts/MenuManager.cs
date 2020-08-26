@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Analytics;
 using UnityEngine.Networking;
@@ -100,9 +99,6 @@ public class MenuManager : MonoBehaviour
     public Sprite deactivateSprite;
     #endregion
 
-    AudioManager audioManager;
-    EvaluationController evaluationController;
-
     DemoKey key;
     LogInScript logInScript;
     SessionManager sessionManager;
@@ -115,7 +111,6 @@ public class MenuManager : MonoBehaviour
     string subscriptionIAPType;
     int numKids;
     int monthsOfSubs;
-    int availableKidsInSubscription;
     int logoPushes;
 
     List<int> ids = new List<int>();
@@ -130,6 +125,7 @@ public class MenuManager : MonoBehaviour
         dobYMD = new int[0];
         Analytics.CustomEvent("open");
         //PlayerPrefs.SetInt(Keys.First_Try, 0);
+        //PlayerPrefs.DeleteAll();
     }
 
     // Use this for initialization
@@ -149,8 +145,6 @@ public class MenuManager : MonoBehaviour
 
     IEnumerator CheckInternetConnection(string resource)
     {
-        WWWForm newForm = new WWWForm();
-
         using (UnityWebRequest newRequest = UnityWebRequest.Get(resource))
         {
             yield return newRequest.SendWebRequest();
@@ -171,7 +165,6 @@ public class MenuManager : MonoBehaviour
         PlayerPrefs.SetString(Keys.Last_Time_Were, DateTime.Today.ToString(DateTimeFormatInfo.InvariantInfo));
         if (PlayerPrefs.GetInt(Keys.Logged_Session) == 0)
         {
-
             if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
             {
                 string user = PlayerPrefs.GetString(Keys.Active_User_Key);
@@ -202,15 +195,8 @@ public class MenuManager : MonoBehaviour
         {
             if (sessionManager.activeKid != null)
             {
-                if (sessionManager.activeKid.offlineSubscription < DateTime.Today)
-                {
-                    string user = PlayerPrefs.GetString(Keys.Active_User_Key);
-                    logInScript.IsActive(user);
-                }
-                else
-                {
-                    ShowGameMenu();
-                }
+                string user = PlayerPrefs.GetString(Keys.Active_User_Key);
+                logInScript.IsActive(user);
             }
             else
             {
@@ -222,6 +208,7 @@ public class MenuManager : MonoBehaviour
     void NoInternetAvailableLogin()
     {
         DateTime lastSession;
+
         if (PlayerPrefs.GetString(Keys.Last_Time_Were) == "")
         {
             lastSession = DateTime.Today.Subtract(TimeSpan.FromDays(1));
@@ -230,7 +217,7 @@ public class MenuManager : MonoBehaviour
         {
             lastSession = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Time_Were), DateTimeFormatInfo.InvariantInfo);
         }
-        Debug.Log($"Last time in internte was {lastSession.ToUniversalTime()} and today is { DateTime.Today.ToUniversalTime()} compare to today is {DateTime.Compare(DateTime.Today, lastSession)}");
+
         if (DateTime.Compare(DateTime.Today, lastSession) >= 0)
         {
             PlayerPrefs.SetString(Keys.Last_Time_Were, DateTime.Today.ToString(DateTimeFormatInfo.InvariantInfo));
@@ -238,22 +225,21 @@ public class MenuManager : MonoBehaviour
             {
                 if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
                 {
-                    if (DateTime.Compare(sessionManager.activeKid.offlineSubscription, DateTime.Today) < 0)
-                    {
-                        Debug.Log("here are less");
-                        ShowNeedConectionToPlay();
-                    }
-                    else
-                    {
-                        DateTime lastFetchTime = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Play_Time), DateTimeFormatInfo.InvariantInfo);
+                    ShowGameMenu();
+                    //if (DateTime.Compare(sessionManager.activeKid.offlineSubscription, DateTime.Today) < 0)
+                    //{
+                    //    ShowNeedConectionToPlay();
+                    //}
+                    //else
+                    //{
+                    //    DateTime lastFetchTime = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Play_Time), DateTimeFormatInfo.InvariantInfo);
 
-                        if (DateTime.Compare(DateTime.Today, lastFetchTime) > 0 && sessionManager.activeKid.missionsToPlay.Count <= 0)
-                        {
-                            Debug.Log("Here we create a new activities");
-                            sessionManager.activeKid.missionsToPlay = OfflineManager.Create_Levels();
-                        }
-                        ShowGameMenu();
-                    }
+                    //    if (DateTime.Compare(DateTime.Today, lastFetchTime) > 0 && sessionManager.activeKid.missionsToPlay.Count <= 0)
+                    //    {
+                    //        sessionManager.activeKid.missionsToPlay = OfflineManager.Create_Levels();
+                    //    }
+                    //    ShowGameMenu();
+                    //}
                 }
                 else
                 {
@@ -292,7 +278,6 @@ public class MenuManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("theres no today");
             ShowNeedConectionToPlay();
         }
 
@@ -478,10 +463,10 @@ public class MenuManager : MonoBehaviour
                 int id = kidsToShow[i].id;
                 kidos[i].buttonOfProfile.onClick.AddListener(() => SetKidProfile(parentkey, id));
                 kidos[i].ChangeAvatar(kidsToShow[i].avatar);
-                if (!kidsToShow[i].isActive)
-                {
-                    kidos[i].PutInGrey();
-                }
+                //if (!kidsToShow[i].isActive)
+                //{
+                //    kidos[i].PutInGrey();
+                //}
             }
         }
         else
@@ -566,7 +551,6 @@ public class MenuManager : MonoBehaviour
         else
         {
             ShowWarning(16);
-            Debug.Log("Some");
         }
     }
 
@@ -1424,7 +1408,6 @@ public class MenuManager : MonoBehaviour
         {
             ShowWarning(4);
         }
-        //Debug.Log("We are creating a kid");
     }
 
     void SetLanguageOfGame(int index)
@@ -1600,7 +1583,6 @@ public class MenuManager : MonoBehaviour
     void ShopWindows()
     {
         Application.OpenURL(Keys.Api_Web_Key + "subscripciones/");
-        Debug.Log("Open shop");
     }
 
     //This will set the correct date for a child
@@ -1789,7 +1771,6 @@ public class MenuManager : MonoBehaviour
     void EscapeApplication()
     {
         Application.Quit();
-        Debug.Log("shoul exit now");
     }
 #if UNITY_WEBGL
     [DllImport("__Internal")]
@@ -2475,8 +2456,15 @@ class GameMenu
         {
             manager.WriteTheText(gamesButton, 1);
             manager.WriteTheText(buyButton, 62);
-            gamesButton.onClick.AddListener(manager.ShowRegisteredAdd);
+
+            gamesButton.onClick.AddListener(manager.LoadGameMenus);
             evaluationButton.onClick.AddListener(manager.ShowRegisteredAdd);
+            buyButton.onClick.AddListener(manager.ShowYouHaveASuscription);
+
+            SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
+            SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
+            SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
+
             if (licencesToActivate > 0)
             {
                 manager.ShowAccountWarning(1);
@@ -2485,9 +2473,6 @@ class GameMenu
             {
                 buyButton.onClick.AddListener(manager.ShowRegisteredAdd);
             }
-            SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
-            SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
-            SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
         }
 
         if (isDemo)
