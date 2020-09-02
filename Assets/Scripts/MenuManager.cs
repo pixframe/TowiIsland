@@ -1547,7 +1547,7 @@ public class MenuManager : MonoBehaviour
         }*/
 
         warningButton.onClick.RemoveAllListeners();
-        warningButton.onClick.AddListener(HideWarning);
+        warningButton.onClick.AddListener(ReturnToFirstMenu);
     }
 
     public void GoToWebSubscriptions()
@@ -1569,6 +1569,12 @@ public class MenuManager : MonoBehaviour
     void HideWarning()
     {
         warningPanel.SetActive(false);
+    }
+
+    void ReturnToFirstMenu()
+    {
+        HideWarning();
+        ShowFirstMenu();
     }
 
     //This will set if a player is logged already

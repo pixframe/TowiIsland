@@ -87,8 +87,9 @@ public class LogInScript : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log(request.downloadHandler.text);
+                    menuController.ShowWarning(9, menuController.ShowLogIn);
                 }
+                Debug.Log($"error is: {request.downloadHandler.text}");
             }
             else
             {
