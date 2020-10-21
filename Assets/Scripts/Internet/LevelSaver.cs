@@ -439,7 +439,7 @@ public class LevelSaver : MonoBehaviour {
             levels = gameData as IcecreamData
         };
 
-        Debug.Log(JsonUtility.ToJson(forms));
+        //Debug.Log(JsonUtility.ToJson(forms));
 
         WWWForm form = new WWWForm();
         //form.AddField("data", data.ToString());
@@ -451,12 +451,13 @@ public class LevelSaver : MonoBehaviour {
 
             if (request.isNetworkError || request.isHttpError)
             {
-                Debug.Log(request.downloadHandler.text);
+                //Debug.Log($"saved error: {request.downloadHandler.text}");
                 FindObjectOfType<PauseTheGame>().DataIsSend();
             }
             else
             {
-                Debug.Log("Done");
+                //Debug.Log("Done");
+                //Debug.Log($"saved success: {request.downloadHandler.text}");
                 FindObjectOfType<PauseTheGame>().DataIsSend();
             }
         }
@@ -466,7 +467,7 @@ public class LevelSaver : MonoBehaviour {
     public void CreateSaveBlock(string gameKey, float gameTime, int passedLevels, int repeatedLevels, int playedLevels, int sessionNumber)
     {
         if (sessionManager == null) {
-            Debug.Log("We find no session manager");
+            //Debug.Log("We find no session manager");
             sessionManager = FindObjectOfType<SessionManager>();
         }
         game = gameKey;
@@ -488,7 +489,7 @@ public class LevelSaver : MonoBehaviour {
             date = String.Format("{0:0000}-{1:00}-{2:00}T{3:00}:{4:00}:{5:00}", nowT.Year, nowT.Month, nowT.Day, nowT.Hour, nowT.Minute, nowT.Second)
         };
 
-        Debug.Log(JsonUtility.ToJson(headers));
+        //Debug.Log(JsonUtility.ToJson(headers));
 
         JSONObject headerItem = new JSONObject
         {
@@ -558,7 +559,7 @@ public class LevelSaver : MonoBehaviour {
             string path = $"{Application.persistentDataPath}/{gameSavedOffline}{Keys.Game_To_Save}";
             gameSavedOffline++;
 
-            Debug.Log($"We have {gameSavedOffline} jsons to save");
+            //Debug.Log($"We have {gameSavedOffline} jsons to save");
 
             File.WriteAllText(path, dataToSave);
 
@@ -599,7 +600,7 @@ public class LevelSaver : MonoBehaviour {
         WWWForm form = new WWWForm();
         //form.AddField("data", data.ToString());
         form.AddField("jsonToDb", data.ToString());
-        Debug.Log(data.ToString());
+        //Debug.Log(data.ToString());
 
         using (UnityWebRequest request = UnityWebRequest.Post(postURL, form))
         {
@@ -607,13 +608,14 @@ public class LevelSaver : MonoBehaviour {
 
             if (request.isNetworkError || request.isHttpError)
             {
-                Debug.Log($"the error has the next messsage {request.downloadHandler.text}");
+                //Debug.Log($"the error has the next messsage {request.downloadHandler.text}");
                 SaveDataOffline();
                 FindObjectOfType<PauseTheGame>().DataIsSend();
             }
             else
             {
                 sessionManager.SaveSession();
+                //Debug.Log($"This was run succesfully {request.downloadHandler.text}");
 
                 FindObjectOfType<PauseTheGame>().DataIsSend();
             }

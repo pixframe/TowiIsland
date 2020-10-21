@@ -766,13 +766,10 @@ public class MagicRiverManager : MonoBehaviour {
             {
                 if (floatingObject.IsThisATarget())
                 {
-                    Debug.Log($"this is the target and have direction {numToCompare}");
                     if (specialAction[floatingObject.SpecialNumber()] == Actions.Reverse)
                     {
-                        Debug.Log("this is handle the other side");
                         if (reverseMode)
                         {
-                            Debug.Log("This should be call");
                             if (numToCompare == hit.transform.GetSiblingIndex())
                             {
                                 specificGoodAnswer++;
@@ -788,7 +785,6 @@ public class MagicRiverManager : MonoBehaviour {
                         }
                         else
                         {
-                            Debug.Log("This should be call if its not in reverse");
                             if (numToCompare != hit.transform.GetSiblingIndex())
                             {
                                 correctAnswer++;
@@ -1084,8 +1080,6 @@ public class MagicRiverManager : MonoBehaviour {
 
         specialObjects = (data.Length / 2) - 1;
         totalTargets += specialObjects;
-
-        Debug.Log($"Total targtes are {totalTargets}");
 
         for (int i = 0; i < data.Length - 2; i += 2)
         {

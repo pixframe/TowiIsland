@@ -111,6 +111,7 @@ public class SessionManager : MonoBehaviour
             {
                 activeUser = GetUser("_local");
                 activeKid = GetKid(0);
+                activeKid.kiwis = 10000;
             }
             else
             {
@@ -428,6 +429,7 @@ public class SessionManager : MonoBehaviour
         downlodingData = true;
         WWWForm form = new WWWForm();
         form.AddField("userKey", key);
+        //Debug.Log("sync profile");
 
         using (UnityWebRequest request = UnityWebRequest.Post(syncProfileURL, form))
         {
@@ -436,7 +438,6 @@ public class SessionManager : MonoBehaviour
             if (request.isNetworkError || request.isHttpError)
             {
                 downlodingData = false;
-                Debug.Log(request.downloadHandler.text);
             }
             else
             {
@@ -489,6 +490,7 @@ public class SessionManager : MonoBehaviour
                     activeUser.kids[index].age = (int)kidObj.GetNumber("age");
 
                     activeUser.kids[index].ResetPlayedGames();
+                    
 
                     activeUser.kids[index].missionsToPlay = new List<int>();
                     for (int o = 0; o < activeMissions.Length; o++)
@@ -588,7 +590,6 @@ public class SessionManager : MonoBehaviour
         {
             yield return request.SendWebRequest();
 
-            Debug.Log(request.downloadHandler.text);
             if (request.isNetworkError || request.isHttpError)
             {
                 if (FindObjectOfType<GameCenterManager>())
@@ -626,8 +627,6 @@ public class SessionManager : MonoBehaviour
         using (UnityWebRequest request = UnityWebRequest.Post(updateProfileURL, form))
         {
             yield return request.SendWebRequest();
-
-            Debug.Log($"Update result was:\n{request.downloadHandler.text}");
 
             if (request.isNetworkError)
             {
@@ -707,9 +706,8 @@ public class SessionManager : MonoBehaviour
 
         WWWForm form = new WWWForm();
         form.AddField("userKey", activeUser.userkey);
-        form.AddField("cid", activeUser.id);
+        form.AddField("cid", activeKid.id);
         form.AddField("date", String.Format("{0:0000}-{1:00}-{2:00}", today.Year, today.Month, today.Day));
-        //WWW hs_post = new WWW(post_url);
 
         using (UnityWebRequest request = UnityWebRequest.Post(syncLevelsURL, form))
         {
@@ -717,6 +715,7 @@ public class SessionManager : MonoBehaviour
             if (request.isHttpError || request.isNetworkError)
             {
 
+                //Debug.Log(request.downloadHandler.text);
             }
             else
             {
@@ -768,7 +767,7 @@ public class SessionManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("We stick to the local data");
+
         }
 
     }

@@ -52,7 +52,6 @@ public class SubscriptionsWays : MonoBehaviour
     //this is the corutine we use for prepaid code
     IEnumerator SendCode(int userId, int childId, string code, int typeOfShop)
     {
-        Debug.Log("We try to send a code now");
 
         //now we create a www form were we set the json that hva eall the info for the activaton
         WWWForm form = new WWWForm();
@@ -88,7 +87,6 @@ public class SubscriptionsWays : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("no error found");
                     Analytics.CustomEvent("buy");
                     menuManager.ShowGameMenu();
                     sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
@@ -149,8 +147,6 @@ public class SubscriptionsWays : MonoBehaviour
         form.AddField("childrens", ids);
         form.AddField("type", typeOfSubscription);
 
-        Debug.Log(form.data);
-
         using (UnityWebRequest request = UnityWebRequest.Post(IAPURL, form))
         {
             yield return request.SendWebRequest();
@@ -205,7 +201,6 @@ public class SubscriptionsWays : MonoBehaviour
                     sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
                     sessionManager.SaveSession();
                     menuManager.ShowGameMenu();
-                    Debug.Log("its done");
                 }
                 else
                 {

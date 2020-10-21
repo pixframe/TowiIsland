@@ -190,7 +190,6 @@ public class GameCenterManager : MonoBehaviour
                     break;
                 }
             }
-            Debug.Log(hasAFirstGame);
             if (hasAFirstGame)
             {
                 for (int i = 0; i < Keys.Number_Of_Games; i++)
@@ -453,7 +452,6 @@ public class GameCenterManager : MonoBehaviour
 
     void LoadNewScene(DemoPanel.Difficulty difficulty)
     {
-        Debug.Log("Doing some");
         FindObjectOfType<DemoKey>().SetDifficulty(difficulty);
         LoadNewScene(scenes[stations[index]]);
     }

@@ -4,6 +4,7 @@ using UnityEngine;
 using Boomlagoon.JSON;
 using UnityEngine.Analytics;
 using UnityEngine.Networking;
+using System;
 
 public class LogInScript : MonoBehaviour
 {
@@ -50,7 +51,7 @@ public class LogInScript : MonoBehaviour
 
     public void PostLogin(string parentMail, string currentPasword, bool newPaidUser)
     {
-        username = parentMail;
+        username = parentMail.TrimEnd('\n');
         password = currentPasword;
         StartCoroutine(PostLoginData(newPaidUser));
     }
@@ -89,7 +90,6 @@ public class LogInScript : MonoBehaviour
                 {
                     menuController.ShowWarning(9, menuController.ShowLogIn);
                 }
-                Debug.Log($"error is: {request.downloadHandler.text}");
             }
             else
             {
@@ -204,7 +204,6 @@ public class LogInScript : MonoBehaviour
 
     IEnumerator UpdateDataRoutine()
     {
-        Debug.Log($"Evaluations to be saved {PlayerPrefs.GetInt(Keys.Evaluations_Saved)}, Games to be saved {PlayerPrefs.GetInt(Keys.Games_Saved)}");
         var user = sessionManager.GetUser(PlayerPrefs.GetString(Keys.Active_User_Key));
         int gamesSaved = PlayerPrefs.GetInt(Keys.Games_Saved);
         if (gamesSaved > 0)
@@ -231,7 +230,6 @@ public class LogInScript : MonoBehaviour
                         if (request.isNetworkError || request.isHttpError)
                         {
                             PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
-                            Debug.Log($"We have trouble uploading the data this is the error :\n{request.downloadHandler.text}");
                             string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}{Keys.Game_To_Save}";
                             dataNotSavedByProblems++;
                             if (pathOfFile != newPathOfFile)
@@ -243,10 +241,8 @@ public class LogInScript : MonoBehaviour
                         else
                         {
                             JSONObject response = JSONObject.Parse(request.downloadHandler.text);
-                            Debug.Log(response["code"].Str);
                             if (response["code"].Str != "200" && response["code"].Str != "201")
                             {
-                                Debug.Log("The game data has been upload");
                                 File.Delete(pathOfFile);
                             }
                         }
@@ -281,7 +277,6 @@ public class LogInScript : MonoBehaviour
                         if (request.isNetworkError || request.isHttpError)
                         {
                             PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
-                            Debug.Log($"We have trouble uploading the data this is the error :\n{request.downloadHandler.text}");
                             string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}{Keys.Evaluation_To_Save}";
                             dataNotSavedByProblems++;
                             if (pathOfFile != newPathOfFile)
@@ -293,10 +288,8 @@ public class LogInScript : MonoBehaviour
                         else
                         {
                             JSONObject response = JSONObject.Parse(request.downloadHandler.text);
-                            Debug.Log(response["code"].Str);
                             if (response["code"].Str != "200" && response["code"].Str != "201")
                             {
-                                Debug.Log("The game data has been upload");
                                 File.Delete(pathOfFile);
                             }
                         }
@@ -309,12 +302,10 @@ public class LogInScript : MonoBehaviour
 
         if (PlayerPrefs.GetInt(Keys.Evaluations_Saved) == 0 || PlayerPrefs.GetInt(Keys.Games_Saved) == 0)
         {
-            Debug.Log("Ok");
             menuController.ShowSyncMessage(1);
         }
         else
         {
-            Debug.Log("Not OK");
             menuController.ShowSyncMessage(2);
         }
     }
@@ -346,7 +337,6 @@ public class LogInScript : MonoBehaviour
                         if (request.isNetworkError || request.isHttpError)
                         {
                             PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
-                            Debug.Log($"We have trouble uploading the data this is the error :\n{request.downloadHandler.text}");
                             string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}{Keys.Game_To_Save}";
                             dataNotSavedByProblems++;
                             if (pathOfFile != newPathOfFile)
@@ -358,10 +348,8 @@ public class LogInScript : MonoBehaviour
                         else
                         {
                             JSONObject response = JSONObject.Parse(request.downloadHandler.text);
-                            Debug.Log(response["code"].Str);
                             if (response["code"].Str != "200" && response["code"].Str != "201")
                             {
-                                Debug.Log("The game data has been upload");
                                 File.Delete(pathOfFile);
                             }
                         }
@@ -396,7 +384,6 @@ public class LogInScript : MonoBehaviour
                         if (request.isNetworkError || request.isHttpError)
                         {
                             PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
-                            Debug.Log($"We have trouble uploading the data this is the error :\n{request.downloadHandler.text}");
                             string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}{Keys.Evaluation_To_Save}";
                             dataNotSavedByProblems++;
                             if (pathOfFile != newPathOfFile)
@@ -408,10 +395,8 @@ public class LogInScript : MonoBehaviour
                         else
                         {
                             JSONObject response = JSONObject.Parse(request.downloadHandler.text);
-                            Debug.Log(response["code"].Str);
                             if (response["code"].Str != "200" && response["code"].Str != "201")
                             {
-                                Debug.Log("The game data has been upload");
                                 File.Delete(pathOfFile);
                             }
                         }
@@ -454,19 +439,15 @@ public class LogInScript : MonoBehaviour
             if (request.isNetworkError)
             {
                 menuController.ShowWarning(8);
-                Debug.Log($"Theres an error {request.error}");
-                Debug.Log(request.downloadHandler);
             }
             else if (request.isHttpError)
             {
                 menuController.CreateAccount();
                 menuController.ShowWarning(13);
-                Debug.Log($"Theres an error {request.error}");
             }
             else
             {
                 JSONObject obj = JSONObject.Parse(request.downloadHandler.text);
-                Debug.Log(obj["code"]);
                 if (obj.ContainsKey("code"))
                 {
                     if (obj["code"].Str == "111")

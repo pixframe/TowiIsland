@@ -805,7 +805,7 @@ public class LavaGameManager : MonoBehaviour {
 
         if (numberOfAssays <= 0)
         {
-            Debug.Log(levelsPlayed.Count);
+            //Debug.Log(levelsPlayed.Count);
             levelsPlayed.Add(level);
             difficultiesPlayed.Add(difficulty);
             readyButton.onClick.RemoveAllListeners();
@@ -813,7 +813,7 @@ public class LavaGameManager : MonoBehaviour {
         }
         else
         {
-            Debug.Log(levelsPlayed.Count);
+            //Debug.Log(levelsPlayed.Count);
             levelsPlayed.Add(level);
             difficultiesPlayed.Add(difficulty);
         }

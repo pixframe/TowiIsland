@@ -1001,7 +1001,6 @@ public class MenuManager : MonoBehaviour
         configMenu.backButton.onClick.RemoveAllListeners();
         configMenu.backButton.onClick.AddListener(ShowGameMenu);
         configMenu.versionText.text = $"V. {Application.version}";
-        Debug.Log(PlayerPrefs.GetInt(Keys.Games_Saved) + " " + PlayerPrefs.GetInt(Keys.Evaluations_Saved));
 
         if (PlayerPrefs.GetInt(Keys.Games_Saved) != 0 || PlayerPrefs.GetInt(Keys.Evaluations_Saved) != 0)
         {
@@ -1209,7 +1208,6 @@ public class MenuManager : MonoBehaviour
         EmailVerificationUtility verificationUtility = new EmailVerificationUtility();
         if (mail != "" && pass != "" && passConfirmation != "" && kidName != "" && kidDob != "")
         {
-
             if (verificationUtility.IsValidMail(mail))
             {
                 if (pass.Length >= 8)
@@ -1709,9 +1707,10 @@ public class MenuManager : MonoBehaviour
 
         public bool IsValidMail(string email)
         {
+            var mail = email.TrimEnd();
             try
             {
-                email = Regex.Replace(email, @"(@)(.+)$", DomainMapper, RegexOptions.None);
+                mail = Regex.Replace(mail, @"(@)(.+)$", DomainMapper, RegexOptions.None);
             }
             catch
             {
@@ -1725,7 +1724,7 @@ public class MenuManager : MonoBehaviour
 
             try
             {
-                return Regex.IsMatch(email,
+                return Regex.IsMatch(mail,
                     @"^(?("")("".+?(?<!\\)""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
                     @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-0-9a-z]*[0-9a-z]*\.)+[a-z0-9][\-a-z0-9]{0,22}[a-z0-9]))$",
                     RegexOptions.IgnoreCase);

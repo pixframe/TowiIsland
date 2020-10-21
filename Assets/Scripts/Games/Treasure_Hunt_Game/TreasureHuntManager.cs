@@ -992,7 +992,10 @@ public class TreasureHuntManager : MonoBehaviour {
             else
             {
                 repeatedLevels++;
-                level--;
+                if (--level < 0) {
+                    level = 0;
+                }
+                
             }
         }
         else
@@ -1240,6 +1243,8 @@ public class TreasureHuntManager : MonoBehaviour {
     {
         specialInstructionPanel.SetActive(false);
         instructionPanel.gameObject.SetActive(false);
+        cellPhoneButton.gameObject.SetActive(false);
+        cellPhone.gameObject.SetActive(false);
         pauser.ShowKiwiEarnings(passLevels);
     }
 
