@@ -937,6 +937,7 @@ public class TreasureHuntManager : MonoBehaviour {
                     miniUIInstructionsText.text = stringsToShow[15];
                     audioManager.PlayClip(instructionsClips[15]);
                     yesButton.onClick.AddListener(SetNewAssay);
+                    stopCellPhoneButton.gameObject.SetActive(false);
                 }
                 noButton.gameObject.SetActive(false);
                 break;

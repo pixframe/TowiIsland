@@ -811,7 +811,6 @@ public class SandDrawingController : MonoBehaviour {
                     {
                         probableSprites = GetProbableSprite("HardBank");
                     }
-                    temporals = ProbableIndex(probableSprites.Length);
                     temp.AddRange(Enumerable.Range(0, probableSprites.Length));
                     for (int i = 0; i < spis.Length; i++)
                     {
@@ -837,7 +836,6 @@ public class SandDrawingController : MonoBehaviour {
             }
             centerCanvas.visibleRenderer.sprite = shower;
             centerCanvas.nonVisibleRenderer.sprite = bases;
-            probableSprites = null;
         }
         showStar = false;
     }
