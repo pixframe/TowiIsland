@@ -3,17 +3,18 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Keys : MonoBehaviour {
+public class Keys
+{
 
-    //public static string Api_Web_Key = "https://towi.nyx.mx:2443/";
+    public static string Api_Web_Key = "https://towi.nyx.mx:2443/";
     //public static string Api_Web_Key = "http://35.232.245.131/";
-    public static string Api_Web_Key = "https://towi-testing.nyx.mx/";
+    //public static string Api_Web_Key = "https://towi-testing.nyx.mx/";
     public static string Try_Connection_Key = "api/levels/connection/";
     public static string First_Try = "frstTry";
     public static string Level_Of_Try = "lvlFTry";
 
     public static string Buy_IAP = "BuIAP";
-    public const int Number_Of_Games = 7;
+    public const int Number_Of_Games = 6;
 
     public static string Active_User_Key = "activeUser";
     public static string Purchase_Key = "purchased";

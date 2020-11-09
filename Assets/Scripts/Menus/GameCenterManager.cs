@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -44,14 +44,13 @@ public class GameCenterManager : MonoBehaviour
     List<bool> unlocks;
     List<int> stations = new List<int>();
 
-    string[] scenes = { "Birds_Singing_Scene", "Magic_Sand_Scene", "Treasure_Hunting_Scene", "Monkey_Hiding_Scene", "Magic_River_Scene", "Lava_Game_Scene", "Icecream_Madness" };
+    string[] scenes = new string[] { "Birds_Singing_Scene", "Magic_Sand_Scene", "Treasure_Hunting_Scene", "Monkey_Hiding_Scene", "Magic_River_Scene", "Lava_Game_Scene", "Icecream_Madness" };
+    List<string> activeMissions = new List<string>();
 
     const string folderPath = "Sprites/GameCenter/";
     const string bannerPath = "Banners/GamePanel_";
     const string iconPath = "Icons/Icon_";
     const string screenPath = "Screens/Capture_";
-
-    readonly string urlBuy = $"{Keys.Api_Web_Key}api/store/purchase/";
 
     AsyncOperation asyncLoad;
     EventTrigger eventTrigger;
@@ -104,7 +103,7 @@ public class GameCenterManager : MonoBehaviour
         rigthButton.onClick.AddListener(() => ChangeMenus(DirectionOfSwipe.Right));
 
         currentPanel.playButton.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[7];
-
+        warningPanel.GetComponentInChildren<Button>().GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[13];
 
         ChildGames();
         ShowLoaderCanvas();
@@ -157,6 +156,7 @@ public class GameCenterManager : MonoBehaviour
 
     void InternetAvailableUpdate()
     {
+        sessionManager.UpdateProfile(activeMissions);
         int funelGame = PlayerPrefs.GetInt(Keys.Funnel_Games, 1);
         if (funelGame < 7)
         {
@@ -181,20 +181,46 @@ public class GameCenterManager : MonoBehaviour
         if (!FindObjectOfType<DemoKey>())
         {
             List<int> missions = new List<int>();
-
+            bool hasAFirstGame = false;
             for (int i = 0; i < Keys.Number_Of_Games; i++)
             {
-                if (sessionManager.activeKid.gamesUnlocked[i])
+                if (sessionManager.activeKid.firstsGames[i])
                 {
-                    Debug.Log($"{i} is unlocked ?{sessionManager.activeKid.gamesUnlocked[i]}");
-                    unlocks[i] = true;
+                    hasAFirstGame = true;
+                    break;
+                }
+            }
+            if (hasAFirstGame)
+            {
+                for (int i = 0; i < Keys.Number_Of_Games; i++)
+                {
                     var x = i;
-                    missions.Add(x);
-                    stations.Add(x);
+                    if (sessionManager.activeKid.firstsGames[i])
+                    {
+                        activeMissions.Add(Keys.Game_Names[x]);
+                        unlocks[x] = true;
+                        missions.Add(x);
+                        stations.Add(x);
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < sessionManager.activeKid.missionsToPlay.Count; i++)
+                {
+                    int missionToCheck = sessionManager.activeKid.missionsToPlay[i];
+                    if (!sessionManager.activeKid.playedGames[missionToCheck])
+                    {
+                        activeMissions.Add(Keys.Game_Names[missionToCheck]);
+                        unlocks[missionToCheck] = true;
+                        var x = missionToCheck;
+                        missions.Add(x);
+                        stations.Add(x);
+                    }
                 }
             }
 
-            Debug.Log($"missions are {missions.Count}");
+            sessionManager.activeKid.missionsToPlay = missions;
         }
         else
         {
@@ -382,7 +408,7 @@ public class GameCenterManager : MonoBehaviour
             if (isCenter)
             {
                 panel.blockPanel.onClick.RemoveAllListeners();
-                panel.blockPanel.onClick.AddListener(ShowBuyOptions);
+                panel.blockPanel.onClick.AddListener(ShowDisclaimer);
             }
         }
     }
@@ -409,6 +435,10 @@ public class GameCenterManager : MonoBehaviour
         }
         else
         {
+            //if (change > 0)
+            //{
+            //    FindObjectOfType<DemoKey>().SetSpecialLevels(level, difficulty, specialLevel);
+            //}
             LoadNewScene(scenes[stations[index]]);
         }
     }
@@ -422,7 +452,6 @@ public class GameCenterManager : MonoBehaviour
 
     void LoadNewScene(DemoPanel.Difficulty difficulty)
     {
-        Debug.Log("Doing some");
         FindObjectOfType<DemoKey>().SetDifficulty(difficulty);
         LoadNewScene(scenes[stations[index]]);
     }
@@ -460,29 +489,19 @@ public class GameCenterManager : MonoBehaviour
         warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[8];
     }
 
-    public void ShowBuyOptionError() 
-    {
-        ShowBuyOptions();
-        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = string.Format(stringsToShow[11], stringsToShow[stations[index]]);
-    }
-
-    void ShowBuyOptions()
+    void ShowDisclaimer()
     {
         DeactivateMainPanel();
         loadingCanvas.SetActive(false);
         warningPanel.SetActive(true);
-        var button = warningPanel.GetComponentInChildren<Button>();
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(() =>
+        warningPanel.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
+        warningPanel.GetComponentInChildren<Button>().onClick.AddListener(() =>
         {
-            //Debug.Log($"this is the station {numberOfGame}");
-            //warningPanel.SetActive(false);
-            //ChangeMenus();
-            BuyItem();
-
+            warningPanel.SetActive(false);
+            ChangeMenus();
+            DeactivateDisclaimer();
         });
-        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = string.Format(stringsToShow[9], stringsToShow[stations[index]]);
-        button.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[10];
+        warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[9];
     }
 
     void DeactivateMainPanel()
@@ -522,55 +541,9 @@ public class GameCenterManager : MonoBehaviour
         iapManager.BuyAGame(stations[index]);
 #elif UNITY_EDITOR
         ShowLoaderCanvas();
-        ShowBuyOptionError();
 #else
         Application.OpenURL($"{Keys.Api_Web_Key}tienda");
 #endif
-    }
-
-    public void SendBuy()
-    {
-        SendABuy(stations[index]);
-    }
-
-    IEnumerator SendABuy(int numberOfGame)
-    {
-        WWWForm form = new WWWForm();
-        form.AddField("userKey", sessionManager.activeUser.userkey);
-        form.AddField("cid", sessionManager.activeKid.id);
-        form.AddField("games", Keys.Game_Names[numberOfGame]);
-        warningPanel.SetActive(false);
-        loadingCanvas.SetActive(true);
-        goBackButton.gameObject.SetActive(false);
-
-        using (UnityWebRequest request = UnityWebRequest.Post(urlBuy, form))
-        {
-            yield return request.SendWebRequest();
-            if (request.isNetworkError || request.isHttpError)
-            {
-                Debug.Log("Error");
-                Debug.Log(request.downloadHandler.text);
-                DeactivateDisclaimer();
-                loadingCanvas.SetActive(false);
-                sessionManager.activeKid.gamesUnlocked[numberOfGame] = true;
-                unlocks[numberOfGame] = true;
-                SetPanel(currentPanel, numberOfGame, true);
-                sessionManager.SaveSession();
-            }
-            else
-            {
-                DeactivateDisclaimer();
-                loadingCanvas.SetActive(false);
-                sessionManager.activeKid.gamesUnlocked[numberOfGame] = true;
-                unlocks[numberOfGame] = true;
-                SetPanel(currentPanel, numberOfGame, true);
-                sessionManager.SaveSession();
-            }
-            if (FindObjectOfType<MyIAPManager>()) 
-            {
-                FindObjectOfType<MyIAPManager>().ConfirmPurchaseProduct();
-            }
-        }
     }
 
 }

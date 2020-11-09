@@ -24,7 +24,8 @@ public class PauseTheGame : MonoBehaviour {
 
     [System.NonSerialized]
     public bool needTutorial;
-
+    [System.NonSerialized]
+    public bool isPaused;
     bool isDataSend = false;
 
     TextAsset textAsset;
@@ -79,6 +80,11 @@ public class PauseTheGame : MonoBehaviour {
         if (Time.timeScale == 1)
         {
             Time.timeScale = 0;
+            isPaused = true;
+        }
+        if (FindObjectOfType<AudioManager>())
+        {
+            FindObjectOfType<AudioManager>().PauseTheAudio();
         }
         pauseButton.gameObject.SetActive(false);
         pausePanel.SetActive(true);
@@ -90,6 +96,11 @@ public class PauseTheGame : MonoBehaviour {
         if (Time.timeScale == 0)
         {
             Time.timeScale = 1;
+            isPaused = false;
+        }
+        if (FindObjectOfType<AudioManager>())
+        {
+            FindObjectOfType<AudioManager>().UnpauseTheAudio();
         }
         pauseButton.gameObject.SetActive(true);
         Debug.Log("Activate pause");
@@ -103,7 +114,10 @@ public class PauseTheGame : MonoBehaviour {
         {
             Time.timeScale = 1;
         }
-
+        if (FindObjectOfType<AudioManager>())
+        {
+            FindObjectOfType<AudioManager>().StopTheAudio();
+        }
         SendInmiediatlyToIsland();
     }
 

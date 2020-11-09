@@ -4,6 +4,7 @@ using UnityEngine;
 using Boomlagoon.JSON;
 using UnityEngine.Analytics;
 using UnityEngine.Networking;
+using System;
 
 public class LogInScript : MonoBehaviour
 {
@@ -17,10 +18,6 @@ public class LogInScript : MonoBehaviour
 
     string username;
     string password;
-
-    string errorText;
-
-    bool loading;
 
     SessionManager sessionManager;
     MenuManager menuController;
@@ -54,7 +51,7 @@ public class LogInScript : MonoBehaviour
 
     public void PostLogin(string parentMail, string currentPasword, bool newPaidUser)
     {
-        username = parentMail;
+        username = parentMail.TrimEnd('\n');
         password = currentPasword;
         StartCoroutine(PostLoginData(newPaidUser));
     }
@@ -74,7 +71,6 @@ public class LogInScript : MonoBehaviour
         using (UnityWebRequest request = UnityWebRequest.Post(post_url, form))
         {
             yield return request.SendWebRequest();
-            Debug.Log(request.downloadHandler.text);
             if (request.isNetworkError)
             {
                 menuController.ShowWarning(9, menuController.ShowLogIn);
@@ -92,7 +88,7 @@ public class LogInScript : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("What");
+                    menuController.ShowWarning(9, menuController.ShowLogIn);
                 }
             }
             else
@@ -103,10 +99,12 @@ public class LogInScript : MonoBehaviour
                 JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
                 JSONArray kids = jsonObject.GetValue("children").Array;
 
-                sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetNumber("id"), (int)jsonObject.GetNumber("assessmentsAvailables"));
+                sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetValue("id").Number);
                 sessionManager.AddKids(kids);
                 sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
                 menuController.LoggedNow();
+                sessionManager.activeUser.trialAccount = false;
+                sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
                 sessionManager.SaveSession();
                 menuController.ClearInputs();
                 if (newPaidUser)
@@ -133,7 +131,7 @@ public class LogInScript : MonoBehaviour
 
     public void IsActive(string user)
     {
-        SessionManager.User tempUser = sessionManager.GetUser(user);
+        var tempUser = sessionManager.GetUser(user);
 
         if (tempUser != null)
         {
@@ -143,7 +141,7 @@ public class LogInScript : MonoBehaviour
             }
             else
             {
-                StartCoroutine(SyncProfile(tempUser.userkey));
+                StartCoroutine(PostIsActive(tempUser));
             }
         }
         else
@@ -157,25 +155,8 @@ public class LogInScript : MonoBehaviour
         StartCoroutine(UpdateDataRoutine());
     }
 
-    IEnumerator SyncProfile(string userKey) 
-    {
-        sessionManager.SyncProfiles(userKey);
-        yield return new WaitWhile(() => !sessionManager.isSyncing);
-        PlayerPrefs.SetInt(Keys.Logged_Session, 1);
-        if (sessionManager.activeKid != null)
-        {
-            menuController.ShowGameMenu();
-        }
-        else
-        {
-            menuController.SetKidsProfiles();
-        }
-    }
-
     IEnumerator PostIsActive(SessionManager.User user)
     {
-        string post_url = activeUserUrl;
-
         // Build form to post in server
         WWWForm form = new WWWForm();
         form.AddField("parent_email", user.username);
@@ -195,6 +176,7 @@ public class LogInScript : MonoBehaviour
 
                 sessionManager.LoadActiveUser(user.userkey);
                 sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
 
                 while (sessionManager.IsDownlodingData())
                 {
@@ -222,7 +204,6 @@ public class LogInScript : MonoBehaviour
 
     IEnumerator UpdateDataRoutine()
     {
-        Debug.Log($"Evaluations to be saved {PlayerPrefs.GetInt(Keys.Evaluations_Saved)}, Games to be saved {PlayerPrefs.GetInt(Keys.Games_Saved)}");
         var user = sessionManager.GetUser(PlayerPrefs.GetString(Keys.Active_User_Key));
         int gamesSaved = PlayerPrefs.GetInt(Keys.Games_Saved);
         if (gamesSaved > 0)
@@ -249,7 +230,6 @@ public class LogInScript : MonoBehaviour
                         if (request.isNetworkError || request.isHttpError)
                         {
                             PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
-                            Debug.Log($"We have trouble uploading the data this is the error :\n{request.downloadHandler.text}");
                             string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}{Keys.Game_To_Save}";
                             dataNotSavedByProblems++;
                             if (pathOfFile != newPathOfFile)
@@ -261,10 +241,8 @@ public class LogInScript : MonoBehaviour
                         else
                         {
                             JSONObject response = JSONObject.Parse(request.downloadHandler.text);
-                            Debug.Log(response["code"].Str);
                             if (response["code"].Str != "200" && response["code"].Str != "201")
                             {
-                                Debug.Log("The game data has been upload");
                                 File.Delete(pathOfFile);
                             }
                         }
@@ -299,7 +277,6 @@ public class LogInScript : MonoBehaviour
                         if (request.isNetworkError || request.isHttpError)
                         {
                             PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
-                            Debug.Log($"We have trouble uploading the data this is the error :\n{request.downloadHandler.text}");
                             string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}{Keys.Evaluation_To_Save}";
                             dataNotSavedByProblems++;
                             if (pathOfFile != newPathOfFile)
@@ -311,10 +288,8 @@ public class LogInScript : MonoBehaviour
                         else
                         {
                             JSONObject response = JSONObject.Parse(request.downloadHandler.text);
-                            Debug.Log(response["code"].Str);
                             if (response["code"].Str != "200" && response["code"].Str != "201")
                             {
-                                Debug.Log("The game data has been upload");
                                 File.Delete(pathOfFile);
                             }
                         }
@@ -327,16 +302,12 @@ public class LogInScript : MonoBehaviour
 
         if (PlayerPrefs.GetInt(Keys.Evaluations_Saved) == 0 || PlayerPrefs.GetInt(Keys.Games_Saved) == 0)
         {
-            Debug.Log("Ok");
             menuController.ShowSyncMessage(1);
         }
         else
         {
-            Debug.Log("Not OK");
             menuController.ShowSyncMessage(2);
         }
-
-        sessionManager.SyncProfiles(user.userkey);
     }
 
     IEnumerator UpdateDataToSend(SessionManager.User user)
@@ -366,7 +337,6 @@ public class LogInScript : MonoBehaviour
                         if (request.isNetworkError || request.isHttpError)
                         {
                             PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
-                            Debug.Log($"We have trouble uploading the data this is the error :\n{request.downloadHandler.text}");
                             string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}{Keys.Game_To_Save}";
                             dataNotSavedByProblems++;
                             if (pathOfFile != newPathOfFile)
@@ -378,10 +348,8 @@ public class LogInScript : MonoBehaviour
                         else
                         {
                             JSONObject response = JSONObject.Parse(request.downloadHandler.text);
-                            Debug.Log(response["code"].Str);
                             if (response["code"].Str != "200" && response["code"].Str != "201")
                             {
-                                Debug.Log("The game data has been upload");
                                 File.Delete(pathOfFile);
                             }
                         }
@@ -416,7 +384,6 @@ public class LogInScript : MonoBehaviour
                         if (request.isNetworkError || request.isHttpError)
                         {
                             PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
-                            Debug.Log($"We have trouble uploading the data this is the error :\n{request.downloadHandler.text}");
                             string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}{Keys.Evaluation_To_Save}";
                             dataNotSavedByProblems++;
                             if (pathOfFile != newPathOfFile)
@@ -428,10 +395,8 @@ public class LogInScript : MonoBehaviour
                         else
                         {
                             JSONObject response = JSONObject.Parse(request.downloadHandler.text);
-                            Debug.Log(response["code"].Str);
                             if (response["code"].Str != "200" && response["code"].Str != "201")
                             {
-                                Debug.Log("The game data has been upload");
                                 File.Delete(pathOfFile);
                             }
                         }
@@ -442,7 +407,7 @@ public class LogInScript : MonoBehaviour
             PlayerPrefs.SetInt(Keys.Evaluations_Saved, dataNotSavedByProblems);
         }
 
-        sessionManager.SyncProfiles(user.userkey);
+        StartCoroutine(PostIsActive(user));
     }
 
     public void RegisterParentAndKid(string email, string password, string kidName, string dateOfBirth, bool newPaidUser)
@@ -474,19 +439,15 @@ public class LogInScript : MonoBehaviour
             if (request.isNetworkError)
             {
                 menuController.ShowWarning(8);
-                Debug.Log($"Theres an error {request.error}");
-                Debug.Log(request.downloadHandler);
             }
             else if (request.isHttpError)
             {
                 menuController.CreateAccount();
                 menuController.ShowWarning(13);
-                Debug.Log($"Theres an error {request.error}");
             }
             else
             {
                 JSONObject obj = JSONObject.Parse(request.downloadHandler.text);
-                Debug.Log(obj["code"]);
                 if (obj.ContainsKey("code"))
                 {
                     if (obj["code"].Str == "111")
@@ -538,6 +499,7 @@ public class LogInScript : MonoBehaviour
             }
             else
             {
+                sessionManager.activeUser.suscriptionsLeft = (int)jsonObt.GetNumber("suscriptionsAvailables");
                 sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
                 menuController.ShowLoading();
                 yield return new WaitForSeconds(5f);

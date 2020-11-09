@@ -20,9 +20,11 @@ public class MagicRiverManager : MonoBehaviour {
 
     [Header("Text Assets")]
     TextAsset textAsset;
+    TextAsset storyAsset;
     TextAsset beachTextAsset;
     TextAsset forestTextAsset;
     string[] stringsToShow;
+    string[] historyStrings;
     string[] beachStrings;
     string[] forestStrings;
 
@@ -129,11 +131,14 @@ public class MagicRiverManager : MonoBehaviour {
         }
         audioManager = FindObjectOfType<AudioManager>();
         textAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/River/RiverText");
+        storyAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/River/History");
         beachTextAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/River/BeachObjectsTextAsset");
         forestTextAsset = Resources.Load<TextAsset>($"{LanguagePicker.BasicTextRoute()}Games/River/ForestObjectsTextAsset");
         instructionsClips = Resources.LoadAll<AudioClip>($"{LanguagePicker.BasicAudioRoute()}Games/River");
         GetLevel();
+
         stringsToShow = TextReader.TextsToShow(textAsset);
+        historyStrings = TextReader.TextsToShow(storyAsset);
         beachStrings = TextReader.TextsToShow(beachTextAsset);
         forestStrings = TextReader.TextsToShow(forestTextAsset);
 
@@ -199,7 +204,7 @@ public class MagicRiverManager : MonoBehaviour {
         instructionPanel.transform.parent.gameObject.SetActive(true);
         readyButton.onClick.AddListener(TellStory);
         instructionScreens[instructionIndex].SetActive(true);
-        instructionText.text = stringsToShow[instructionIndex];
+        instructionText.text = historyStrings[instructionIndex];
         readyButton.gameObject.SetActive(false);
         audioManager.PlayClip(instructionsClips[instructionIndex]);
         Invoke("ReadyButtonOn", audioManager.ClipDuration());
@@ -347,10 +352,17 @@ public class MagicRiverManager : MonoBehaviour {
         instructionIndex++;
         instructionScreens[instructionIndex - 1].SetActive(false);
         instructionScreens[instructionIndex].SetActive(true);
-        instructionText.text = stringsToShow[instructionIndex];
+        instructionText.text = historyStrings[instructionIndex];
         readyButton.gameObject.SetActive(false);
-        audioManager.PlayClip(instructionsClips[instructionIndex]);
-        Invoke("ReadyButtonOn", audioManager.ClipDuration());
+        if (instructionIndex < 3)
+        {
+            audioManager.PlayClip(instructionsClips[instructionIndex]);
+            Invoke("ReadyButtonOn", audioManager.ClipDuration());
+        }
+        else
+        { 
+            readyButton.gameObject.SetActive(true); 
+        }
         if (instructionIndex >= instructionScreens.Length - 1)
         {
             readyButton.onClick.RemoveAllListeners();
@@ -754,13 +766,10 @@ public class MagicRiverManager : MonoBehaviour {
             {
                 if (floatingObject.IsThisATarget())
                 {
-                    Debug.Log($"this is the target and have direction {numToCompare}");
                     if (specialAction[floatingObject.SpecialNumber()] == Actions.Reverse)
                     {
-                        Debug.Log("this is handle the other side");
                         if (reverseMode)
                         {
-                            Debug.Log("This should be call");
                             if (numToCompare == hit.transform.GetSiblingIndex())
                             {
                                 specificGoodAnswer++;
@@ -776,7 +785,6 @@ public class MagicRiverManager : MonoBehaviour {
                         }
                         else
                         {
-                            Debug.Log("This should be call if its not in reverse");
                             if (numToCompare != hit.transform.GetSiblingIndex())
                             {
                                 correctAnswer++;
@@ -1073,8 +1081,6 @@ public class MagicRiverManager : MonoBehaviour {
         specialObjects = (data.Length / 2) - 1;
         totalTargets += specialObjects;
 
-        Debug.Log($"Total targtes are {totalTargets}");
-
         for (int i = 0; i < data.Length - 2; i += 2)
         {
             switch (data[i + 2])
@@ -1227,8 +1233,6 @@ public class MagicRiverManager : MonoBehaviour {
         }
 
         level = levelInput - (difficulty * baseLevelDifficulty);
-
-        Debug.Log("Level is " + level + " Difficulty is " + difficulty);
     }
 
     /// <summary>

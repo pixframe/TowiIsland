@@ -937,6 +937,7 @@ public class TreasureHuntManager : MonoBehaviour {
                     miniUIInstructionsText.text = stringsToShow[15];
                     audioManager.PlayClip(instructionsClips[15]);
                     yesButton.onClick.AddListener(SetNewAssay);
+                    stopCellPhoneButton.gameObject.SetActive(false);
                 }
                 noButton.gameObject.SetActive(false);
                 break;
@@ -992,7 +993,10 @@ public class TreasureHuntManager : MonoBehaviour {
             else
             {
                 repeatedLevels++;
-                level--;
+                if (--level < 0) {
+                    level = 0;
+                }
+                
             }
         }
         else
@@ -1240,6 +1244,8 @@ public class TreasureHuntManager : MonoBehaviour {
     {
         specialInstructionPanel.SetActive(false);
         instructionPanel.gameObject.SetActive(false);
+        cellPhoneButton.gameObject.SetActive(false);
+        cellPhone.gameObject.SetActive(false);
         pauser.ShowKiwiEarnings(passLevels);
     }
 
