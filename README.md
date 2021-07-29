@@ -19,7 +19,7 @@ What things you need to install the software and how to install them
 ```
 
 Knowladge in C#/Unity3D
-Unity 2018.2.6f1
+Unity 2020.3.9f1
 
 ```
 
