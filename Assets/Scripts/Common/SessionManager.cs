@@ -435,7 +435,7 @@ public class SessionManager : MonoBehaviour
         {
             yield return request.SendWebRequest();
 
-            if (request.isNetworkError || request.isHttpError)
+            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
             {
                 downlodingData = false;
             }
@@ -490,7 +490,7 @@ public class SessionManager : MonoBehaviour
                     activeUser.kids[index].age = (int)kidObj.GetNumber("age");
 
                     activeUser.kids[index].ResetPlayedGames();
-                    
+
 
                     activeUser.kids[index].missionsToPlay = new List<int>();
                     for (int o = 0; o < activeMissions.Length; o++)
@@ -590,7 +590,7 @@ public class SessionManager : MonoBehaviour
         {
             yield return request.SendWebRequest();
 
-            if (request.isNetworkError || request.isHttpError)
+            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
             {
                 if (FindObjectOfType<GameCenterManager>())
                 {
@@ -628,7 +628,7 @@ public class SessionManager : MonoBehaviour
         {
             yield return request.SendWebRequest();
 
-            if (request.isNetworkError)
+            if (request.result == UnityWebRequest.Result.ConnectionError)
             {
                 if (FindObjectOfType<GameCenterManager>())
                 {
@@ -712,7 +712,7 @@ public class SessionManager : MonoBehaviour
         using (UnityWebRequest request = UnityWebRequest.Post(syncLevelsURL, form))
         {
             yield return request.SendWebRequest();
-            if (request.isHttpError || request.isNetworkError)
+            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
             {
 
                 //Debug.Log(request.downloadHandler.text);

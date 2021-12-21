@@ -7,5 +7,5 @@ public class TowiDictionary
 
     public static Dictionary<string, string> CharacterNames = new Dictionary<string, string> { { "koala", "TOWI" }, { "tucan", "TUKI" }, { "mono", "MOKI" }, { "jaguar", "KALI" }, { "tortuga", "TELO" } };
 
-    public static Dictionary<string, string> ColorHexs = new Dictionary<string, string> { { "activeGreen", "#8CC63F" }, { "deactivated", "#36bdc8" }, {"activeOrange", "#E89B10" }, {"activeYellow", "#EEBD18" } };
+    public static Dictionary<string, string> ColorHexs = new Dictionary<string, string> { { "activeGreen", "#3665F1" }, { "deactivated", "#36bdc8" }, {"activeOrange", "#E89B10" }, {"activeYellow", "#E89B10" } };
 }

@@ -92,6 +92,11 @@ public class MenuManager : MonoBehaviour
     [Header("Configuration Menu")]
     public GameObject configCanvas;
     ConfigMenu configMenu;
+
+    [Header("Suscription Menu")]
+    public GameObject suscriptionPromoPanel;
+    SubscriptionPromoMenu subscriptionPromoMenu;
+
     bool timeLimitActivation;
     readonly List<float> limitTimes = new List<float> { 15, 30, 45, 60, 75 };
     int limitTimeIndex = 0;
@@ -149,7 +154,7 @@ public class MenuManager : MonoBehaviour
         {
             yield return newRequest.SendWebRequest();
 
-            if (newRequest.isNetworkError)
+            if (newRequest.result == UnityWebRequest.Result.ConnectionError)
             {
                 NoInternetAvailableLogin();
             }
@@ -226,20 +231,6 @@ public class MenuManager : MonoBehaviour
                 if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
                 {
                     ShowGameMenu();
-                    //if (DateTime.Compare(sessionManager.activeKid.offlineSubscription, DateTime.Today) < 0)
-                    //{
-                    //    ShowNeedConectionToPlay();
-                    //}
-                    //else
-                    //{
-                    //    DateTime lastFetchTime = DateTime.Parse(PlayerPrefs.GetString(Keys.Last_Play_Time), DateTimeFormatInfo.InvariantInfo);
-
-                    //    if (DateTime.Compare(DateTime.Today, lastFetchTime) > 0 && sessionManager.activeKid.missionsToPlay.Count <= 0)
-                    //    {
-                    //        sessionManager.activeKid.missionsToPlay = OfflineManager.Create_Levels();
-                    //    }
-                    //    ShowGameMenu();
-                    //}
                 }
                 else
                 {
@@ -300,6 +291,7 @@ public class MenuManager : MonoBehaviour
         shopMenu = new ShopMenu(shopCanvas, this);
         registerMenu = new RegisterMenu(registerCanvas, this);
         addMenu = new AddMenu(addCanvas, this);
+        subscriptionPromoMenu = new SubscriptionPromoMenu(suscriptionPromoPanel, this);
 
         ButtonSetUp();
 
@@ -609,9 +601,16 @@ public class MenuManager : MonoBehaviour
         loadingCanvas.SetActive(false);
         newKidPanel.SetActive(false);
         escapeButton.gameObject.SetActive(false);
-        configMenu.panel.SetActive(false);
+        configMenu.SetActive(false);
         registerMenu.HideAll();
         addMenu.HidePanel();
+        suscriptionPromoPanel.SetActive(false);
+    }
+
+    public void ShowSubscriptionPanel()
+    {
+        HideAllCanvas();
+        suscriptionPromoPanel.SetActive(true);
     }
 
     void UpdateKidInMenu()
@@ -660,11 +659,11 @@ public class MenuManager : MonoBehaviour
         HideAllCanvas();
         if (key)
         {
-            gameMenuObject.ShowThisMenu(true, false, IsEvaluationAvilable(), true, 0);
+            gameMenuObject.ShowThisMenu(true, IsEvaluationAvilable(), 0);
         }
         else
         {
-            gameMenuObject.ShowThisMenu(sessionManager.activeKid.isActive, PlayerPrefs.GetInt(Keys.First_Try) == 0, IsEvaluationAvilable(), false, sessionManager.activeUser.suscriptionsLeft);
+            gameMenuObject.ShowThisMenu(sessionManager.activeKid.isActive, IsEvaluationAvilable(), sessionManager.activeUser.suscriptionsLeft);
         }
 
         UpdateKidInMenu();
@@ -990,7 +989,7 @@ public class MenuManager : MonoBehaviour
     public void ShowSettings()
     {
         HideAllCanvas();
-        configMenu.panel.SetActive(true);
+        configMenu.SetActive(true);
         configMenu.languagePanelHandler.SetActive(false);
         configMenu.timeLimitPanel.SetActive(false);
         configMenu.passwordNeedMenu.panel.gameObject.SetActive(false);
@@ -1783,64 +1782,7 @@ public class MenuManager : MonoBehaviour
 #endif
 }
 
-//Configuration menu
-class ConfigMenu
-{
-    public GameObject panel;
-    public Button languageButton;
-    public Button automaticButton;
-    public Button backButton;
-    public Button logoButton;
-    public Button updateDataButton;
-    public Button timeLimitButton;
-    public TextMeshProUGUI versionText;
-
-    public GameObject languagePanelHandler;
-    public Button englishLanguageButton;
-    public Button spanishLanguageButton;
-
-    public GameObject changeConfigPanel;
-    public GameObject timeLimitPanel;
-    public TextMeshProUGUI timeLimitLabel;
-    public TMP_Dropdown dropdwonTime;
-    public Button saveButton;
-    public TextMeshProUGUI timeAmountLabel;
-    public Button plusButton;
-    public Button lessButton;
-    public Toggle toogleActivate;
-    public TextMeshProUGUI textActivate;
-    public PasswordNeedMenu passwordNeedMenu;
-
-    public ConfigMenu(GameObject mainPanel)
-    {
-        panel = mainPanel;
-        languageButton = panel.transform.Find("Language Button").GetComponent<Button>();
-        backButton = panel.transform.Find("Back Button").GetComponent<Button>();
-        logoButton = panel.transform.Find("Logo Button").GetComponent<Button>();
-        updateDataButton = panel.transform.Find("Upadte Button").GetComponent<Button>();
-        versionText = panel.transform.Find("Version Number Text").GetComponent<TextMeshProUGUI>();
-        timeLimitButton = panel.transform.Find("Time Limit").GetComponent<Button>();
-
-        languagePanelHandler = panel.transform.Find("Language Panel Handler").gameObject;
-        englishLanguageButton = languagePanelHandler.transform.GetChild(0).GetComponent<Button>();
-        spanishLanguageButton = languagePanelHandler.transform.GetChild(1).GetComponent<Button>();
-        automaticButton = languagePanelHandler.transform.GetChild(languagePanelHandler.transform.childCount - 1).GetComponent<Button>();
-
-        timeLimitPanel = panel.transform.Find("Time Limit Panel").gameObject;
-        timeLimitLabel = timeLimitPanel.transform.Find("Time Limit Label").GetComponent<TextMeshProUGUI>();
-        dropdwonTime = timeLimitPanel.transform.Find("Dropdown Time").GetComponent<TMP_Dropdown>();
-        saveButton = timeLimitPanel.transform.Find("Save Time Config Button").GetComponent<Button>();
-        timeAmountLabel = timeLimitPanel.transform.Find("Time Label").GetComponentInChildren<TextMeshProUGUI>();
-        plusButton = timeLimitPanel.transform.Find("Plus Button").GetComponent<Button>();
-        lessButton = timeLimitPanel.transform.Find("Less Button").GetComponent<Button>();
-        toogleActivate = timeLimitPanel.transform.Find("Change Time Limit").GetComponent<Toggle>();
-        textActivate = toogleActivate.GetComponentInChildren<TextMeshProUGUI>();
-
-        passwordNeedMenu = new PasswordNeedMenu(timeLimitPanel.transform.Find("Pasword Need Component"));
-    }
-}
-
-class KidProfileCanvas
+public class KidProfileCanvas
 {
     public GameObject gameObject;
     public Button buttonOfProfile;
@@ -2242,257 +2184,6 @@ class InputPanels
         gameObject = panel.gameObject;
         inputNameText = panel.Find("Text (TMP)").GetComponent<TextMeshProUGUI>();
         field = panel.Find("InputField (TMP)").GetComponent<TMP_InputField>();
-    }
-}
-
-class GameMenu
-{
-    GameObject mainCanvas;
-    MenuManager manager;
-    public GameObject tryLogo;
-    public GameObject logoIcon;
-    public Button gamesButton;
-    public Button buyButton;
-    public Button evaluationButton;
-    public KidProfileCanvas kidProfile;
-    Button singOutButton;
-    Button settingsButton;
-    Button aboutButton;
-#if UNITY_WEBGL
-    Transform buyButton;
-#endif
-
-    const string pathOfFirstMenu = "Login/FirstMenu";
-
-    public GameMenu(GameObject panel, MenuManager managerToRelay)
-    {
-        manager = managerToRelay;
-        mainCanvas = panel;
-        tryLogo = mainCanvas.transform.Find("Try Logo").gameObject;
-        logoIcon = mainCanvas.transform.Find("Game Logo").gameObject;
-        gamesButton = mainCanvas.transform.Find("Games Button").GetComponent<Button>();
-        buyButton = mainCanvas.transform.Find("Buy Button").GetComponent<Button>(); ;
-        evaluationButton = mainCanvas.transform.Find("Evaluation Button").GetComponent<Button>();
-        kidProfile = new KidProfileCanvas(mainCanvas.transform.Find("Change Kid Profile Button").gameObject);
-        singOutButton = mainCanvas.transform.Find("Sing Out Button").GetComponent<Button>();
-        settingsButton = mainCanvas.transform.Find("Settings Button").GetComponent<Button>();
-        aboutButton = mainCanvas.transform.Find("About Button").GetComponent<Button>();
-        SetStaticButtonFuctions();
-#if UNITY_WEBGL
-#endif
-    }
-
-    //This is where we show the first menu of the before login or sign in
-    public void ShowFirstMenu()
-    {
-        var textsToSet = TextReader.TextsToSet(pathOfFirstMenu);
-
-        mainCanvas.SetActive(true);
-
-        gamesButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[0];
-        evaluationButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[1];
-        buyButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[2];
-        tryLogo.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[3];
-
-        tryLogo.SetActive(true);
-        logoIcon.SetActive(false);
-
-        gamesButton.gameObject.SetActive(true);
-
-
-        for (int i = 0; i < gamesButton.transform.childCount; i++)
-        {
-            var child = gamesButton.transform.GetChild(i);
-            if (!child.GetComponent<TextMeshProUGUI>())
-            {
-                gamesButton.transform.GetChild(i).gameObject.SetActive(false);
-            }
-        }
-#if UNITY_WEBGL
-        evaluationButton.gameObject.SetActive(false);
-        gamesButton.transform.position = buyButton.position;
-#else
-        evaluationButton.gameObject.SetActive(true);
-        buyButton.gameObject.SetActive(true);
-#endif
-        singOutButton.gameObject.SetActive(false);
-        settingsButton.gameObject.SetActive(false);
-        aboutButton.gameObject.SetActive(false);
-        kidProfile.gameObject.SetActive(false);
-
-        SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
-        SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
-        SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
-
-        gamesButton.onClick.RemoveAllListeners();
-        evaluationButton.onClick.RemoveAllListeners();
-        buyButton.onClick.RemoveAllListeners();
-
-        gamesButton.onClick.AddListener(manager.ShowLogIn);
-        if (PlayerPrefs.GetInt(Keys.First_Try) != 0)
-        {
-            buyButton.onClick.AddListener(manager.ShowAdd);
-        }
-        else
-        {
-            buyButton.onClick.AddListener(manager.ShowTryChances);
-        }
-
-        evaluationButton.onClick.AddListener(manager.ShowAdd);
-    }
-
-    public void ShowThisMenu()
-    {
-        mainCanvas.SetActive(true);
-        manager.WriteTheText(evaluationButton, 0);
-        manager.WriteTheText(gamesButton, 1);
-
-        gamesButton.gameObject.SetActive(true);
-        for (int i = 0; i < gamesButton.transform.childCount; i++)
-        {
-            gamesButton.transform.GetChild(i).gameObject.SetActive(true);
-        }
-        evaluationButton.gameObject.SetActive(true);
-        for (int i = 0; i < evaluationButton.transform.childCount; i++)
-        {
-            evaluationButton.transform.GetChild(i).gameObject.SetActive(true);
-        }
-
-        gamesButton.onClick.RemoveAllListeners();
-        evaluationButton.onClick.RemoveAllListeners();
-        buyButton.onClick.RemoveAllListeners();
-
-        gamesButton.onClick.AddListener(manager.ShowRegisteredAdd);
-        evaluationButton.onClick.AddListener(manager.ShowRegisteredAdd);
-        buyButton.onClick.AddListener(manager.ShowRegisteredAdd);
-
-        SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
-        SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
-        SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
-
-        singOutButton.gameObject.SetActive(true);
-        settingsButton.gameObject.SetActive(true);
-        aboutButton.gameObject.SetActive(true);
-        kidProfile.gameObject.SetActive(true);
-
-        tryLogo.SetActive(false);
-        logoIcon.SetActive(true);
-    }
-
-    public void ShowThisMenu(bool isActiveTheCurrentKid, bool isInTrial, bool isEvaluationAvailable, bool isDemo, int licencesToActivate)
-    {
-        mainCanvas.SetActive(true);
-        SetDynamicButtonFunctions(isActiveTheCurrentKid, isInTrial, isEvaluationAvailable, isDemo, licencesToActivate);
-
-        singOutButton.gameObject.SetActive(true);
-        settingsButton.gameObject.SetActive(true);
-        aboutButton.gameObject.SetActive(true);
-        kidProfile.gameObject.SetActive(true);
-
-        tryLogo.SetActive(false);
-        logoIcon.SetActive(true);
-    }
-
-    public void HideThisMenu()
-    {
-        mainCanvas.SetActive(false);
-    }
-
-    void SetStaticButtonFuctions()
-    {
-        aboutButton.onClick.AddListener(manager.ShowCredits);
-        settingsButton.onClick.AddListener(manager.ShowSettings);
-        kidProfile.buttonOfProfile.onClick.AddListener(manager.SetKidsProfiles);
-        singOutButton.onClick.AddListener(manager.ShowSingOutWarning);
-    }
-
-    public void SetDynamicButtonFunctions(bool isActiveTheCurrentKid, bool isInTrail, bool evaluationAvailable, bool isDemo, int licencesToActivate)
-    {
-        gamesButton.onClick.RemoveAllListeners();
-        evaluationButton.onClick.RemoveAllListeners();
-        buyButton.onClick.RemoveAllListeners();
-        manager.WriteTheText(evaluationButton, 0);
-
-        if (evaluationAvailable)
-        {
-            evaluationButton.gameObject.SetActive(true);
-        }
-        else
-        {
-            evaluationButton.gameObject.SetActive(false);
-        }
-
-        if (isActiveTheCurrentKid)
-        {
-            manager.WriteTheText(gamesButton, 1);
-            manager.WriteTheText(buyButton, 57);
-
-            gamesButton.onClick.AddListener(manager.LoadGameMenus);
-            evaluationButton.onClick.AddListener(manager.ShowDisclaimer);
-            buyButton.onClick.AddListener(manager.ShowYouHaveASuscription);
-
-            SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
-            SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
-            SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
-
-            PlayerPrefs.SetInt(Keys.First_Try, 1);
-        }
-        else if (isInTrail)
-        {
-            manager.WriteTheText(buyButton, 62);
-
-
-            manager.WriteTheText(gamesButton, 59);
-            gamesButton.onClick.AddListener(manager.ShowTryChancesRegistered);
-            SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
-            SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
-            SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
-            if (licencesToActivate > 0)
-            {
-                manager.ShowAccountWarning(1);
-            }
-            else
-            {
-                buyButton.onClick.AddListener(manager.ShowRegisteredAdd);
-            }
-            evaluationButton.onClick.AddListener(manager.ShowRegisteredAdd);
-        }
-        else
-        {
-            manager.WriteTheText(gamesButton, 1);
-            manager.WriteTheText(buyButton, 62);
-
-            gamesButton.onClick.AddListener(manager.LoadGameMenus);
-            evaluationButton.onClick.AddListener(manager.ShowRegisteredAdd);
-            buyButton.onClick.AddListener(manager.ShowYouHaveASuscription);
-
-            SetImageColor(buyButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeOrange"]);
-            SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
-            SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
-
-            if (licencesToActivate > 0)
-            {
-                manager.ShowAccountWarning(1);
-            }
-            else
-            {
-                buyButton.onClick.AddListener(manager.ShowRegisteredAdd);
-            }
-        }
-
-        if (isDemo)
-        {
-            evaluationButton.gameObject.SetActive(true);
-            evaluationButton.onClick.RemoveAllListeners();
-            evaluationButton.onClick.AddListener(manager.ShowDisclaimer);
-        }
-    }
-
-    void SetImageColor(Image imageToChange, string colorToSet)
-    {
-        Color colorToPut;
-        ColorUtility.TryParseHtmlString(colorToSet, out colorToPut);
-        imageToChange.color = colorToPut;
     }
 }
 

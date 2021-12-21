@@ -71,11 +71,11 @@ public class LogInScript : MonoBehaviour
         using (UnityWebRequest request = UnityWebRequest.Post(post_url, form))
         {
             yield return request.SendWebRequest();
-            if (request.isNetworkError)
+            if (request.result == UnityWebRequest.Result.ConnectionError)
             {
                 menuController.ShowWarning(9, menuController.ShowLogIn);
             }
-            else if (request.isHttpError)
+            else if (request.result == UnityWebRequest.Result.ProtocolError)
             {
                 JSONObject jsonObj = JSONObject.Parse(request.downloadHandler.text);
                 if (request.error.Contains("401"))
@@ -164,7 +164,7 @@ public class LogInScript : MonoBehaviour
         using (UnityWebRequest request = UnityWebRequest.Post(activeUserUrl, form))
         {
             yield return request.SendWebRequest();
-            if (request.isNetworkError || request.isHttpError)
+            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
             {
                 menuController.HideAllCanvas();
                 menuController.ShowWarning(8);
@@ -227,7 +227,7 @@ public class LogInScript : MonoBehaviour
                     {
                         int dataRemaining = i;
                         yield return request.SendWebRequest();
-                        if (request.isNetworkError || request.isHttpError)
+                        if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
                         {
                             PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
                             string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}{Keys.Game_To_Save}";
@@ -274,7 +274,7 @@ public class LogInScript : MonoBehaviour
                     {
                         int dataRemaining = i;
                         yield return request.SendWebRequest();
-                        if (request.isNetworkError || request.isHttpError)
+                        if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
                         {
                             PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
                             string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}{Keys.Evaluation_To_Save}";
@@ -334,7 +334,7 @@ public class LogInScript : MonoBehaviour
                     {
                         int dataRemaining = i;
                         yield return request.SendWebRequest();
-                        if (request.isNetworkError || request.isHttpError)
+                        if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
                         {
                             PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
                             string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}{Keys.Game_To_Save}";
@@ -381,7 +381,7 @@ public class LogInScript : MonoBehaviour
                     {
                         int dataRemaining = i;
                         yield return request.SendWebRequest();
-                        if (request.isNetworkError || request.isHttpError)
+                        if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
                         {
                             PlayerPrefs.SetInt(Keys.Games_Saved, dataRemaining);
                             string newPathOfFile = $"{Application.persistentDataPath}/{dataNotSavedByProblems}{Keys.Evaluation_To_Save}";
@@ -436,11 +436,11 @@ public class LogInScript : MonoBehaviour
         using (UnityWebRequest request = UnityWebRequest.Post(registerUrl, form))
         {
             yield return request.SendWebRequest();
-            if (request.isNetworkError)
+            if (request.result == UnityWebRequest.Result.ConnectionError)
             {
                 menuController.ShowWarning(8);
             }
-            else if (request.isHttpError)
+            else if (request.result == UnityWebRequest.Result.ProtocolError)
             {
                 menuController.CreateAccount();
                 menuController.ShowWarning(13);
@@ -492,7 +492,7 @@ public class LogInScript : MonoBehaviour
 
             JSONObject jsonObt = JSONObject.Parse(request.downloadHandler.text);
 
-            if (request.isHttpError || request.isNetworkError)
+            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
             {
                 menuController.ShowWarning(9);
                 menuController.AddKidShower();
