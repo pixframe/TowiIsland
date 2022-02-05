@@ -11,7 +11,7 @@ public class BaseMenu
         gameObject = baseGameObject;
     }
 
-    public void SetActive(bool status)
+    public virtual void SetActive(bool status)
     {
         gameObject.SetActive(status);
     }

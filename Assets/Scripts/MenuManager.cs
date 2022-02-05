@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Analytics;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
@@ -291,7 +292,7 @@ public class MenuManager : MonoBehaviour
         shopMenu = new ShopMenu(shopCanvas, this);
         registerMenu = new RegisterMenu(registerCanvas, this);
         addMenu = new AddMenu(addCanvas, this);
-        subscriptionPromoMenu = new SubscriptionPromoMenu(suscriptionPromoPanel, this);
+        subscriptionPromoMenu = new SubscriptionPromoMenu(suscriptionPromoPanel, ()=>SetShop(0), LoadGameMenus);
 
         ButtonSetUp();
 
@@ -604,13 +605,13 @@ public class MenuManager : MonoBehaviour
         configMenu.SetActive(false);
         registerMenu.HideAll();
         addMenu.HidePanel();
-        suscriptionPromoPanel.SetActive(false);
+        subscriptionPromoMenu.SetActive(false);
     }
 
-    public void ShowSubscriptionPanel()
+    public void ShowSubscriptionPanel(UnityAction actionOfCancel)
     {
         HideAllCanvas();
-        suscriptionPromoPanel.SetActive(true);
+        subscriptionPromoMenu.SetActive(true, actionOfCancel);
     }
 
     void UpdateKidInMenu()

@@ -445,6 +445,8 @@ public class SessionManager : MonoBehaviour
 
                 JSONArray kids = JSONArray.Parse(request.downloadHandler.text);
 
+                Debug.Log($"endpoint  {syncProfileURL} response is ñ{request.downloadHandler.text}");
+
                 bool setType = false;
                 bool needStoreSync = false;
 
@@ -600,6 +602,7 @@ public class SessionManager : MonoBehaviour
             }
             else
             {
+                Debug.Log($"endpoint {updateProfileURL} response is ñ{request.downloadHandler.text}");
                 if (FindObjectOfType<GameCenterManager>())
                 {
                     FindObjectOfType<GameCenterManager>().ChangeMenus();
@@ -716,10 +719,13 @@ public class SessionManager : MonoBehaviour
             {
 
                 //Debug.Log(request.downloadHandler.text);
+                //TODO Fix this non resolved issue
             }
             else
             {
                 var json = JsonUtility.FromJson(request.downloadHandler.text, typeof(LevlSyncJson)) as LevlSyncJson;
+                Debug.Log($"endpoint  {syncLevelsURL} response is ñ{request.downloadHandler.text}");
+
 
                 //Birds Level Set
                 SetTheCorrectLevel(ref activeKid.birdsDifficulty, ref activeKid.birdsLevel, json.arbolMusicalLevel, json.arbolMusicalSublevel);

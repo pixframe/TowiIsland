@@ -166,13 +166,15 @@ public class GameMenu : BaseMenu
         if (isActiveTheCurrentKid)
         {
             gamesButton.onClick.AddListener(manager.LoadGameMenus);
+            evaluationButton.onClick.AddListener(manager.ShowDisclaimer);
         }
         else
         {
-            gamesButton.onClick.AddListener(manager.ShowSubscriptionPanel);
+            gamesButton.onClick.AddListener(() => manager.ShowSubscriptionPanel(manager.LoadGameMenus));
+            evaluationButton.onClick.AddListener(() => manager.ShowSubscriptionPanel(manager.ShowGameMenu));
         }
 
-        evaluationButton.onClick.AddListener(manager.ShowDisclaimer);
+
 
         SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
         SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);

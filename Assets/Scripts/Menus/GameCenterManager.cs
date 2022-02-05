@@ -19,6 +19,8 @@ public class GameCenterManager : MonoBehaviour
     public GameObject fowardPanel;
     public GameObject centerPanel;
     public GameObject warningPanel;
+    public GameObject shopPanel;
+    GameCenterShopPanel gameCenterShopPanel;
     public GameObject loadingCanvas;
     public Button leftButton;
     public Button rigthButton;
@@ -41,8 +43,8 @@ public class GameCenterManager : MonoBehaviour
     DemoPanel demoPanel;
 
     int index;
-    List<bool> unlocks;
     List<int> stations = new List<int>();
+    List<KindOfBlock> blocks = new List<KindOfBlock>();
 
     string[] scenes = new string[] { "Birds_Singing_Scene", "Magic_Sand_Scene", "Treasure_Hunting_Scene", "Monkey_Hiding_Scene", "Magic_River_Scene", "Lava_Game_Scene", "Icecream_Madness" };
     List<string> activeMissions = new List<string>();
@@ -62,8 +64,13 @@ public class GameCenterManager : MonoBehaviour
     float firstXPos;
     float secondXPos;
 
+    public Sprite lockSprite;
+    public Sprite timeSprite;
+
     enum DirectionOfSwipe { Left, Right, None };
     DirectionOfSwipe directtion = DirectionOfSwipe.None;
+
+    enum KindOfBlock { unlock, timeLock, gameLock }
 
     // Use this for initialization
     void Start()
@@ -80,6 +87,8 @@ public class GameCenterManager : MonoBehaviour
         eventTrigger = FindObjectOfType<EventTrigger>();
         tPos = eventTrigger.transform.GetSiblingIndex();
         loadingCanvas.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[12];
+        gameCenterShopPanel = new GameCenterShopPanel(shopPanel);
+        gameCenterShopPanel.gameObject.SetActive(false);
 
         EventTrigger.Entry t1 = new EventTrigger.Entry();
         t1.eventID = EventTriggerType.BeginDrag;
@@ -138,19 +147,20 @@ public class GameCenterManager : MonoBehaviour
 
     IEnumerator CheckInternetConnection(string resource)
     {
-        WWWForm newForm = new WWWForm();
-        using (UnityWebRequest newRequest = UnityWebRequest.Get(resource))
-        {
-            yield return newRequest.SendWebRequest();
+        using UnityWebRequest newRequest = UnityWebRequest.Get(resource);
+        yield return newRequest.SendWebRequest();
 
-            if (newRequest.isNetworkError || newRequest.isHttpError)
-            {
-                NotAvailableUpdate();
-            }
-            else
-            {
-                InternetAvailableUpdate();
-            }
+        if (newRequest.result == UnityWebRequest.Result.ProtocolError)
+        {
+            NotAvailableUpdate();
+        }
+        else if (newRequest.result == UnityWebRequest.Result.ConnectionError)
+        {
+            NotAvailableUpdate();
+        }
+        else
+        {
+            InternetAvailableUpdate();
         }
     }
 
@@ -172,10 +182,9 @@ public class GameCenterManager : MonoBehaviour
 
     void ChildGames()
     {
-        unlocks = new List<bool>();
         for (int i = 0; i < Keys.Number_Of_Games; i++)
         {
-            unlocks.Add(false);
+            blocks.Add(KindOfBlock.timeLock);
         }
 
         if (!FindObjectOfType<DemoKey>())
@@ -198,9 +207,18 @@ public class GameCenterManager : MonoBehaviour
                     if (sessionManager.activeKid.firstsGames[i])
                     {
                         activeMissions.Add(Keys.Game_Names[x]);
-                        unlocks[x] = true;
-                        missions.Add(x);
-                        stations.Add(x);
+                        if (!sessionManager.activeKid.isActive && x > 2)
+                        {
+                            blocks[x] = KindOfBlock.gameLock;
+                            stations.Add(x);
+                            continue;
+                        }
+                        else
+                        {
+                            blocks[x] = KindOfBlock.unlock;
+                            missions.Add(x);
+                            stations.Add(x);
+                        }
                     }
                 }
             }
@@ -212,7 +230,7 @@ public class GameCenterManager : MonoBehaviour
                     if (!sessionManager.activeKid.playedGames[missionToCheck])
                     {
                         activeMissions.Add(Keys.Game_Names[missionToCheck]);
-                        unlocks[missionToCheck] = true;
+                        blocks[missionToCheck] = KindOfBlock.timeLock;
                         var x = missionToCheck;
                         missions.Add(x);
                         stations.Add(x);
@@ -224,9 +242,9 @@ public class GameCenterManager : MonoBehaviour
         }
         else
         {
-            for (int i = 0; i < unlocks.Count; i++)
+            for (int i = 0; i < blocks.Count; i++)
             {
-                unlocks[i] = true;
+                blocks.Add(KindOfBlock.unlock);
             }
         }
 
@@ -264,15 +282,9 @@ public class GameCenterManager : MonoBehaviour
         ChangeMenus();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public void ChangeMenus()
     {
-        if (unlocks.Contains(true))
+        if (blocks.Contains(KindOfBlock.unlock))
         {
             goBackButton.gameObject.SetActive(true);
             loadingCanvas.SetActive(false);
@@ -397,18 +409,30 @@ public class GameCenterManager : MonoBehaviour
 
         }
 
-        if (unlocks[number])
+        if (blocks[number] == KindOfBlock.unlock)
         {
             panel.blockPanel.gameObject.SetActive(false);
         }
-        else
+        else if (blocks[number] == KindOfBlock.timeLock)
         {
+            panel.blockImage.sprite = timeSprite;
             panel.blockPanel.gameObject.SetActive(true);
             panel.playButton.gameObject.SetActive(false);
             if (isCenter)
             {
                 panel.blockPanel.onClick.RemoveAllListeners();
                 panel.blockPanel.onClick.AddListener(ShowDisclaimer);
+            }
+        }
+        else
+        {
+            panel.blockImage.sprite = lockSprite;
+            panel.blockPanel.gameObject.SetActive(true);
+            panel.playButton.gameObject.SetActive(false);
+            if (isCenter)
+            {
+                panel.blockPanel.onClick.RemoveAllListeners();
+                panel.blockPanel.onClick.AddListener(ShowPurchaseOptions);
             }
         }
     }
@@ -435,10 +459,6 @@ public class GameCenterManager : MonoBehaviour
         }
         else
         {
-            //if (change > 0)
-            //{
-            //    FindObjectOfType<DemoKey>().SetSpecialLevels(level, difficulty, specialLevel);
-            //}
             LoadNewScene(scenes[stations[index]]);
         }
     }
@@ -504,6 +524,20 @@ public class GameCenterManager : MonoBehaviour
         warningPanel.GetComponentInChildren<TextMeshProUGUI>().text = stringsToShow[9];
     }
 
+    void ShowPurchaseOptions()
+    {
+        DeactivateMainPanel();
+        loadingCanvas.SetActive(false);
+        gameCenterShopPanel.gameObject.SetActive(true);
+        var text = string.Format(stringsToShow[14], stringsToShow[stations[index]], "$20");
+        gameCenterShopPanel.UpdateTexts(text, "Comprar", "Suscribete");
+        gameCenterShopPanel.UpdateCancelFunction(DeactivateShopPanel);
+        gameCenterShopPanel.gameButton.onClick.RemoveAllListeners();
+        gameCenterShopPanel.gameButton.onClick.AddListener(BuyGame);
+        gameCenterShopPanel.subscriptionButton.onClick.RemoveAllListeners();
+        gameCenterShopPanel.subscriptionButton.onClick.AddListener(BuySubscription);
+    }
+
     void DeactivateMainPanel()
     {
         backPanel.SetActive(false);
@@ -511,9 +545,7 @@ public class GameCenterManager : MonoBehaviour
         fowardPanel.SetActive(false);
         leftButton.gameObject.SetActive(false);
         rigthButton.gameObject.SetActive(false);
-        goBackButton.gameObject.SetActive(true);
-        goBackButton.onClick.RemoveAllListeners();
-        goBackButton.onClick.AddListener(DeactivateDisclaimer);
+        goBackButton.gameObject.SetActive(false);
     }
 
     void DeactivateDisclaimer()
@@ -525,11 +557,20 @@ public class GameCenterManager : MonoBehaviour
         rigthButton.gameObject.SetActive(true);
         goBackButton.gameObject.SetActive(true);
         warningPanel.SetActive(false);
-        goBackButton.onClick.RemoveAllListeners();
-        goBackButton.onClick.AddListener(GoBackScene);
     }
 
-    void BuyItem()
+    void DeactivateShopPanel()
+    {
+        backPanel.SetActive(true);
+        centerPanel.SetActive(true);
+        fowardPanel.SetActive(true);
+        leftButton.gameObject.SetActive(true);
+        rigthButton.gameObject.SetActive(true);
+        goBackButton.gameObject.SetActive(true);
+        gameCenterShopPanel.gameObject.SetActive(false);
+    }
+
+    void BuyItem(int index)
     {
 #if UNITY_ANDROID
         ShowLoaderCanvas();
@@ -541,11 +582,21 @@ public class GameCenterManager : MonoBehaviour
         iapManager.BuyAGame(stations[index]);
 #elif UNITY_EDITOR
         ShowLoaderCanvas();
+        var buy = MyIAPManager.instance.BuyAGame(index);
 #else
         Application.OpenURL($"{Keys.Api_Web_Key}tienda");
 #endif
     }
 
+    void BuyGame()
+    {
+        DeactivateShopPanel();
+    }
+
+    void BuySubscription()
+    {
+        DeactivateShopPanel();
+    }
 }
 
 public struct GamePanel
@@ -561,6 +612,7 @@ public struct GamePanel
         captureImage = gamePanel.transform.GetChild(4).GetComponent<Image>();
         playButton = gamePanel.transform.GetChild(5).GetComponent<Button>();
         blockPanel = gamePanel.transform.Find("Block Panel").GetComponent<Button>();
+        blockImage = blockPanel.transform.GetChild(0).GetComponent<Image>();
     }
 
     public GameObject gameObject;
@@ -572,5 +624,5 @@ public struct GamePanel
     public Image captureImage;
     public Button playButton;
     public Button blockPanel;
-
+    public Image blockImage;
 }

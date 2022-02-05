@@ -93,6 +93,7 @@ public class LogInScript : MonoBehaviour
             }
             else
             {
+                Debug.Log($"endpoint  {post_url} response is ñ{request.downloadHandler.text}");
                 PlayerPrefs.SetInt(Keys.Logged_Session, 1);
                 PlayerPrefs.SetInt(Keys.First_Try, 1);
                 //we get a JSON object from the server  
@@ -173,7 +174,7 @@ public class LogInScript : MonoBehaviour
             {
                 PlayerPrefs.SetInt(Keys.Logged_Session, 1);
                 JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
-
+                Debug.Log($"endpoint {activeUserUrl} response is {request.downloadHandler.text}");
                 sessionManager.LoadActiveUser(user.userkey);
                 sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
                 sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");

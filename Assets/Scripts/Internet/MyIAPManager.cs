@@ -90,6 +90,8 @@ public class MyIAPManager : MonoBehaviour, IStoreListener
     PurchaseEventArgs eventArgs;
     MenuManager menuManager;
 
+    public static MyIAPManager instance;
+
     void Awake()
     {
         if (FindObjectsOfType<MyIAPManager>().Length > 1)
@@ -102,6 +104,7 @@ public class MyIAPManager : MonoBehaviour, IStoreListener
         {
             // Begin to configure our connection to Purchasing
             InitializePurchasing();
+            instance = this;
         }
         menuManager = FindObjectOfType<MenuManager>();
     }
@@ -218,31 +221,26 @@ public class MyIAPManager : MonoBehaviour, IStoreListener
     }
 
 
-    public void BuyAGame(int numberOfGame)
+    public string BuyAGame(int numberOfGame)
     {
         switch (numberOfGame)
         {
             case 0:
-                BuyProductID(birdsGame);
-                break;
+                return BuyProductID(birdsGame);
             case 1:
-                BuyProductID(sandGame);
-                break;
+                return BuyProductID(sandGame);
             case 2:
-                BuyProductID(treasureGame);
-                break;
+                return BuyProductID(treasureGame);
             case 3:
-                BuyProductID(monkeyGame);
-                break;
+                return BuyProductID(monkeyGame);
             case 4:
-                BuyProductID(riverGame);
-                break;
+                return BuyProductID(riverGame);
             case 5:
-                BuyProductID(lavaGame);
-                break;
+                return BuyProductID(lavaGame);
             case 6:
-                BuyProductID(icecreamGame);
-                break;
+                return BuyProductID(icecreamGame);
+            default:
+                return "No existe el producto";
 
         }
     }
@@ -319,7 +317,7 @@ public class MyIAPManager : MonoBehaviour, IStoreListener
     }
 
 
-    public void BuyProductID(string productId)
+    public string BuyProductID(string productId)
     {
         // If Purchasing has been initialized ...
         if (IsInitialized())
@@ -335,6 +333,7 @@ public class MyIAPManager : MonoBehaviour, IStoreListener
                 // ... buy the product. Expect a response either through ProcessPurchase or OnPurchaseFailed 
                 // asynchronously.
                 m_StoreController.InitiatePurchase(product);
+                return null;
             }
             // Otherwise ...
             else
@@ -342,6 +341,7 @@ public class MyIAPManager : MonoBehaviour, IStoreListener
                 FindObjectOfType<MenuManager>().ShowWarning(8);
                 // ... report the product look-up failure situation  
                 Debug.Log("BuyProductID: FAIL. Not purchasing product, either is not found or is not available for purchase");
+                return "No se encontro el producto";
             }
         }
         // Otherwise ...
@@ -350,6 +350,7 @@ public class MyIAPManager : MonoBehaviour, IStoreListener
             // ... report the fact Purchasing has not succeeded initializing yet. Consider waiting longer or 
             // retrying initiailization.
             Debug.Log("BuyProductID FAIL. Not initialized.");
+            return "No se pudo cargar la tienda";
         }
     }
 
@@ -415,7 +416,7 @@ public class MyIAPManager : MonoBehaviour, IStoreListener
                 {
                     if (item.definition.type == ProductType.Subscription)
                     {
-                        if (checkIfProductIsAvailableForSubscriptionManager(item.receipt))
+                        if (CheckIfProductIsAvailableForSubscriptionManager(item.receipt))
                         {
                             string intro_json = (introductory_info_dict == null || !introductory_info_dict.ContainsKey(item.definition.storeSpecificId)) ? null : introductory_info_dict[item.definition.storeSpecificId];
                             SubscriptionManager p = new SubscriptionManager(item, intro_json);
@@ -499,7 +500,7 @@ public class MyIAPManager : MonoBehaviour, IStoreListener
         return kids;
     }
 
-    private bool checkIfProductIsAvailableForSubscriptionManager(string receipt)
+    private bool CheckIfProductIsAvailableForSubscriptionManager(string receipt)
     {
         var receipt_wrapper = (Dictionary<string, object>)MiniJson.JsonDecode(receipt);
         if (!receipt_wrapper.ContainsKey("Store") || !receipt_wrapper.ContainsKey("Payload"))
