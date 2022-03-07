@@ -50,7 +50,9 @@ That will gives you a working copy that you will able to edit
 
 * [Unity3D] - The game engine used.
 
+## Contributing
 
+Please read [CONTRIBUTING.md](https://github.com/pixframe/towi/blob/master/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Authors
 
