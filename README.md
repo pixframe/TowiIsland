@@ -34,15 +34,11 @@ git clone https://github.com/pixframe/TowiIsland.git
 
 ```
 
-Open Unity and select open
+1. Open Unity and select open
 
-![enter image description here](https://lh3.googleusercontent.com/kNelsG9dC9zzPGoDI23WXT2J-i5289FMevwTdDYTysHns8JskuqZKlPNvtgk2D-4FDu76N1azSg)
+2. Select the folder where you clone the repository
 
-Select the folder where you clone the repository
-
-![enter image description here](https://lh3.googleusercontent.com/TLabiPiB4YAQfaTNlJIuelUJ-9As5CCUeeJcKLiZWh38QlVfRm2QaU5bGPBq6JJ5KkhmBy2T3d8)
-
-That will gives you a working copy that you will able to edit
+3. That will gives you a working copy that you will able to edit
 
 
 ## Built With
