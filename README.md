@@ -50,6 +50,10 @@ git clone https://github.com/pixframe/TowiIsland.git
 
 Please read [CONTRIBUTING.md](https://github.com/pixframe/towi/blob/master/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
+## Discussion
+
+The [discussion tab](https://github.com/pixframe/TowiIsland/discussions) is available for developers and contributors. Please take your time to read the new updates, and post any doubt.
+
 ## Authors
 
 
