@@ -244,7 +244,7 @@ public class GameCenterManager : MonoBehaviour
         {
             for (int i = 0; i < blocks.Count; i++)
             {
-                blocks.Add(KindOfBlock.unlock);
+                blocks[i] = KindOfBlock.unlock;
             }
         }
 
