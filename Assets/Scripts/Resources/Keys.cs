@@ -15,6 +15,7 @@ public class Keys
 
     public static string Buy_IAP = "BuIAP";
     public const int Number_Of_Games = 6;
+    public const int Number_Of_Evaluation_Stages = 7;
 
     public static string Active_User_Key = "activeUser";
     public static string Purchase_Key = "purchased";

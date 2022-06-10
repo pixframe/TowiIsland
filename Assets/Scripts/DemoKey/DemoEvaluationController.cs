@@ -131,7 +131,7 @@ public class DemoEvaluationController : MonoBehaviour
             index--;
         }
 
-        int count = Keys.Number_Of_Games;
+        int count = Keys.Number_Of_Evaluation_Stages;
 
         if (index >= count)
         {
