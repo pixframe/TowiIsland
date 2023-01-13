@@ -29,7 +29,7 @@ public class IslandShoppingManager : MonoBehaviour {
     MiniIslandController miniIsland;
     SessionManager sessionManager;
 
-    int kiwiAmout = 10000;
+    int kiwiAmout = 0;
     float startPosition;
 
     string[] stringsToShow;

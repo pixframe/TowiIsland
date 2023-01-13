@@ -291,7 +291,7 @@ public class MenuManager : MonoBehaviour
         gameMenuObject = new GameMenu(gameCanvas, this);
         shopMenu = new ShopMenu(shopCanvas, this);
         registerMenu = new RegisterMenu(registerCanvas, this);
-        addMenu = new AddMenu(addCanvas, this);
+        //addMenu = new AddMenu(addCanvas, this);
         subscriptionPromoMenu = new SubscriptionPromoMenu(suscriptionPromoPanel, ()=>SetShop(0), LoadGameMenus);
 
         ButtonSetUp();
@@ -604,7 +604,7 @@ public class MenuManager : MonoBehaviour
         escapeButton.gameObject.SetActive(false);
         configMenu.SetActive(false);
         registerMenu.HideAll();
-        addMenu.HidePanel();
+        //addMenu.HidePanel();
         subscriptionPromoMenu.SetActive(false);
     }
 
@@ -703,13 +703,13 @@ public class MenuManager : MonoBehaviour
     public void ShowAdd()
     {
         HideAllCanvas();
-        addMenu.ShowAdd();
+        //addMenu.ShowAdd();
     }
 
     public void ShowRegisteredAdd()
     {
         HideAllCanvas();
-        addMenu.ShowAddRegister();
+        //addMenu.ShowAddRegister();
     }
 
     public void ShowLogIn()
@@ -1833,9 +1833,9 @@ class RegisterMenu
 
     public GameObject gameObject;
 
-    public GameObject division;
+    //public GameObject division;
 
-    public GameObject add0;
+    //public GameObject add0;
     public GameObject add1;
 
     public GameObject logInMenu;
@@ -1872,9 +1872,9 @@ class RegisterMenu
         gameObject = mainMenu;
         var mainPanel = gameObject.transform.Find("Main Panel");
 
-        division = mainPanel.Find("Division").gameObject;
+        //division = mainPanel.Find("Division").gameObject;
 
-        add0 = mainPanel.Find("Add 0").gameObject;
+        //add0 = mainPanel.Find("Add 0").gameObject;
         add1 = mainPanel.Find("Add 1").gameObject;
 
         var logInPanel = mainPanel.Find("Log In Panel");
@@ -1931,9 +1931,9 @@ class RegisterMenu
 
     void ShouldShowAdds(bool showAdds)
     {
-        add0.gameObject.SetActive(showAdds);
+        //add0.gameObject.SetActive(showAdds);
         add1.gameObject.SetActive(showAdds);
-        division.SetActive(showAdds);
+        //division.SetActive(showAdds);
     }
 
     public void HideAll()
@@ -1958,7 +1958,7 @@ class RegisterMenu
         var texts = TextReader.TextsToSet(pathOfLoginMenuTetxs);
 
         woodText.text = texts[0];
-        add0.GetComponentInChildren<TextMeshProUGUI>().text = texts[1];
+        //add0.GetComponentInChildren<TextMeshProUGUI>().text = texts[1];
         add1.GetComponentInChildren<TextMeshProUGUI>().text = texts[2];
 
         inputEmail.inputNameText.text = texts[3];
@@ -1999,7 +1999,7 @@ class RegisterMenu
         var texts = TextReader.TextsToSet(pathOfLoginMenuTetxs);
 
         woodText.text = texts[0];
-        add0.GetComponentInChildren<TextMeshProUGUI>().text = texts[1];
+        //add0.GetComponentInChildren<TextMeshProUGUI>().text = texts[1];
         add1.GetComponentInChildren<TextMeshProUGUI>().text = texts[2];
 
         inputEmailDad.inputNameText.text = texts[3];
@@ -2045,7 +2045,7 @@ class RegisterMenu
         var texts = TextReader.TextsToSet(pathOfLoginMenuTetxs);
 
         woodText.text = texts[13];
-        add0.GetComponentInChildren<TextMeshProUGUI>().text = texts[1];
+        //add0.GetComponentInChildren<TextMeshProUGUI>().text = texts[1];
         add1.GetComponentInChildren<TextMeshProUGUI>().text = texts[2];
 
         inputEmailDad.inputNameText.text = texts[3];
@@ -2208,7 +2208,7 @@ class AddMenu
         }
 
         woodText = main.Find("Logo Panel").GetComponentInChildren<TextMeshProUGUI>();
-        buyButton = main.Find("Buy Button").GetComponent<Button>();
+        //buyButton = main.Find("Buy Button").GetComponent<Button>();
         backButton = main.Find("Return Button").GetComponent<Button>();
 
         HidePanel();
@@ -2227,12 +2227,12 @@ class AddMenu
         }
 
         woodText.text = texts[2];
-        buyButton.GetComponentInChildren<TextMeshProUGUI>().text = texts[2];
-        buyButton.onClick.RemoveAllListeners();
-        buyButton.onClick.AddListener(() =>
-        {
-            manager.SetShop(0);
-        });
+        // buyButton.GetComponentInChildren<TextMeshProUGUI>().text = texts[2];
+        // buyButton.onClick.RemoveAllListeners();
+        // buyButton.onClick.AddListener(() =>
+        // {
+        //     manager.SetShop(0);
+        // });
 
         backButton.onClick.RemoveAllListeners();
         backButton.onClick.AddListener(manager.ShowFirstMenu);
@@ -2251,12 +2251,12 @@ class AddMenu
         }
 
         woodText.text = texts[2];
-        buyButton.GetComponentInChildren<TextMeshProUGUI>().text = texts[2];
-        buyButton.onClick.RemoveAllListeners();
-        buyButton.onClick.AddListener(() =>
-        {
-            manager.SetShop(0);
-        });
+        // buyButton.GetComponentInChildren<TextMeshProUGUI>().text = texts[2];
+        // buyButton.onClick.RemoveAllListeners();
+        // buyButton.onClick.AddListener(() =>
+        // {
+        //     manager.SetShop(0);
+        // });
 
         backButton.onClick.RemoveAllListeners();
         backButton.onClick.AddListener(manager.ShowGameMenu);
