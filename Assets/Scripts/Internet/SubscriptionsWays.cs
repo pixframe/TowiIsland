@@ -69,6 +69,7 @@ public class SubscriptionsWays : MonoBehaviour
             }
             else if (request.isNetworkError)
             {
+                Debug.Log("por alguna razon llegamos aqui en Subs");
                 menuManager.ShopWithCode(typeOfShop);
                 menuManager.ShowWarning(9);
             }
@@ -108,6 +109,7 @@ public class SubscriptionsWays : MonoBehaviour
             yield return request.SendWebRequest();
             if (request.isNetworkError || request.isHttpError)
             {
+                Debug.Log("por alguna razon llegamos aqui");
                 menuManager.ShopWithCode(typeOfShop);
                 menuManager.ShowWarning(9);
             }
@@ -152,6 +154,7 @@ public class SubscriptionsWays : MonoBehaviour
             yield return request.SendWebRequest();
             if (request.isNetworkError || request.isHttpError)
             {
+                Debug.Log("por alguna razon llegamos aqui en el if");
                 menuManager.ShowWarning(9);
             }
             else
@@ -166,6 +169,7 @@ public class SubscriptionsWays : MonoBehaviour
                 }
                 else
                 {
+                    Debug.Log("por alguna razon llegamos aqui en el else");
                     menuManager.ShowWarning(9);
                 }
             }

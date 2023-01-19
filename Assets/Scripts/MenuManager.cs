@@ -1249,6 +1249,7 @@ public class MenuManager : MonoBehaviour
     //this one tries to change a code for the active kid
     public void ChangeAPrePaidCode(int isNewChild)
     {
+        
         ShowLoading();
         if (isNewChild == 0)
         {

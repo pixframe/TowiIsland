@@ -296,8 +296,10 @@ public class SessionManager : MonoBehaviour
 
     public void AddKids(JSONArray kids)
     {
+        //Debug.Log(kids);
         temporalKids.Clear();
         for (int i = 0; i < kids.Length; i++)
+        //for (int i = 0; i < 9; i++)
         {
             JSONObject kidObj = kids[i].Obj;
             //bool missingUser = true;
@@ -305,7 +307,7 @@ public class SessionManager : MonoBehaviour
             for (int u = 0; u < users.Count; u++)
             {
                 int cid = (int)kidObj.GetValue("cid").Number;
-                if (users[u].kids.Count >= kids.Length)
+                if (users[u].kids.Count >= 9)
                 {
                     if (cid != users[u].kids[i].id)
                     {

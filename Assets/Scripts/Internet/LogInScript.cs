@@ -1,13 +1,25 @@
 ﻿using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Boomlagoon.JSON;
 using UnityEngine.Analytics;
 using UnityEngine.Networking;
 using System;
+using System.IO;
+using System.Linq;
 
 public class LogInScript : MonoBehaviour
 {
+    #region Offline Variables
+    string serialTemp;
+    string userTemp;
+    List<string> fileLines;
+    List<string> userLines;
+
+
+    #endregion
+
     #region Variables
     //This urls are set in the NewLogin Scene
     string loginUrl = Keys.Api_Web_Key + "api/login/";
@@ -51,6 +63,7 @@ public class LogInScript : MonoBehaviour
 
     public void PostLogin(string parentMail, string currentPasword, bool newPaidUser)
     {
+        Debug.Log("PostLogin");
         username = parentMail.TrimEnd('\n');
         password = currentPasword;
         StartCoroutine(PostLoginData(newPaidUser));
@@ -66,10 +79,64 @@ public class LogInScript : MonoBehaviour
         form.AddField("email", username);
         form.AddField("password", password);
 
+        PlayerPrefs.SetInt(Keys.Logged_Session, 1);
+        PlayerPrefs.SetInt(Keys.First_Try, 1);
+        // //we get a JSON object from the server  
+        // // string downloadhandler;
+        // // downloadhandler = "{'id':9464,'access':true,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExists':true,'children':[{'cid':9788,'name':'ANDRES Prueba','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''}],'suscriptionsAvailables':0}";
+        // // downloadhandler = "{'cid':9788,'name':'ANDRES Prueba','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''";
+        // //JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
+        // JSONObject jsonObject = new JSONObject();
+        // jsonObject.Add("id",9999);
+        // jsonObject.Add("access",true);
+        // jsonObject.Add("key","d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b");
+        
+        // //jsonObject.Add("children",downloadhandler);
+        
+        // //jsonObject.Add("children", [{"cid",9788,"name","ANDRES Prueba","lastname","","active",true,"trial",false,"key","d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b","picture","https://storage.googleapis.com/storage-towi//avatars/default_user.png","age",6,"pruebaDate",""}]);
+        // jsonObject.Add("children","ANDRES");
+        // jsonObject.Add("suscriptionsAvailables",5);
+        // jsonObject.Add("userExists",true);
+        // // jsonObject.Add("status","01");
+        // // jsonObject.Add("message","01");
+        // //jsonObject.Add("children","children");
+        // JSONArray kids = jsonObject.GetValue("children").Array;
+        // Debug.Log("Esto es kids value " +jsonObject.GetValue("children"));
+        // Debug.Log("Esto es kids  " +kids);
+
+        // sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetValue("id").Number);
+        // sessionManager.AddKids(kids);
+        // sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+        // menuController.LoggedNow();
+        // sessionManager.activeUser.trialAccount = false;
+        // sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
+        // sessionManager.SaveSession();
+        // menuController.ClearInputs();
+        // if (newPaidUser)
+        // {
+        //     string parentkey = sessionManager.activeUser.kids[0].userkey;
+        //     int id = sessionManager.activeUser.kids[0].id;
+        //     sessionManager.SetKid(parentkey, id);
+        //     if (System.Convert.ToBoolean(PlayerPrefs.GetInt(Keys.Buy_IAP)))
+        //     {
+        //         menuController.ConfirmKidPurchase();
+        //     }
+        //     else
+        //     {
+        //         menuController.ChangeAPrePaidCode(0);
+        //     }
+        // }
+        // else
+        // {
+        //     menuController.SetKidsProfiles();
+        // }
+        // yield return null;
 
         //Post the URL to the site and download a result
         using (UnityWebRequest request = UnityWebRequest.Post(post_url, form))
         {
+            Debug.Log("Entramos al request   "+request);
+            
             yield return request.SendWebRequest();
             if (request.result == UnityWebRequest.Result.ConnectionError)
             {
@@ -78,6 +145,8 @@ public class LogInScript : MonoBehaviour
             else if (request.result == UnityWebRequest.Result.ProtocolError)
             {
                 JSONObject jsonObj = JSONObject.Parse(request.downloadHandler.text);
+                
+                Debug.Log(jsonObj);
                 if (request.error.Contains("401"))
                 {
                     menuController.ShowWarning(15, menuController.ShowLogIn);
@@ -94,11 +163,17 @@ public class LogInScript : MonoBehaviour
             else
             {
                 Debug.Log($"endpoint  {post_url} response is ñ{request.downloadHandler.text}");
+                Debug.Log("EL TEXTO   "+request.downloadHandler.text);
                 PlayerPrefs.SetInt(Keys.Logged_Session, 1);
                 PlayerPrefs.SetInt(Keys.First_Try, 1);
                 //we get a JSON object from the server  
                 JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
+                Debug.Log("ANTES DE SUMAR "+ jsonObject.GetValue("suscriptionsAvailables"));
+                jsonObject.Add("suscriptionsAvailables", 10);
+                Debug.Log("DESPUES DE SUMAR "+ jsonObject.GetValue("suscriptionsAvailables"));
                 JSONArray kids = jsonObject.GetValue("children").Array;
+                Debug.Log("ESTO ES KIDS ARRAY  "+jsonObject.GetValue("children").Array);
+                Debug.Log("ESTO ES KIDS   "+kids);
 
                 sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetValue("id").Number);
                 sessionManager.AddKids(kids);
@@ -413,7 +488,81 @@ public class LogInScript : MonoBehaviour
 
     public void RegisterParentAndKid(string email, string password, string kidName, string dateOfBirth, bool newPaidUser)
     {
-        StartCoroutine(PostRegisterParentAndKid(email, password, kidName, dateOfBirth, newPaidUser));
+        bool temp = ValidateEmail(email, password);
+        if(temp==true){StartCoroutine(PostRegisterParentAndKid(email, password, kidName, dateOfBirth, newPaidUser));}
+        else{
+            Debug.Log("ya fallo");
+        }
+    }
+
+    public bool ValidateEmail(string email, string password)
+    {
+        bool warningUser = false;
+        bool warningSerial = false;
+        bool userCorrect = false;
+        bool serialCorrect = false;
+
+
+        string readFromFilePath = Application.streamingAssetsPath +"/"+ "serialKeys"+".txt";
+        fileLines = File.ReadAllLines(readFromFilePath).ToList();
+        string userPath = Application.streamingAssetsPath +"/"+ "users"+".txt";
+        userLines = File.ReadAllLines(userPath).ToList();
+
+
+        userTemp = email;
+        serialTemp = password;
+        Debug.Log(userTemp);
+        Debug.Log(serialTemp);
+        
+        for(int i=0;i<fileLines.Count;i++)
+            {
+                //Debug.Log(fileLines[i]);
+            }
+            if(fileLines.Contains(serialTemp))
+            {
+                serialCorrect = true;
+                Debug.Log("SI es un serial correcto");
+            }
+            else
+            {
+                warningSerial = true;
+                Debug.Log("NO es un serial correcto");  
+            }
+
+
+        for(int i=0;i<userLines.Count;i++)
+            {
+                //Debug.Log(fileLines[i]);
+            }
+            if(userLines.Contains(userTemp))
+            {
+                userCorrect = true;
+                Debug.Log("SI es un usuario correcto");
+                //return true;
+            }
+            else
+            {
+                
+                warningUser = true;
+                Debug.Log("NO es un usuario correcto"); 
+                //return false; 
+            }
+            
+        if((warningSerial == true) || (warningUser==true))
+        {
+            return false;
+            //warningPanel.SetActive(true);
+        }
+        if((userCorrect==true) && (serialCorrect==true))
+        {
+            return true;
+            // SceneManager.LoadScene("NewLogin", LoadSceneMode.Single);
+            // PlayerPrefs.SetInt("quitScene", 1);
+        }
+        return false;
+
+            
+
     }
 
     IEnumerator PostRegisterParentAndKid(string email, string password, string kidName, string dateOfBirth, bool newPaidUser)
@@ -433,26 +582,19 @@ public class LogInScript : MonoBehaviour
 
         WWWForm form = new WWWForm();
         form.AddField("jsonToDb", data.ToString());
+        //menuController.CreateAccount();
+        PostLogin(email, password, newPaidUser);
+        Analytics.CustomEvent("register");
 
-        using (UnityWebRequest request = UnityWebRequest.Post(registerUrl, form))
-        {
-            yield return request.SendWebRequest();
-            if (request.result == UnityWebRequest.Result.ConnectionError)
-            {
-                menuController.ShowWarning(8);
-            }
-            else if (request.result == UnityWebRequest.Result.ProtocolError)
-            {
-                menuController.CreateAccount();
-                menuController.ShowWarning(13);
-            }
-            else
-            {
-                JSONObject obj = JSONObject.Parse(request.downloadHandler.text);
-                if (obj.ContainsKey("code"))
+        JSONObject obj =  new JSONObject();
+        obj.Add("code", "111");
+        bool towi = true;
+        bool pass = true;
+                if (towi == true)
                 {
-                    if (obj["code"].Str == "111")
+                    if (pass == false)
                     {
+                        Debug.Log("por alguna razon hubo fallo");
                         menuController.ShowWarning(13, () => menuController.ShowRegister(System.Convert.ToBoolean(PlayerPrefs.GetInt(Keys.Buy_IAP))));
                     }
                     else
@@ -466,8 +608,42 @@ public class LogInScript : MonoBehaviour
                     PostLogin(email, password, newPaidUser);
                     Analytics.CustomEvent("register");
                 }
-            }
-        }
+
+        yield return null;
+        // using (UnityWebRequest request = UnityWebRequest.Post(registerUrl, form))
+        // {
+        //     yield return request.SendWebRequest();
+        //     if (request.result == UnityWebRequest.Result.ConnectionError)
+        //     {
+        //         menuController.ShowWarning(8);
+        //     }
+        //     else if (request.result == UnityWebRequest.Result.ProtocolError)
+        //     {
+        //         menuController.CreateAccount();
+        //         menuController.ShowWarning(13);
+        //     }
+        //     else
+        //     {
+        //         JSONObject obj = JSONObject.Parse(request.downloadHandler.text);
+        //         if (obj.ContainsKey("code"))
+        //         {
+        //             if (obj["code"].Str == "111")
+        //             {
+        //                 menuController.ShowWarning(13, () => menuController.ShowRegister(System.Convert.ToBoolean(PlayerPrefs.GetInt(Keys.Buy_IAP))));
+        //             }
+        //             else
+        //             {
+        //                 PostLogin(email, password, newPaidUser);
+        //                 Analytics.CustomEvent("register");
+        //             }
+        //         }
+        //         else
+        //         {
+        //             PostLogin(email, password, newPaidUser);
+        //             Analytics.CustomEvent("register");
+        //         }
+        //     }
+        // }
     }
 
     public void RegisterAKid(string dobKid, string nameKid, int parentId)
@@ -495,6 +671,7 @@ public class LogInScript : MonoBehaviour
 
             if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
             {
+                Debug.Log("por alguna razon llegamos aqui en Send Web DEEBRIA QUITAR ESTA PART DE CONEXION");
                 menuController.ShowWarning(9);
                 menuController.AddKidShower();
             }
