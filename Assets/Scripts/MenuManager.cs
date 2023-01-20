@@ -137,16 +137,18 @@ public class MenuManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        ShowLoading();
+        ShowGameMenu();
 
-        if (key == null)
-        {
-            StartCoroutine(CheckInternetConnection(Keys.Api_Web_Key + Keys.Try_Connection_Key));
-        }
-        else
-        {
-            ShowGameMenu();
-        }
+        //ShowLoading();
+        //
+        //if (key == null)
+        //{
+        //    StartCoroutine(CheckInternetConnection(Keys.Api_Web_Key + Keys.Try_Connection_Key));
+        //}
+        //else
+        //{
+        //    ShowGameMenu();
+        //}
     }
 
     IEnumerator CheckInternetConnection(string resource)
@@ -632,21 +634,23 @@ public class MenuManager : MonoBehaviour
     //we show the game menu if the player has acces to it
     public void ShowGameMenu()
     {
-        if (!needInternetConectionNow)
-        {
-            if (sessionManager.activeKid != null)
-            {
-                StartCoroutine(ShowMenuInCorrectTime());
-            }
-            else
-            {
-                ShowFirstMenu();
-            }
-        }
-        else
-        {
-            ShowNeedConectionToPlay();
-        }
+        //if (!needInternetConectionNow)
+        //{
+        //    if (sessionManager.activeKid != null)
+        //    {
+        //        StartCoroutine(ShowMenuInCorrectTime());
+        //    }
+        //    else
+        //    {
+        //        ShowFirstMenu();
+        //    }
+        //}
+        //else
+        //{
+        //    ShowNeedConectionToPlay();
+        //}
+
+        ShowFirstMenu();
     }
 
     IEnumerator ShowMenuInCorrectTime()
@@ -1181,25 +1185,27 @@ public class MenuManager : MonoBehaviour
 
     public void TryALogIn(string email, string password)
     {
-        var verificationUtility = new EmailVerificationUtility();
-        bool isAccountReady = verificationUtility.IsValidMail(email);
-        bool isPassReady = password != "";
-        if (isAccountReady)
-        {
-            if (isPassReady)
-            {
-                ShowLoading();
-                logInScript.PostLogin(email, password, false);
-            }
-            else
-            {
-                ShowWarning(0, registerMenu.ShowLoginPanel);
-            }
-        }
-        else
-        {
-            ShowWarning(1, registerMenu.ShowLoginPanel);
-        }
+        //AQUI TENEMOS QUE HACER LA LECTURA DE CORREOS Y PASSWORD
+        //var verificationUtility = new EmailVerificationUtility();
+        //bool isAccountReady = verificationUtility.IsValidMail(email);
+        //bool isPassReady = password != "";
+        //if (isAccountReady)
+        //{
+        //    if (isPassReady)
+        //    {
+        //        ShowLoading();
+        //        logInScript.PostLogin(email, password, false);
+        //    }
+        //    else
+        //    {
+        //        ShowWarning(0, registerMenu.ShowLoginPanel);
+        //    }
+        //}
+        //else
+        //{
+        //    ShowWarning(1, registerMenu.ShowLoginPanel);
+        //}
+        logInScript.PostLogin(email, password, true);
     }
 
     public void TrySignIn(string mail, string pass, string passConfirmation, string kidName, bool isNewPaidUser)

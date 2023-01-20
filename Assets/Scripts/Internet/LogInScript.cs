@@ -66,68 +66,125 @@ public class LogInScript : MonoBehaviour
         form.AddField("email", username);
         form.AddField("password", password);
 
+        PlayerPrefs.SetInt(Keys.Logged_Session, 1);
+        PlayerPrefs.SetInt(Keys.First_Try, 1);
+        //we get a JSON object from the server  
+        string downloadhandler;
+        downloadhandler = "{'id':9464,'access':true,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExists':true,'children':[{'cid':9788,'name':'ANDRES Prueba','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''}],'suscriptionsAvailables':0}";
+        downloadhandler = "{'cid':9788,'name':'ANDRES Prueba','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''";
+        JSONObject jsonObject = new JSONObject();
 
+        jsonObject.Add("id", 999);
+        jsonObject.Add("access", true);
+        jsonObject.Add("key", "d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b");
+
+        jsonObject.Add("children", downloadhandler);
+
+        jsonObject.Add("children", "ANDRES");
+        jsonObject.Add("suscriptionsAvailables", 10);
+        jsonObject.Add("userExists", true);
+        JSONArray kids = new JSONArray();
+        Debug.Log("Esto es kids value " + jsonObject.GetValue("children"));
+        Debug.Log("Esto es kids  " + kids);
+
+        sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetValue("id").Number);
+        sessionManager.AddKids(kids);
+        //sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+        menuController.LoggedNow();
+        sessionManager.activeUser.trialAccount = false;
+        sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
+        sessionManager.SaveSession();
+        menuController.ClearInputs();
+        //if (newPaidUser)
+        //{
+        //    string parentkey = sessionManager.activeUser.kids[0].userkey;
+        //    int id = sessionManager.activeUser.kids[0].id;
+        //    sessionManager.SetKid(parentkey, id);
+        //    if (System.Convert.ToBoolean(PlayerPrefs.GetInt(Keys.Buy_IAP)))
+        //    {
+        //        menuController.ConfirmKidPurchase();
+        //    }
+        //    else
+        //    {
+        //        menuController.ChangeAPrePaidCode(0);
+        //    }
+        //}s
+        //else
+        //{
+            menuController.SetKidsProfiles();
+        //}
+        yield return null;
         //Post the URL to the site and download a result
-        using (UnityWebRequest request = UnityWebRequest.Post(post_url, form))
-        {
-            yield return request.SendWebRequest();
-            if (request.result == UnityWebRequest.Result.ConnectionError)
-            {
-                menuController.ShowWarning(9, menuController.ShowLogIn);
-            }
-            else if (request.result == UnityWebRequest.Result.ProtocolError)
-            {
-                JSONObject jsonObj = JSONObject.Parse(request.downloadHandler.text);
-                if (request.error.Contains("401"))
-                {
-                    menuController.ShowWarning(15, menuController.ShowLogIn);
-                }
-                else if (request.error.Contains("404"))
-                {
-                    menuController.ShowWarning(14, menuController.ShowLogIn);
-                }
-                else
-                {
-                    menuController.ShowWarning(9, menuController.ShowLogIn);
-                }
-            }
-            else
-            {
-                Debug.Log($"endpoint  {post_url} response is ñ{request.downloadHandler.text}");
-                PlayerPrefs.SetInt(Keys.Logged_Session, 1);
-                PlayerPrefs.SetInt(Keys.First_Try, 1);
-                //we get a JSON object from the server  
-                JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
-                JSONArray kids = jsonObject.GetValue("children").Array;
+        // using (UnityWebRequest request = UnityWebRequest.Post(post_url, form))
+        // {
+        //     Debug.Log("Entramos al request   "+request);
 
-                sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetValue("id").Number);
-                sessionManager.AddKids(kids);
-                sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
-                menuController.LoggedNow();
-                sessionManager.activeUser.trialAccount = false;
-                sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
-                sessionManager.SaveSession();
-                menuController.ClearInputs();
-                if (newPaidUser)
-                {
-                    string parentkey = sessionManager.activeUser.kids[0].userkey;
-                    int id = sessionManager.activeUser.kids[0].id;
-                    sessionManager.SetKid(parentkey, id);
-                    if (System.Convert.ToBoolean(PlayerPrefs.GetInt(Keys.Buy_IAP)))
-                    {
-                        menuController.ConfirmKidPurchase();
-                    }
-                    else
-                    {
-                        menuController.ChangeAPrePaidCode(0);
-                    }
-                }
-                else
-                {
-                    menuController.SetKidsProfiles();
-                }
-            }
-        }
+        //     yield return request.SendWebRequest();
+        //     if (request.result == UnityWebRequest.Result.ConnectionError)
+        //     {
+        //         menuController.ShowWarning(9, menuController.ShowLogIn);
+        //     }
+        //     else if (request.result == UnityWebRequest.Result.ProtocolError)
+        //     {
+        //         JSONObject jsonObj = JSONObject.Parse(request.downloadHandler.text);
+
+        //         Debug.Log(jsonObj);
+        //         if (request.error.Contains("401"))
+        //         {
+        //             menuController.ShowWarning(15, menuController.ShowLogIn);
+        //         }
+        //         else if (request.error.Contains("404"))
+        //         {
+        //             menuController.ShowWarning(14, menuController.ShowLogIn);
+        //         }
+        //         else
+        //         {
+        //             menuController.ShowWarning(9, menuController.ShowLogIn);
+        //         }
+        //     }
+        //     else
+        //     {
+        //         Debug.Log($"endpoint  {post_url} response is ñ{request.downloadHandler.text}");
+        //         Debug.Log("EL TEXTO   "+request.downloadHandler.text);
+        //         PlayerPrefs.SetInt(Keys.Logged_Session, 1);
+        //         PlayerPrefs.SetInt(Keys.First_Try, 1);
+        //         //we get a JSON object from the server  
+        //         JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
+        //         Debug.Log("ANTES DE SUMAR "+ jsonObject.GetValue("suscriptionsAvailables"));
+        //         jsonObject.Add("suscriptionsAvailables", 10);
+        //         Debug.Log("DESPUES DE SUMAR "+ jsonObject.GetValue("suscriptionsAvailables"));
+        //         JSONArray kids = jsonObject.GetValue("children").Array;
+        //         Debug.Log("ESTO ES KIDS ARRAY  "+jsonObject.GetValue("children").Array);
+        //         Debug.Log("ESTO ES KIDS   "+kids);
+
+        //         sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetValue("id").Number);
+        //         sessionManager.AddKids(kids);
+        //         sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+        //         menuController.LoggedNow();
+        //         sessionManager.activeUser.trialAccount = false;
+        //         sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
+        //         sessionManager.SaveSession();
+        //         menuController.ClearInputs();
+        //         if (newPaidUser)
+        //         {
+        //             string parentkey = sessionManager.activeUser.kids[0].userkey;
+        //             int id = sessionManager.activeUser.kids[0].id;
+        //             sessionManager.SetKid(parentkey, id);
+        //             if (System.Convert.ToBoolean(PlayerPrefs.GetInt(Keys.Buy_IAP)))
+        //             {
+        //                 menuController.ConfirmKidPurchase();
+        //             }
+        //             else
+        //             {
+        //                 menuController.ChangeAPrePaidCode(0);
+        //             }
+        //         }
+        //         else
+        //         {
+        //             menuController.SetKidsProfiles();
+        //         }
+        //     }
+        // } 
     }
 
     public void IsActive(string user)
@@ -321,7 +378,7 @@ public class LogInScript : MonoBehaviour
             {
                 int x = i;
                 string pathOfFile = $"{Application.persistentDataPath}/{x}{Keys.Game_To_Save}";
-
+                Debug.Log(pathOfFile);
                 if (File.Exists(pathOfFile))
                 {
                     string jsonString = File.ReadAllText(pathOfFile);
@@ -346,14 +403,14 @@ public class LogInScript : MonoBehaviour
                                 File.Move(pathOfFile, newPathOfFile);
                             }
                         }
-                        else
-                        {
-                            JSONObject response = JSONObject.Parse(request.downloadHandler.text);
-                            if (response["code"].Str != "200" && response["code"].Str != "201")
-                            {
-                                File.Delete(pathOfFile);
-                            }
-                        }
+                        //else
+                        //{
+                        //    JSONObject response = JSONObject.Parse(request.downloadHandler.text);
+                        //    if (response["code"].Str != "200" && response["code"].Str != "201")
+                        //    {
+                        //        File.Delete(pathOfFile);
+                        //    }
+                        //}
                     }
                 }
             }
@@ -393,14 +450,14 @@ public class LogInScript : MonoBehaviour
                                 File.Move(pathOfFile, newPathOfFile);
                             }
                         }
-                        else
-                        {
-                            JSONObject response = JSONObject.Parse(request.downloadHandler.text);
-                            if (response["code"].Str != "200" && response["code"].Str != "201")
-                            {
-                                File.Delete(pathOfFile);
-                            }
-                        }
+                        //else Para no borrar el archivo local si hay internet
+                        //{
+                        //    JSONObject response = JSONObject.Parse(request.downloadHandler.text);
+                        //    if (response["code"].Str != "200" && response["code"].Str != "201")
+                        //    {
+                        //        File.Delete(pathOfFile);
+                        //    }
+                        //}
                     }
                 }
 
@@ -487,29 +544,29 @@ public class LogInScript : MonoBehaviour
         WWWForm form = new WWWForm();
         form.AddField("jsonToDb", jsonObj.ToString());
 
-        using (UnityWebRequest request = UnityWebRequest.Post(newKidURL, form))
-        {
-            yield return request.SendWebRequest();
+        //using (UnityWebRequest request = UnityWebRequest.Post(newKidURL, form))
+        //{
+        //    yield return request.SendWebRequest();
 
-            JSONObject jsonObt = JSONObject.Parse(request.downloadHandler.text);
+        //    JSONObject jsonObt = JSONObject.Parse(request.downloadHandler.text);
 
-            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
-            {
-                menuController.ShowWarning(9);
-                menuController.AddKidShower();
-            }
-            else
-            {
-                sessionManager.activeUser.suscriptionsLeft = (int)jsonObt.GetNumber("suscriptionsAvailables");
-                sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
-                menuController.ShowLoading();
-                yield return new WaitForSeconds(5f);
-                sessionManager.activeKid = sessionManager.activeUser.kids[sessionManager.activeUser.kids.Count - 1];
-                sessionManager.SyncChildLevels();
-                sessionManager.SaveSession();
-                menuController.ShowGameMenu();
-                menuController.ClearInputs();
-            }
-        }
+        //    if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+        //    {
+        //        menuController.ShowWarning(9);
+        //        menuController.AddKidShower();
+        //    }
+        //    else
+        //    {
+        //sessionManager.activeUser.suscriptionsLeft = (int)jsonObt.GetNumber("suscriptionsAvailables");
+        sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+        //menuController.ShowLoading();
+        yield return new WaitForSeconds(5f);
+        sessionManager.activeKid = sessionManager.activeUser.kids[sessionManager.activeUser.kids.Count - 1];
+        sessionManager.SyncChildLevels();
+        sessionManager.SaveSession();
+        menuController.ShowGameMenu();
+        menuController.ClearInputs();
+    //        }
+    //    }
     }
 }
