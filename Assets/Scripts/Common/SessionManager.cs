@@ -355,6 +355,7 @@ public class SessionManager : MonoBehaviour
 
     public void SetKid(string parentkey, int id)
     {
+        Debug.Log("Users.Counts   "+ users.Count);
         for (int u = 0; u < users.Count; u++)
         {
             if (users[u].userkey == activeUser.userkey)

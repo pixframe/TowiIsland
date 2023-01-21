@@ -141,7 +141,8 @@ public class MenuManager : MonoBehaviour
 
         if (key == null)
         {
-            StartCoroutine(CheckInternetConnection(Keys.Api_Web_Key + Keys.Try_Connection_Key));
+            ShowGameMenu();
+            //StartCoroutine(CheckInternetConnection(Keys.Api_Web_Key + Keys.Try_Connection_Key));
         }
         else
         {
@@ -151,6 +152,7 @@ public class MenuManager : MonoBehaviour
 
     IEnumerator CheckInternetConnection(string resource)
     {
+        Debug.Log("Estamos en CheckInternet");
         using (UnityWebRequest newRequest = UnityWebRequest.Get(resource))
         {
             yield return newRequest.SendWebRequest();
@@ -168,6 +170,7 @@ public class MenuManager : MonoBehaviour
 
     void InternetAvailableLogin()
     {
+        Debug.Log("Estamos en InternetAvailable");
         PlayerPrefs.SetString(Keys.Last_Time_Were, DateTime.Today.ToString(DateTimeFormatInfo.InvariantInfo));
         if (PlayerPrefs.GetInt(Keys.Logged_Session) == 0)
         {
@@ -362,6 +365,7 @@ public class MenuManager : MonoBehaviour
     //here we set almost every button in the ui with the correspondent function to do
     void ButtonSetUp()
     {
+        Debug.Log("Estamos en ButtonSetUp");
         exitCredits.onClick.AddListener(ShowGameMenu);
         selectionKidBackButton.onClick.AddListener(CloseKids);
         newKidBackButton.onClick.AddListener(CloseKids);
@@ -394,6 +398,7 @@ public class MenuManager : MonoBehaviour
     //we show the kids that are available for the player
     public void SetKidsProfiles()
     {
+        Debug.Log("Estamos en SetKidsProfiles");
         WriteTheText(selectionKidText, 23);
         HideAllCanvas();
         kidsPanel.SetActive(true);
@@ -415,6 +420,8 @@ public class MenuManager : MonoBehaviour
 
     void UpdateKids()
     {
+
+        Debug.Log("Estamos en UpdateKids");
         List<KidProfileCanvas> kidos = new List<KidProfileCanvas>();
         float deltaSize = miniKidContainer.GetComponent<RectTransform>().sizeDelta.x;
         miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
@@ -431,6 +438,7 @@ public class MenuManager : MonoBehaviour
 
         if (kidsToShow.Count > 0)
         {
+            Debug.Log("Entramos a kidsToShow > 0");
             HideWarning();
             for (int i = 0; i < kidsToShow.Count; i++)
             {
@@ -464,6 +472,7 @@ public class MenuManager : MonoBehaviour
         }
         else
         {
+            Debug.Log("Hubo error en UpdateKids");
             ShowWarning(16);
         }
     }
@@ -543,6 +552,7 @@ public class MenuManager : MonoBehaviour
         }
         else
         {
+            Debug.Log("Hubo error en UpdateKids To Buy");
             ShowWarning(16);
         }
     }
@@ -1272,6 +1282,8 @@ public class MenuManager : MonoBehaviour
     //this one will set a kid as an active kid if its selected
     void SetKidProfile(string parentKey, int id)
     {
+        
+        Debug.Log("Entramos a SetKidProfile");
         sessionManager.SetKid(parentKey, id);
         ShowGameMenu();
     }
@@ -1824,6 +1836,7 @@ public class KidProfileCanvas
 
     public void SetKidName(string kidName)
     {
+        Debug.Log("Entramos a SetKidName");
         nameText.text = kidName;
     }
 }
