@@ -69,14 +69,19 @@ public class LogInScript : MonoBehaviour
         StartCoroutine(PostLoginData(newPaidUser));
     }
 
-    private void Start() {
-        
-    // var downloadhandler = "[{'id':9464,'access':true,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExist':true'children':['cid':9788,'name'ANDRES Prueba','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b''picture2:'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':'}],'suscriptionsAvailables':0}']".Replace("'", "\"");
-    // Debug.Log(downloadhandler);
+    public void PostLogin(string parentMail, string currentPasword, string kidName, bool newPaidUser)
+    {
+        //username
+        //password
+        //kidname
+        //STartCoroutine(PostLoginData(newPaidUser))
     }
+
 
     IEnumerator PostLoginData(bool newPaidUser)
     {
+
+        //Aqui debemos lograr pasar una variable que guarda el nombre dle niño. Esa variable viene desde el TrySignIn
         string hash = password;//Md5SUm(password);
         string post_url = loginUrl;
 
@@ -87,105 +92,41 @@ public class LogInScript : MonoBehaviour
 
         PlayerPrefs.SetInt(Keys.Logged_Session, 1);
         PlayerPrefs.SetInt(Keys.First_Try, 1);
+        
+        //VERSION OFFLINE
+        //AQUI SE ESTA CREANDO EL NIÑO
+
+
         // //we get a JSON object from the server  
         
-        //string downloadhandler;
-        //downloadhandler = @"""Hi, "" I am programmer";
-        var value = "'Field1','Field2','Field3'".Replace("'", "\"");
-        var downloadhandler = "{'id':9464,'access':true,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExists':true,'children':[{'cid':9788,'name':'ANDRES Prueba','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture2':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''}],'suscriptionsAvailables':10}".Replace("'", "\"");
+        //var value = "'Field1','Field2','Field3'".Replace("'", "\"");
+        //var downloadhandler = "{'id':9999,'access':true,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExists':true,'children':[{'cid':9788,'name':"+dobKid+",'lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture2':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''}],'suscriptionsAvailables':10}".Replace("'", "\"");
+        var downloadhandler = "{'id':9464,'access':true,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExists':true,'children':[{'cid':9788,'name':'ANDRES Raul Dany Prueba','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture2':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''}],'suscriptionsAvailables':10}".Replace("'", "\"");
         
-        //var downloadhandler = """[{"id":9464,"access":true,"key":"d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b","userExists":true,"children":[{"cid":9788,"name":"ANDRES Prueba","lastname":"","active":true,"trial":false,"key":"d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b","picture2:"https://storage.googleapis.com/storage-towi//avatars/default_user.png","age":6,"pruebaDate":"}],"suscriptionsAvailables":0}"]""".Replace("'", "\"");
         Debug.Log(downloadhandler);
-        Debug.Log(value);
-        //var downloadhandler = "{'cid':9788,'name':'ANDRES Prueba','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''".Replace("'", "\"");
-        //downloadhandler.Replace("'", "\"");
-        //Debug.Log(downloadhandler);
-        // //downloadhandler = """[{"id":9464,"access":true,"key":"d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b","userExists":true,"children":[{"cid":9788,"name":"ANDRES Prueba","lastname":"","active":true,"trial":false,"key":"d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b","picture2:"https://storage.googleapis.com/storage-towi//avatars/default_user.png","age":6,"pruebaDate":"}],"suscriptionsAvailables":0}"]""";
         //JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
         JSONObject jsonObject = new JSONObject();
         jsonObject = JSONObject.Parse(downloadhandler);
         
         
-        
-        // downloadhandler = $@"   
-        // {{
-        //     'id': {id}
-        // }}
-        // ";
-        // Debug.Log(downloadhandler);
-        
+          
         
         //JSONObject jsonObject = JSONObject.Parse(downloadhandler);    
         Debug.Log("esto es el JSobject"+jsonObject);
-        // jsonObject.Add("id",9999);
-        // jsonObject.Add("access",true);
-        // //jsonObject.Add("key","d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b");
-        // jsonObject.Add("key","d");
-        
-        // jsonObject.Add("children",downloadhandler);
-        
-        // // //jsonObject.Add("children", [{"cid",9788,"name","ANDRES Prueba","lastname","","active",true,"trial",false,"key","d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b","picture","https://storage.googleapis.com/storage-towi//avatars/default_user.png","age",6,"pruebaDate",""}]);
-        // // //jsonObject.Add("children","ANDRES");
-        // jsonObject.Add("suscriptionsAvailables",10);
-        // jsonObject.Add("userExists",true);
-        // // jsonObject.Add("status","01");
-        // // jsonObject.Add("message","01");
-        // //jsonObject.Add("children","children");
-        // //JSONArray kids = new JSONArray();
         
 
         
-        // JSONObject data = new JSONObject();
-        
-        // data.Add("cid", 9999);
-        // data.Add("name", "Andres");
-        // data.Add("lastname", "");
-        // data.Add("active", true);
-        
-        // data.Add("trial", false);
-        // data.Add("key", "d");
-        // data.Add("picture", "https://storage.googleapis.com/storage-towi//avatars/default_user.png");
-        // data.Add("age", 6);
-        // data.Add("pruebaDate", "");
-        
-      
-        
         // string json = JsonUtility.ToJson(data);
-        // Debug.Log("esto es el object json " +"["+data+"]");
-        // string a = "["+data+"]";
-        // Debug.Log("esto es "+a);
-        // JSONObject c = new JSONObject();
-        // c.Add("key",a);
-        // JSONValue b = a;
-        // Debug.Log("Esto es c "+c);
-        // Debug.Log("Esto es b "+b);
-        // //jsonObject.Add("children", a);
-        //string[] dataArray = new string[9];
-        //JSONValue valueData = new JSONValue(a);
-        //Debug.Log("Esto es el valueData "+valueData);
-        //valueData = a;
-        //jsonObject.Add("children", a);
-        // { "kidData": [
-        //     {"cid":9788},
-        //     {"name":"ANDRES Prueba"},
-        //     {"lastname":""},
-        //     {"active":true},
-        //     {"trial":false},
-        //     {"key":"d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b"},
-        //     {"picture":"https://storage.googleapis.com/storage-towi//avatars/default_user.png"},
-        //     {"age":6},
-        //     {"pruebaDate":""}
-        //     ]
-        // }
+       
         //JSONArray kids = jsonObject.GetValue("children").Array;
         JSONArray kids = jsonObject.GetValue("children").Array;
-        Debug.Log("Esto es CHILDREN " +jsonObject.GetValue("children"));
+        //Debug.Log("Esto es CHILDREN " +jsonObject.GetValue("children"));
         Debug.Log("Esto es kids  " +kids);
         if(kids == null)
         {
             Debug.Log("kids esta VACIO");
         }
-        Debug.Log("DESPUES DE SUMAR "+ jsonObject.GetValue("suscriptionsAvailables"));
+        //Debug.Log("DESPUES DE SUMAR "+ jsonObject.GetValue("suscriptionsAvailables"));
 
 
 
@@ -669,6 +610,7 @@ public class LogInScript : MonoBehaviour
 
     IEnumerator PostRegisterParentAndKid(string email, string password, string kidName, string dateOfBirth, bool newPaidUser)
     {
+
         string psswdHash = password;//Md5SUm(password);
 
         JSONObject data = new JSONObject();
@@ -755,6 +697,7 @@ public class LogInScript : MonoBehaviour
 
     IEnumerator RegisterKid(string dobKid, string nameKid, int parentId)
     {
+        Debug.Log("Estamos en Register");
         JSONObject jsonObj = new JSONObject
         {
             { "child_dob", dobKid},
@@ -767,8 +710,10 @@ public class LogInScript : MonoBehaviour
         //JSONObject jsonObt = JSONObject.Parse(request.downloadHandler.text);
 
         string downloadhandler;
-        downloadhandler = "{'id':9464,'access':true,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExists':true,'children':[{'cid':9788,'name':'ANDRES Prueba','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''}],'suscriptionsAvailables':0}";
-        downloadhandler = "{'cid':9788,'name':'ANDRES Prueba','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''";
+        //var prueba = "{"+dobKid+"}";
+        downloadhandler = "{'id':9464,'access':"+true+",'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExists':true,'children':[{'cid':9788,'name':"+dobKid+",'lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''}],'suscriptionsAvailables':0}";
+        //downloadhandler = "{'id':9464,'access':true,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExists':true,'children':[{'cid':9788,'name':'ANDRES Prueba','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''}],'suscriptionsAvailables':0}";
+        //downloadhandler = "{'cid':9788,'name':'ANDRES ','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''";
         //JSONObject jsonObt = JSONObject.Parse(request.downloadHandler.text);
         JSONObject jsonObt = new JSONObject();
         jsonObt.Add("id",9999);

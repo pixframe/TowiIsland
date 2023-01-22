@@ -52,6 +52,7 @@ public class SubscriptionsWays : MonoBehaviour
     //this is the corutine we use for prepaid code
     IEnumerator SendCode(int userId, int childId, string code, int typeOfShop)
     {
+        Debug.Log("Estamos en SendCode");
 
         //now we create a www form were we set the json that hva eall the info for the activaton
         WWWForm form = new WWWForm();
@@ -59,51 +60,91 @@ public class SubscriptionsWays : MonoBehaviour
         form.AddField("child_id", childId);
         form.AddField("parent_id", userId);
 
-        using (UnityWebRequest request = UnityWebRequest.Post(codeURL, form))
-        {
-            yield return request.SendWebRequest();
-            if (request.isHttpError)
-            {
-                menuManager.ShopWithCode(typeOfShop);
-                menuManager.ShowWarning(8);
-            }
-            else if (request.isNetworkError)
-            {
-                Debug.Log("por alguna razon llegamos aqui en Subs");
-                menuManager.ShopWithCode(typeOfShop);
-                menuManager.ShowWarning(9);
-            }
-            else
-            {
-                var jsonObject = JSONObject.Parse(request.downloadHandler.text);
-                if (jsonObject.ContainsKey("status"))
-                {
-                    string status = jsonObject.GetString("status");
-                    if (status == "COUPON_NOT_FOUND")
-                    {
-                        //JSONObject jsonObject = JSONObject.Parse(post.text);
-                        menuManager.ShopWithCode(typeOfShop);
-                        menuManager.ShowWarning(10);
-                    }
-                }
-                else
-                {
-                    Analytics.CustomEvent("buy");
-                    menuManager.ShowGameMenu();
-                    sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
-                }
-            }
-        }
+        //VERSION OFFLINE
+        var downloadHandler = "{'status':'COUPON_NOT_FOUND','message':'The coupon does not exists'}".Replace("'", "\"");
+        JSONObject jsonObject = JSONObject.Parse(downloadHandler);
+        Debug.Log("Estamos en la version OFFLINE en el else de status");
+        Analytics.CustomEvent("buy");
+        menuManager.ShowGameMenu();
+        sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+        // if (jsonObject.ContainsKey("status"))
+        // {
+        //     Debug.Log("Estamos en la version OFFLINE en el if de status");
+        //     string status = jsonObject.GetString("status");
+        //     if (status == "COUPON_NOT_FOUND")
+        //     {
+        //         //JSONObject jsonObject = JSONObject.Parse(post.text);
+        //         menuManager.ShopWithCode(typeOfShop);
+        //         menuManager.ShowWarning(10);
+        //     }
+        // }
+        // else
+        // {
+        //     Debug.Log("Estamos en la version OFFLINE en el else de status");
+        //     Analytics.CustomEvent("buy");
+        //     menuManager.ShowGameMenu();
+        //     sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+        // }
+        yield return null;
+
+
+
+        //VERSION ONLINE
+
+        // using (UnityWebRequest request = UnityWebRequest.Post(codeURL, form))
+        // {
+        //     yield return request.SendWebRequest();
+        //     if (request.isHttpError)
+        //     {
+        //         menuManager.ShopWithCode(typeOfShop);
+        //         menuManager.ShowWarning(8);
+        //     }
+        //     else if (request.isNetworkError)
+        //     {
+        //         Debug.Log("por alguna razon llegamos aqui en Subs");
+        //         menuManager.ShopWithCode(typeOfShop);
+        //         menuManager.ShowWarning(9);
+        //     }
+        //     else
+        //     {
+        //         var jsonObject = JSONObject.Parse(request.downloadHandler.text);
+        //         Debug.Log("Esto es el request de Downaload "+request.downloadHandler.text);
+        //         if (jsonObject.ContainsKey("status"))
+        //         {
+        //             string status = jsonObject.GetString("status");
+        //             if (status == "COUPON_NOT_FOUND")
+        //             {
+        //                 //JSONObject jsonObject = JSONObject.Parse(post.text);
+        //                 menuManager.ShopWithCode(typeOfShop);
+        //                 menuManager.ShowWarning(10);
+        //             }
+        //         }
+        //         else
+        //         {
+        //             Analytics.CustomEvent("buy");
+        //             menuManager.ShowGameMenu();
+        //             sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+        //         }
+        //     }
+        // }
     }
 
     IEnumerator SendCode(int userId, string code, int typeOfShop)
     {
+        Debug.Log("Estamos en SendCode");
         //now we create a www form were we set the json that hva eall the info for the activaton
         WWWForm form = new WWWForm();
         form.AddField("code", code);
         form.AddField("parent_id", userId);
 
 
+        // //VERSION OFFLINE
+        // var downloadHandler = 
+
+        // JSONObject jsonObject = JSONObject.Parse(downloadHandler);
+        // yield return null;
+
+        //VERSION ONLINE
         using (UnityWebRequest request = UnityWebRequest.Post(codeURL, form))
         {
             yield return request.SendWebRequest();
@@ -116,6 +157,7 @@ public class SubscriptionsWays : MonoBehaviour
             else
             {
                 JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
+                Debug.Log("Download reuqest del SendCode" + request.downloadHandler.text);
                 if (jsonObject.ContainsKey("status"))
                 {
                     string status = jsonObject.GetString("status");

@@ -434,137 +434,262 @@ public class SessionManager : MonoBehaviour
         form.AddField("userKey", key);
         //Debug.Log("sync profile");
 
-        using (UnityWebRequest request = UnityWebRequest.Post(syncProfileURL, form))
-        {
-            yield return request.SendWebRequest();
+        //VERSION OFFLINE
+        PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
 
-            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+        var downloadhandler = "[{'cid':9788,'kiwis':7,'avatar':'tortuga','avatarClothes':'','ownedItems':'','activeMissions':['ArbolMusical','Rio','ArenaMagica','DondeQuedoLaBolita','Tesoro','JuegoDeSombras'],'age':6,'activeDay':0,'rioFirstTime':false,'tesoroFirstTime':true,'arbolFirstTime':false,'bolitaFirstTime':true,'sombrasFirstTime':true,'arenaFirstTime':true,'testAvailable':true,'active':true,'trial':false,'name':'Andres Prueba ','suscriptionType':'quarterly','rioLevelSet':true,'tesoroLevelSet':true,'arbolLevelSet':true,'arenaLevelSet':false,'arenaLevelSet2':true,'sombrasLevelSet':true,'bolitaLevelSet':true,'islandShoppingList':[]}]".Replace("'", "\"");
+        JSONArray kids = JSONArray.Parse(downloadhandler);
+        //JSONArray kids = JSONArray.Parse(request.downloadHandler.text);
+
+        //Debug.Log($"endpoint  {syncProfileURL} response is ñ{request.downloadHandler.text}");
+
+        bool setType = false;
+        bool needStoreSync = false;
+
+        var cidsOfActiveKids = new List<int>();
+
+        foreach (Kid k in activeUser.kids)
+        {
+            cidsOfActiveKids.Add(k.id);
+        }
+
+        for (int i = 0; i < kids.Length; i++)
+        {
+            JSONObject kidObj = kids[i].Obj;
+            JSONArray activeMissions = kidObj.GetArray("activeMissions");
+            JSONArray buyedItems = kidObj.GetArray("islandShoppingList");
+
+            int cid = (int)kidObj.GetNumber("cid");
+            string kidName = kidObj.GetString("name");
+            int index;
+
+            if (!cidsOfActiveKids.Contains(cid))
             {
-                downlodingData = false;
+                AddKid(cid, kidName, activeUser.userkey, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial"));
+                index = activeUser.kids.Count - 1;
             }
             else
             {
-                PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
-
-                JSONArray kids = JSONArray.Parse(request.downloadHandler.text);
-
-                Debug.Log($"endpoint  {syncProfileURL} response is ñ{request.downloadHandler.text}");
-
-                bool setType = false;
-                bool needStoreSync = false;
-
-                var cidsOfActiveKids = new List<int>();
-
-                foreach (Kid k in activeUser.kids)
-                {
-                    cidsOfActiveKids.Add(k.id);
-                }
-
-                for (int i = 0; i < kids.Length; i++)
-                {
-                    JSONObject kidObj = kids[i].Obj;
-                    JSONArray activeMissions = kidObj.GetArray("activeMissions");
-                    JSONArray buyedItems = kidObj.GetArray("islandShoppingList");
-
-                    int cid = (int)kidObj.GetNumber("cid");
-                    string kidName = kidObj.GetString("name");
-                    int index;
-
-                    if (!cidsOfActiveKids.Contains(cid))
-                    {
-                        AddKid(cid, kidName, activeUser.userkey, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial"));
-                        index = activeUser.kids.Count - 1;
-                    }
-                    else
-                    {
-                        index = cidsOfActiveKids.IndexOf(cid);
-                    }
-
-                    activeUser.kids[index].isActive = kidObj.GetBoolean("active");
-                    activeUser.kids[index].kiwis = (int)kidObj.GetNumber("kiwis");
-                    if (kidObj.GetString("avatar") != null)
-                    {
-                        activeUser.kids[index].avatar = kidObj.GetString("avatar").ToLower();
-                    }
-                    else
-                    {
-                        activeUser.kids[index].avatar = "koala";
-                    }
-                    activeUser.kids[index].avatarClothes = kidObj.GetString("avatarClothes");
-                    activeUser.kids[index].ownedItems = kidObj.GetString("ownedItems");
-                    activeUser.kids[index].age = (int)kidObj.GetNumber("age");
-
-                    activeUser.kids[index].ResetPlayedGames();
-
-
-                    activeUser.kids[index].missionsToPlay = new List<int>();
-                    for (int o = 0; o < activeMissions.Length; o++)
-                    {
-                        string gameKey = activeMissions[o].Str;
-                        for (int gameName = 0; gameName < Keys.Number_Of_Games; gameName++)
-                        {
-                            if (gameKey == Keys.Game_Names[gameName])
-                            {
-                                activeUser.kids[index].missionsToPlay.Add(gameName);
-                                break;
-                            }
-                        }
-                    }
-
-                    activeUser.kids[index].activeDay = (int)kidObj.GetNumber("activeDay");
-                    activeUser.kids[index].ageSet = true;
-                    activeUser.kids[index].firstsGames[0] = kidObj.GetBoolean("arbolFirstTime");
-                    activeUser.kids[index].firstsGames[1] = kidObj.GetBoolean("arenaFirstTime");
-                    activeUser.kids[index].firstsGames[2] = kidObj.GetBoolean("tesoroFirstTime");
-                    activeUser.kids[index].firstsGames[3] = kidObj.GetBoolean("bolitaFirstTime");
-                    activeUser.kids[index].firstsGames[4] = kidObj.GetBoolean("rioFirstTime");
-                    activeUser.kids[index].firstsGames[5] = kidObj.GetBoolean("sombrasFirstTime");
-                    //activeUser.kids[index].firstsGames[6] = kidObj.GetBoolean("heladosFirstTime");
-
-                    activeUser.kids[index].testAvailable = kidObj.GetBoolean("testAvailable");
-                    activeUser.kids[index].sandLevelSet = kidObj.GetBoolean("arenaLevelSet");
-
-                    activeUser.kids[index].buyedIslandObjects.Clear();
-                    for (int o = 0; o < buyedItems.Length; o++)
-                    {
-                        activeUser.kids[index].buyedIslandObjects.Add((int)buyedItems[o].Number);
-                    }
-
-                    string type = kidObj.GetString("suscriptionType");
-                    if (type == "monthly" || type == "quarterly")
-                    {
-                        setType = true;
-                        PlayerPrefs.SetInt(Keys.First_Try, 1);
-                    }
-                    else if (type == "monthly_inApp" || type == "quarterly_inApp")
-                    {
-                        activeUser.kids[index].isIAPSubscribed = true;
-                        PlayerPrefs.SetInt(Keys.First_Try, 1);
-                    }
-
-                    if (activeKid != null)
-                    {
-                        if (activeKid.id == cid)
-                        {
-                            activeKid = activeUser.kids[index];
-                            SyncChildLevels();
-                        }
-                    }
-                }
-                if (!setType)
-                {
-                    activeUser.isPossibleBuyIAP = true;
-                }
-                if (needStoreSync)
-                {
-                    idStrings = GetKidsIds();
-                    FindObjectOfType<MenuManager>().UpdateIAPSubscription(idStrings, kidsIAP);
-                }
-                SaveSession();
+                index = cidsOfActiveKids.IndexOf(cid);
             }
 
-            isSyncing = false;
+            activeUser.kids[index].isActive = kidObj.GetBoolean("active");
+            activeUser.kids[index].kiwis = (int)kidObj.GetNumber("kiwis");
+            if (kidObj.GetString("avatar") != null)
+            {
+                activeUser.kids[index].avatar = kidObj.GetString("avatar").ToLower();
+            }
+            else
+            {
+                activeUser.kids[index].avatar = "koala";
+            }
+            activeUser.kids[index].avatarClothes = kidObj.GetString("avatarClothes");
+            activeUser.kids[index].ownedItems = kidObj.GetString("ownedItems");
+            activeUser.kids[index].age = (int)kidObj.GetNumber("age");
+
+            activeUser.kids[index].ResetPlayedGames();
+
+
+            activeUser.kids[index].missionsToPlay = new List<int>();
+            for (int o = 0; o < activeMissions.Length; o++)
+            {
+                string gameKey = activeMissions[o].Str;
+                for (int gameName = 0; gameName < Keys.Number_Of_Games; gameName++)
+                {
+                    if (gameKey == Keys.Game_Names[gameName])
+                    {
+                        activeUser.kids[index].missionsToPlay.Add(gameName);
+                        break;
+                    }
+                }
+            }
+
+            activeUser.kids[index].activeDay = (int)kidObj.GetNumber("activeDay");
+            activeUser.kids[index].ageSet = true;
+            activeUser.kids[index].firstsGames[0] = kidObj.GetBoolean("arbolFirstTime");
+            activeUser.kids[index].firstsGames[1] = kidObj.GetBoolean("arenaFirstTime");
+            activeUser.kids[index].firstsGames[2] = kidObj.GetBoolean("tesoroFirstTime");
+            activeUser.kids[index].firstsGames[3] = kidObj.GetBoolean("bolitaFirstTime");
+            activeUser.kids[index].firstsGames[4] = kidObj.GetBoolean("rioFirstTime");
+            activeUser.kids[index].firstsGames[5] = kidObj.GetBoolean("sombrasFirstTime");
+            //activeUser.kids[index].firstsGames[6] = kidObj.GetBoolean("heladosFirstTime");
+
+            activeUser.kids[index].testAvailable = kidObj.GetBoolean("testAvailable");
+            activeUser.kids[index].sandLevelSet = kidObj.GetBoolean("arenaLevelSet");
+
+            activeUser.kids[index].buyedIslandObjects.Clear();
+            for (int o = 0; o < buyedItems.Length; o++)
+            {
+                activeUser.kids[index].buyedIslandObjects.Add((int)buyedItems[o].Number);
+            }
+
+            string type = kidObj.GetString("suscriptionType");
+            if (type == "monthly" || type == "quarterly")
+            {
+                setType = true;
+                PlayerPrefs.SetInt(Keys.First_Try, 1);
+            }
+            else if (type == "monthly_inApp" || type == "quarterly_inApp")
+            {
+                activeUser.kids[index].isIAPSubscribed = true;
+                PlayerPrefs.SetInt(Keys.First_Try, 1);
+            }
+
+            if (activeKid != null)
+            {
+                if (activeKid.id == cid)
+                {
+                    activeKid = activeUser.kids[index];
+                    SyncChildLevels();
+                }
+            }
         }
+        if (!setType)
+        {
+            activeUser.isPossibleBuyIAP = true;
+        }
+        if (needStoreSync)
+        {
+            idStrings = GetKidsIds();
+            FindObjectOfType<MenuManager>().UpdateIAPSubscription(idStrings, kidsIAP);
+        }
+        SaveSession();
+        yield return null;
+
+
+        //VERSION ONLINE
+
+        // using (UnityWebRequest request = UnityWebRequest.Post(syncProfileURL, form))
+        // {
+        //     yield return request.SendWebRequest();
+
+        //     if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+        //     {
+        //         downlodingData = false;
+        //     }
+        //     else
+        //     {
+        //         PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
+
+        //         JSONArray kids = JSONArray.Parse(request.downloadHandler.text);
+
+        //         Debug.Log($"endpoint  {syncProfileURL} response is ñ{request.downloadHandler.text}");
+
+        //         bool setType = false;
+        //         bool needStoreSync = false;
+
+        //         var cidsOfActiveKids = new List<int>();
+
+        //         foreach (Kid k in activeUser.kids)
+        //         {
+        //             cidsOfActiveKids.Add(k.id);
+        //         }
+
+        //         for (int i = 0; i < kids.Length; i++)
+        //         {
+        //             JSONObject kidObj = kids[i].Obj;
+        //             JSONArray activeMissions = kidObj.GetArray("activeMissions");
+        //             JSONArray buyedItems = kidObj.GetArray("islandShoppingList");
+
+        //             int cid = (int)kidObj.GetNumber("cid");
+        //             string kidName = kidObj.GetString("name");
+        //             int index;
+
+        //             if (!cidsOfActiveKids.Contains(cid))
+        //             {
+        //                 AddKid(cid, kidName, activeUser.userkey, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial"));
+        //                 index = activeUser.kids.Count - 1;
+        //             }
+        //             else
+        //             {
+        //                 index = cidsOfActiveKids.IndexOf(cid);
+        //             }
+
+        //             activeUser.kids[index].isActive = kidObj.GetBoolean("active");
+        //             activeUser.kids[index].kiwis = (int)kidObj.GetNumber("kiwis");
+        //             if (kidObj.GetString("avatar") != null)
+        //             {
+        //                 activeUser.kids[index].avatar = kidObj.GetString("avatar").ToLower();
+        //             }
+        //             else
+        //             {
+        //                 activeUser.kids[index].avatar = "koala";
+        //             }
+        //             activeUser.kids[index].avatarClothes = kidObj.GetString("avatarClothes");
+        //             activeUser.kids[index].ownedItems = kidObj.GetString("ownedItems");
+        //             activeUser.kids[index].age = (int)kidObj.GetNumber("age");
+
+        //             activeUser.kids[index].ResetPlayedGames();
+
+
+        //             activeUser.kids[index].missionsToPlay = new List<int>();
+        //             for (int o = 0; o < activeMissions.Length; o++)
+        //             {
+        //                 string gameKey = activeMissions[o].Str;
+        //                 for (int gameName = 0; gameName < Keys.Number_Of_Games; gameName++)
+        //                 {
+        //                     if (gameKey == Keys.Game_Names[gameName])
+        //                     {
+        //                         activeUser.kids[index].missionsToPlay.Add(gameName);
+        //                         break;
+        //                     }
+        //                 }
+        //             }
+
+        //             activeUser.kids[index].activeDay = (int)kidObj.GetNumber("activeDay");
+        //             activeUser.kids[index].ageSet = true;
+        //             activeUser.kids[index].firstsGames[0] = kidObj.GetBoolean("arbolFirstTime");
+        //             activeUser.kids[index].firstsGames[1] = kidObj.GetBoolean("arenaFirstTime");
+        //             activeUser.kids[index].firstsGames[2] = kidObj.GetBoolean("tesoroFirstTime");
+        //             activeUser.kids[index].firstsGames[3] = kidObj.GetBoolean("bolitaFirstTime");
+        //             activeUser.kids[index].firstsGames[4] = kidObj.GetBoolean("rioFirstTime");
+        //             activeUser.kids[index].firstsGames[5] = kidObj.GetBoolean("sombrasFirstTime");
+        //             //activeUser.kids[index].firstsGames[6] = kidObj.GetBoolean("heladosFirstTime");
+
+        //             activeUser.kids[index].testAvailable = kidObj.GetBoolean("testAvailable");
+        //             activeUser.kids[index].sandLevelSet = kidObj.GetBoolean("arenaLevelSet");
+
+        //             activeUser.kids[index].buyedIslandObjects.Clear();
+        //             for (int o = 0; o < buyedItems.Length; o++)
+        //             {
+        //                 activeUser.kids[index].buyedIslandObjects.Add((int)buyedItems[o].Number);
+        //             }
+
+        //             string type = kidObj.GetString("suscriptionType");
+        //             if (type == "monthly" || type == "quarterly")
+        //             {
+        //                 setType = true;
+        //                 PlayerPrefs.SetInt(Keys.First_Try, 1);
+        //             }
+        //             else if (type == "monthly_inApp" || type == "quarterly_inApp")
+        //             {
+        //                 activeUser.kids[index].isIAPSubscribed = true;
+        //                 PlayerPrefs.SetInt(Keys.First_Try, 1);
+        //             }
+
+        //             if (activeKid != null)
+        //             {
+        //                 if (activeKid.id == cid)
+        //                 {
+        //                     activeKid = activeUser.kids[index];
+        //                     SyncChildLevels();
+        //                 }
+        //             }
+        //         }
+        //         if (!setType)
+        //         {
+        //             activeUser.isPossibleBuyIAP = true;
+        //         }
+        //         if (needStoreSync)
+        //         {
+        //             idStrings = GetKidsIds();
+        //             FindObjectOfType<MenuManager>().UpdateIAPSubscription(idStrings, kidsIAP);
+        //         }
+        //         SaveSession();
+        //     }
+
+        //     isSyncing = false;
+        // }
     }
 
     public void UpdateProfile()
@@ -715,49 +840,83 @@ public class SessionManager : MonoBehaviour
         form.AddField("cid", activeKid.id);
         form.AddField("date", String.Format("{0:0000}-{1:00}-{2:00}", today.Year, today.Month, today.Day));
 
-        using (UnityWebRequest request = UnityWebRequest.Post(syncLevelsURL, form))
-        {
-            yield return request.SendWebRequest();
-            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
-            {
+    
+        //VERSION OFFLINE
+        var json = JsonUtility.FromJson("{'code':'200','arbolMusicalLevel':2,'arbolMusicalSublevel':10,'rioLevel':0,'rioSublevel':4,'arenaMagicaLevel':15,'arenaMagicaSublevel':19,'arenaMagicaSublevel2':11,'arenaMagicaSublevel3':11,'monkeyLevel':0,'monkeySublevel':0,'sombrasLevel':0,'sombrasSublevel':0,'tesoroLevel':0,'tesoroSublevel':0,'arbolToday':0,'rioToday':0,'arenaToday':0,'monkeyToday':0,'sombrasToday':0,'tesoroToday':0}".Replace("'", "\""),typeof(LevlSyncJson)) as LevlSyncJson;
+        //Birds Level Set
+        SetTheCorrectLevel(ref activeKid.birdsDifficulty, ref activeKid.birdsLevel, json.arbolMusicalLevel, json.arbolMusicalSublevel);
 
-                //Debug.Log(request.downloadHandler.text);
-                //TODO Fix this non resolved issue
-            }
-            else
-            {
-                var json = JsonUtility.FromJson(request.downloadHandler.text, typeof(LevlSyncJson)) as LevlSyncJson;
-                Debug.Log($"endpoint  {syncLevelsURL} response is ñ{request.downloadHandler.text}");
+        //River Level Set
+        SetTheCorrectLevel(ref activeKid.riverDifficulty, ref activeKid.riverLevel, json.rioLevel, json.rioSublevel);
 
+        //Monkey Level Set
+        SetTheCorrectLevel(ref activeKid.monkeyDifficulty, ref activeKid.monkeyLevel, json.monkeyLevel, json.monkeySublevel);
 
-                //Birds Level Set
-                SetTheCorrectLevel(ref activeKid.birdsDifficulty, ref activeKid.birdsLevel, json.arbolMusicalLevel, json.arbolMusicalSublevel);
+        //Lava Level Set
+        SetTheCorrectLevel(ref activeKid.lavaDifficulty, ref activeKid.lavaLevel, json.sombrasLevel, json.sombrasSublevel);
 
-                //River Level Set
-                SetTheCorrectLevel(ref activeKid.riverDifficulty, ref activeKid.riverLevel, json.rioLevel, json.rioSublevel);
+        //Treasure Level Set
+        SetTheCorrectLevel(ref activeKid.treasureDifficulty, ref activeKid.treasureLevel, json.tesoroLevel, json.tesoroSublevel);
 
-                //Monkey Level Set
-                SetTheCorrectLevel(ref activeKid.monkeyDifficulty, ref activeKid.monkeyLevel, json.monkeyLevel, json.monkeySublevel);
+        //Sand Level Set
+        SetTheCorrectLevel(ref activeKid.sandDifficulty, json.arenaMagicaLevel);
+        SetTheCorrectLevel(ref activeKid.sandLevel, json.arenaMagicaSublevel);
+        SetTheCorrectLevel(ref activeKid.sandLevel2, json.arenaMagicaSublevel2);
+        SetTheCorrectLevel(ref activeKid.sandLevel3, json.arenaMagicaSublevel3);
 
-                //Lava Level Set
-                SetTheCorrectLevel(ref activeKid.lavaDifficulty, ref activeKid.lavaLevel, json.sombrasLevel, json.sombrasSublevel);
-
-                //Treasure Level Set
-                SetTheCorrectLevel(ref activeKid.treasureDifficulty, ref activeKid.treasureLevel, json.tesoroLevel, json.tesoroSublevel);
-
-                //Sand Level Set
-                SetTheCorrectLevel(ref activeKid.sandDifficulty, json.arenaMagicaLevel);
-                SetTheCorrectLevel(ref activeKid.sandLevel, json.arenaMagicaSublevel);
-                SetTheCorrectLevel(ref activeKid.sandLevel2, json.arenaMagicaSublevel2);
-                SetTheCorrectLevel(ref activeKid.sandLevel3, json.arenaMagicaSublevel3);
-
-                //Icecream level set
-                SetTheCorrectLevel(ref activeKid.icecreamLevel, json.heladosLevel);
-            }
-        }
-
+        //Icecream level set
+        SetTheCorrectLevel(ref activeKid.icecreamLevel, json.heladosLevel);
         downlodingData = false;
         SaveSession();
+        yield return null;
+    
+    
+    
+        //VERSION ONLINE
+    
+        // using (UnityWebRequest request = UnityWebRequest.Post(syncLevelsURL, form))
+        // {
+        //     yield return request.SendWebRequest();
+        //     if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+        //     {
+
+        //         //Debug.Log(request.downloadHandler.text);
+        //         //TODO Fix this non resolved issue
+        //     }
+        //     else
+        //     {
+        //         var json = JsonUtility.FromJson(request.downloadHandler.text, typeof(LevlSyncJson)) as LevlSyncJson;
+        //         Debug.Log($"endpoint  {syncLevelsURL} response is ñ{request.downloadHandler.text}");
+
+
+        //         //Birds Level Set
+        //         SetTheCorrectLevel(ref activeKid.birdsDifficulty, ref activeKid.birdsLevel, json.arbolMusicalLevel, json.arbolMusicalSublevel);
+
+        //         //River Level Set
+        //         SetTheCorrectLevel(ref activeKid.riverDifficulty, ref activeKid.riverLevel, json.rioLevel, json.rioSublevel);
+
+        //         //Monkey Level Set
+        //         SetTheCorrectLevel(ref activeKid.monkeyDifficulty, ref activeKid.monkeyLevel, json.monkeyLevel, json.monkeySublevel);
+
+        //         //Lava Level Set
+        //         SetTheCorrectLevel(ref activeKid.lavaDifficulty, ref activeKid.lavaLevel, json.sombrasLevel, json.sombrasSublevel);
+
+        //         //Treasure Level Set
+        //         SetTheCorrectLevel(ref activeKid.treasureDifficulty, ref activeKid.treasureLevel, json.tesoroLevel, json.tesoroSublevel);
+
+        //         //Sand Level Set
+        //         SetTheCorrectLevel(ref activeKid.sandDifficulty, json.arenaMagicaLevel);
+        //         SetTheCorrectLevel(ref activeKid.sandLevel, json.arenaMagicaSublevel);
+        //         SetTheCorrectLevel(ref activeKid.sandLevel2, json.arenaMagicaSublevel2);
+        //         SetTheCorrectLevel(ref activeKid.sandLevel3, json.arenaMagicaSublevel3);
+
+        //         //Icecream level set
+        //         SetTheCorrectLevel(ref activeKid.icecreamLevel, json.heladosLevel);
+        //     }
+        // }
+
+        // downlodingData = false;
+        // SaveSession();
     }
 
     void SetTheCorrectLevel(ref int difficulty, ref int level, int difficltyFromWeb, int levelFromWeb)

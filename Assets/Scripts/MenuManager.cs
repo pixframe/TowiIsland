@@ -661,6 +661,7 @@ public class MenuManager : MonoBehaviour
 
     IEnumerator ShowMenuInCorrectTime()
     {
+        Debug.Log("Entramos a ShowMenuInCorrectTime");
         while (sessionManager.IsDownlodingData())
         {
             yield return null;
@@ -1400,6 +1401,7 @@ public class MenuManager : MonoBehaviour
 
     void CreateAKid()
     {
+        Debug.Log("Estamos creando un niño");
         if (newKidNameInput.text != "" && newKidDay.text != "" && newKidMonth.text != "" && newKidYear.text != "")
         {
             if (KidDateIsOK(1))
@@ -1824,6 +1826,8 @@ public class KidProfileCanvas
 
     public void ChangeAvatar(string avatarData)
     {
+
+        Debug.Log("Entramos a ChangeAvatar");
         if (avatarData != "")
         {
             avatarImage.sprite = Resources.Load<Sprite>($"Icons/{avatarData}");
@@ -1989,8 +1993,10 @@ class RegisterMenu
         forgotPassButton.onClick.AddListener(manager.ForgotPassword);
 
         logInButton.onClick.RemoveAllListeners();
-        logInButton.onClick.AddListener(() => manager.TryALogIn(inputEmail.field.text, inputPass.field.text));
-
+        //logInButton.onClick.AddListener(() => manager.TryALogIn(inputEmail.field.text, inputPass.field.text));
+        //logInButton.onClick.AddListener() => manager.TrySignIn(inputEmail.field.text, inputPass.field.text, inputPass.field.text,  );
+        
+        
         goToSingInButton.onClick.RemoveAllListeners();
         goToSingInButton.onClick.AddListener(ShowSignInPanel);
 
@@ -2005,6 +2011,7 @@ class RegisterMenu
 
     public void ShowSignInPanel()
     {
+        Debug.Log("Estamos en el ShowSignIn");
         gameObject.SetActive(true);
         const string pathOfLoginMenuTetxs = "Login/SingInMenu";
         HideAllPanels();
@@ -2039,7 +2046,7 @@ class RegisterMenu
 
         signInButton.onClick.RemoveAllListeners();
         signInButton.onClick.AddListener(TryASignIn);
-
+        
         returnButton.onClick.RemoveAllListeners();
         returnButton.onClick.AddListener(() =>
         {
@@ -2169,6 +2176,7 @@ class RegisterMenu
 
     void TryASignIn()
     {
+        Debug.Log("Se intento el registro");
         var mail = inputEmailDad.field.text;
         var pass = inputPassDad.field.text;
         var pass2 = inputPassAgain.field.text;
