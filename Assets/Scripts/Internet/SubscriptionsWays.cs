@@ -66,7 +66,7 @@ public class SubscriptionsWays : MonoBehaviour
         Debug.Log("Estamos en la version OFFLINE en el else de status");
         Analytics.CustomEvent("buy");
         menuManager.ShowGameMenu();
-        sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+        //sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
         // if (jsonObject.ContainsKey("status"))
         // {
         //     Debug.Log("Estamos en la version OFFLINE en el if de status");
@@ -171,7 +171,7 @@ public class SubscriptionsWays : MonoBehaviour
                 else
                 {
                     Analytics.CustomEvent("buy");
-                    sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                    //sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
                     menuManager.AddKidShower();
                 }
             }
@@ -205,7 +205,7 @@ public class SubscriptionsWays : MonoBehaviour
                 if (jsonOBJ["status"].Str == "Succesful")
                 {
                     Analytics.CustomEvent("buy");
-                    sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                    //sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
                     menuManager.SetKidsProfiles();
                     FindObjectOfType<MyIAPManager>().ConfirmPurchaseProduct();
                 }
@@ -244,7 +244,7 @@ public class SubscriptionsWays : MonoBehaviour
                 if (jsonObj.GetString("status") == "Succesful")
                 {
                     sessionManager.activeKid = sessionManager.GetKid(kidId);
-                    sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                    //sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
                     sessionManager.SaveSession();
                     menuManager.ShowGameMenu();
                 }
@@ -281,8 +281,8 @@ public class SubscriptionsWays : MonoBehaviour
                 JSONObject jsonObj = JSONObject.Parse(request.downloadHandler.text);
                 if (jsonObj.ContainsKey("successful"))
                 {
-                    sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
-                    sessionManager.SaveSession();
+                    //sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                    //sessionManager.SaveSession();
                     menuManager.ShowGameMenu();
                 }
                 else

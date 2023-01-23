@@ -1190,28 +1190,28 @@ public class MenuManager : MonoBehaviour
         SceneManager.LoadScene("Loader_Scene");
     }
 
-    public void TryALogIn(string email, string password)
-    {
-        var verificationUtility = new EmailVerificationUtility();
-        bool isAccountReady = verificationUtility.IsValidMail(email);
-        bool isPassReady = password != "";
-        if (isAccountReady)
-        {
-            if (isPassReady)
-            {
-                ShowLoading();
-                logInScript.PostLogin(email, password, false);
-            }
-            else
-            {
-                ShowWarning(0, registerMenu.ShowLoginPanel);
-            }
-        }
-        else
-        {
-            ShowWarning(1, registerMenu.ShowLoginPanel);
-        }
-    }
+    //public void TryALogIn(string email, string password)
+    //{
+    //    var verificationUtility = new EmailVerificationUtility();
+    //    bool isAccountReady = verificationUtility.IsValidMail(email);
+    //    bool isPassReady = password != "";
+    //    if (isAccountReady)
+    //    {
+    //        if (isPassReady)
+    //        {
+    //            ShowLoading();
+    //            logInScript.PostLogin(email, password, false);
+    //        }
+    //        else
+    //        {
+    //            ShowWarning(0, registerMenu.ShowLoginPanel);
+    //        }
+    //    }
+    //    else
+    //    {
+    //        ShowWarning(1, registerMenu.ShowLoginPanel);
+    //    }
+    //}
 
     public void TrySignIn(string mail, string pass, string passConfirmation, string kidName, bool isNewPaidUser)
     {
@@ -1258,27 +1258,27 @@ public class MenuManager : MonoBehaviour
     }
 
     //this one tries to change a code for the active kid
-    public void ChangeAPrePaidCode(int isNewChild)
-    {
+    //public void ChangeAPrePaidCode(int isNewChild)
+    //{
         
-        ShowLoading();
-        if (isNewChild == 0)
-        {
-            if (sessionManager.activeUser != null)
-            {
-                subscriptionsManager.SendACode(sessionManager.activeUser.id, sessionManager.activeKid.id, shopMenu.prepaidInput.text, isNewChild);
-            }
-            else
-            {
-                HideAllCanvas();
-                registerMenu.ShowRegisterPanel(false);
-            }
-        }
-        else
-        {
-            subscriptionsManager.SendACode(sessionManager.activeUser.id, shopMenu.prepaidInput.text, isNewChild);
-        }
-    }
+    //    ShowLoading();
+    //    if (isNewChild == 0)
+    //    {
+    //        if (sessionManager.activeUser != null)
+    //        {
+    //            subscriptionsManager.SendACode(sessionManager.activeUser.id, sessionManager.activeKid.id, shopMenu.prepaidInput.text, isNewChild);
+    //        }
+    //        else
+    //        {
+    //            HideAllCanvas();
+    //            registerMenu.ShowRegisterPanel(false);
+    //        }
+    //    }
+    //    else
+    //    {
+    //        subscriptionsManager.SendACode(sessionManager.activeUser.id, shopMenu.prepaidInput.text, isNewChild);
+    //    }
+    //}
 
     //this one will set a kid as an active kid if its selected
     void SetKidProfile(string parentKey, int id)
@@ -2453,7 +2453,7 @@ class ShopMenu
         manager.WriteTheText(shopButton, 60);
 
         shopButton.onClick.RemoveAllListeners();
-        shopButton.onClick.AddListener(() => manager.ChangeAPrePaidCode(isAShopForNewKid));
+        //shopButton.onClick.AddListener(() => manager.ChangeAPrePaidCode(isAShopForNewKid));
 
         SetBackButtonSecondStep(isAShopForNewKid);
     }

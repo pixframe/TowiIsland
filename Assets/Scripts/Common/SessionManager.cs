@@ -242,7 +242,9 @@ public class SessionManager : MonoBehaviour
                         PlayerPrefs.SetInt("activeKid", -1);
                     }
                     PlayerPrefs.SetString("activeUser", activeUser.userkey);
-                    SyncProfiles(key);
+                    var myKey = PlayerPrefs.GetString("key");
+                    var myKid = PlayerPrefs.GetString("kid");
+                    SyncProfiles(myKey, myKid);
                     break;
                 }
             }
@@ -421,13 +423,13 @@ public class SessionManager : MonoBehaviour
         }
     }
 
-    public void SyncProfiles(string key)
+    public void SyncProfiles(string key, string kid)
     {
         isSyncing = true;
-        StartCoroutine(PostSyncProfiles(key));
+        StartCoroutine(PostSyncProfiles(key, kid));
     }
 
-    IEnumerator PostSyncProfiles(string key)
+    IEnumerator PostSyncProfiles(string key, string kid)
     {
         downlodingData = true;
         WWWForm form = new WWWForm();
@@ -437,8 +439,8 @@ public class SessionManager : MonoBehaviour
         //VERSION OFFLINE
         PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
 
-        var downloadhandler = "[{'cid':9788,'kiwis':7,'avatar':'tortuga','avatarClothes':'','ownedItems':'','activeMissions':['ArbolMusical','Rio','ArenaMagica','DondeQuedoLaBolita','Tesoro','JuegoDeSombras'],'age':6,'activeDay':0,'rioFirstTime':false,'tesoroFirstTime':true,'arbolFirstTime':false,'bolitaFirstTime':true,'sombrasFirstTime':true,'arenaFirstTime':true,'testAvailable':true,'active':true,'trial':false,'name':'Andres Prueba ','suscriptionType':'quarterly','rioLevelSet':true,'tesoroLevelSet':true,'arbolLevelSet':true,'arenaLevelSet':false,'arenaLevelSet2':true,'sombrasLevelSet':true,'bolitaLevelSet':true,'islandShoppingList':[]}]".Replace("'", "\"");
-        JSONArray kids = JSONArray.Parse(downloadhandler);
+        var downloadhandler = "[{'cid':9788,'kiwis':7,'avatar':'tortuga','avatarClothes':'','ownedItems':'','activeMissions':['ArbolMusical','Rio','ArenaMagica','DondeQuedoLaBolita','Tesoro','JuegoDeSombras'],'age':6,'activeDay':0,'rioFirstTime':false,'tesoroFirstTime':true,'arbolFirstTime':false,'bolitaFirstTime':true,'sombrasFirstTime':true,'arenaFirstTime':true,'testAvailable':true,'active':true,'trial':false,'name':'PEPITO ','suscriptionType':'quarterly','rioLevelSet':true,'tesoroLevelSet':true,'arbolLevelSet':true,'arenaLevelSet':false,'arenaLevelSet2':true,'sombrasLevelSet':true,'bolitaLevelSet':true,'islandShoppingList':[]}]".Replace("'", "\"");
+        JSONArray kids = new JSONArray();
         //JSONArray kids = JSONArray.Parse(request.downloadHandler.text);
 
         //Debug.Log($"endpoint  {syncProfileURL} response is ñ{request.downloadHandler.text}");
@@ -835,17 +837,21 @@ public class SessionManager : MonoBehaviour
         downlodingData = true;
         DateTime today = DateTime.Now;
 
-        WWWForm form = new WWWForm();
-        form.AddField("userKey", activeUser.userkey);
-        form.AddField("cid", activeKid.id);
-        form.AddField("date", String.Format("{0:0000}-{1:00}-{2:00}", today.Year, today.Month, today.Day));
-
+        //WWWForm form = new WWWForm();
+        //form.AddField("userKey", activeUser.userkey);
+        //form.AddField("cid", activeKid.id);
+        //form.AddField("date", String.Format("{0:0000}-{1:00}-{2:00}", today.Year, today.Month, today.Day));
+        Debug.Log("entre al postchildsynclevels");
     
         //VERSION OFFLINE
         var json = JsonUtility.FromJson("{'code':'200','arbolMusicalLevel':2,'arbolMusicalSublevel':10,'rioLevel':0,'rioSublevel':4,'arenaMagicaLevel':15,'arenaMagicaSublevel':19,'arenaMagicaSublevel2':11,'arenaMagicaSublevel3':11,'monkeyLevel':0,'monkeySublevel':0,'sombrasLevel':0,'sombrasSublevel':0,'tesoroLevel':0,'tesoroSublevel':0,'arbolToday':0,'rioToday':0,'arenaToday':0,'monkeyToday':0,'sombrasToday':0,'tesoroToday':0}".Replace("'", "\""),typeof(LevlSyncJson)) as LevlSyncJson;
+       
+        Debug.Log("pase el json");
+
         //Birds Level Set
         SetTheCorrectLevel(ref activeKid.birdsDifficulty, ref activeKid.birdsLevel, json.arbolMusicalLevel, json.arbolMusicalSublevel);
 
+        Debug.Log("pase el primer levelcheck");
         //River Level Set
         SetTheCorrectLevel(ref activeKid.riverDifficulty, ref activeKid.riverLevel, json.rioLevel, json.rioSublevel);
 
@@ -921,6 +927,10 @@ public class SessionManager : MonoBehaviour
 
     void SetTheCorrectLevel(ref int difficulty, ref int level, int difficltyFromWeb, int levelFromWeb)
     {
+        Debug.Log(difficulty);
+        Debug.Log(difficltyFromWeb);
+        Debug.Log(level);
+        Debug.Log(levelFromWeb);
         if (difficulty < difficltyFromWeb)
         {
             difficulty = difficltyFromWeb;
@@ -970,7 +980,7 @@ public class SessionManager : MonoBehaviour
             psswdHash = psswd;
             id = ide;
             kids = new List<Kid>();
-            trialAccount = true;
+            trialAccount = false;
             suscriptionDate = DateTime.Now;
             suscriptionDate.AddDays(7);
             suscriptionsLeft = 0;

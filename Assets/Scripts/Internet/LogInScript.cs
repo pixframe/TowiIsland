@@ -6,7 +6,7 @@ using Boomlagoon.JSON;
 using UnityEngine.Analytics;
 using UnityEngine.Networking;
 using System;
-using System.IO;
+//using System.IO;
 using System.Linq;
 
 public class LogInScript : MonoBehaviour
@@ -61,34 +61,35 @@ public class LogInScript : MonoBehaviour
         return hashString.PadLeft(32, '0');
     }
 
-    public void PostLogin(string parentMail, string currentPasword, bool newPaidUser)
+    //public void PostLogin(string parentMail, string currentPasword, bool newPaidUser)
+    //{
+    //    Debug.Log("PostLogin");
+    //    username = parentMail.TrimEnd('\n');
+    //    password = currentPasword;
+    //    StartCoroutine(PostLoginData(newPaidUser));
+    //}
+
+    //public void PostLogin(string parentMail, string currentPasword, string kidName, bool newPaidUser)
+    //{
+    //    //username
+    //    //password
+    //    //kidname
+    //    //STartCoroutine(PostLoginData(newPaidUser))
+    //}
+
+
+    IEnumerator PostLoginData(string parentMail, string currentPasword, string kidName, string kidDob, bool newPaidUser)
     {
-        Debug.Log("PostLogin");
         username = parentMail.TrimEnd('\n');
         password = currentPasword;
-        StartCoroutine(PostLoginData(newPaidUser));
-    }
-
-    public void PostLogin(string parentMail, string currentPasword, string kidName, bool newPaidUser)
-    {
-        //username
-        //password
-        //kidname
-        //STartCoroutine(PostLoginData(newPaidUser))
-    }
-
-
-    IEnumerator PostLoginData(bool newPaidUser)
-    {
-
         //Aqui debemos lograr pasar una variable que guarda el nombre dle niño. Esa variable viene desde el TrySignIn
         string hash = password;//Md5SUm(password);
         string post_url = loginUrl;
 
         //Build form to post in server
-        WWWForm form = new WWWForm();
-        form.AddField("email", username);
-        form.AddField("password", password);
+        //WWWForm form = new WWWForm();
+        //form.AddField("email", username);
+        //form.AddField("password", password);
 
         PlayerPrefs.SetInt(Keys.Logged_Session, 1);
         PlayerPrefs.SetInt(Keys.First_Try, 1);
@@ -101,25 +102,31 @@ public class LogInScript : MonoBehaviour
         
         //var value = "'Field1','Field2','Field3'".Replace("'", "\"");
         //var downloadhandler = "{'id':9999,'access':true,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExists':true,'children':[{'cid':9788,'name':"+dobKid+",'lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture2':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''}],'suscriptionsAvailables':10}".Replace("'", "\"");
-        var downloadhandler = "{'id':9464,'access':true,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExists':true,'children':[{'cid':9788,'name':'ANDRES Raul Dany Prueba','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture2':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''}],'suscriptionsAvailables':10}".Replace("'", "\"");
+        //var downloadhandler = "{'id':9464,'access':true,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExists':true,'children':[{'cid':9788,'name':'ANDRES Raul Dany Prueba','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture2':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''}],'suscriptionsAvailables':10}".Replace("'", "\"");
         
-        Debug.Log(downloadhandler);
+       // Debug.Log(downloadhandler);
         //JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
         JSONObject jsonObject = new JSONObject();
-        jsonObject = JSONObject.Parse(downloadhandler);
-        
-        
-          
+        JSONArray kids = new JSONArray();
+
+        jsonObject.Add("id", 9);
+        jsonObject.Add("access", true);
+        jsonObject.Add("key", "d");
+        jsonObject.Add("userExist", true);
+        jsonObject.Add("children", "");
+        jsonObject.Add("suscriptionsAvailables", 10);
         
         //JSONObject jsonObject = JSONObject.Parse(downloadhandler);    
         Debug.Log("esto es el JSobject"+jsonObject);
-        
 
-        
+        string json = JsonUtility.ToJson(jsonObject);
+
+        File.WriteAllText(Application.dataPath + "/dataFromUsers", json);
+
         // string json = JsonUtility.ToJson(data);
-       
+
         //JSONArray kids = jsonObject.GetValue("children").Array;
-        JSONArray kids = jsonObject.GetValue("children").Array;
+
         //Debug.Log("Esto es CHILDREN " +jsonObject.GetValue("children"));
         Debug.Log("Esto es kids  " +kids);
         if(kids == null)
@@ -135,7 +142,9 @@ public class LogInScript : MonoBehaviour
 
         sessionManager.LoadUser(username, hash, jsonObject.GetValue("key").Str, null, (int)jsonObject.GetValue("id").Number);
         sessionManager.AddKids(kids);
-        sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+        sessionManager.SyncProfiles(sessionManager.activeUser.userkey, json);
+        PlayerPrefs.SetString("key", sessionManager.activeUser.userkey);
+        PlayerPrefs.SetString("kid", json);
         menuController.LoggedNow();
         sessionManager.activeUser.trialAccount = false;
         sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
@@ -144,11 +153,11 @@ public class LogInScript : MonoBehaviour
         if (newPaidUser)
         {
             Debug.Log("Entramos al if de newPaidUser");
-            Debug.Log("Entramos al sessionManager" + sessionManager.activeUser.kids[0].userkey);
-            string parentkey = sessionManager.activeUser.kids[0].userkey;
+            //Debug.Log("Entramos al sessionManager" + sessionManager.activeUser.kids[0].userkey);
+            string parentkey = sessionManager.activeUser.userkey;
             Debug.Log("Pasamos el string");
-            int id = sessionManager.activeUser.kids[0].id;
-            sessionManager.SetKid(parentkey, id);
+            int id = sessionManager.activeUser.id;
+            sessionManager.SetKid(parentkey, sessionManager.activeUser.id);
             if (System.Convert.ToBoolean(PlayerPrefs.GetInt(Keys.Buy_IAP)))
             {
                 Debug.Log("Estamos en el if despues de SetKid");
@@ -157,7 +166,7 @@ public class LogInScript : MonoBehaviour
             else
             {
                 Debug.Log("Estamos en el else para SystemConvert");
-                menuController.ChangeAPrePaidCode(0);
+               // menuController.ChangeAPrePaidCode(0);
             }
         }
         else
@@ -294,7 +303,7 @@ public class LogInScript : MonoBehaviour
                 JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
                 Debug.Log($"endpoint {activeUserUrl} response is {request.downloadHandler.text}");
                 sessionManager.LoadActiveUser(user.userkey);
-                sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+                //sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
                 sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
 
                 while (sessionManager.IsDownlodingData())
@@ -624,34 +633,34 @@ public class LogInScript : MonoBehaviour
         //data.Add("child_gender", gender);
         data.Add("user_type", "Familiar");
 
-        WWWForm form = new WWWForm();
-        form.AddField("jsonToDb", data.ToString());
+        //WWWForm form = new WWWForm();
+        //form.AddField("jsonToDb", data.ToString());
         //menuController.CreateAccount();
-        PostLogin(email, password, newPaidUser);
+        //PostLogin(email, password, newPaidUser);
         Analytics.CustomEvent("register");
 
         JSONObject obj =  new JSONObject();
         obj.Add("code", "111");
         bool towi = true;
         bool pass = true;
-                if (towi == true)
-                {
-                    if (pass == false)
-                    {
-                        Debug.Log("por alguna razon hubo fallo");
-                        menuController.ShowWarning(13, () => menuController.ShowRegister(System.Convert.ToBoolean(PlayerPrefs.GetInt(Keys.Buy_IAP))));
-                    }
-                    else
-                    {
-                        PostLogin(email, password, newPaidUser);
-                        Analytics.CustomEvent("register");
-                    }
-                }
-                else
-                {
-                    PostLogin(email, password, newPaidUser);
-                    Analytics.CustomEvent("register");
-                }
+        if (towi == true)
+        {
+            if (pass == false)
+            {
+                Debug.Log("por alguna razon hubo fallo");
+                menuController.ShowWarning(13, () => menuController.ShowRegister(System.Convert.ToBoolean(PlayerPrefs.GetInt(Keys.Buy_IAP))));
+            }
+            else
+            {
+                StartCoroutine(PostLoginData(email, password, kidName, dateOfBirth, newPaidUser));
+                Analytics.CustomEvent("register");
+            }
+        }
+        else
+        {
+            StartCoroutine(PostLoginData(email, password, kidName, dateOfBirth, newPaidUser));
+            Analytics.CustomEvent("register");
+        }
 
         yield return null;
         // using (UnityWebRequest request = UnityWebRequest.Post(registerUrl, form))
@@ -705,9 +714,9 @@ public class LogInScript : MonoBehaviour
             { "parent_id", parentId}
         };
 
-        WWWForm form = new WWWForm();
-        form.AddField("jsonToDb", jsonObj.ToString());
-        //JSONObject jsonObt = JSONObject.Parse(request.downloadHandler.text);
+        //WWWForm form = new WWWForm();
+        //form.AddField("jsonToDb", jsonObj.ToString());
+        ////JSONObject jsonObt = JSONObject.Parse(request.downloadHandler.text);
 
         string downloadhandler;
         //var prueba = "{"+dobKid+"}";
@@ -729,7 +738,8 @@ public class LogInScript : MonoBehaviour
         // };
         
         sessionManager.activeUser.suscriptionsLeft = (int)jsonObt.GetNumber("suscriptionsAvailables");
-        sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+        var myKid = PlayerPrefs.GetString("kid");
+        sessionManager.SyncProfiles(sessionManager.activeUser.userkey, myKid);
         menuController.ShowLoading();
         yield return new WaitForSeconds(5f);
         sessionManager.activeKid = sessionManager.activeUser.kids[sessionManager.activeUser.kids.Count - 1];
@@ -763,5 +773,50 @@ public class LogInScript : MonoBehaviour
         //         menuController.ClearInputs();
         //     }
         // }
+    }
+}
+
+[System.Serializable]
+public class KidData
+{
+    public int id;
+    public bool access;
+    public string key;
+    public bool userExists;
+    public ChildrenData child;
+    public int suscriptionsAvailables;
+    public KidData()
+    {
+        id = 0;
+        access = true;
+        key = "d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b";
+        userExists = true;
+        var children = JsonUtility.ToJson(child);
+        suscriptionsAvailables = 10;
+    }
+}
+[System.Serializable]
+public class ChildrenData
+{
+    public int cid;
+    public string name;
+    public string lastName;
+    public bool active;
+    public bool trial;
+    public int key;
+    public string picture2;
+    public int age;
+    public string pruebaDate;
+    public ChildrenData()
+    {
+        cid = 0;
+        name = "";
+        lastName = "";
+        active = true;
+        trial = false;
+        key = 1;
+        picture2 = "";
+        age = 5;
+        pruebaDate = DateTime.Now.ToString();
     }
 }
