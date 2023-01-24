@@ -64,6 +64,7 @@ public class SessionManager : MonoBehaviour
             }
         });
 #endif
+
         //if(main)
         //PlayerPrefs.DeleteAll ();
         string version = Application.version;
@@ -308,6 +309,7 @@ public class SessionManager : MonoBehaviour
             //bool missing = true;
             for (int u = 0; u < users.Count; u++)
             {
+                
                 int cid = (int)kidObj.GetValue("cid").Number;
                 if (users[u].kids.Count >= 9)
                 {
@@ -328,6 +330,7 @@ public class SessionManager : MonoBehaviour
                 }
             }
         }
+        
         SaveSession();
     }
 
@@ -432,8 +435,8 @@ public class SessionManager : MonoBehaviour
     IEnumerator PostSyncProfiles(string key, string kid)
     {
         downlodingData = true;
-        WWWForm form = new WWWForm();
-        form.AddField("userKey", key);
+        //WWWForm form = new WWWForm();
+        //form.AddField("userKey", key);
         //Debug.Log("sync profile");
 
         //VERSION OFFLINE

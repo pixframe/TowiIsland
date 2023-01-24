@@ -158,22 +158,25 @@ public class LogInScript : MonoBehaviour
             Debug.Log("Pasamos el string");
             int id = sessionManager.activeUser.id;
             sessionManager.SetKid(parentkey, sessionManager.activeUser.id);
-            if (System.Convert.ToBoolean(PlayerPrefs.GetInt(Keys.Buy_IAP)))
-            {
-                Debug.Log("Estamos en el if despues de SetKid");
-                menuController.ConfirmKidPurchase();
-            }
-            else
-            {
-                Debug.Log("Estamos en el else para SystemConvert");
-               // menuController.ChangeAPrePaidCode(0);
-            }
+            //if (System.Convert.ToBoolean(PlayerPrefs.GetInt(Keys.Buy_IAP)))
+            //{
+            //    Debug.Log("Estamos en el if despues de SetKid");
+            //    menuController.ConfirmKidPurchase();
+            //}
+            //else
+            //{
+            //    Debug.Log("Estamos en el else para SystemConvert");
+            //   // menuController.ChangeAPrePaidCode(0);
+            //}
         }
         else
         {
-            
-            Debug.Log("Estamos en el else para el SetKids");
-            menuController.SetKidsProfiles();
+            string parentkey = sessionManager.activeUser.userkey;
+            Debug.Log("Pasamos el string");
+            int id = sessionManager.activeUser.id;
+            sessionManager.SetKid(parentkey, sessionManager.activeUser.id);
+            //Debug.Log("Estamos en el else para el SetKids");
+            //menuController.SetKidsProfiles();
         }
         yield return null;
 
