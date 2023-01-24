@@ -78,6 +78,7 @@ public class MenuManager : MonoBehaviour
 
     [Header("New Kid")]
     public GameObject newKidPanel;
+    public GameObject serialPanel;
     public TMP_InputField newKidNameInput;
     public TMP_InputField newKidDay;
     public TextMeshProUGUI newKidBirthday;
