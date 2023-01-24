@@ -355,7 +355,7 @@ public class SessionManager : MonoBehaviour
 
     public void SetKid(string parentkey, int id)
     {
-        Debug.Log("Users.Counts   "+ users.Count);
+        //Debug.Log("Users.Counts   "+ users.Count);
         for (int u = 0; u < users.Count; u++)
         {
             if (users[u].userkey == activeUser.userkey)
@@ -426,18 +426,150 @@ public class SessionManager : MonoBehaviour
         isSyncing = true;
         StartCoroutine(PostSyncProfiles(key));
     }
+    public void SyncProfiles(string key, string nameKid, int id)
+    {
+        isSyncing = true;
+        StartCoroutine(PostSyncProfiles(key, nameKid, id));
+    }
+
+    IEnumerator PostSyncProfiles(string key, string nameKid, int id)
+    {
+        id = id+1;
+        downlodingData = true;
+        PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
+        var downloadhandler = ("[{'cid':"+id+",'kiwis':7,'avatar':'tortuga','avatarClothes':'','ownedItems':'','activeMissions':['ArbolMusical','Rio','ArenaMagica','DondeQuedoLaBolita','Tesoro','JuegoDeSombras'],'age':6,'activeDay':0,'rioFirstTime':false,'tesoroFirstTime':true,'arbolFirstTime':false,'bolitaFirstTime':true,'sombrasFirstTime':true,'arenaFirstTime':true,'testAvailable':true,'active':true,'trial':false,'name':'"+nameKid+" ','suscriptionType':'quarterly','rioLevelSet':true,'tesoroLevelSet':true,'arbolLevelSet':true,'arenaLevelSet':false,'arenaLevelSet2':true,'sombrasLevelSet':true,'bolitaLevelSet':true,'islandShoppingList':[]}]").Replace("'", "\"");
+        JSONArray kids = JSONArray.Parse(downloadhandler);
+        bool setType = false;
+        bool needStoreSync = false;
+
+        var cidsOfActiveKids = new List<int>();
+
+        foreach (Kid k in activeUser.kids)
+        {
+            cidsOfActiveKids.Add(k.id);
+        }
+
+        for (int i = 0; i < kids.Length; i++)
+        {
+            JSONObject kidObj = kids[i].Obj;
+            JSONArray activeMissions = kidObj.GetArray("activeMissions");
+            JSONArray buyedItems = kidObj.GetArray("islandShoppingList");
+
+            int cid = (int)kidObj.GetNumber("cid");
+            string kidName = kidObj.GetString("name");
+            int index;
+
+            if (!cidsOfActiveKids.Contains(cid))
+            {
+                //Debug.Log("Entramos al if");
+                AddKid(cid, kidName, activeUser.userkey, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial"));
+                index = activeUser.kids.Count - 1;
+            }
+            else
+            {
+                //Debug.Log("Entramos al else");
+                index = cidsOfActiveKids.IndexOf(cid);
+            }
+
+            activeUser.kids[index].isActive = kidObj.GetBoolean("active");
+            activeUser.kids[index].kiwis = (int)kidObj.GetNumber("kiwis");
+            if (kidObj.GetString("avatar") != null)
+            {
+                //Debug.Log("Entramos al if de avatar");
+                activeUser.kids[index].avatar = kidObj.GetString("avatar").ToLower();
+            }
+            else
+            {
+                //Debug.Log("Entramos al else de avatar");
+                activeUser.kids[index].avatar = "koala";
+            }
+            activeUser.kids[index].avatarClothes = kidObj.GetString("avatarClothes");
+            activeUser.kids[index].ownedItems = kidObj.GetString("ownedItems");
+            activeUser.kids[index].age = (int)kidObj.GetNumber("age");
+
+            activeUser.kids[index].ResetPlayedGames();
+
+
+            activeUser.kids[index].missionsToPlay = new List<int>();
+            for (int o = 0; o < activeMissions.Length; o++)
+            {
+                string gameKey = activeMissions[o].Str;
+                for (int gameName = 0; gameName < Keys.Number_Of_Games; gameName++)
+                {
+                    if (gameKey == Keys.Game_Names[gameName])
+                    {
+                        //Debug.Log("Entramos al if de gamekey");
+                        activeUser.kids[index].missionsToPlay.Add(gameName);
+                        break;
+                    }
+                }
+            }
+
+            activeUser.kids[index].activeDay = (int)kidObj.GetNumber("activeDay");
+            activeUser.kids[index].ageSet = true;
+            activeUser.kids[index].firstsGames[0] = kidObj.GetBoolean("arbolFirstTime");
+            activeUser.kids[index].firstsGames[1] = kidObj.GetBoolean("arenaFirstTime");
+            activeUser.kids[index].firstsGames[2] = kidObj.GetBoolean("tesoroFirstTime");
+            activeUser.kids[index].firstsGames[3] = kidObj.GetBoolean("bolitaFirstTime");
+            activeUser.kids[index].firstsGames[4] = kidObj.GetBoolean("rioFirstTime");
+            activeUser.kids[index].firstsGames[5] = kidObj.GetBoolean("sombrasFirstTime");
+            //activeUser.kids[index].firstsGames[6] = kidObj.GetBoolean("heladosFirstTime");
+
+            activeUser.kids[index].testAvailable = kidObj.GetBoolean("testAvailable");
+            activeUser.kids[index].sandLevelSet = kidObj.GetBoolean("arenaLevelSet");
+
+            activeUser.kids[index].buyedIslandObjects.Clear();
+            for (int o = 0; o < buyedItems.Length; o++)
+            {
+                activeUser.kids[index].buyedIslandObjects.Add((int)buyedItems[o].Number);
+            }
+
+            string type = kidObj.GetString("suscriptionType");
+            if (type == "monthly" || type == "quarterly")
+            {
+                setType = true;
+                PlayerPrefs.SetInt(Keys.First_Try, 1);
+            }
+            else if (type == "monthly_inApp" || type == "quarterly_inApp")
+            {
+                activeUser.kids[index].isIAPSubscribed = true;
+                PlayerPrefs.SetInt(Keys.First_Try, 1);
+            }
+
+            if (activeKid != null)
+            {
+                if (activeKid.id == cid)
+                {
+                    activeKid = activeUser.kids[index];
+                    SyncChildLevels();
+                }
+            }
+        }
+        if (!setType)
+        {
+            activeUser.isPossibleBuyIAP = true;
+        }
+        if (needStoreSync)
+        {
+            idStrings = GetKidsIds();
+            FindObjectOfType<MenuManager>().UpdateIAPSubscription(idStrings, kidsIAP);
+        }
+        SaveSession();
+        yield return null;
+    }
 
     IEnumerator PostSyncProfiles(string key)
     {
         downlodingData = true;
-        WWWForm form = new WWWForm();
-        form.AddField("userKey", key);
+        //WWWForm form = new WWWForm();
+        //form.AddField("userKey", key);
         //Debug.Log("sync profile");
 
         //VERSION OFFLINE
         PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
 
-        var downloadhandler = "[{'cid':9788,'kiwis':7,'avatar':'tortuga','avatarClothes':'','ownedItems':'','activeMissions':['ArbolMusical','Rio','ArenaMagica','DondeQuedoLaBolita','Tesoro','JuegoDeSombras'],'age':6,'activeDay':0,'rioFirstTime':false,'tesoroFirstTime':true,'arbolFirstTime':false,'bolitaFirstTime':true,'sombrasFirstTime':true,'arenaFirstTime':true,'testAvailable':true,'active':true,'trial':false,'name':'Andres Prueba ','suscriptionType':'quarterly','rioLevelSet':true,'tesoroLevelSet':true,'arbolLevelSet':true,'arenaLevelSet':false,'arenaLevelSet2':true,'sombrasLevelSet':true,'bolitaLevelSet':true,'islandShoppingList':[]}]".Replace("'", "\"");
+        //var downloadhandler = "[{'cid':9999,'kiwis':7,'avatar':'tortuga','avatarClothes':'','ownedItems':'','activeMissions':['ArbolMusical','Rio','ArenaMagica','DondeQuedoLaBolita','Tesoro','JuegoDeSombras'],'age':6,'activeDay':0,'rioFirstTime':false,'tesoroFirstTime':true,'arbolFirstTime':false,'bolitaFirstTime':true,'sombrasFirstTime':true,'arenaFirstTime':true,'testAvailable':true,'active':true,'trial':false,'name':'Raul ','suscriptionType':'quarterly','rioLevelSet':true,'tesoroLevelSet':true,'arbolLevelSet':true,'arenaLevelSet':false,'arenaLevelSet2':true,'sombrasLevelSet':true,'bolitaLevelSet':true,'islandShoppingList':[]}]".Replace("'", "\"");
+        string downloadhandler = null; 
         JSONArray kids = JSONArray.Parse(downloadhandler);
         //JSONArray kids = JSONArray.Parse(request.downloadHandler.text);
 
@@ -465,11 +597,13 @@ public class SessionManager : MonoBehaviour
 
             if (!cidsOfActiveKids.Contains(cid))
             {
+                Debug.Log("Entramos al if");
                 AddKid(cid, kidName, activeUser.userkey, kidObj.GetBoolean("active"), kidObj.GetBoolean("trial"));
                 index = activeUser.kids.Count - 1;
             }
             else
             {
+                Debug.Log("Entramos al else");
                 index = cidsOfActiveKids.IndexOf(cid);
             }
 
@@ -477,10 +611,12 @@ public class SessionManager : MonoBehaviour
             activeUser.kids[index].kiwis = (int)kidObj.GetNumber("kiwis");
             if (kidObj.GetString("avatar") != null)
             {
+                Debug.Log("Entramos al if de avatar");
                 activeUser.kids[index].avatar = kidObj.GetString("avatar").ToLower();
             }
             else
             {
+                Debug.Log("Entramos al else de avatar");
                 activeUser.kids[index].avatar = "koala";
             }
             activeUser.kids[index].avatarClothes = kidObj.GetString("avatarClothes");
@@ -498,6 +634,7 @@ public class SessionManager : MonoBehaviour
                 {
                     if (gameKey == Keys.Game_Names[gameName])
                     {
+                        Debug.Log("Entramos al if de gamekey");
                         activeUser.kids[index].missionsToPlay.Add(gameName);
                         break;
                     }
@@ -835,14 +972,19 @@ public class SessionManager : MonoBehaviour
         downlodingData = true;
         DateTime today = DateTime.Now;
 
-        WWWForm form = new WWWForm();
-        form.AddField("userKey", activeUser.userkey);
-        form.AddField("cid", activeKid.id);
-        form.AddField("date", String.Format("{0:0000}-{1:00}-{2:00}", today.Year, today.Month, today.Day));
+        //WWWForm form = new WWWForm();
+        // form.AddField("userKey", activeUser.userkey);
+        // form.AddField("cid", activeKid.id);
+        // form.AddField("date", String.Format("{0:0000}-{1:00}-{2:00}", today.Year, today.Month, today.Day));
 
     
         //VERSION OFFLINE
         var json = JsonUtility.FromJson("{'code':'200','arbolMusicalLevel':2,'arbolMusicalSublevel':10,'rioLevel':0,'rioSublevel':4,'arenaMagicaLevel':15,'arenaMagicaSublevel':19,'arenaMagicaSublevel2':11,'arenaMagicaSublevel3':11,'monkeyLevel':0,'monkeySublevel':0,'sombrasLevel':0,'sombrasSublevel':0,'tesoroLevel':0,'tesoroSublevel':0,'arbolToday':0,'rioToday':0,'arenaToday':0,'monkeyToday':0,'sombrasToday':0,'tesoroToday':0}".Replace("'", "\""),typeof(LevlSyncJson)) as LevlSyncJson;
+        
+        // Debug.Log("activeKid.bD "+activeKid.birdsDifficulty);
+        // Debug.Log("activeKid.bL "+activeKid.birdsLevel);
+        // Debug.Log("arbolML "+json.arbolMusicalLevel);
+        // Debug.Log("arbolSL "+json.arbolMusicalSublevel);
         //Birds Level Set
         SetTheCorrectLevel(ref activeKid.birdsDifficulty, ref activeKid.birdsLevel, json.arbolMusicalLevel, json.arbolMusicalSublevel);
 
@@ -868,6 +1010,7 @@ public class SessionManager : MonoBehaviour
         SetTheCorrectLevel(ref activeKid.icecreamLevel, json.heladosLevel);
         downlodingData = false;
         SaveSession();
+        //Debug.Log("Llegamos al final de la funcion");
         yield return null;
     
     

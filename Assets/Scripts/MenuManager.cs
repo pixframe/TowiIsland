@@ -152,7 +152,7 @@ public class MenuManager : MonoBehaviour
 
     IEnumerator CheckInternetConnection(string resource)
     {
-        Debug.Log("Estamos en CheckInternet");
+        //Debug.Log("Estamos en CheckInternet");
         using (UnityWebRequest newRequest = UnityWebRequest.Get(resource))
         {
             yield return newRequest.SendWebRequest();
@@ -170,7 +170,7 @@ public class MenuManager : MonoBehaviour
 
     void InternetAvailableLogin()
     {
-        Debug.Log("Estamos en InternetAvailable");
+        //Debug.Log("Estamos en InternetAvailable");
         PlayerPrefs.SetString(Keys.Last_Time_Were, DateTime.Today.ToString(DateTimeFormatInfo.InvariantInfo));
         if (PlayerPrefs.GetInt(Keys.Logged_Session) == 0)
         {
@@ -365,7 +365,7 @@ public class MenuManager : MonoBehaviour
     //here we set almost every button in the ui with the correspondent function to do
     void ButtonSetUp()
     {
-        Debug.Log("Estamos en ButtonSetUp");
+        //Debug.Log("Estamos en ButtonSetUp");
         exitCredits.onClick.AddListener(ShowGameMenu);
         selectionKidBackButton.onClick.AddListener(CloseKids);
         newKidBackButton.onClick.AddListener(CloseKids);
@@ -398,7 +398,7 @@ public class MenuManager : MonoBehaviour
     //we show the kids that are available for the player
     public void SetKidsProfiles()
     {
-        Debug.Log("Estamos en SetKidsProfiles");
+        //Debug.Log("Estamos en SetKidsProfiles");
         WriteTheText(selectionKidText, 23);
         HideAllCanvas();
         kidsPanel.SetActive(true);
@@ -421,7 +421,7 @@ public class MenuManager : MonoBehaviour
     void UpdateKids()
     {
 
-        Debug.Log("Estamos en UpdateKids");
+        //Debug.Log("Estamos en UpdateKids");
         List<KidProfileCanvas> kidos = new List<KidProfileCanvas>();
         float deltaSize = miniKidContainer.GetComponent<RectTransform>().sizeDelta.x;
         miniKidContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, miniKidContainer.GetComponent<RectTransform>().sizeDelta.y);
@@ -438,7 +438,7 @@ public class MenuManager : MonoBehaviour
 
         if (kidsToShow.Count > 0)
         {
-            Debug.Log("Entramos a kidsToShow > 0");
+            //Debug.Log("Entramos a kidsToShow > 0");
             HideWarning();
             for (int i = 0; i < kidsToShow.Count; i++)
             {
@@ -472,7 +472,7 @@ public class MenuManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("Hubo error en UpdateKids");
+            //Debug.Log("Hubo error en UpdateKids");
             ShowWarning(16);
         }
     }
@@ -552,7 +552,7 @@ public class MenuManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("Hubo error en UpdateKids To Buy");
+            //Debug.Log("Hubo error en UpdateKids To Buy");
             ShowWarning(16);
         }
     }
@@ -661,7 +661,7 @@ public class MenuManager : MonoBehaviour
 
     IEnumerator ShowMenuInCorrectTime()
     {
-        Debug.Log("Entramos a ShowMenuInCorrectTime");
+        //Debug.Log("Entramos a ShowMenuInCorrectTime");
         while (sessionManager.IsDownlodingData())
         {
             yield return null;
@@ -1200,7 +1200,7 @@ public class MenuManager : MonoBehaviour
             if (isPassReady)
             {
                 ShowLoading();
-                logInScript.PostLogin(email, password, false);
+                //logInScript.PostLogin(email, password, false);
             }
             else
             {
@@ -1266,6 +1266,7 @@ public class MenuManager : MonoBehaviour
         {
             if (sessionManager.activeUser != null)
             {
+                Debug.Log("difernte de nulo");
                 subscriptionsManager.SendACode(sessionManager.activeUser.id, sessionManager.activeKid.id, shopMenu.prepaidInput.text, isNewChild);
             }
             else
@@ -1284,7 +1285,7 @@ public class MenuManager : MonoBehaviour
     void SetKidProfile(string parentKey, int id)
     {
         
-        Debug.Log("Entramos a SetKidProfile");
+        //Debug.Log("Entramos a SetKidProfile");
         sessionManager.SetKid(parentKey, id);
         ShowGameMenu();
     }
@@ -1407,8 +1408,11 @@ public class MenuManager : MonoBehaviour
             if (KidDateIsOK(1))
             {
                 string dob = DefineTheDateOfBirth(1);
+                Debug.Log(dob);
                 string nameKid = newKidNameInput.text;
+                Debug.Log(nameKid);
                 int id = sessionManager.activeUser.id;
+                Debug.Log(id);
                 ShowLoading();
                 logInScript.RegisterAKid(dob, nameKid, id);
             }
@@ -1827,7 +1831,7 @@ public class KidProfileCanvas
     public void ChangeAvatar(string avatarData)
     {
 
-        Debug.Log("Entramos a ChangeAvatar");
+        //Debug.Log("Entramos a ChangeAvatar");
         if (avatarData != "")
         {
             avatarImage.sprite = Resources.Load<Sprite>($"Icons/{avatarData}");
@@ -1840,7 +1844,7 @@ public class KidProfileCanvas
 
     public void SetKidName(string kidName)
     {
-        Debug.Log("Entramos a SetKidName");
+        //Debug.Log("Entramos a SetKidName");
         nameText.text = kidName;
     }
 }
@@ -2011,7 +2015,7 @@ class RegisterMenu
 
     public void ShowSignInPanel()
     {
-        Debug.Log("Estamos en el ShowSignIn");
+        //Debug.Log("Estamos en el ShowSignIn");
         gameObject.SetActive(true);
         const string pathOfLoginMenuTetxs = "Login/SingInMenu";
         HideAllPanels();
@@ -2176,7 +2180,7 @@ class RegisterMenu
 
     void TryASignIn()
     {
-        Debug.Log("Se intento el registro");
+        //Debug.Log("Se intento el registro");
         var mail = inputEmailDad.field.text;
         var pass = inputPassDad.field.text;
         var pass2 = inputPassAgain.field.text;

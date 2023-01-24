@@ -8,6 +8,7 @@ using UnityEngine.Networking;
 using System;
 using System.IO;
 using System.Linq;
+using Random = UnityEngine.Random;
 
 public class LogInScript : MonoBehaviour
 {
@@ -61,24 +62,40 @@ public class LogInScript : MonoBehaviour
         return hashString.PadLeft(32, '0');
     }
 
-    public void PostLogin(string parentMail, string currentPasword, bool newPaidUser)
+    public void PostLogin(string parentMail, string currentPasword, string kidName, string dateOfBirth, bool newPaidUser)
     {
         Debug.Log("PostLogin");
         username = parentMail.TrimEnd('\n');
         password = currentPasword;
-        StartCoroutine(PostLoginData(newPaidUser));
+        StartCoroutine(PostLoginData(newPaidUser, kidName, dateOfBirth));
     }
 
-    public void PostLogin(string parentMail, string currentPasword, string kidName, bool newPaidUser)
-    {
-        //username
-        //password
-        //kidname
-        //STartCoroutine(PostLoginData(newPaidUser))
+    // public void PostLogin(string parentMail, string currentPasword, string kidName, bool newPaidUser)
+    // {
+    //     //username
+    //     //password
+    //     //kidname
+    //     //STartCoroutine(PostLoginData(newPaidUser))
+    // }
+
+    private void Start() {
+        // int numbertmp = 0;
+        // string nametmp = "Raul";
+        // string lastname = "";
+        // string key = "d";
+        // string image = "https://storage.googleapis.com/storage-towi//avatars/default_user.png";
+        // string fecha = "";
+        // var childrenhandler = ("[{'cid':"+numbertmp+",'name':'"+nametmp+"','lastname':'"+lastname+"','active':"+true+",'trial':"+false+",'key':'"+key+"','picture2':'"+image+"','age':"+6+",'pruebaDate':'"+fecha+"'}]").Replace("'", "\"");
+        // Debug.Log(childrenhandler);
+        // var temp = ("[{'cid':"+numbertmp).Replace("'", "\"");
+        // var temp2 = "'name':"+nametmp;
+        // var all = temp+temp2;
+        // Debug.Log(all);
+        // var downloadhandler = ("{'id':9464,'access':true,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExists':true,'children':[{'cid':9788,'name':'ANDRES Raul Dany Prueba','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture2':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''}],'suscriptionsAvailables':10}").Replace("'", "\"");
+        // Debug.Log(downloadhandler);
     }
 
-
-    IEnumerator PostLoginData(bool newPaidUser)
+    IEnumerator PostLoginData(bool newPaidUser, string kidName, string dateOfBirth)
     {
 
         //Aqui debemos lograr pasar una variable que guarda el nombre dle niño. Esa variable viene desde el TrySignIn
@@ -101,10 +118,24 @@ public class LogInScript : MonoBehaviour
         
         //var value = "'Field1','Field2','Field3'".Replace("'", "\"");
         //var downloadhandler = "{'id':9999,'access':true,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExists':true,'children':[{'cid':9788,'name':"+dobKid+",'lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture2':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''}],'suscriptionsAvailables':10}".Replace("'", "\"");
-        var downloadhandler = "{'id':9464,'access':true,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExists':true,'children':[{'cid':9788,'name':'ANDRES Raul Dany Prueba','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture2':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''}],'suscriptionsAvailables':10}".Replace("'", "\"");
+        int numbertmp = 0;
+        string nametmp = "Raul";
+        string lastname = "";
+        string key = "d";
+        string image = "https://storage.googleapis.com/storage-towi//avatars/default_user.png";
+        string fecha = "";
         
+        
+        var childrenhandler = ("[{'cid':"+numbertmp+",'name':'"+kidName+"','lastname':'"+lastname+"','active':"+"true"+",'trial':"+"false"+",'key':'"+key+"','picture2':'"+image+"','age':"+6+",'pruebaDate':'"+fecha+"'}]").Replace("'", "\"");
+        //var downloadhandler = ("{'id':9464,'access':true,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExists':true,'children':[{'cid':9788,'name':'ANDRES Raul Dany Prueba','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture2':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''}],'suscriptionsAvailables':10}").Replace("'", "\"");
+        var downloadhandler = ("{'id':9464,'access':true,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExists':true,'children':"+childrenhandler+",'suscriptionsAvailables':"+10+"}").Replace("'", "\"");
+        
+        
+        Debug.Log(childrenhandler);
         Debug.Log(downloadhandler);
         //JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
+        // JSONObject jsonChildren = new JSONObject();
+        // jsonChildren = JSONObject.Parse(childrenhandler);
         JSONObject jsonObject = new JSONObject();
         jsonObject = JSONObject.Parse(downloadhandler);
         
@@ -119,6 +150,7 @@ public class LogInScript : MonoBehaviour
         // string json = JsonUtility.ToJson(data);
        
         //JSONArray kids = jsonObject.GetValue("children").Array;
+        //JSONArray kids = 
         JSONArray kids = jsonObject.GetValue("children").Array;
         //Debug.Log("Esto es CHILDREN " +jsonObject.GetValue("children"));
         Debug.Log("Esto es kids  " +kids);
@@ -141,12 +173,14 @@ public class LogInScript : MonoBehaviour
         sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
         sessionManager.SaveSession();
         menuController.ClearInputs();
+        
+               
         if (newPaidUser)
         {
             Debug.Log("Entramos al if de newPaidUser");
-            Debug.Log("Entramos al sessionManager" + sessionManager.activeUser.kids[0].userkey);
+            //Debug.Log("Entramos al sessionManager" + sessionManager.activeUser.kids[0].userkey);
             string parentkey = sessionManager.activeUser.kids[0].userkey;
-            Debug.Log("Pasamos el string");
+            //Debug.Log("Pasamos el string");
             int id = sessionManager.activeUser.kids[0].id;
             sessionManager.SetKid(parentkey, id);
             if (System.Convert.ToBoolean(PlayerPrefs.GetInt(Keys.Buy_IAP)))
@@ -554,8 +588,8 @@ public class LogInScript : MonoBehaviour
 
         userTemp = email;
         serialTemp = password;
-        Debug.Log(userTemp);
-        Debug.Log(serialTemp);
+        // Debug.Log(userTemp);
+        // Debug.Log(serialTemp);
         
         for(int i=0;i<fileLines.Count;i++)
             {
@@ -564,12 +598,12 @@ public class LogInScript : MonoBehaviour
             if(fileLines.Contains(serialTemp))
             {
                 serialCorrect = true;
-                Debug.Log("SI es un serial correcto");
+                //Debug.Log("SI es un serial correcto");
             }
             else
             {
                 warningSerial = true;
-                Debug.Log("NO es un serial correcto");  
+                //Debug.Log("NO es un serial correcto");  
             }
 
 
@@ -580,14 +614,14 @@ public class LogInScript : MonoBehaviour
             if(userLines.Contains(userTemp))
             {
                 userCorrect = true;
-                Debug.Log("SI es un usuario correcto");
+                //Debug.Log("SI es un usuario correcto");
                 //return true;
             }
             else
             {
                 
                 warningUser = true;
-                Debug.Log("NO es un usuario correcto"); 
+                //Debug.Log("NO es un usuario correcto"); 
                 //return false; 
             }
             
@@ -627,31 +661,31 @@ public class LogInScript : MonoBehaviour
         WWWForm form = new WWWForm();
         form.AddField("jsonToDb", data.ToString());
         //menuController.CreateAccount();
-        PostLogin(email, password, newPaidUser);
+        PostLogin(email, password, kidName, dateOfBirth, newPaidUser);
         Analytics.CustomEvent("register");
 
-        JSONObject obj =  new JSONObject();
-        obj.Add("code", "111");
-        bool towi = true;
-        bool pass = true;
-                if (towi == true)
-                {
-                    if (pass == false)
-                    {
-                        Debug.Log("por alguna razon hubo fallo");
-                        menuController.ShowWarning(13, () => menuController.ShowRegister(System.Convert.ToBoolean(PlayerPrefs.GetInt(Keys.Buy_IAP))));
-                    }
-                    else
-                    {
-                        PostLogin(email, password, newPaidUser);
-                        Analytics.CustomEvent("register");
-                    }
-                }
-                else
-                {
-                    PostLogin(email, password, newPaidUser);
-                    Analytics.CustomEvent("register");
-                }
+        // JSONObject obj =  new JSONObject();
+        // obj.Add("code", "111");
+        // bool towi = true;
+        // bool pass = true;
+        //         if (towi == true)
+        //         {
+        //             if (pass == false)
+        //             {
+        //                 Debug.Log("por alguna razon hubo fallo");
+        //                 menuController.ShowWarning(13, () => menuController.ShowRegister(System.Convert.ToBoolean(PlayerPrefs.GetInt(Keys.Buy_IAP))));
+        //             }
+        //             else
+        //             {
+        //                 PostLogin(email, password, newPaidUser);
+        //                 Analytics.CustomEvent("register");
+        //             }
+        //         }
+        //         else
+        //         {
+        //             PostLogin(email, password, newPaidUser);
+        //             Analytics.CustomEvent("register");
+        //         }
 
         yield return null;
         // using (UnityWebRequest request = UnityWebRequest.Post(registerUrl, form))
@@ -697,6 +731,12 @@ public class LogInScript : MonoBehaviour
 
     IEnumerator RegisterKid(string dobKid, string nameKid, int parentId)
     {
+        int temp = 9464;
+        if(parentId == temp)
+        {
+            parentId = Random.Range(0,100);
+            
+        }
         Debug.Log("Estamos en Register");
         JSONObject jsonObj = new JSONObject
         {
@@ -704,24 +744,29 @@ public class LogInScript : MonoBehaviour
             { "child_name", nameKid},
             { "parent_id", parentId}
         };
-
-        WWWForm form = new WWWForm();
-        form.AddField("jsonToDb", jsonObj.ToString());
+        parentId = parentId+1;
+        //WWWForm form = new WWWForm();
+        //form.AddField("jsonToDb", jsonObj.ToString());
         //JSONObject jsonObt = JSONObject.Parse(request.downloadHandler.text);
 
         string downloadhandler;
+        downloadhandler = ("{'id':'"+parentId+"','access':'"+true+"','key':'d','userExists':true,'children':[{'cid':9788,'name':'"+nameKid+"','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''}],'suscriptionsAvailables':10}").Replace("'", "\"");
+        //downloadhandler = "{'id':9464,'access':"+true+",'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExists':true,'children':[{'cid':9788,'name':"+dobKid+",'lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''}],'suscriptionsAvailables':0}";
         //var prueba = "{"+dobKid+"}";
-        downloadhandler = "{'id':9464,'access':"+true+",'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExists':true,'children':[{'cid':9788,'name':"+dobKid+",'lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''}],'suscriptionsAvailables':0}";
         //downloadhandler = "{'id':9464,'access':true,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','userExists':true,'children':[{'cid':9788,'name':'ANDRES Prueba','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''}],'suscriptionsAvailables':0}";
         //downloadhandler = "{'cid':9788,'name':'ANDRES ','lastname':'','active':true,'trial':false,'key':'d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b','picture':'https://storage.googleapis.com/storage-towi//avatars/default_user.png','age':6,'pruebaDate':''";
         //JSONObject jsonObt = JSONObject.Parse(request.downloadHandler.text);
-        JSONObject jsonObt = new JSONObject();
-        jsonObt.Add("id",9999);
-        jsonObt.Add("access",true);
-        jsonObt.Add("key","d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b");
         
-        jsonObt.Add("children",downloadhandler);
-        jsonObt.Add("suscriptionsAvailables",9);
+        
+        JSONObject jsonObt = new JSONObject();
+        jsonObt = JSONObject.Parse(downloadhandler);
+        Debug.Log("El json de addKid "+jsonObt);
+        // jsonObt.Add("id",9999);
+        // jsonObt.Add("access",true);
+        // jsonObt.Add("key","d61f3e54e37ece1d2ee4231a3d9c2110a731a292e1ffc4babbd8bf0205d6dc2b");
+        
+        // jsonObt.Add("children",downloadhandler);
+        // jsonObt.Add("suscriptionsAvailables",9);
         
         // JSONObject jsonObt = new JSONObject
         // {
@@ -729,13 +774,20 @@ public class LogInScript : MonoBehaviour
         // };
         
         sessionManager.activeUser.suscriptionsLeft = (int)jsonObt.GetNumber("suscriptionsAvailables");
-        sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+        Debug.Log("Suscripciones faltantes "+sessionManager.activeUser.suscriptionsLeft);
+        Debug.Log("Userkey  "+sessionManager.activeUser.userkey);
+        sessionManager.SyncProfiles(sessionManager.activeUser.userkey, nameKid, parentId);
+        Debug.Log("pasamos l Snyc");
         menuController.ShowLoading();
+        Debug.Log("pasamos Loading");
         yield return new WaitForSeconds(5f);
         sessionManager.activeKid = sessionManager.activeUser.kids[sessionManager.activeUser.kids.Count - 1];
         sessionManager.SyncChildLevels();
+        Debug.Log("pasamos SyncCHi");
         sessionManager.SaveSession();
+        Debug.Log("pasamos Save");
         menuController.ShowGameMenu();
+        Debug.Log("pasamos GameMenu");
         menuController.ClearInputs();
 
         // using (UnityWebRequest request = UnityWebRequest.Post(newKidURL, form))
