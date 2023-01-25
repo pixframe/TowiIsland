@@ -385,7 +385,7 @@ public class LevelSaver : MonoBehaviour {
             date = String.Format("{0:0000}-{1:00}-{2:00}T{3:00}:{4:00}:{5:00}", nowT.Year, nowT.Month, nowT.Day, nowT.Hour, nowT.Minute, nowT.Second)
         };
     }
-
+    //Este JSON sirve para guardar datos de partida
     public void SetIcecreamData(List<int> ordersAsk, List<int> correctOrders, List<int> expiredOrders,
         List<int> deliveredOrders, List<int> madeOrders, List<int> wrongOrders, List<int> trashOrders,
         List<float> latencies, float correctPercentage, float errorPercentage, float expiredPercentage,

@@ -14,6 +14,7 @@ public class GameMenu : BaseMenu
     public KidProfileCanvas kidProfile;
     Button singOutButton;
     Button settingsButton;
+    Button evalButton;
     Button aboutButton;
 #if UNITY_WEBGL
     Transform buyButton;
@@ -32,6 +33,7 @@ public class GameMenu : BaseMenu
         kidProfile = new KidProfileCanvas(gameObject.transform.Find("Change Kid Profile Button").gameObject);
         singOutButton = gameObject.transform.Find("Sing Out Button").GetComponent<Button>();
         settingsButton = gameObject.transform.Find("Settings Button").GetComponent<Button>();
+        evalButton = gameObject.transform.Find("Eval Button").GetComponent<Button>();
         aboutButton = gameObject.transform.Find("About Button").GetComponent<Button>();
         SetStaticButtonFuctions();
 #if UNITY_WEBGL
@@ -142,6 +144,7 @@ public class GameMenu : BaseMenu
     {
         aboutButton.onClick.AddListener(manager.ShowCredits);
         settingsButton.onClick.AddListener(manager.ShowSettings);
+        evalButton.onClick.AddListener(manager.ShowEval);
         kidProfile.buttonOfProfile.onClick.AddListener(manager.SetKidsProfiles);
         singOutButton.onClick.AddListener(manager.ShowSingOutWarning);
     }
