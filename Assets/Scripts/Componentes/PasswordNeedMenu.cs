@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using TMPro;
+using System.IO;
+using System.Linq;
 
 public class PasswordNeedMenu
 {
@@ -34,16 +36,67 @@ public class PasswordNeedMenu
 
     void DoTheAction(UnityAction action, string currentPass) 
     {
-        if (passwordField.text == currentPass)
-        {
-            action();
-            passwordField.text = string.Empty;
-        }
-        else
+        string serialTemp;
+        string userTemp;
+
+        List<string> fileLines;
+        List<string> userLines;
+        string readFromFilePath = Application.streamingAssetsPath +"/"+ "serialKeys"+".txt";
+        fileLines = File.ReadAllLines(readFromFilePath).ToList();
+        string userPath = Application.streamingAssetsPath +"/"+ "users"+".txt";
+        userLines = File.ReadAllLines(userPath).ToList();
+
+        bool warningUser = false;
+        bool warningSerial = false;
+        bool userCorrect = false;
+        bool serialCorrect = false;
+
+        userTemp = "hola";
+        serialTemp = passwordField.text;
+
+        for(int i=0;i<fileLines.Count;i++)
+            {
+                //Debug.Log(fileLines[i]);
+            }
+            if(fileLines.Contains(serialTemp))
+            {
+                serialCorrect = true;
+                Debug.Log("SI es un serial correcto");
+            }
+            else
+            {
+                warningSerial = true;
+                Debug.Log("NO es un serial correcto");  
+            }
+        //Read the text from directly from the test.txt file
+        //StreamReader reader = new StreamReader(readFromFilePath);
+        //Debug.Log(reader.ReadToEnd());
+        //reader.Close();
+        if(warningSerial || warningUser)
         {
             needPassText.text = $"{badPassword}\n{messageNormal}";
             passwordField.text = string.Empty;
+            //warningPanel.SetActive(true);
         }
+        if(serialCorrect)
+        {
+            action();
+            //SceneManager.LoadScene("NewLogin", LoadSceneMode.Single);
+            PlayerPrefs.SetInt("quitScene", 1);
+            passwordField.text = "";
+        }
+   
+
+        // if (passwordField.text == currentPass)
+        // {
+        //     action();
+        //     passwordField.text = string.Empty;
+        // }
+        // else
+        // {
+        //     needPassText.text = $"{badPassword}\n{messageNormal}";
+        //     passwordField.text = string.Empty;
+        // }
     }
 
     public void SetTexts() 

@@ -612,6 +612,7 @@ public class MenuManager : MonoBehaviour
         warningPanel.SetActive(false);
         loadingCanvas.SetActive(false);
         newKidPanel.SetActive(false);
+        serialPanel.SetActive(false);
         escapeButton.gameObject.SetActive(false);
         configMenu.SetActive(false);
         registerMenu.HideAll();
@@ -982,7 +983,9 @@ public class MenuManager : MonoBehaviour
         HideAllCanvas();
         if (sessionManager.activeUser.suscriptionsLeft > 0)
         {
-            newKidPanel.SetActive(true);
+            serialPanel.SetActive(true);
+            
+            //newKidPanel.SetActive(true);
         }
         else
         {
