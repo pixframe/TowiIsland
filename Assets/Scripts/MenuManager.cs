@@ -1000,6 +1000,11 @@ public class MenuManager : MonoBehaviour
         loadingCanvas.SetActive(true);
     }
 
+    public void ShowEval()
+    {
+        PrefsKeys.SetNextScene("Data");
+        SceneManager.LoadScene("Loader_Scene");
+    }
 
     #region Configuration Menu
     public void ShowSettings()

@@ -527,13 +527,18 @@ public class ProgressHandler : MonoBehaviour {
         string dataToSave = data.ToString();
         int evaluationSavedOffline = PlayerPrefs.GetInt(Keys.Evaluations_Saved);
 
-        string path = $"{Application.persistentDataPath}/{evaluationSavedOffline}{Keys.Evaluation_To_Save}";
+        PlayerPrefs.SetString($"{sessionManager.activeKid.name}-{evaluationSavedOffline}", $"{DateTime.Now.Month} - {DateTime.Now.Day} - {sessionManager.activeKid.id}");
+
+        string kidData = PlayerPrefs.GetString($"{sessionManager.activeKid.name}-{evaluationSavedOffline}");
+
+        string path = $"{Application.persistentDataPath}/{kidData}{Keys.Evaluation_To_Save}";
         evaluationSavedOffline++;
-
+        Debug.Log($"El dia de hoy es: {kidData}");
+        Debug.Log($"Y el id es: {sessionManager.activeKid.id}");
         Debug.Log($"We have {evaluationSavedOffline} jsons to save");
-
+        Debug.Log(path);
         File.WriteAllText(path, dataToSave);
-
+        PlayerPrefs.SetString("evaluationPath", path);
         PlayerPrefs.SetInt(Keys.Evaluations_Saved, evaluationSavedOffline);
 
         sessionManager.SaveSession();
