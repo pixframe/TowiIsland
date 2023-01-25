@@ -43,27 +43,27 @@ public class SessionManager : MonoBehaviour
         {
             DontDestroyOnLoad(gameObject);
         }
-#if UNITY_ANDROID || UNITY_IOS
+//#if UNITY_ANDROID || UNITY_IOS
 
-        Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => {
-            var dependencyStatus = task.Result;
-            if (dependencyStatus == Firebase.DependencyStatus.Available)
-            {
-                // Create and hold a reference to your FirebaseApp, i.e.
-                //   app = Firebase.FirebaseApp.DefaultInstance;
-                // where app is a Firebase.FirebaseApp property of your application class.
-                firebaseApp = Firebase.FirebaseApp.DefaultInstance;
-                // Set a flag here indicating that Firebase is ready to use by your
-                // application.
-                //GameObject.FindGameObjectWithTag("Coin").GetComponent<UnityEngine.UI.Text>().text = "firebase is set All right";
-            }
-            else
-            {
-                // Firebase Unity SDK is not safe to use here
-                //GameObject.FindGameObjectWithTag("Coin").GetComponent<UnityEngine.UI.Text>().text = $"firebase is not correctly set: {dependencyStatus}";
-            }
-        });
-#endif
+//        Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => {
+//            var dependencyStatus = task.Result;
+//            if (dependencyStatus == Firebase.DependencyStatus.Available)
+//            {
+//                // Create and hold a reference to your FirebaseApp, i.e.
+//                //   app = Firebase.FirebaseApp.DefaultInstance;
+//                // where app is a Firebase.FirebaseApp property of your application class.
+//                firebaseApp = Firebase.FirebaseApp.DefaultInstance;
+//                // Set a flag here indicating that Firebase is ready to use by your
+//                // application.
+//                //GameObject.FindGameObjectWithTag("Coin").GetComponent<UnityEngine.UI.Text>().text = "firebase is set All right";
+//            }
+//            else
+//            {
+//                // Firebase Unity SDK is not safe to use here
+//                //GameObject.FindGameObjectWithTag("Coin").GetComponent<UnityEngine.UI.Text>().text = $"firebase is not correctly set: {dependencyStatus}";
+//            }
+//        });
+//#endif
         //if(main)
         //PlayerPrefs.DeleteAll ();
         string version = Application.version;
@@ -437,7 +437,7 @@ public class SessionManager : MonoBehaviour
         id = id+1;
         downlodingData = true;
         PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
-        var downloadhandler = ("[{'cid':"+id+",'kiwis':7,'avatar':'tortuga','avatarClothes':'','ownedItems':'','activeMissions':['ArbolMusical','Rio','ArenaMagica','DondeQuedoLaBolita','Tesoro','JuegoDeSombras'],'age':6,'activeDay':0,'rioFirstTime':false,'tesoroFirstTime':true,'arbolFirstTime':false,'bolitaFirstTime':true,'sombrasFirstTime':true,'arenaFirstTime':true,'testAvailable':true,'active':true,'trial':false,'name':'"+nameKid+" ','suscriptionType':'quarterly','rioLevelSet':true,'tesoroLevelSet':true,'arbolLevelSet':true,'arenaLevelSet':false,'arenaLevelSet2':true,'sombrasLevelSet':true,'bolitaLevelSet':true,'islandShoppingList':[]}]").Replace("'", "\"");
+        var downloadhandler = ("[{'cid':"+id+",'kiwis':0,'avatar':'tortuga','avatarClothes':'','ownedItems':'','activeMissions':['ArbolMusical','Rio','ArenaMagica','DondeQuedoLaBolita','Tesoro','JuegoDeSombras'],'age':6,'activeDay':0,'rioFirstTime':false,'tesoroFirstTime':true,'arbolFirstTime':false,'bolitaFirstTime':true,'sombrasFirstTime':true,'arenaFirstTime':true,'testAvailable':true,'active':true,'trial':false,'name':'"+nameKid+" ','suscriptionType':'quarterly','rioLevelSet':true,'tesoroLevelSet':true,'arbolLevelSet':true,'arenaLevelSet':false,'arenaLevelSet2':true,'sombrasLevelSet':true,'bolitaLevelSet':true,'islandShoppingList':[]}]").Replace("'", "\"");
         JSONArray kids = JSONArray.Parse(downloadhandler);
         bool setType = false;
         bool needStoreSync = false;
@@ -651,7 +651,7 @@ public class SessionManager : MonoBehaviour
             activeUser.kids[index].firstsGames[5] = kidObj.GetBoolean("sombrasFirstTime");
             //activeUser.kids[index].firstsGames[6] = kidObj.GetBoolean("heladosFirstTime");
 
-            activeUser.kids[index].testAvailable = kidObj.GetBoolean("testAvailable");
+           // activeUser.kids[index].testAvailable = kidObj.GetBoolean("testAvailable");
             activeUser.kids[index].sandLevelSet = kidObj.GetBoolean("arenaLevelSet");
 
             activeUser.kids[index].buyedIslandObjects.Clear();
