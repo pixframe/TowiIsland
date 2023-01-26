@@ -568,9 +568,10 @@ public class SessionManager : MonoBehaviour
         //VERSION OFFLINE
         PlayerPrefs.SetString(Keys.Last_Play_Time, DateTime.Today.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
 
-        //var downloadhandler = "[{'cid':9999,'kiwis':7,'avatar':'tortuga','avatarClothes':'','ownedItems':'','activeMissions':['ArbolMusical','Rio','ArenaMagica','DondeQuedoLaBolita','Tesoro','JuegoDeSombras'],'age':6,'activeDay':0,'rioFirstTime':false,'tesoroFirstTime':true,'arbolFirstTime':false,'bolitaFirstTime':true,'sombrasFirstTime':true,'arenaFirstTime':true,'testAvailable':true,'active':true,'trial':false,'name':'Raul ','suscriptionType':'quarterly','rioLevelSet':true,'tesoroLevelSet':true,'arbolLevelSet':true,'arenaLevelSet':false,'arenaLevelSet2':true,'sombrasLevelSet':true,'bolitaLevelSet':true,'islandShoppingList':[]}]".Replace("'", "\"");
-        string downloadhandler = null; 
+        var downloadhandler = "[{'cid':9999,'kiwis':7,'avatar':'tortuga','avatarClothes':'','ownedItems':'','activeMissions':['ArbolMusical','Rio','ArenaMagica','DondeQuedoLaBolita','Tesoro','JuegoDeSombras'],'age':6,'activeDay':0,'rioFirstTime':false,'tesoroFirstTime':true,'arbolFirstTime':false,'bolitaFirstTime':true,'sombrasFirstTime':true,'arenaFirstTime':true,'testAvailable':true,'active':true,'trial':false,'name':'Raul ','suscriptionType':'quarterly','rioLevelSet':true,'tesoroLevelSet':true,'arbolLevelSet':true,'arenaLevelSet':false,'arenaLevelSet2':true,'sombrasLevelSet':true,'bolitaLevelSet':true,'islandShoppingList':[]}]".Replace("'", "\"");
+        //string downloadhandler = null; 
         JSONArray kids = JSONArray.Parse(downloadhandler);
+        Debug.Log("Esto es kids "+kids);
         //JSONArray kids = JSONArray.Parse(request.downloadHandler.text);
 
         //Debug.Log($"endpoint  {syncProfileURL} response is ñ{request.downloadHandler.text}");
