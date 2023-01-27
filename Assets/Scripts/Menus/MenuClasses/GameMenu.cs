@@ -70,11 +70,11 @@ public class GameMenu : BaseMenu
 #else
         evaluationButton.gameObject.SetActive(true);
 #endif
-        singOutButton.gameObject.SetActive(false);
+        //singOutButton.gameObject.SetActive(false);
         settingsButton.gameObject.SetActive(false);
         aboutButton.gameObject.SetActive(false);
         kidProfile.gameObject.SetActive(false);
-
+        evalButton.gameObject.SetActive(false);
         SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
         SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
 
@@ -112,10 +112,19 @@ public class GameMenu : BaseMenu
         SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
         SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
 
-        singOutButton.gameObject.SetActive(true);
+        //singOutButton.gameObject.SetActive(true);
         settingsButton.gameObject.SetActive(true);
         aboutButton.gameObject.SetActive(true);
         kidProfile.gameObject.SetActive(true);
+
+        if(PlayerPrefs.GetInt("IsAvailable") == 0)
+        {
+            evalButton.gameObject.SetActive(true);
+        }
+        else if(PlayerPrefs.GetInt("IsAvailable") == 1)
+        {
+            evalButton.gameObject.SetActive(false);
+        }
 
         tryLogo.SetActive(false);
         logoIcon.SetActive(true);
@@ -126,10 +135,20 @@ public class GameMenu : BaseMenu
         gameObject.SetActive(true);
         SetDynamicButtonFunctions(isActiveTheCurrentKid, isEvaluationAvailable, licencesToActivate);
 
-        singOutButton.gameObject.SetActive(true);
+        //singOutButton.gameObject.SetActive(true);
         settingsButton.gameObject.SetActive(true);
         aboutButton.gameObject.SetActive(true);
         kidProfile.gameObject.SetActive(true);
+
+
+        if (PlayerPrefs.GetInt("IsAvailable") == 0)
+        {
+            evalButton.gameObject.SetActive(true);
+        }
+        else if (PlayerPrefs.GetInt("IsAvailable") == 1)
+        {
+            evalButton.gameObject.SetActive(false);
+        }
 
         tryLogo.SetActive(false);
         logoIcon.SetActive(true);

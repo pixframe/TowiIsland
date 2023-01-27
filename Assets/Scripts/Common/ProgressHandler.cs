@@ -427,30 +427,27 @@ public class ProgressHandler : MonoBehaviour {
     public void PostEvaluationData(LastSceneManager last)
     {
         lastSceneManager = last;
-        StartCoroutine(PostEvaluation());
+        PostEvaluation();
     }
 
-    IEnumerator PostEvaluation()
+    public void PostEvaluation()
     {
-        WWWForm form = new WWWForm();
-        form.AddField("jsonToDb", data.ToString());
-        Debug.Log($"the form is \n{form.ToString()}");
-        using (UnityWebRequest request = UnityWebRequest.Post(postSuperURL, form))
-        {
-            Debug.Log(request.ToString());
-            yield return request.SendWebRequest();
+        //WWWForm form = new WWWForm();
+        //form.AddField("jsonToDb", data.ToString());
+        //Debug.Log($"the form is \n{form.ToString()}");
+        //using (UnityWebRequest request = UnityWebRequest.Post(postSuperURL, form))
+        //{
+           // Debug.Log(request.ToString());
+           // yield return request.SendWebRequest();
 
-            if (request.isNetworkError || request.isHttpError)
-            {
-                EmergencySave();
-            }
-            else
-            {
                 Debug.Log("This is done");
-            }
+                sessionManager.activeKid.testAvailable = false;
+                PlayerPrefs.SetInt("IsAvailable", 0);
+                EmergencySave();
+            
             FindObjectOfType<EvaluationController>().DataIsSend();
             lastSceneManager.MoveToMenu();
-        }
+        //}
     }
 	 
 	void SavePending(){
@@ -527,14 +524,15 @@ public class ProgressHandler : MonoBehaviour {
         string dataToSave = data.ToString();
         int evaluationSavedOffline = PlayerPrefs.GetInt(Keys.Evaluations_Saved);
 
-        PlayerPrefs.SetString($"{sessionManager.activeKid.name}-{evaluationSavedOffline}", $"{DateTime.Now.Month} - {DateTime.Now.Day} - {sessionManager.activeKid.id}");
+        PlayerPrefs.SetString($"{sessionManager.activeKid.id}", $"{DateTime.Now.Month} - {DateTime.Now.Day} - {sessionManager.activeKid.id}");
 
-        string kidData = PlayerPrefs.GetString($"{sessionManager.activeKid.name}-{evaluationSavedOffline}");
+        string kidData = PlayerPrefs.GetString($"{sessionManager.activeKid.id}");
 
         string path = $"{Application.persistentDataPath}/{kidData}{Keys.Evaluation_To_Save}";
         evaluationSavedOffline++;
         Debug.Log($"El dia de hoy es: {kidData}");
         Debug.Log($"Y el id es: {sessionManager.activeKid.id}");
+        Debug.Log($"Y el id que se guarda: {PlayerPrefs.GetString("activesKid")}");
         Debug.Log($"We have {evaluationSavedOffline} jsons to save");
         Debug.Log(path);
         File.WriteAllText(path, dataToSave);

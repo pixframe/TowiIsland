@@ -29,9 +29,9 @@ public class SessionManager : MonoBehaviour
 
     public bool isSyncing;
 
-#if UNITY_ANDROID || UNITY_IOS
-    Firebase.FirebaseApp firebaseApp;
-#endif
+//#if UNITY_ANDROID || UNITY_IOS
+//    Firebase.FirebaseApp firebaseApp;
+//#endif
 
     void Awake()
     {
@@ -198,10 +198,20 @@ public class SessionManager : MonoBehaviour
 
     public void LoadLocal()
     {
+        Debug.Log("pasa aqui");
         activeUser = users[0];
         activeKid = activeUser.kids[0];
         PlayerPrefs.SetString("activeUser", "_local");
-        PlayerPrefs.SetInt("activeKid", activeKid.id);
+        PlayerPrefs.SetInt("activesKid", activeKid.id);
+        Debug.Log("lol" + PlayerPrefs.GetInt("IsAvailable"));
+        if (activeKid.testAvailable == true)
+        {
+            PlayerPrefs.SetInt("IsAvailable", 1);
+        }
+        else if (activeKid.testAvailable == false)
+        {
+            PlayerPrefs.SetInt("IsAvailable", 0);
+        }
     }
 
     public void LoadActiveUser(string key)
@@ -980,7 +990,16 @@ public class SessionManager : MonoBehaviour
     
         //VERSION OFFLINE
         var json = JsonUtility.FromJson("{'code':'200','arbolMusicalLevel':2,'arbolMusicalSublevel':10,'rioLevel':0,'rioSublevel':4,'arenaMagicaLevel':15,'arenaMagicaSublevel':19,'arenaMagicaSublevel2':11,'arenaMagicaSublevel3':11,'monkeyLevel':0,'monkeySublevel':0,'sombrasLevel':0,'sombrasSublevel':0,'tesoroLevel':0,'tesoroSublevel':0,'arbolToday':0,'rioToday':0,'arenaToday':0,'monkeyToday':0,'sombrasToday':0,'tesoroToday':0}".Replace("'", "\""),typeof(LevlSyncJson)) as LevlSyncJson;
-        
+
+        if (activeKid.testAvailable == true)
+        {
+            PlayerPrefs.SetInt("IsAvailable", 1);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("IsAvailable", 0);
+        }
+
         // Debug.Log("activeKid.bD "+activeKid.birdsDifficulty);
         // Debug.Log("activeKid.bL "+activeKid.birdsLevel);
         // Debug.Log("arbolML "+json.arbolMusicalLevel);

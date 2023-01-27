@@ -160,7 +160,7 @@ public class LogInScript : MonoBehaviour
         }
         //Debug.Log("DESPUES DE SUMAR "+ jsonObject.GetValue("suscriptionsAvailables"));
 
-
+        
 
         //Forzar que sea un usuario nuevo
         newPaidUser = true;
@@ -173,8 +173,9 @@ public class LogInScript : MonoBehaviour
         sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
         sessionManager.SaveSession();
         menuController.ClearInputs();
+
         
-               
+
         if (newPaidUser)
         {
             Debug.Log("Entramos al if de newPaidUser");
@@ -294,7 +295,7 @@ public class LogInScript : MonoBehaviour
             }
             else
             {
-                StartCoroutine(PostIsActive(tempUser));
+               // StartCoroutine(PostIsActive(tempUser));
             }
         }
         else
@@ -308,52 +309,52 @@ public class LogInScript : MonoBehaviour
         StartCoroutine(UpdateDataRoutine());
     }
 
-    IEnumerator PostIsActive(SessionManager.User user)
-    {
-        // Build form to post in server
-        WWWForm form = new WWWForm();
-        form.AddField("parent_email", user.username);
+    //IEnumerator PostIsActive(SessionManager.User user)
+    //{
+    //    // Build form to post in server
+    //    WWWForm form = new WWWForm();
+    //    form.AddField("parent_email", user.username);
 
-        using (UnityWebRequest request = UnityWebRequest.Post(activeUserUrl, form))
-        {
-            yield return request.SendWebRequest();
-            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
-            {
-                menuController.HideAllCanvas();
-                menuController.ShowWarning(8);
-            }
-            else
-            {
-                PlayerPrefs.SetInt(Keys.Logged_Session, 1);
-                JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
-                Debug.Log($"endpoint {activeUserUrl} response is {request.downloadHandler.text}");
-                sessionManager.LoadActiveUser(user.userkey);
-                sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
-                sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
+    //    using (UnityWebRequest request = UnityWebRequest.Post(activeUserUrl, form))
+    //    {
+    //        yield return request.SendWebRequest();
+    //        if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+    //        {
+    //            menuController.HideAllCanvas();
+    //            menuController.ShowWarning(8);
+    //        }
+    //        else
+    //        {
+    //            PlayerPrefs.SetInt(Keys.Logged_Session, 1);
+    //            JSONObject jsonObject = JSONObject.Parse(request.downloadHandler.text);
+    //            Debug.Log($"endpoint {activeUserUrl} response is {request.downloadHandler.text}");
+    //            sessionManager.LoadActiveUser(user.userkey);
+    //            sessionManager.SyncProfiles(sessionManager.activeUser.userkey);
+    //            sessionManager.activeUser.suscriptionsLeft = (int)jsonObject.GetNumber("suscriptionsAvailables");
 
-                while (sessionManager.IsDownlodingData())
-                {
-                    yield return null;
-                }
+    //            while (sessionManager.IsDownlodingData())
+    //            {
+    //                yield return null;
+    //            }
 
-                if (jsonObject.GetValue("active").Boolean)
-                {
-                    if (sessionManager.activeKid != null)
-                    {
-                        menuController.ShowGameMenu();
-                    }
-                    else
-                    {
-                        menuController.SetKidsProfiles();
-                    }
-                }
-                else
-                {
-                    menuController.ShowAccountWarning(0);
-                }
-            }
-        }
-    }
+    //            if (jsonObject.GetValue("active").Boolean)
+    //            {
+    //                if (sessionManager.activeKid != null)
+    //                {
+    //                    menuController.ShowGameMenu();
+    //                }
+    //                else
+    //                {
+    //                    menuController.SetKidsProfiles();
+    //                }
+    //            }
+    //            else
+    //            {
+    //                menuController.ShowAccountWarning(0);
+    //            }
+    //        }
+    //    }
+    //}
 
     IEnumerator UpdateDataRoutine()
     {
@@ -560,7 +561,7 @@ public class LogInScript : MonoBehaviour
             PlayerPrefs.SetInt(Keys.Evaluations_Saved, dataNotSavedByProblems);
         }
 
-        StartCoroutine(PostIsActive(user));
+       // StartCoroutine(PostIsActive(user));
     }
 
     public void RegisterParentAndKid(string email, string password, string kidName, string dateOfBirth, bool newPaidUser)

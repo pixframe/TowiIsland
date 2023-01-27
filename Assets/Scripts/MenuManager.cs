@@ -151,69 +151,69 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    IEnumerator CheckInternetConnection(string resource)
-    {
-        //Debug.Log("Estamos en CheckInternet");
-        using (UnityWebRequest newRequest = UnityWebRequest.Get(resource))
-        {
-            yield return newRequest.SendWebRequest();
+    //IEnumerator CheckInternetConnection(string resource)
+    //{
+    //    //Debug.Log("Estamos en CheckInternet");
+    //    using (UnityWebRequest newRequest = UnityWebRequest.Get(resource))
+    //    {
+    //        yield return newRequest.SendWebRequest();
 
-            if (newRequest.result == UnityWebRequest.Result.ConnectionError)
-            {
-                NoInternetAvailableLogin();
-            }
-            else
-            {
-                InternetAvailableLogin();
-            }
-        }
-    }
+    //        if (newRequest.result == UnityWebRequest.Result.ConnectionError)
+    //        {
+    //            NoInternetAvailableLogin();
+    //        }
+    //        else
+    //        {
+    //            InternetAvailableLogin();
+    //        }
+    //    }
+    //}
 
-    void InternetAvailableLogin()
-    {
-        //Debug.Log("Estamos en InternetAvailable");
-        PlayerPrefs.SetString(Keys.Last_Time_Were, DateTime.Today.ToString(DateTimeFormatInfo.InvariantInfo));
-        if (PlayerPrefs.GetInt(Keys.Logged_Session) == 0)
-        {
-            if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
-            {
-                string user = PlayerPrefs.GetString(Keys.Active_User_Key);
-                if (user != "_local")
-                {
-                    if (user != "")
-                    {
-                        logInScript.IsActive(user);
-                    }
-                    else
-                    {
-                        ShowFirstMenu();
-                    }
-                }
-                else
-                {
+    //void InternetAvailableLogin()
+    //{
+    //    //Debug.Log("Estamos en InternetAvailable");
+    //    PlayerPrefs.SetString(Keys.Last_Time_Were, DateTime.Today.ToString(DateTimeFormatInfo.InvariantInfo));
+    //    if (PlayerPrefs.GetInt(Keys.Logged_Session) == 0)
+    //    {
+    //        if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
+    //        {
+    //            string user = PlayerPrefs.GetString(Keys.Active_User_Key);
+    //            if (user != "_local")
+    //            {
+    //                if (user != "")
+    //                {
+    //                    logInScript.IsActive(user);
+    //                }
+    //                else
+    //                {
+    //                    ShowFirstMenu();
+    //                }
+    //            }
+    //            else
+    //            {
 
-                    ShowGameMenu();
-                    PlayerPrefs.SetInt(Keys.Logged_Session, 1);
-                }
-            }
-            else
-            {
-                ShowFirstMenu();
-            }
-        }
-        else
-        {
-            if (sessionManager.activeKid != null)
-            {
-                string user = PlayerPrefs.GetString(Keys.Active_User_Key);
-                logInScript.IsActive(user);
-            }
-            else
-            {
-                SetKidsProfiles();
-            }
-        }
-    }
+    //                ShowGameMenu();
+    //                PlayerPrefs.SetInt(Keys.Logged_Session, 1);
+    //            }
+    //        }
+    //        else
+    //        {
+    //            ShowFirstMenu();
+    //        }
+    //    }
+    //    else
+    //    {
+    //        if (sessionManager.activeKid != null)
+    //        {
+    //            string user = PlayerPrefs.GetString(Keys.Active_User_Key);
+    //            logInScript.IsActive(user);
+    //        }
+    //        else
+    //        {
+    //            SetKidsProfiles();
+    //        }
+    //    }
+    //}
 
     void NoInternetAvailableLogin()
     {
@@ -437,6 +437,17 @@ public class MenuManager : MonoBehaviour
             return kidName.Contains(lookingKid);
         });
 
+        PlayerPrefs.SetInt("ActiveKid", sessionManager.activeKid.id);
+        PlayerPrefs.SetString("ActiveKidName", sessionManager.activeKid.name);
+
+        if (sessionManager.activeKid.testAvailable == true)
+        {
+            PlayerPrefs.SetInt("IsAvailable", 1);
+        }
+        else if (sessionManager.activeKid.testAvailable == false)
+        {
+            PlayerPrefs.SetInt("IsAvailable", 0);
+        }
         if (kidsToShow.Count > 0)
         {
             //Debug.Log("Entramos a kidsToShow > 0");
@@ -630,6 +641,14 @@ public class MenuManager : MonoBehaviour
     {
         gameMenuObject.kidProfile.SetKidName(sessionManager.activeKid.name);
         gameMenuObject.kidProfile.ChangeAvatar(sessionManager.activeKid.avatar);
+        if (sessionManager.activeKid.testAvailable == true)
+        {
+            PlayerPrefs.SetInt("IsAvailable", 1);
+        }
+        else if(sessionManager.activeKid.testAvailable == false)
+        {
+            PlayerPrefs.SetInt("IsAvailable", 0);
+        }
     }
 
     public void ShowEscapeButton()
@@ -677,6 +696,8 @@ public class MenuManager : MonoBehaviour
         }
         else
         {
+            PlayerPrefs.SetInt("activesKid", sessionManager.activeKid.id);
+            Debug.Log("lol" + PlayerPrefs.GetInt("IsAvailable"));
             gameMenuObject.ShowThisMenu(sessionManager.activeKid.isActive, IsEvaluationAvilable(), sessionManager.activeUser.suscriptionsLeft);
         }
 
@@ -1293,8 +1314,19 @@ public class MenuManager : MonoBehaviour
     //this one will set a kid as an active kid if its selected
     void SetKidProfile(string parentKey, int id)
     {
+        PlayerPrefs.SetInt("activesKid", id);
+        PlayerPrefs.SetString("ActiveKidName", sessionManager.activeKid.name);
         
-        //Debug.Log("Entramos a SetKidProfile");
+        if(sessionManager.activeKid.testAvailable == true)
+        {
+            PlayerPrefs.SetInt("IsAvailable", 1);
+        }
+        else if (sessionManager.activeKid.testAvailable == false)
+        {
+            PlayerPrefs.SetInt("IsAvailable", 0);
+        }
+
+        Debug.Log("Entramos a Cambiar niño");
         sessionManager.SetKid(parentKey, id);
         ShowGameMenu();
     }
@@ -1796,6 +1828,8 @@ public class MenuManager : MonoBehaviour
         if (IsTablet() && sessionManager.activeKid.testAvailable)
         {
             returner = true;
+            Debug.Log("Si esta");
+            Debug.Log(sessionManager.activeKid.testAvailable);
         }
 
         return returner;
@@ -1805,10 +1839,10 @@ public class MenuManager : MonoBehaviour
     {
         Application.Quit();
     }
-#if UNITY_WEBGL
-    [DllImport("__Internal")]
-    private static extern void openWindow(string url);
-#endif
+//#if UNITY_WEBGL
+//    [DllImport("__Internal")]
+//    private static extern void openWindow(string url);
+//#endif
 }
 
 public class KidProfileCanvas

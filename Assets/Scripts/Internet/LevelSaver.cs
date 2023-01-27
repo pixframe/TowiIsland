@@ -545,7 +545,7 @@ public class LevelSaver : MonoBehaviour {
         }
         else
         { 
-            StartCoroutine(CheckInternetConecction("www.towi.com.mx"));
+            CheckInternetConecction("www.towi.com.mx");
         }
     }
 
@@ -555,11 +555,26 @@ public class LevelSaver : MonoBehaviour {
         {
             string dataToSave = data.ToString();
             int gameSavedOffline = PlayerPrefs.GetInt(Keys.Games_Saved);
+            JSONObject datas = JSONObject.Parse(dataToSave);
+            string games = datas.GetValue("header").ToString();
+            datas = new JSONObject();
+            datas = JSONObject.Parse(games);
+            games = " ";
+            games = datas.GetValue("game_key").ToString();
+            datas = new JSONObject();
+            string pat = $"{gameSavedOffline}-{sessionManager.activeKid.id}-{games}";
+            PlayerPrefs.SetString("gamesDatas", $"{gameSavedOffline}-{sessionManager.activeKid.id}");
 
-            string path = $"{Application.persistentDataPath}/{gameSavedOffline}{Keys.Game_To_Save}";
+            List<char> c = new List<char>() { '"'};
+            foreach(char d in c)
+            {
+                pat = pat.Replace(d.ToString(), string.Empty);
+            }
+
+            string path = $"{Application.persistentDataPath}/{pat}{Keys.Game_To_Save}";
             gameSavedOffline++;
 
-            //Debug.Log($"We have {gameSavedOffline} jsons to save");
+            Debug.Log($"We have {path}");
 
             File.WriteAllText(path, dataToSave);
 
@@ -569,23 +584,25 @@ public class LevelSaver : MonoBehaviour {
         }
     }
 
-    IEnumerator CheckInternetConecction(string resource)
+    void CheckInternetConecction(string resource)
     {
-        WWWForm form = new WWWForm();
-        using (UnityWebRequest newRequest = UnityWebRequest.Get(resource))
-        {
-            yield return newRequest.SendWebRequest();
+        SaveDataOffline();
+        FindObjectOfType<PauseTheGame>().DataIsSend();
+        //WWWForm form = new WWWForm();
+        //using (UnityWebRequest newRequest = UnityWebRequest.Get(resource))
+        //{
+        //    yield return newRequest.SendWebRequest();
 
-            if (newRequest.isNetworkError)
-            {
-                SaveDataOffline();
-                FindObjectOfType<PauseTheGame>().DataIsSend();
-            }
-            else
-            {
-                StartCoroutine(PostScores());
-            }
-        }
+        //    if (newRequest.isNetworkError)
+        //    {
+        //        SaveDataOffline();
+        //        FindObjectOfType<PauseTheGame>().DataIsSend();
+        //    }
+        //    else
+        //    {
+        //        StartCoroutine(PostScores());
+        //    }
+        //}
     }
 
     // remember to use StartCoroutine when calling this function!
