@@ -574,56 +574,101 @@ public class LogInScript : MonoBehaviour
 
     public bool ValidateEmail(string email, string password)
     {
+        // string usersPath = "Assets/StreamingAssets/users.txt";
+        // string serialPath = "Assets/StreamingAssets/serialKeys.txt";
+
+        // StreamReader usersReader = new StreamReader(usersPath); 
+        // StreamReader serialReader = new StreamReader(serialPath); 
+
+
+        var str = "A string with many words";
+        string[] userArr = new string[1500000];
+        string[] serialArr = new string[1500000];
+        
+        TextAsset usersList = (TextAsset)Resources.Load("users", typeof (TextAsset));
+        string usersContent = usersList.text;
+        
+        TextAsset serialsList = (TextAsset)Resources.Load("serialKeys", typeof (TextAsset));
+        string serialsContent = serialsList.text;
+        
+        userArr= usersContent.Split(char.Parse("\n")); 
+        serialArr= serialsContent.Split(char.Parse("\n")); 
+        for (int i = 0; i<userArr.Length; i++)
+        {
+            userArr[i] = userArr[i].TrimEnd();
+        }
+        for (int i = 0; i<serialArr.Length; i++)
+        {
+            serialArr[i] = serialArr[i].TrimEnd();
+        }
+        // Debug.Log("Lenght "+strArr.Length);
+        //strArr = usersContent.Split();
+        // Debug.Log(strArr[0].TrimEnd());
+        // Debug.Log(strArr[1]);
+        // bool tempPrueba = false;
+        
+        // if(strArr[0].TrimEnd() == "PZW7YY4MCZ")
+        // {
+        //     tempPrueba = true;
+        // }
+        // Debug.Log(tempPrueba);
+
+        // for(int i = 0; i < strArr.Length; i++)
+        // {
+        //     Debug.Log(strArr[i]); 
+        // }
+
+
+        
+
+
+        // List<string> lista = new List<string>();
+        // lista.Add(serialsContent);
+        // var a = lista;
+        // Debug.Log("Cantidad de usuarios "+a.Count());
+
         bool warningUser = false;
         bool warningSerial = false;
         bool userCorrect = false;
         bool serialCorrect = false;
 
-
-        string readFromFilePath = Application.streamingAssetsPath +"/"+ "serialKeys"+".txt";
-        fileLines = File.ReadAllLines(readFromFilePath).ToList();
-        string userPath = Application.streamingAssetsPath +"/"+ "users"+".txt";
-        userLines = File.ReadAllLines(userPath).ToList();
+        // string readFromFilePath = Application.streamingAssetsPath +"/"+ "serialKeys"+".txt";
+        // fileLines = File.ReadAllLines(readFromFilePath).ToList();
+        // string userPath = Application.streamingAssetsPath +"/"+ "users"+".txt";
+        // userLines = File.ReadAllLines(userPath).ToList();
 
 
         userTemp = email;
         serialTemp = password;
+
         // Debug.Log(userTemp);
-        // Debug.Log(serialTemp);
+        Debug.Log(serialTemp);
         
-        for(int i=0;i<fileLines.Count;i++)
-            {
-                //Debug.Log(fileLines[i]);
-            }
-            if(fileLines.Contains(serialTemp))
-            {
-                serialCorrect = true;
-                //Debug.Log("SI es un serial correcto");
-            }
-            else
-            {
-                warningSerial = true;
-                //Debug.Log("NO es un serial correcto");  
-            }
+        if(serialArr.Contains(serialTemp))
+        {
+            serialCorrect = true;
+            Debug.Log("SI es un serial correcto");
+        }
+        else
+        {
+            warningSerial = true;
+            Debug.Log("NO es un serial correcto");  
+        }
 
 
-        for(int i=0;i<userLines.Count;i++)
-            {
-                //Debug.Log(fileLines[i]);
-            }
-            if(userLines.Contains(userTemp))
-            {
-                userCorrect = true;
-                //Debug.Log("SI es un usuario correcto");
-                //return true;
-            }
-            else
-            {
-                
-                warningUser = true;
-                //Debug.Log("NO es un usuario correcto"); 
-                //return false; 
-            }
+        if(userArr.Contains(userTemp))
+        {
+            userCorrect = true;
+            Debug.Log("SI es un usuario correcto");
+            //return true;
+        }
+        else
+        {
+            
+            warningUser = true;
+            Debug.Log("NO es un usuario correcto"); 
+            //return false; 
+        }
             
         if((warningSerial == true) || (warningUser==true))
         {
