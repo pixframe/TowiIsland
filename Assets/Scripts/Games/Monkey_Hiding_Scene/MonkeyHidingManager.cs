@@ -299,6 +299,8 @@ public class MonkeyHidingManager : MonoBehaviour {
             levelSaver.AddLevelData("session_number", difficulty);
             levelSaver.AddLevelData("session_time", time);
 
+            PlayerPrefs.SetInt("MonkeySession", sessionManager.activeKid.monkeySessions);
+
             levelSaver.CreateSaveBlock("DondeQuedoLaBolita", time, passLevels, repeatedLevels, passLevels - repeatedLevels, sessionManager.activeKid.monkeySessions);
             levelSaver.AddLevelsToBlock();
             levelSaver.PostProgress();

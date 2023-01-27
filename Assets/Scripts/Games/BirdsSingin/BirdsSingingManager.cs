@@ -346,6 +346,8 @@ public class BirdsSingingManager : MonoBehaviour {
             levelSaver.AddLevelDataAsString("played_difficulty", difficultyPlayed);
             levelSaver.AddLevelDataAsString("essay_time", assaysTimes);
 
+            PlayerPrefs.SetInt("BirdSession", sessionManager.activeKid.birdsSessions);
+
             levelSaver.CreateSaveBlock("ArbolMusical", time, passLevels, repeatedLevels, 5, sessionManager.activeKid.birdsSessions);
             levelSaver.AddLevelsToBlock();
             levelSaver.PostProgress();

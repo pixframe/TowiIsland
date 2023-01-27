@@ -336,6 +336,8 @@ public class MagicRiverManager : MonoBehaviour {
             levelSaver.AddLevelData("target_correct", totalCorrectTargets);
             levelSaver.AddLevelData("target_errors", totalIncorrectTargets);
 
+            PlayerPrefs.SetInt("RiverSession", sessionManager.activeKid.riverSessions);
+
             levelSaver.CreateSaveBlock("Rio", time, passLevels, repeatedLevels, 5, sessionManager.activeKid.riverSessions);
             levelSaver.AddLevelsToBlock();
             levelSaver.PostProgress();
