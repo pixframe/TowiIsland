@@ -1997,8 +1997,8 @@ class RegisterMenu
     void ShouldShowAdds(bool showAdds)
     {
         add0.gameObject.SetActive(showAdds);
-        add1.gameObject.SetActive(showAdds);
-        division.SetActive(showAdds);
+        //add1.gameObject.SetActive(showAdds);
+        //division.SetActive(showAdds);
     }
 
     public void HideAll()
