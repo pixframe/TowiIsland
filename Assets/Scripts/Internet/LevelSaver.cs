@@ -472,7 +472,7 @@ public class LevelSaver : MonoBehaviour {
         }
         game = gameKey;
         DateTime nowT = DateTime.Now;
-
+        Debug.Log("sessionNumber es:" + sessionNumber);
         headers = new Header()
         {
             device = SystemInfo.deviceType.ToString(),
@@ -557,15 +557,15 @@ public class LevelSaver : MonoBehaviour {
             int gameSavedOffline = PlayerPrefs.GetInt(Keys.Games_Saved);
             JSONObject datas = JSONObject.Parse(dataToSave);
             string games = datas.GetValue("header").ToString();
-            datas = new JSONObject();
             datas = JSONObject.Parse(games);
-            games = " ";
             games = datas.GetValue("game_key").ToString();
-            datas = new JSONObject();
-            string pat = $"{gameSavedOffline}-{sessionManager.activeKid.id}-{games}";
-            PlayerPrefs.SetString("gamesDatas", $"{gameSavedOffline}-{sessionManager.activeKid.id}");
 
-            List<char> c = new List<char>() { '"'};
+            string numbe = datas.GetValue("session_number").ToString();
+
+            string pat = $"{numbe}-{sessionManager.activeKid.id}-{games}";
+           // PlayerPrefs.SetString("gamesDatas", $"{sessionManager.activeKid.id}");
+
+            List<char> c = new List<char>() {'"'};
             foreach(char d in c)
             {
                 pat = pat.Replace(d.ToString(), string.Empty);

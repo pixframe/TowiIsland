@@ -385,6 +385,8 @@ public class LavaGameManager : MonoBehaviour {
             levelSaver.AddLevelDataAsString("played_difficulty", difficultiesPlayed);
             levelSaver.AddLevelData("session_time", (int)time);
 
+            PlayerPrefs.SetInt("ShadowSession", sessionManager.activeKid.lavaSessions);
+
             levelSaver.CreateSaveBlock("JuegoDeSombras", time, passLevels, repeatedLevels, passLevels+repeatedLevels, sessionManager.activeKid.lavaSessions);
             levelSaver.AddLevelsToBlock();
             levelSaver.PostProgress();

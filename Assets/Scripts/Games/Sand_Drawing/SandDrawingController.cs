@@ -336,6 +336,9 @@ public class SandDrawingController : MonoBehaviour {
             levelSaver.AddLevelData("session_number", levelGame);
             levelSaver.AddLevelDataAsString("accuracy", accuracies);
             levelSaver.AddLevelDataAsString("overdraw", overdraws);
+
+            PlayerPrefs.SetInt("SandSession", sessionManager.activeKid.sandSessions);
+
             levelSaver.CreateSaveBlock("ArenaMagica", time, passLevels, repeatedLevels, totalAssaysInTheGame, sessionManager.activeKid.sandSessions);
             levelSaver.AddLevelsToBlock();
             levelSaver.PostProgress();

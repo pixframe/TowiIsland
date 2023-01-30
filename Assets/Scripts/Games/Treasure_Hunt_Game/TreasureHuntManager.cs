@@ -497,6 +497,8 @@ public class TreasureHuntManager : MonoBehaviour {
             levelSaver.AddLevelData("requestreminder", remainder);
             levelSaver.AddLevelData("session_time", (int)time);
 
+            PlayerPrefs.SetInt("HuntSession", sessionManager.activeKid.treasureSessions);
+
             levelSaver.CreateSaveBlock("Tesoro", time, passLevels, repeatedLevels, 5, sessionManager.activeKid.treasureSessions);
             levelSaver.AddLevelsToBlock();
             levelSaver.PostProgress();
