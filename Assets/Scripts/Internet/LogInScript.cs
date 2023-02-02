@@ -174,7 +174,7 @@ public class LogInScript : MonoBehaviour
         sessionManager.SaveSession();
         menuController.ClearInputs();
 
-        
+        PlayerPrefs.SetInt($"Age-{sessionManager.activeKid.id}", sessionManager.activeKid.age);
 
         if (newPaidUser)
         {
@@ -836,6 +836,10 @@ public class LogInScript : MonoBehaviour
         Debug.Log("pasamos GameMenu");
         menuController.ClearInputs();
 
+        var genre = PlayerPrefs.GetInt("Genre");
+        PlayerPrefs.SetInt($"Genre-{sessionManager.activeKid.id}", genre);
+        Debug.Log(PlayerPrefs.GetInt($"Genre-{sessionManager.activeKid.id}"));
+        PlayerPrefs.SetInt($"Age-{sessionManager.activeKid.id}", sessionManager.activeKid.age);
         // using (UnityWebRequest request = UnityWebRequest.Post(newKidURL, form))
         // {
         //     yield return request.SendWebRequest();

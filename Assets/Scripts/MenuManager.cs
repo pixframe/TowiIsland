@@ -82,9 +82,14 @@ public class MenuManager : MonoBehaviour
     public TMP_InputField newKidNameInput;
     public TMP_InputField newKidDay;
     public TextMeshProUGUI newKidBirthday;
+    public TextMeshProUGUI newKidGenre;
     public TMP_InputField newKidMonth;
     public TMP_InputField newKidYear;
     public Button newKidButton;
+    public Button boyGenre;
+    public Button girlGenre;
+    public RawImage boyCross;
+    public RawImage girlCross;
     public Button newKidBackButton;
 
     [Header("Loading")]
@@ -297,7 +302,8 @@ public class MenuManager : MonoBehaviour
         registerMenu = new RegisterMenu(registerCanvas, this);
         addMenu = new AddMenu(addCanvas, this);
         subscriptionPromoMenu = new SubscriptionPromoMenu(suscriptionPromoPanel, ()=>SetShop(0), LoadGameMenus);
-
+        boyCross.color = new Color(255, 255, 255, 0);
+        girlCross.color = new Color(255, 255, 255, 0);
         ButtonSetUp();
 
         if (FindObjectOfType<DemoKey>())
@@ -374,6 +380,18 @@ public class MenuManager : MonoBehaviour
         addKidButton.onClick.AddListener(AddKidShower);
         changeProfileButton.onClick.AddListener(SetKidsProfiles);
         newKidButton.onClick.AddListener(CreateAKid);
+        boyGenre.onClick.AddListener(() => {
+            PlayerPrefs.SetInt("Genre", 0);
+            boyCross.color = new Color(255, 255, 255, 0);
+            girlCross.color = new Color(255, 255, 255, 255);
+
+        });
+        girlGenre.onClick.AddListener(() => {
+            PlayerPrefs.SetInt("Genre", 0);
+            boyCross.color = new Color(255, 255, 255, 255);
+            girlCross.color = new Color(255, 255, 255, 0);
+
+        });
         escapeButton.onClick.AddListener(ShowTheEscapeApp);
 
         //configuration Menu SetUp
@@ -439,6 +457,10 @@ public class MenuManager : MonoBehaviour
 
         PlayerPrefs.SetInt("ActiveKid", sessionManager.activeKid.id);
         PlayerPrefs.SetString("ActiveKidName", sessionManager.activeKid.name);
+        var genre = PlayerPrefs.GetInt("Genre");
+        PlayerPrefs.SetInt($"Genre-{sessionManager.activeKid.id}", genre);
+        Debug.Log(PlayerPrefs.GetInt($"Genre-{sessionManager.activeKid.id}"));
+        
 
         if (sessionManager.activeKid.testAvailable == true)
         {
@@ -1455,6 +1477,7 @@ public class MenuManager : MonoBehaviour
                 int id = sessionManager.activeUser.id;
                 Debug.Log(id);
                 ShowLoading();
+                //Adentro de esta funcion cambiamos el genero
                 logInScript.RegisterAKid(dob, nameKid, id);
             }
             else
@@ -1486,6 +1509,7 @@ public class MenuManager : MonoBehaviour
     //This will set all the texts need for the menus
     void WriteTheTexts()
     {
+        newKidGenre.text = "Género";
         WriteTheText(subscribeAnotherCountButton, 3);
         WriteTheText(creditColumOne, 6);
         WriteTheText(creditColumTwo, 7);
@@ -1906,8 +1930,13 @@ class RegisterMenu
     public GameObject logInMenu;
     public InputPanels inputEmail;
     public InputPanels inputPass;
+    public TextMeshProUGUI inputGenre;
     public Button forgotPassButton;
     public Button logInButton;
+    public Button girlButton;
+    public Button boyButton;
+    public RawImage boyCross;
+    public RawImage girlCross;
     public TextMeshProUGUI notRegisterText;
     public Button goToSingInButton;
 
@@ -1953,6 +1982,11 @@ class RegisterMenu
 
         var signInPanel = mainPanel.Find("Sing In Panel");
         signInMenu = signInPanel.gameObject;
+        inputGenre = signInPanel.Find("Input Genre").GetComponent<TextMeshProUGUI>(); ;
+        girlButton = signInPanel.Find("girl").GetComponent<Button>();
+        boyButton = signInPanel.Find("boy").GetComponent<Button>();
+        boyCross = signInPanel.Find("boyX").GetComponent<RawImage>();
+        girlCross = signInPanel.Find("girlX").GetComponent<RawImage>();
         inputEmailDad = new InputPanels(signInPanel.Find("Input E-mail"));
         inputPassDad = new InputPanels(signInPanel.Find("Input Password"));
         inputPassAgain = new InputPanels(signInPanel.Find("Input Password Confirm"));
@@ -1986,6 +2020,7 @@ class RegisterMenu
         inputEmail.field.text = "";
         inputEmailDad.field.text = "";
         inputPass.field.text = "";
+        inputGenre.text = "";
         inputPassAgain.field.text = "";
         inputPassDad.field.text = "";
         inputName.field.text = "";
@@ -2081,7 +2116,11 @@ class RegisterMenu
         termsAndConditionsButton.GetComponent<TextMeshProUGUI>().text = texts[6];
         termsAndConditionsButton.onClick.RemoveAllListeners();
         termsAndConditionsButton.onClick.AddListener(manager.GoToTermsAndConditions);
-
+        inputGenre.text = "Género";
+        boyButton.onClick.AddListener(IsABoy);
+        girlButton.onClick.AddListener(IsAGirl);
+        boyCross.color = new Color(255,255,255,0);
+        girlCross.color = new Color(255, 255, 255, 0);
         inputName.inputNameText.text = texts[7];
         inputName.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[7];
         birthdateText.text = texts[8];
@@ -2121,6 +2160,11 @@ class RegisterMenu
         inputPassDad.inputNameText.text = texts[4];
         inputPassDad.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[4];
         //inputPassDad.field.inputType = TMP_InputField.InputType.Password;
+        inputGenre.text = "Género";
+        boyButton.onClick.AddListener(IsABoy);
+        girlButton.onClick.AddListener(IsAGirl);
+        boyCross.color = new Color(255, 255, 255, 0);
+        girlCross.color = new Color(255, 255, 255, 0);
         inputPassAgain.inputNameText.text = texts[5];
         inputPassAgain.field.placeholder.GetComponent<TextMeshProUGUI>().text = texts[5];
         //inputPassAgain.field.inputType = TMP_InputField.InputType.Password;
@@ -2230,6 +2274,20 @@ class RegisterMenu
         var kidName = inputName.field.text;
 
         manager.TrySignIn(mail, pass, pass2, kidName, false);
+    }
+
+    public void IsABoy()
+    {
+        PlayerPrefs.SetInt("Genre", 0);
+        boyCross.color = new Color(255, 255, 255, 0);
+        girlCross.color = new Color(255, 255, 255, 255);
+    }
+
+    public void IsAGirl()
+    {
+        PlayerPrefs.SetInt("Genre", 1);
+        girlCross.color = new Color(255, 255, 255, 0);
+        boyCross.color = new Color(255, 255, 255, 255);
     }
 
     void TrySingInAndPurchase(bool isIAP)
