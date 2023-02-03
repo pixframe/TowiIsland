@@ -132,12 +132,14 @@ public class MenuManager : MonoBehaviour
 
     void Awake()
     {
+        // Debug.Log("ESTO ES KEY 01");
+        // Debug.Log(PlayerPrefs.GetString("Key01"));
         //here we start the process of initrilization
         Initialization();
         dobYMD = new int[0];
         Analytics.CustomEvent("open");
         //PlayerPrefs.SetInt(Keys.First_Try, 0);
-        //PlayerPrefs.DeleteAll();
+        // PlayerPrefs.DeleteAll();
     }
 
     // Use this for initialization
@@ -1656,7 +1658,7 @@ public class MenuManager : MonoBehaviour
     void ReturnToFirstMenu()
     {
         HideWarning();
-        ShowFirstMenu();
+        //ShowFirstMenu();
     }
 
     //This will set if a player is logged already

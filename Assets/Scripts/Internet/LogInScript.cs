@@ -174,7 +174,8 @@ public class LogInScript : MonoBehaviour
         sessionManager.SaveSession();
         menuController.ClearInputs();
 
-        PlayerPrefs.SetInt($"Age-{sessionManager.activeKid.id}", sessionManager.activeKid.age);
+
+        //PlayerPrefs.SetInt($"Age-{sessionManager.activeKid.id}", sessionManager.activeKid.age);
 
         if (newPaidUser)
         {

@@ -18,6 +18,11 @@ public class SerialKeyManager : MonoBehaviour
     public GameObject warningPanel;
     public GameObject serialPanel;
     public GameObject newKidPanel;
+    public GameObject GameMenuPanel;
+
+    //List<string> keysUsed = new List<string>();
+    int keyNumber = 0;
+    string[] keyUsed = new string[11];
 
     // public TMP_InputField newKidNameInput;
     // public TMP_InputField newKidDay;
@@ -27,11 +32,7 @@ public class SerialKeyManager : MonoBehaviour
     int quitScene;
 
     // Start is called before the first frame update
-    void Start()
-    {
-        Debug.Log(fileLines.Count);
-        Debug.Log(userLines.Count);
-    }
+
 
 
     public void ValidateSerial()
@@ -40,35 +41,171 @@ public class SerialKeyManager : MonoBehaviour
     }
 
     private void Awake() {
-        string readFromFilePath = Application.streamingAssetsPath +"/"+ "serialKeys"+".txt";
-        fileLines = File.ReadAllLines(readFromFilePath).ToList();
-        string userPath = Application.streamingAssetsPath +"/"+ "users"+".txt";
-        userLines = File.ReadAllLines(userPath).ToList();
+        // string readFromFilePath = Application.streamingAssetsPath +"/"+ "serialKeys"+".txt";
+        // fileLines = File.ReadAllLines(readFromFilePath).ToList();
+        // string userPath = Application.streamingAssetsPath +"/"+ "users"+".txt";
+        // userLines = File.ReadAllLines(userPath).ToList();
         // if(quitScene == 1)
         // {
         //     SceneManager.LoadScene("NewLogin", LoadSceneMode.Single);
         // }
+        
+    }
+    
+    void Start() {
+
+        if(PlayerPrefs.HasKey("nKey"))
+        {
+            keyNumber = PlayerPrefs.GetInt("nKey");
+        }
+        else
+        {
+            PlayerPrefs.SetInt("nKey", 1);
+        }
+        
+        if(PlayerPrefs.HasKey("Key01"))
+        {
+            keyUsed[1]=PlayerPrefs.GetString("Key01");
+        }
+        else
+        {
+            PlayerPrefs.SetString("Key01", null);
+            
+        }
+        
+        if(PlayerPrefs.HasKey("Key02"))
+        {
+            keyUsed[2]=PlayerPrefs.GetString("Key02");
+
+        }
+        else
+        {
+            PlayerPrefs.SetString("Key02", null);
+        }
+        if(PlayerPrefs.HasKey("Key03"))
+        {
+            keyUsed[3]=PlayerPrefs.GetString("Key03");
+        }
+        else
+        {
+            PlayerPrefs.SetString("Key03", null);
+        }
+        
+        if(PlayerPrefs.HasKey("Key04"))
+        {
+            keyUsed[4]=PlayerPrefs.GetString("Key04");
+        }
+        else
+        {
+            PlayerPrefs.SetString("Key04", null);
+        }
+        if(PlayerPrefs.HasKey("Key05"))
+        {
+            keyUsed[5]=PlayerPrefs.GetString("Key05");
+        }
+        else
+        {
+            PlayerPrefs.SetString("Key05", null);
+        }
+        if(PlayerPrefs.HasKey("Key06"))
+        {
+            keyUsed[6]=PlayerPrefs.GetString("Key06");
+        }
+        else
+        {
+            PlayerPrefs.SetString("Key06", null);
+        }
+        if(PlayerPrefs.HasKey("Key07"))
+        {
+            keyUsed[7]=PlayerPrefs.GetString("Key07");
+        }
+        else
+        {
+            PlayerPrefs.SetString("Key07", null);
+        }
+        if(PlayerPrefs.HasKey("Key08"))
+        {
+            keyUsed[8]=PlayerPrefs.GetString("Key08");
+        }
+        else
+        {
+            PlayerPrefs.SetString("Key08", null);
+        }
+        if(PlayerPrefs.HasKey("Key09"))
+        {
+            keyUsed[9]=PlayerPrefs.GetString("Key09");
+        }
+        else
+        {
+            PlayerPrefs.SetString("Key09", null);
+        }
+        if(PlayerPrefs.HasKey("Key10"))
+        {
+            keyUsed[10]=PlayerPrefs.GetString("Key10");
+        }
+        else
+        {
+            PlayerPrefs.SetString("Key10", "null");
+        }
+
+        keyUsed[0]=null;
+     
     }
     public void ReadString()
     {
+        Debug.Log("Contraseñas usadas " + keyNumber);
+        
+        
+        for(int i=0;i<keyUsed.Length;i++)
+        {
+            Debug.Log(keyUsed[i]);
+        }
         bool warningUser = false;
         bool warningSerial = false;
         bool userCorrect = false;
         bool serialCorrect = false;
         userTemp = userInput.text;
         serialTemp = serialInput.text;
-        Debug.Log(serialTemp);
         Debug.Log(userTemp);
+        Debug.Log(serialTemp);
+        
+        
+
         //string readFromFilePath = Application.streamingAssetsPath +"/"+ "text"+".txt";
         
+        string[] userArr = new string[1500000];
+        string[] serialArr = new string[1500000];
         
-        //Debug.Log(fileLines);
+        TextAsset usersList = (TextAsset)Resources.Load("users", typeof (TextAsset));
+        string usersContent = usersList.text;
+        
+        TextAsset serialsList = (TextAsset)Resources.Load("serialKeys", typeof (TextAsset));
+        string serialsContent = serialsList.text;
 
-        for(int i=0;i<fileLines.Count;i++)
-            {
-                //Debug.Log(fileLines[i]);
-            }
-            if(fileLines.Contains(serialTemp))
+
+        userArr= usersContent.Split(char.Parse("\n")); 
+        serialArr= serialsContent.Split(char.Parse("\n")); 
+        for (int i = 0; i<userArr.Length; i++)
+        {
+            userArr[i] = userArr[i].TrimEnd();
+        }
+        for (int i = 0; i<serialArr.Length; i++)
+        {
+            serialArr[i] = serialArr[i].TrimEnd();
+        }
+
+        if(userTemp == null || serialTemp == null || userTemp == "" || serialTemp == "" || keyUsed.Contains(serialTemp) )
+        {
+            warningSerial = true;
+            warningUser = true;
+            Debug.Log("Ya fue usado"); 
+            warningPanel.SetActive(true);
+            newKidPanel.SetActive(false); 
+        }
+        else 
+        {
+            
+            if(serialArr.Contains(serialTemp))
             {
                 serialCorrect = true;
                 Debug.Log("SI es un serial correcto");
@@ -78,38 +215,102 @@ public class SerialKeyManager : MonoBehaviour
                 warningSerial = true;
                 Debug.Log("NO es un serial correcto");  
             }
-        for(int i=0;i<userLines.Count;i++)
-            {
-                //Debug.Log(fileLines[i]);
-            }
-            if(userLines.Contains(userTemp))
+
+
+            if(userArr.Contains(userTemp))
             {
                 userCorrect = true;
                 Debug.Log("SI es un usuario correcto");
+                //return true;
             }
             else
             {
+                
                 warningUser = true;
-                Debug.Log("NO es un usuario correcto");  
-            }    
-        //Read the text from directly from the test.txt file
-        //StreamReader reader = new StreamReader(readFromFilePath);
-        //Debug.Log(reader.ReadToEnd());
-        //reader.Close();
-        if(warningSerial || warningUser)
-        {
-            warningPanel.SetActive(true);
+                Debug.Log("NO es un usuario correcto"); 
+                //return false; 
+            }
+                
+            if((warningSerial == true) || (warningUser==true))
+            {
+                warningPanel.SetActive(true);
+                newKidPanel.SetActive(false);   
+                //warningPanel.SetActive(true);
+            }
+            if((userCorrect==true) && (serialCorrect==true))
+            {
+
+                ClearInputs();
+                PlayerPrefs.SetInt("quitScene", 1);
+                serialPanel.SetActive(false);
+                newKidPanel.SetActive(true);
+                
+                //keysUsed.Add(serialTemp);
+                keyNumber += 1;
+                PlayerPrefs.SetInt("nKey", keyNumber);
+                string temp = SetKey(keyNumber);
+                PlayerPrefs.SetString(temp, serialTemp);  
+                // SceneManager.LoadScene("NewLogin", LoadSceneMode.Single);
+                // PlayerPrefs.SetInt("quitScene", 1);
+            }
         }
-        if(userCorrect && serialCorrect)
-        {
-            //SceneManager.LoadScene("NewLogin", LoadSceneMode.Single);
-            PlayerPrefs.SetInt("quitScene", 1);
-            serialPanel.SetActive(false);
-            newKidPanel.SetActive(true);
-            ClearInputs();
-        }
+        
+        
+        
    }
 
+
+    public string SetKey(int keyNumber)
+    {
+        string keyCode;
+        switch(keyNumber)
+        {
+            case 0:
+
+            break;
+            case 1:
+            keyCode = "Key01";
+            return keyCode;
+            //break;
+            
+            case 2:
+            keyCode = "Key02";
+            return keyCode;
+            
+            case 3:
+            keyCode = "Key03";
+            return keyCode;
+            
+            case 4:
+            keyCode = "Key04";
+            return keyCode;
+            
+            case 5:
+            keyCode = "Key05";
+            return keyCode;
+            
+            case 6:
+            keyCode = "Key06";
+            return keyCode;
+            
+            case 7:
+            keyCode = "Key07";
+            return keyCode;
+            
+            case 8:
+            keyCode = "Key08";
+            return keyCode;
+            
+            case 9:
+            keyCode = "Key09";
+            return keyCode;
+            
+            case 10:
+            keyCode = "Key10";
+            return keyCode;
+        }
+        return null;
+    }
     public void ClearInputs()
     {
         serialInput.text = "";
@@ -121,66 +322,12 @@ public class SerialKeyManager : MonoBehaviour
         warningPanel.SetActive(false);
     }
 
-    // void CreateAKid()
-    // {
-    //     if (newKidNameInput.text != "" && newKidDay.text != "" && newKidMonth.text != "" && newKidYear.text != "")
-    //     {
-    //         if (KidDateIsOK(1))
-    //         {
-    //             // string dob = DefineTheDateOfBirth(1);
-    //             // string nameKid = newKidNameInput.text;
-    //             // int id = sessionManager.activeUser.id;
-    //             // ShowLoading();
-    //             // logInScript.RegisterAKid(dob, nameKid, id);
-    //         }
-    //         else
-    //         {
-    //             //ShowWarning(12);
-    //         }
-    //     }
-    //     else
-    //     {
-    //         //ShowWarning(4);
-    //     }
-    // }
+    public void Close()
+    {
+        GameMenuPanel.SetActive(true);
+        newKidPanel.SetActive(false);
+        serialPanel.SetActive(false);   
+    }
 
-    // bool KidDateIsOK(int typeOfKid)
-    // {
-    //     int year = 0;
-    //     int month = 0;
-    //     int day = 0;
-    //     if (typeOfKid == 0)
-    //     {
-    //         year = int.Parse(registerMenu.yearInput.text);
-    //         month = int.Parse(registerMenu.monthInput.text);
-    //         day = int.Parse(registerMenu.dayInput.text);
-    //     }
-    //     if (typeOfKid != 0)
-    //     {
-    //         year = int.Parse(newKidYear.text);
-    //         month = int.Parse(newKidMonth.text);
-    //         day = int.Parse(newKidDay.text);
-    //     }
-
-    //     List<int> months1 = new List<int> { 1, 3, 5, 7, 8, 10, 12 };
-    //     List<int> months2 = new List<int> { 4, 6, 9, 11 };
-
-    //     if (year > 999 && day > 0 && month > 0 && month < 13)
-    //     {
-    //         if (months1.Contains(month) && day < 32 || months2.Contains(month) && day < 31
-    //             || year % 4 == 0 && month == 2 && day < 30 || year % 4 != 0 && month == 2 && day < 29)
-    //         {
-    //             dobYMD = new int[] { year, month, day };
-    //             return true;
-    //         }
-    //         else
-    //         {
-    //             return false;
-    //         }
-    //     }
-    //     else
-    //     {
-    //         return false;
-    //     }
-    // }
+    
 }
