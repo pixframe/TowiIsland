@@ -100,7 +100,7 @@ public class EvaluationController : MonoBehaviour
         saveHandler.AddLevelData("boarding_age", ageOfPlayer);
         saveHandler.AddLevelData("boarding_birthday", birthOfPlayer);
         saveHandler.AddLevelData("boarding_time1", Mathf.Round(secctionTime));
-
+        PlayerPrefs.SetInt($"KidAge-{sessionManager.activeKid.id}", ageOfPlayer);
         StopCounting();
         RestartSecctionTime();
     }
@@ -127,13 +127,13 @@ public class EvaluationController : MonoBehaviour
         saveHandler.AddLevelData("packforward_time", secctionTime);
         saveHandler.AddLevelData("packforward_incorrect_secuence", badOrdered);
         saveHandler.AddLevelData("packforward_instrusions", intrusion);
-
+        PlayerPrefs.SetFloat($"packforward_score-{sessionManager.activeKid.id}",(float)normalLevel + 3);
         /*saveHandler.AddLevelData("packErrors", errorsFront);
         saveHandler.AddLevelData("packRawData", rawSelectedObjects);*/
 
         //saveHandler.SetLevel();
 
-		StopCounting();
+        StopCounting();
 		RestartSecctionTime();
 	}
 
@@ -146,7 +146,7 @@ public class EvaluationController : MonoBehaviour
         saveHandler.AddLevelData("packbackward_time", secctionTime);
         saveHandler.AddLevelData("packbackward_incorrect_secuence", badOrdered);
         saveHandler.AddLevelData("packbackward_intrusions", intrusion);
-
+        PlayerPrefs.SetFloat($"packbackward_score-{sessionManager.activeKid.id}", (float)backLevel + 2);
 
         /*saveHandler.AddLevelData("reversePackErrors", errorsBack);
 
@@ -220,6 +220,12 @@ public class EvaluationController : MonoBehaviour
         saveHandler.AddLevelData("lab_mdeadends", IntDivider(totalDeadEnds, laberyntNumber));
         saveHandler.AddLevelData("lab_time", Mathf.Round(secctionTime));
 
+        PlayerPrefs.SetFloat($"lab1_hits-{sessionManager.activeKid.id}", (float)hits[1]);
+        PlayerPrefs.SetFloat($"lab1_crosses-{sessionManager.activeKid.id}", (float)crosses[1]);
+        PlayerPrefs.SetFloat($"lab1_deadends-{sessionManager.activeKid.id}", (float)deadEnds[1]);
+        PlayerPrefs.SetFloat($"lab2_time-{sessionManager.activeKid.id}", (float)labTimes[2]);
+        PlayerPrefs.SetFloat($"lab2_latency-{sessionManager.activeKid.id}", (float)latencies[2]);
+
         StopCounting();
         RestartSecctionTime();
         GoToNextScene("Evaluation_Scene4");
@@ -230,7 +236,7 @@ public class EvaluationController : MonoBehaviour
     {
         saveHandler.AddLevelData("waitroom_correct", good);
         saveHandler.AddLevelData("waitroom_incorrect", bad);
-
+        PlayerPrefs.SetFloat($"waitroom_correct-{sessionManager.activeKid.id}", (float)good);
         float medium = 0;
         for (int i = 0; i < goodLatencies.Length; i++)
         {
@@ -272,6 +278,11 @@ public class EvaluationController : MonoBehaviour
         saveHandler.AddLevelData("flyplane_greenincorrect", gBad);
         saveHandler.AddLevelData("flyplane_greenmissed", gMiss);
 
+        PlayerPrefs.SetFloat($"flyplane_correct-{sessionManager.activeKid.id}", (float)good);
+        PlayerPrefs.SetFloat($"flyplane_incorrect-{sessionManager.activeKid.id}", (float)bad);
+        PlayerPrefs.SetFloat($"flyplane_greencorrect-{sessionManager.activeKid.id}", (float)gGood);
+        PlayerPrefs.SetFloat($"flyplane_greenincorrect-{sessionManager.activeKid.id}", (float)gBad);
+        
         float lat = 0;
         float prom = 0;
         for (int i = 0; i < goodL.Count; i++)
@@ -305,6 +316,8 @@ public class EvaluationController : MonoBehaviour
         saveHandler.AddLevelData("flyplane_greenincorrect_mlatency", FloatDivider(lat, gBadL.Count));
         saveHandler.AddLevelData("flyplane_time", Mathf.Round(secctionTime));
 
+        PlayerPrefs.SetFloat($"flyplane_time-{sessionManager.activeKid.id}", Mathf.Round(secctionTime));
+
         /*saveHandler.AddLevelData("flyPlanesLatencies", goodL);
         saveHandler.AddLevelData("flyPlanesBadLatencies", badL);
         saveHandler.AddLevelData("flyPlanesGreenLatencie", gGoodL);
@@ -331,6 +344,9 @@ public class EvaluationController : MonoBehaviour
         saveHandler.AddLevelData("coins_selected", coins);
         saveHandler.AddLevelData("coins_organization_score", score);
         saveHandler.AddLevelData("coins_clickfinish_before_min", pauses);
+
+        PlayerPrefs.SetFloat($"coins_min_correct-{sessionManager.activeKid.id}", (float)good);
+        PlayerPrefs.SetFloat($"coins_extra_missed-{sessionManager.activeKid.id}", (float)24 - (good + gX));
 
         float prom = 0;
         for (int i = 0; i < goodLatencies.Count; i++)
@@ -372,6 +388,8 @@ public class EvaluationController : MonoBehaviour
         //saveHandler.AddLevelData("unPackObjects", unpackObjects);
         //saveHandler.SetLevel();
 
+        PlayerPrefs.SetFloat($"unpack_correct-{sessionManager.activeKid.id}", (float)scoreOfUnpack);
+
         StopCounting();
         RestartSecctionTime();
     }
@@ -401,7 +419,13 @@ public class EvaluationController : MonoBehaviour
         saveHandler.AddLevelData("arrange_time", Mathf.Round(secctionTime));
         saveHandler.AddLevelData("arrange_primacy", (firstPercentage / 3));
         saveHandler.AddLevelData("arrange_recence", (lastpercentage / 3));
+
+        PlayerPrefs.SetFloat($"arrange_time-{sessionManager.activeKid.id}", Mathf.Round(secctionTime));
+
         saveHandler.AddLevelData("arrange_perc_correct", GetPercentage(totalCorrects, (numberOfAssays * nOfStimulus)));
+
+        PlayerPrefs.SetFloat($"arrange_perc_correct-{sessionManager.activeKid.id}", GetPercentage(totalCorrects, (numberOfAssays * nOfStimulus)));
+
         for (int i = 0; i < 2; i++)
         {
             saveHandler.AddLevelData("arrange_storage_efficency" + (i+1).ToString(), goodReapeted[i].Count);

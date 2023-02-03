@@ -384,14 +384,14 @@ public class MenuManager : MonoBehaviour
         newKidButton.onClick.AddListener(CreateAKid);
         boyGenre.onClick.AddListener(() => {
             PlayerPrefs.SetInt("Genre", 0);
-            boyCross.color = new Color(255, 255, 255, 0);
-            girlCross.color = new Color(255, 255, 255, 255);
+            boyCross.color = new Color(255, 255, 255, 255);
+            girlCross.color = new Color(255, 255, 255, 0);
 
         });
         girlGenre.onClick.AddListener(() => {
-            PlayerPrefs.SetInt("Genre", 0);
-            boyCross.color = new Color(255, 255, 255, 255);
-            girlCross.color = new Color(255, 255, 255, 0);
+            PlayerPrefs.SetInt("Genre", 1);
+            boyCross.color = new Color(255, 255, 255, 0);
+            girlCross.color = new Color(255, 255, 255, 255);
 
         });
         escapeButton.onClick.AddListener(ShowTheEscapeApp);
@@ -721,6 +721,8 @@ public class MenuManager : MonoBehaviour
         else
         {
             PlayerPrefs.SetInt("activesKid", sessionManager.activeKid.id);
+            var genre = PlayerPrefs.GetInt($"Genre-{PlayerPrefs.GetInt("activesKid")}");
+            Debug.Log("de yendre is: " + genre);
             Debug.Log("lol" + PlayerPrefs.GetInt("IsAvailable"));
             gameMenuObject.ShowThisMenu(sessionManager.activeKid.isActive, IsEvaluationAvilable(), sessionManager.activeUser.suscriptionsLeft);
         }
@@ -915,6 +917,10 @@ public class MenuManager : MonoBehaviour
         continueEvaluationButton.onClick.RemoveAllListeners();
         escapeEvaluationButton.onClick.RemoveAllListeners();
         subscribeBackButton.onClick.RemoveAllListeners();
+
+        boyCross.color = new Color(255, 255, 255, 0);
+        girlCross.color = new Color(255, 255, 255, 0);
+
         if (PlayerPrefs.GetInt(Keys.Logged_In) == 1)
         {
             continueEvaluationButton.onClick.AddListener(ShowGameMenu);
