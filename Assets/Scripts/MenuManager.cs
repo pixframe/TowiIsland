@@ -677,11 +677,12 @@ public class MenuManager : MonoBehaviour
 
     public void ShowEscapeButton()
     {
-#if UNITY_STANDALONE
         escapeButton.gameObject.SetActive(true);
-#else
-        escapeButton.gameObject.SetActive(false);
-#endif
+        //#if UNITY_STANDALONE
+        //        escapeButton.gameObject.SetActive(true);
+        //#else
+        //        escapeButton.gameObject.SetActive(false);
+        //#endif
     }
 
     //we show the game menu if the player has acces to it

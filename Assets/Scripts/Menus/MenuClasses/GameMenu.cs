@@ -48,7 +48,7 @@ public class GameMenu : BaseMenu
         gameObject.SetActive(true);
 
         gamesButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[0];
-        evaluationButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[1];
+        //evaluationButton.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[1];
         tryLogo.GetComponentInChildren<TextMeshProUGUI>().text = textsToSet[3];
 
         tryLogo.SetActive(true);
@@ -68,7 +68,7 @@ public class GameMenu : BaseMenu
 #if UNITY_WEBGL
         evaluationButton.gameObject.SetActive(false);
 #else
-        evaluationButton.gameObject.SetActive(true);
+        //evaluationButton.gameObject.SetActive(true);
 #endif
         //singOutButton.gameObject.SetActive(false);
         settingsButton.gameObject.SetActive(false);
@@ -76,14 +76,14 @@ public class GameMenu : BaseMenu
         kidProfile.gameObject.SetActive(false);
         evalButton.gameObject.SetActive(false);
         SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeYellow"]);
-        SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
+        //SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["activeGreen"]);
 
         gamesButton.onClick.RemoveAllListeners();
         evaluationButton.onClick.RemoveAllListeners();
 
         gamesButton.onClick.AddListener(manager.ShowLogIn);
 
-        evaluationButton.onClick.AddListener(manager.ShowAdd);
+        //evaluationButton.onClick.AddListener(manager.ShowAdd);
     }
 
     public void ShowThisMenu()
@@ -97,20 +97,20 @@ public class GameMenu : BaseMenu
         {
             gamesButton.transform.GetChild(i).gameObject.SetActive(true);
         }
-        evaluationButton.gameObject.SetActive(true);
+        //evaluationButton.gameObject.SetActive(true);
         for (int i = 0; i < evaluationButton.transform.childCount; i++)
         {
-            evaluationButton.transform.GetChild(i).gameObject.SetActive(true);
+            //evaluationButton.transform.GetChild(i).gameObject.SetActive(true);
         }
 
         gamesButton.onClick.RemoveAllListeners();
         evaluationButton.onClick.RemoveAllListeners();
 
         gamesButton.onClick.AddListener(manager.ShowRegisteredAdd);
-        evaluationButton.onClick.AddListener(manager.ShowRegisteredAdd);
+        //evaluationButton.onClick.AddListener(manager.ShowRegisteredAdd);
 
         SetImageColor(gamesButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
-        SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
+        //SetImageColor(evaluationButton.GetComponent<Image>(), TowiDictionary.ColorHexs["deactivated"]);
 
         //singOutButton.gameObject.SetActive(true);
         settingsButton.gameObject.SetActive(true);
