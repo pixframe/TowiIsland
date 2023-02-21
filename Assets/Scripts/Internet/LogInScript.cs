@@ -35,6 +35,8 @@ public class LogInScript : MonoBehaviour
     SessionManager sessionManager;
     MenuManager menuController;
 
+    public GameObject warning;
+
     #endregion
     // Use this for initialization
     void Awake()
@@ -565,13 +567,23 @@ public class LogInScript : MonoBehaviour
        // StartCoroutine(PostIsActive(user));
     }
 
-    public void RegisterParentAndKid(string email, string password, string kidName, string dateOfBirth, bool newPaidUser)
+    public bool RegisterParentAndKid(string email, string password, string kidName, string dateOfBirth, bool newPaidUser)
     {
         bool temp = ValidateEmail(email, password);
-        if(temp==true){StartCoroutine(PostRegisterParentAndKid(email, password, kidName, dateOfBirth, newPaidUser));}
+        if(temp==true){
+            StartCoroutine(PostRegisterParentAndKid(email, password, kidName, dateOfBirth, newPaidUser));
+            return true;
+            }
         else{
-            Debug.Log("ya fallo");
+            warning.SetActive(true);
+            return false;
         }
+    }
+
+    public void CloseWarning()
+    {
+        warning.SetActive(false);
+        
     }
 
     public bool ValidateEmail(string email, string password)

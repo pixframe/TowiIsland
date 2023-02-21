@@ -1290,7 +1290,15 @@ public class MenuManager : MonoBehaviour
                         if (KidDateIsOK(0))
                         {
                             ShowLoading();
-                            logInScript.RegisterParentAndKid(mail, pass, kidName, kidDob, isNewPaidUser);
+                            bool temp = logInScript.RegisterParentAndKid(mail, pass, kidName, kidDob, isNewPaidUser);
+                            if(temp == true)
+                            {
+
+                            }
+                            else{
+                                ShowGameMenu();
+                            }
+                            
                         }
                         else
                         {
