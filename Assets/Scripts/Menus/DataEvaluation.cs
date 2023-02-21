@@ -3605,7 +3605,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text = "0" + ("\n");
+                quartileText.text = "1" + ("\n");
             }
             Debug.Log("yes:" + num);
             num = PlayerPrefs.GetInt($"coins_extra_missed-{PlayerPrefs.GetInt("activesKid")}");
@@ -3635,9 +3635,9 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
                 Debug.Log("aqui" + quartileText);
-                AverageQText.text = "0" + ("\n");
+                AverageQText.text = "1" + ("\n");
             }
             Debug.Log("yes:" + num);
             num = PlayerPrefs.GetInt($"arrange_perc_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -3663,7 +3663,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
             Debug.Log("yes:" + num);
             num = PlayerPrefs.GetInt($"arrange_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -3694,8 +3694,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n") + ("\n");
             }
             Debug.Log("yes:" + num);
             num = PlayerPrefs.GetInt($"unpack_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -3716,7 +3716,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
             Debug.Log("yes:" + num);
             num = PlayerPrefs.GetInt($"packforward_score-{PlayerPrefs.GetInt("activesKid")}");
@@ -3742,7 +3742,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
             Debug.Log("yes:" + num);
             num = PlayerPrefs.GetInt($"packbackward_score-{PlayerPrefs.GetInt("activesKid")}");
@@ -3768,7 +3768,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
             Debug.Log("yes:" + num);
             num = PlayerPrefs.GetInt($"waitroom_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -3794,7 +3794,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
             Debug.Log("yes:" + num);
             num = PlayerPrefs.GetInt($"flyplane_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -3824,8 +3824,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n");
             }
             Debug.Log("yes:" + num);
             num = PlayerPrefs.GetInt($"flyplane_greencorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -3851,7 +3851,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
             Debug.Log("yes:" + num);
             num = PlayerPrefs.GetInt($"flyplane_greenincorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -3877,7 +3877,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
             Debug.Log("yes:" + num);
             num = PlayerPrefs.GetInt($"flyplane_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -3903,7 +3903,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
             Debug.Log("yes:" + num);
             num = PlayerPrefs.GetInt($"flyplane_incorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -3933,8 +3933,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n");
             }
             Debug.Log("yes:" + num);
             num = PlayerPrefs.GetInt($"lab1_hits-{PlayerPrefs.GetInt("activesKid")}");
@@ -3960,7 +3960,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
             Debug.Log("yes:" + num);
             num = PlayerPrefs.GetInt($"lab1_crosses-{PlayerPrefs.GetInt("activesKid")}");
@@ -3986,7 +3986,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
             Debug.Log("yes:" + num);
             num = PlayerPrefs.GetInt($"lab1_deadends-{PlayerPrefs.GetInt("activesKid")}");
@@ -4016,8 +4016,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n");
             }
             Debug.Log("yes:" + num);
             num = PlayerPrefs.GetInt($"lab2_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -4043,7 +4043,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
             Debug.Log("yes:" + num);
             num = PlayerPrefs.GetInt($"lab2_latency-{PlayerPrefs.GetInt("activesKid")}");
@@ -4073,8 +4073,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0";
-                AverageQText.text += "0";
+                quartileText.text += "1";
+                AverageQText.text += "1";
             }
             Debug.Log("yes:" + num);
         }
@@ -4104,7 +4104,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"coins_extra_missed-{PlayerPrefs.GetInt("activesKid")}");
@@ -4134,8 +4134,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"arrange_perc_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -4161,7 +4161,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"arrange_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -4192,8 +4192,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n") + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"unpack_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -4219,7 +4219,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"packforward_score-{PlayerPrefs.GetInt("activesKid")}");
@@ -4240,7 +4240,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"packbackward_score-{PlayerPrefs.GetInt("activesKid")}");
@@ -4261,7 +4261,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"waitroom_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -4287,7 +4287,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -4317,8 +4317,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_greencorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -4344,7 +4344,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_greenincorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -4370,7 +4370,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -4396,7 +4396,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_incorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -4426,8 +4426,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab1_hits-{PlayerPrefs.GetInt("activesKid")}");
@@ -4453,7 +4453,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab1_crosses-{PlayerPrefs.GetInt("activesKid")}");
@@ -4479,7 +4479,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab1_deadends-{PlayerPrefs.GetInt("activesKid")}");
@@ -4509,8 +4509,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab2_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -4536,7 +4536,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab2_latency-{PlayerPrefs.GetInt("activesKid")}");
@@ -4566,8 +4566,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text = "0";
-                AverageQText.text += "0";
+                quartileText.text = "1";
+                AverageQText.text += "1";
             }
         }
         if (age == 8)
@@ -4596,7 +4596,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text = "0" + ("\n");
+                quartileText.text = "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"coins_extra_missed-{PlayerPrefs.GetInt("activesKid")}");
@@ -4626,8 +4626,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text = "0" + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text = "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"arrange_perc_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -4653,7 +4653,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text = "0" + ("\n");
+                quartileText.text = "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"arrange_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -4684,8 +4684,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n") + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"unpack_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -4706,7 +4706,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"packforward_score-{PlayerPrefs.GetInt("activesKid")}");
@@ -4732,7 +4732,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"packbackward_score-{PlayerPrefs.GetInt("activesKid")}");
@@ -4758,7 +4758,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"waitroom_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -4784,7 +4784,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -4814,8 +4814,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_greencorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -4841,7 +4841,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_greenincorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -4867,7 +4867,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -4893,7 +4893,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_incorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -4923,8 +4923,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab1_hits-{PlayerPrefs.GetInt("activesKid")}");
@@ -4950,7 +4950,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab1_crosses-{PlayerPrefs.GetInt("activesKid")}");
@@ -4976,7 +4976,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab1_deadends-{PlayerPrefs.GetInt("activesKid")}");
@@ -5006,8 +5006,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab2_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -5033,7 +5033,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab2_latency-{PlayerPrefs.GetInt("activesKid")}");
@@ -5063,8 +5063,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0";
-                AverageQText.text += "0";
+                quartileText.text += "1";
+                AverageQText.text += "1";
             }
         }
         if (age == 9)
@@ -5093,7 +5093,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text = "0" + ("\n");
+                quartileText.text = "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"coins_extra_missed-{PlayerPrefs.GetInt("activesKid")}");
@@ -5123,8 +5123,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text = "0" + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text = "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"arrange_perc_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -5150,7 +5150,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"arrange_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -5181,8 +5181,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n") + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"unpack_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -5203,7 +5203,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"packforward_score-{PlayerPrefs.GetInt("activesKid")}");
@@ -5229,7 +5229,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"packbackward_score-{PlayerPrefs.GetInt("activesKid")}");
@@ -5255,7 +5255,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"waitroom_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -5281,7 +5281,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -5311,8 +5311,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_greencorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -5338,7 +5338,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_greenincorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -5364,7 +5364,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -5390,7 +5390,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_incorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -5420,8 +5420,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab1_hits-{PlayerPrefs.GetInt("activesKid")}");
@@ -5447,7 +5447,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab1_crosses-{PlayerPrefs.GetInt("activesKid")}");
@@ -5473,7 +5473,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab1_deadends-{PlayerPrefs.GetInt("activesKid")}");
@@ -5503,8 +5503,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab2_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -5530,7 +5530,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab2_latency-{PlayerPrefs.GetInt("activesKid")}");
@@ -5560,8 +5560,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0";
-                AverageQText.text += "0";
+                quartileText.text += "1";
+                AverageQText.text += "1";
             }
         }
         if (age == 10)
@@ -5590,7 +5590,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text = "0" + ("\n");
+                quartileText.text = "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"coins_extra_missed-{PlayerPrefs.GetInt("activesKid")}");
@@ -5620,8 +5620,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text = "0" + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text = "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"arrange_perc_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -5647,7 +5647,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"arrange_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -5678,8 +5678,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n") + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"unpack_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -5700,7 +5700,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"packforward_score-{PlayerPrefs.GetInt("activesKid")}");
@@ -5726,7 +5726,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"packbackward_score-{PlayerPrefs.GetInt("activesKid")}");
@@ -5752,7 +5752,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"waitroom_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -5778,7 +5778,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -5808,8 +5808,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_greencorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -5835,7 +5835,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_greenincorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -5861,7 +5861,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -5887,7 +5887,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_incorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -5917,8 +5917,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab1_hits-{PlayerPrefs.GetInt("activesKid")}");
@@ -5944,7 +5944,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab1_crosses-{PlayerPrefs.GetInt("activesKid")}");
@@ -5970,7 +5970,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab1_deadends-{PlayerPrefs.GetInt("activesKid")}");
@@ -6000,8 +6000,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab2_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -6027,7 +6027,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab2_latency-{PlayerPrefs.GetInt("activesKid")}");
@@ -6057,8 +6057,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0";
-                AverageQText.text += "0";
+                quartileText.text += "1";
+                AverageQText.text += "1";
             }
         }
         if (age == 11)
@@ -6087,7 +6087,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text = "0" + ("\n");
+                quartileText.text = "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"coins_extra_missed-{PlayerPrefs.GetInt("activesKid")}");
@@ -6117,8 +6117,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text = "0" + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text = "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"arrange_perc_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -6144,7 +6144,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"arrange_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -6175,8 +6175,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n") + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"unpack_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -6197,7 +6197,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"packforward_score-{PlayerPrefs.GetInt("activesKid")}");
@@ -6223,7 +6223,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"packbackward_score-{PlayerPrefs.GetInt("activesKid")}");
@@ -6249,7 +6249,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"waitroom_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -6275,7 +6275,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -6305,8 +6305,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_greencorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -6327,7 +6327,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_greenincorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -6353,7 +6353,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -6379,7 +6379,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_incorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -6409,8 +6409,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab1_hits-{PlayerPrefs.GetInt("activesKid")}");
@@ -6436,7 +6436,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab1_crosses-{PlayerPrefs.GetInt("activesKid")}");
@@ -6462,7 +6462,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab1_deadends-{PlayerPrefs.GetInt("activesKid")}");
@@ -6492,8 +6492,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab2_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -6519,7 +6519,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab2_latency-{PlayerPrefs.GetInt("activesKid")}");
@@ -6549,8 +6549,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0";
-                AverageQText.text += "0";
+                quartileText.text += "1";
+                AverageQText.text += "1";
             }
         }
         if (age == 12)
@@ -6579,7 +6579,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text = "0" + ("\n");
+                quartileText.text = "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"coins_extra_missed-{PlayerPrefs.GetInt("activesKid")}");
@@ -6609,8 +6609,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text = "0" + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text = "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"arrange_perc_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -6636,7 +6636,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"arrange_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -6667,8 +6667,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n") + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"unpack_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -6689,7 +6689,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"packforward_score-{PlayerPrefs.GetInt("activesKid")}");
@@ -6715,7 +6715,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"packbackward_score-{PlayerPrefs.GetInt("activesKid")}");
@@ -6741,7 +6741,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"waitroom_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -6767,7 +6767,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -6797,8 +6797,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_greencorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -6824,7 +6824,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_greenincorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -6850,7 +6850,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_correct-{PlayerPrefs.GetInt("activesKid")}");
@@ -6876,7 +6876,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"flyplane_incorrect-{PlayerPrefs.GetInt("activesKid")}");
@@ -6906,8 +6906,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n") + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n") + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab1_hits-{PlayerPrefs.GetInt("activesKid")}");
@@ -6933,7 +6933,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab1_crosses-{PlayerPrefs.GetInt("activesKid")}");
@@ -6959,7 +6959,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab1_deadends-{PlayerPrefs.GetInt("activesKid")}");
@@ -6989,8 +6989,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
-                AverageQText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
+                AverageQText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab2_time-{PlayerPrefs.GetInt("activesKid")}");
@@ -7016,7 +7016,7 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0" + ("\n");
+                quartileText.text += "1" + ("\n");
             }
 
             num = PlayerPrefs.GetInt($"lab2_latency-{PlayerPrefs.GetInt("activesKid")}");
@@ -7046,8 +7046,8 @@ public class DataEvaluation : MonoBehaviour
             }
             else
             {
-                quartileText.text += "0";
-                AverageQText.text += "0";
+                quartileText.text += "1";
+                AverageQText.text += "1";
             }
         }
     }
