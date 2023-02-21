@@ -788,14 +788,15 @@ public class MenuManager : MonoBehaviour
 
     public void ShowDisclaimer()
     {
-        if (SystemInfo.deviceType == DeviceType.Handheld && !IsTablet())
-        {
-            ShowBiggerScreenMessage();
-        }
-        else
-        {
-            ShowTheDisclaimer();
-        }
+        ShowTheDisclaimer();
+        //if (SystemInfo.deviceType == DeviceType.Handheld && !IsTablet())
+        //{
+        //    ShowBiggerScreenMessage();
+        //}
+        //else
+        //{
+        //    ShowTheDisclaimer();
+        //}
     }
 
     void ShowBiggerScreenMessage()
