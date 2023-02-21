@@ -1858,14 +1858,13 @@ public class MenuManager : MonoBehaviour
 
     bool IsEvaluationAvilable()
     {
-        //bool returner = false;
-        //if (IsTablet() && sessionManager.activeKid.testAvailable)
-        //{
-        //    returner = true;
-        //    Debug.Log("Si esta");
-        //    Debug.Log(sessionManager.activeKid.testAvailable);
-        //}
-        bool returner = true;
+        bool returner = false;
+        if (sessionManager.activeKid.testAvailable)
+        {
+            returner = true;
+            Debug.Log("Si esta");
+            Debug.Log(sessionManager.activeKid.testAvailable);
+        }
         return returner;
     }
 

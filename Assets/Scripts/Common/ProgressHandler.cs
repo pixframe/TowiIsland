@@ -530,14 +530,13 @@ public class ProgressHandler : MonoBehaviour {
 
         string path = $"{Application.persistentDataPath}/{kidData}{Keys.Evaluation_To_Save}";
         evaluationSavedOffline++;
-        Debug.Log($"El dia de hoy es: {kidData}");
-        Debug.Log($"Y el id es: {sessionManager.activeKid.id}");
-        Debug.Log($"Y el id que se guarda: {PlayerPrefs.GetString("activesKid")}");
-        Debug.Log($"We have {evaluationSavedOffline} jsons to save");
-        Debug.Log(path);
         File.WriteAllText(path, dataToSave);
         PlayerPrefs.SetString("evaluationPath", path);
         PlayerPrefs.SetInt(Keys.Evaluations_Saved, evaluationSavedOffline);
+
+        StreamWriter writer = new StreamWriter(Application.persistentDataPath + $"/{kidData}{Keys.Evaluation_To_Save}.txt");
+        writer.Write(dataToSave);
+
 
         sessionManager.SaveSession();
 
