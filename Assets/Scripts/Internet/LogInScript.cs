@@ -74,9 +74,11 @@ public class LogInScript : MonoBehaviour
             if (request.result == UnityWebRequest.Result.ConnectionError)
             {
                 menuController.ShowWarning(9, menuController.ShowLogIn);
+                Debug.Log("Aqui mando el error1");
             }
             else if (request.result == UnityWebRequest.Result.ProtocolError)
             {
+                Debug.Log(request.error);
                 JSONObject jsonObj = JSONObject.Parse(request.downloadHandler.text);
                 if (request.error.Contains("401"))
                 {
@@ -89,6 +91,7 @@ public class LogInScript : MonoBehaviour
                 else
                 {
                     menuController.ShowWarning(9, menuController.ShowLogIn);
+                    Debug.Log("Aqui mando el error2");
                 }
             }
             else
@@ -169,6 +172,8 @@ public class LogInScript : MonoBehaviour
             {
                 menuController.HideAllCanvas();
                 menuController.ShowWarning(8);
+                Debug.Log("Aqui falo el request1");
+                
             }
             else
             {
@@ -440,6 +445,7 @@ public class LogInScript : MonoBehaviour
             if (request.result == UnityWebRequest.Result.ConnectionError)
             {
                 menuController.ShowWarning(8);
+                Debug.Log("Aqui falo el request2");
             }
             else if (request.result == UnityWebRequest.Result.ProtocolError)
             {
@@ -496,6 +502,7 @@ public class LogInScript : MonoBehaviour
             if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
             {
                 menuController.ShowWarning(9);
+                Debug.Log("Aqui mando el error3");
                 menuController.AddKidShower();
             }
             else

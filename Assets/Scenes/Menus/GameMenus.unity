@@ -62,7 +62,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.71320885, g: 0.893153, b: 0.9802273, a: 1}
+  m_IndirectSpecularColor: {r: 0.70792013, g: 0.89983755, b: 0.9760893, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &17
 LightmapSettings:
@@ -7779,7 +7779,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: -0.00003314174, y: 47.30002}
+  m_AnchoredPosition: {x: -55.70057, y: 47.30002}
   m_SizeDelta: {x: 127, y: 94.6}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &459464111
@@ -16355,6 +16355,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 222722779}
     m_Modifications:
+    - target: {fileID: 1500036285730412, guid: 5602b4354656b89408e516faf8ea5e10, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1655818314388962, guid: 5602b4354656b89408e516faf8ea5e10, type: 3}
       propertyPath: m_Name
       value: Isla
@@ -32063,8 +32067,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 343956570}
   m_HandleRect: {fileID: 343956569}
   m_Direction: 0
-  m_Value: 0
-  m_Size: 1
+  m_Value: 1
+  m_Size: 0.8412896
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

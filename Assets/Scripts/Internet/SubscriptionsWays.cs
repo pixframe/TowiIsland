@@ -66,6 +66,7 @@ public class SubscriptionsWays : MonoBehaviour
             {
                 menuManager.ShopWithCode(typeOfShop);
                 menuManager.ShowWarning(8);
+                Debug.Log("Aqui falo el request3");
             }
             else if (request.isNetworkError)
             {
@@ -83,6 +84,8 @@ public class SubscriptionsWays : MonoBehaviour
                         //JSONObject jsonObject = JSONObject.Parse(post.text);
                         menuManager.ShopWithCode(typeOfShop);
                         menuManager.ShowWarning(10);
+                        
+                        
                     }
                 }
                 else
@@ -122,6 +125,7 @@ public class SubscriptionsWays : MonoBehaviour
                         //JSONObject jsonObject = JSONObject.Parse(post.text);
                         menuManager.ShopWithCode(typeOfShop);
                         menuManager.ShowWarning(10);
+                        Debug.Log("Aqui mando el error2");
                     }
                 }
                 else
@@ -191,6 +195,7 @@ public class SubscriptionsWays : MonoBehaviour
             {
                 menuManager.ShowAccountWarning(0);
                 menuManager.ShowWarning(8);
+                Debug.Log("Aqui falo el request4");
             }
             else
             {
@@ -206,6 +211,7 @@ public class SubscriptionsWays : MonoBehaviour
                 {
                     menuManager.ShowAccountWarning(0);
                     menuManager.ShowWarning(8);
+                    Debug.Log("Aqui falo el request5");
                 }
             }
         }
