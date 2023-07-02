@@ -550,6 +550,7 @@ public class MenuManager : MonoBehaviour
     //This will set the shop
     public void SetShop(int isAShopForNewKid)
     {
+        //Debug.Log("algo de tienda");
         HideAllCanvas();
         shopMenu.ShowThisMenu();
         if (SystemInfo.deviceType == DeviceType.Desktop)
@@ -1201,7 +1202,29 @@ public class MenuManager : MonoBehaviour
             ShowWarning(1, registerMenu.ShowLoginPanel);
         }
     }
+    
+    public void TryDelete(string mail, string pass, string passConfirmation)
+    {
+        EmailVerificationUtility verificationUtility = new EmailVerificationUtility();
+        if (mail != "" && pass != "" && passConfirmation != "")
+        {
+            if (pass == passConfirmation)
+            {
+                ShowLoading();
+                logInScript.DeleteAccount(mail, pass);
+            }
+            else
+            {
+                //Warning
+            }
 
+        }
+        else
+        {
+            ShowWarning(7);
+        }
+
+    }
     public void TrySignIn(string mail, string pass, string passConfirmation, string kidName, bool isNewPaidUser)
     {
         string kidDob = DefineTheDateOfBirth(0);

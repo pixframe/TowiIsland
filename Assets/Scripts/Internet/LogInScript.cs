@@ -415,7 +415,65 @@ public class LogInScript : MonoBehaviour
     {
         StartCoroutine(PostRegisterParentAndKid(email, password, kidName, dateOfBirth, newPaidUser));
     }
+    public void DeleteAccount(string email, string pass)
+    {
+        StartCoroutine(PostDeleteAccount(email, pass));
+    }
 
+    IEnumerator PostDeleteAccount(string mail, string pass)
+    {
+        string psswdHash = password;//Md5SUm(password);
+        JSONObject data = new JSONObject();
+        //data.Add("parent_name", name);
+        //data.Add("parent_lastname", lastName);
+        data.Add("parent_email", mail);
+        data.Add("parent_password", psswdHash);
+        //data.Add("child_name", kidName);
+        //data.Add("child_lastname", kidLastName);
+        //data.Add("child_dob", dateOfBirth);
+        //data.Add("child_gender", gender);
+        data.Add("user_type", "Familiar");
+
+        WWWForm form = new WWWForm();
+        form.AddField("jsonToDb", data.ToString());
+
+        using (UnityWebRequest request = UnityWebRequest.Post(registerUrl, form))
+        {
+            yield return request.SendWebRequest();
+            if (request.result == UnityWebRequest.Result.ConnectionError)
+            {
+                menuController.ShowWarning(8);
+            }
+            else if (request.result == UnityWebRequest.Result.ProtocolError)
+            {
+                menuController.CreateAccount();
+                menuController.ShowWarning(13);
+            }
+
+            else
+            {
+                JSONObject obj = JSONObject.Parse(request.downloadHandler.text);
+                if (obj.ContainsKey("code"))
+                {
+                    if (obj["code"].Str == "111")
+                    {
+                        menuController.ShowWarning(13, () => menuController.ShowRegister(System.Convert.ToBoolean(PlayerPrefs.GetInt(Keys.Buy_IAP))));
+                    }
+                    else
+                    {
+                        //Aqui debe ocurrir el llamado a la base y borrar
+                        //PostLogin(mail, password);
+                        //Analytics.CustomEvent("delete");
+                    }
+                }
+                else
+                {
+                    //PostLogin(mail, password);
+                    //Analytics.CustomEvent("delete");
+                }
+            }
+        }
+    }
     IEnumerator PostRegisterParentAndKid(string email, string password, string kidName, string dateOfBirth, bool newPaidUser)
     {
         string psswdHash = password;//Md5SUm(password);
